@@ -1,0 +1,35 @@
+# IntelliScan Product Roadmap & Requirements
+
+## Project Overview
+IntelliScan is a professional-grade business card scanning and contact management platform. It uses a dual-engine AI approach (Gemini AI + Tesseract OCR) to ensure maximum data accuracy for professionals and enterprise teams.
+
+## Core Architectural Requirements (Non-Negotiable)
+- **Iconography:** `lucide-react` exclusively.
+- **Layouts:** 3 specific wrappers (`PublicLayout`, `DashboardLayout`, `AdminLayout`).
+- **Data Schema:** Strict `Contact` interface with confidence scores (0.0-1.0) and engine attribution (`gemini` | `tesseract`).
+- **Theming:** Class-based dark mode with persistence in `localStorage`.
+
+## Planned Screen List
+
+### Phase 1: Public & Authentication
+1.  **Landing Page (`/`):** Hero, Features, Pricing, Footer.
+2.  **Sign In (`/sign-in`):** Simple auth with "Forgot Password" link.
+3.  **Sign Up (`/sign-up`):** Account creation.
+4.  **Onboarding (`/onboarding`):** Setup wizard.
+
+### Phase 2: User Dashboard (Personal)
+5.  **Scan Page (`/dashboard/scan`):** Upload/Camera interface with real-time confidence feedback.
+6.  **Contacts Page (`/dashboard/contacts`):** Filterable list of personal contacts.
+7.  **Settings (`/dashboard/settings`):** User profile and dark mode toggle.
+
+### Phase 3: Business Workspace (Admin)
+8.  **Workspace Dashboard (`/workspace/dashboard`):** Team stats and activity feed.
+9.  **Team Contacts (`/workspace/contacts`):** Centralized team database.
+10. **Members (`/workspace/members`):** Role management.
+11. **Scanner Links (`/workspace/scanner-links`):** Manage public QR/Link endpoints.
+12. **Analytics (`/workspace/analytics`):** Performance charts.
+13. **Billing (`/workspace/billing`):** Plan management.
+
+### Phase 4: Super Admin
+14. **Platform Overview (`/admin/dashboard`):** System-wide metrics.
+15. **Engine Performance (`/admin/engine-performance`):** AI vs OCR comparison.

@@ -1,0 +1,250 @@
+# IntelliScan: In-Depth Feature Workflows & Diagrams
+**Supplementary Documentation for Academic Assessment**
+
+This document provides granular, dedicated sets of diagrams for **every individual feature** of the IntelliScan platform.
+
+---
+
+## Feature 1: Intelligent OCR Capture (Single & Bulk Processing)
+This is the core feature of the platform. It handles image intake, API payload structuring, and contact json normalization.
+
+### 1.1 Use Case Diagram (Capture Module)
+```mermaid
+usecaseDiagram
+    actor PersonalUser as Personal User
+    actor EnterpriseUser as Enterprise User
+    
+    usecase "Upload Image(s)" as UC1
+    usecase "Validate File Size" as UC2
+    usecase "Extract Contact Data" as UC3
+    usecase "Normalize Schema" as UC4
+    usecase "Store to SQLite" as UC5
+    usecase "Deduct Quota" as UC6
+    
+    PersonalUser --> UC1
+    EnterpriseUser --> UC1
+    
+    UC1 ..> UC2 : <<include>>
+    UC1 ..> UC3 : <<include>>
+    UC3 ..> UC4 : <<include>>
+    UC4 ..> UC5 : <<include>>
+    EnterpriseUser ..> UC6 : <<extend>>
+```
+
+### 1.2 Activity Diagram (Capture Workflow)
+```mermaid
+stateDiagram-v2
+    [*] --> ImageReceived
+    ImageReceived --> CheckRateLimit
+    CheckRateLimit --> EnsureQuota: Valid Token
+    EnsureQuota --> FetchEngineStatus: Quota OK
+    FetchEngineStatus --> ExtractData
+    ExtractData --> NormalizeData: Raw JSON from LLM
+    NormalizeData --> CalculateDealScore
+    CalculateDealScore --> SaveContact
+    SaveContact --> [*]: 200 OK Return
+```
+
+### 1.3 Sequence / Interaction Diagram (Multi-Card Parse)
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API as /api/scan-multi
+    participant DB as SQLite
+    participant LLM as AI Wrapper
+    
+    Client->>API: POST Base64 Group Photo
+    API->>DB: Check group_scans_used
+    DB-->>API: Quota = 3/9999
+    API->>LLM: Pass Image + Bulk Prompt
+    LLM-->>API: Returns Array of 5 Contacts
+    loop For Each Contact
+        API->>API: normalizeCard()
+        API->>DB: INSERT INTO contacts
+    end
+    API-->>Client: Return 5 Contact Profiles
+```
+
+---
+
+## Feature 2: Robust Dual-Engine AI Fallback System
+This unique architectural feature ensures the application never crashes if Google's API goes offline.
+
+### 2.1 Use Case Diagram (AI Fault Tolerance)
+```mermaid
+usecaseDiagram
+    actor BackendAPI as Express Backend
+    
+    usecase "Route AI Request" as Route
+    usecase "Try Google Gemini" as TryG
+    usecase "Try OpenAI ChatGPT" as TryO
+    usecase "Trigger Fallback Alert" as Alert
+    
+    BackendAPI --> Route
+    Route ..> TryG : Primary Attempt
+    TryG ..> TryO : <<extend>> (If TimeOut/429)
+    TryO ..> Alert : <<extend>> (If Both Fail)
+```
+
+### 2.2 Sequence Diagram (Failover Protocol)
+```mermaid
+sequenceDiagram
+    participant Feature as Any AI Feature
+    participant Fallback as generateWithFallback()
+    participant DB as engine_config
+    participant Gemini as Google API
+    participant OpenAI as ChatGPT API
+
+    Feature->>Fallback: Request Generation
+    Fallback->>DB: SELECT status FROM ai_models
+    Fallback->>Gemini: model.generateContent()
+    alt Throw 500/429 Error
+        Gemini--xFallback: Connection Timeout
+        Fallback->>DB: Fetch OPENAI_API_KEY
+        Fallback->>OpenAI: chat.completions.create()
+        OpenAI-->>Fallback: Recovery Success
+    end
+    Fallback-->>Feature: Seamless Response
+```
+
+---
+
+## Feature 3: Smart Calendar & Scheduling Engine
+Allows users to instantly schedule follow-ups and invite attendees via automated email triggers.
+
+### 3.1 Class Diagram (Calendar Module)
+```mermaid
+classDiagram
+    class CalendarEvent {
+        +int id
+        +string title
+        +string description
+        +datetime start_date
+        +datetime end_date
+        +createEvent()
+        +deleteEvent()
+    }
+    class EventAttendee {
+        +int event_id
+        +string email
+        +string status
+        +sendInvite()
+    }
+    class NodemailerMailer {
+        +string smtp_host
+        +string smtp_port
+        +dispatch()
+    }
+    
+    CalendarEvent "1" *-- "many" EventAttendee : has
+    EventAttendee ..> NodemailerMailer : triggers
+```
+
+### 3.2 Activity Diagram (Event Deletion & SMTP Protection)
+```mermaid
+stateDiagram-v2
+    [*] --> UserClicksDelete
+    UserClicksDelete --> CustomReactModal
+    CustomReactModal --> APIRequest: User Confirms
+    APIRequest --> DB_Delete_Record
+    
+    DB_Delete_Record --> TriggerEmailCancellation
+    state TriggerEmailCancellation {
+        [*] --> SendSMTP
+        SendSMTP --> SMTP_Success
+        SendSMTP --> SMTP_Crash
+        SMTP_Crash --> CatchErrorSilently
+    }
+    TriggerEmailCancellation --> ReturnSuccessToUI
+    ReturnSuccessToUI --> [*]
+```
+
+---
+
+## Feature 4: Role-Based Access Control (RBAC) & SuperAdmin Control Panel
+Distinct capabilities between Freemium users and Enterprise deployment.
+
+### 4.1 Use Case Diagram (Platform Security)
+```mermaid
+usecaseDiagram
+    actor Personal as Personal
+    actor Enterprise as Enterprise
+    actor SuperAdmin as Platform Admin
+    
+    usecase "View Personal Contacts" as V1
+    usecase "Export to CSV" as V2
+    usecase "Deploy/Pause AI Engines" as V3
+    usecase "View Global Telemetry" as V4
+    
+    Personal --> V1
+    Enterprise --> V1
+    Enterprise --> V2
+    
+    SuperAdmin --> V3
+    SuperAdmin --> V4
+```
+
+### 4.2 Sequence Diagram (Admin Deploying Models)
+```mermaid
+sequenceDiagram
+    participant SuperAdmin
+    participant UI as Management Dashboard
+    participant API as /api/admin/models
+    participant DB as ai_models Table
+    
+    SuperAdmin->>UI: Click "Pause" on Gemini Engine
+    UI->>API: PUT status = 'paused'
+    note over API: Restrict via requireSuperAdmin JWT
+    API->>DB: UPDATE ai_models SET status='paused' WHERE id=1
+    DB-->>API: Confirmation
+    API-->>UI: 200 Success
+    
+    note over UI: Later when User Scans...
+    API->>DB: Check Status
+    DB-->>API: Status = 'paused'
+    API-->>User: 503 Models Disabled Alert
+```
+
+---
+
+## Feature 5: AI Networking Coach & Campaign Autowriter
+The intelligent analytical suite that warns users about stale connections and writes automated cold-emails.
+
+### 5.1 Use Case Diagram (Analytics Suite)
+```mermaid
+usecaseDiagram
+    actor User as Any User
+    
+    usecase "Load Analytics Dashboard" as Load
+    usecase "Calculate Stale Connections" as Calc1
+    usecase "Determine Missing Context" as Calc2
+    usecase "Generate Actionable Insights" as Gen
+    usecase "Auto-Write Campaign Draft" as Draft
+    
+    User --> Load
+    Load ..> Calc1 : <<include>>
+    Load ..> Calc2 : <<include>>
+    Calc1 ..> Gen : Feed to LLM
+    Gen ..> Draft : <<extend>> (User clicks CTA)
+```
+
+### 5.2 Activity Diagram (Coach Insight Generation)
+```mermaid
+stateDiagram-v2
+    [*] --> DashboardMounts
+    DashboardMounts --> FetchAllUserContacts
+    FetchAllUserContacts --> FilterLogic
+    
+    state FilterLogic {
+        [*] --> CheckDates
+        CheckDates --> MarkStale(>14days)
+        CheckDates --> CheckFields
+        CheckFields --> MarkMissingContext
+    }
+    
+    FilterLogic --> LLMPromptCreation
+    LLMPromptCreation --> generateWithFallback
+    generateWithFallback --> ReturnJSON
+    ReturnJSON --> RenderGamifiedLeaderboard
+    RenderGamifiedLeaderboard --> [*]
+```

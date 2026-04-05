@@ -1,0 +1,307 @@
+[
+  {
+    "name": "Gen404SystemErrorStates",
+    "path": "404-system-error-states",
+    "folder": "404_system_error_states"
+  },
+  {
+    "name": "GenAdvancedApiExplorerSandbox",
+    "path": "advanced-api-explorer-sandbox",
+    "folder": "advanced_api_explorer_sandbox"
+  },
+  {
+    "name": "GenAdvancedApiWebhookMonitor",
+    "path": "advanced-api-webhook-monitor",
+    "folder": "advanced_api_webhook_monitor"
+  },
+  {
+    "name": "GenAdvancedCsvJsonExportMapper",
+    "path": "advanced-csv-json-export-mapper",
+    "folder": "advanced_csv_json_export_mapper"
+  },
+  {
+    "name": "GenAdvancedSecurityAuditLogs1",
+    "path": "advanced-security-audit-logs-1",
+    "folder": "advanced_security_audit_logs_1"
+  },
+  {
+    "name": "GenAdvancedSecurityAuditLogs2",
+    "path": "advanced-security-audit-logs-2",
+    "folder": "advanced_security_audit_logs_2"
+  },
+  {
+    "name": "GenAdvancedSegmentBuilder",
+    "path": "advanced-segment-builder",
+    "folder": "advanced_segment_builder"
+  },
+  {
+    "name": "GenAiConfidenceAuditFeedbackHub",
+    "path": "ai-confidence-audit-feedback-hub",
+    "folder": "ai_confidence_audit_feedback_hub"
+  },
+  {
+    "name": "GenAiConflictResolutionHumanInTheLoop",
+    "path": "ai-conflict-resolution-human-in-the-loop",
+    "folder": "ai_conflict_resolution_human_in_the_loop"
+  },
+  {
+    "name": "GenAiMaintenanceRetrainingLogs",
+    "path": "ai-maintenance-retraining-logs",
+    "folder": "ai_maintenance_retraining_logs"
+  },
+  {
+    "name": "GenAiModelVersioningRollback",
+    "path": "ai-model-versioning-rollback",
+    "folder": "ai_model_versioning_rollback"
+  },
+  {
+    "name": "GenAiTrainingTuningSuperAdmin",
+    "path": "ai-training-tuning-super-admin",
+    "folder": "ai_training_tuning_super_admin"
+  },
+  {
+    "name": "GenApiIntegrations",
+    "path": "api-integrations",
+    "folder": "api_integrations"
+  },
+  {
+    "name": "GenApiPerformanceWebhooks",
+    "path": "api-performance-webhooks",
+    "folder": "api_performance_webhooks"
+  },
+  {
+    "name": "GenApiWebhookConfiguration1",
+    "path": "api-webhook-configuration-1",
+    "folder": "api_webhook_configuration_1"
+  },
+  {
+    "name": "GenApiWebhookConfiguration2",
+    "path": "api-webhook-configuration-2",
+    "folder": "api_webhook_configuration_2"
+  },
+  {
+    "name": "GenApiWebhookLogsDebugging",
+    "path": "api-webhook-logs-debugging",
+    "folder": "api_webhook_logs_debugging"
+  },
+  {
+    "name": "GenAuditLogsSecurity",
+    "path": "audit-logs-security",
+    "folder": "audit_logs_security"
+  },
+  {
+    "name": "GenBatchProcessingMonitorUserDashboard",
+    "path": "batch-processing-monitor-user-dashboard",
+    "folder": "batch_processing_monitor_user_dashboard"
+  },
+  {
+    "name": "GenBillingUsage",
+    "path": "billing-usage",
+    "folder": "billing_usage"
+  },
+  {
+    "name": "GenBulkContactExportWizard1",
+    "path": "bulk-contact-export-wizard-1",
+    "folder": "bulk_contact_export_wizard_1"
+  },
+  {
+    "name": "GenBulkContactExportWizard2",
+    "path": "bulk-contact-export-wizard-2",
+    "folder": "bulk_contact_export_wizard_2"
+  },
+  {
+    "name": "GenBulkMemberInvitationImport",
+    "path": "bulk-member-invitation-import",
+    "folder": "bulk_member_invitation_import"
+  },
+  {
+    "name": "GenComplianceDataSovereigntySuperAdmin",
+    "path": "compliance-data-sovereignty-super-admin",
+    "folder": "compliance_data_sovereignty_super_admin"
+  },
+  {
+    "name": "GenComplianceDisclosureLegalCenter",
+    "path": "compliance-disclosure-legal-center",
+    "folder": "compliance_disclosure_legal_center"
+  },
+  {
+    "name": "GenContactDetailView",
+    "path": "contact-detail-view",
+    "folder": "contact_detail_view"
+  },
+  {
+    "name": "GenContactMergeDeduplication",
+    "path": "contact-merge-deduplication",
+    "folder": "contact_merge_deduplication"
+  },
+  {
+    "name": "GenDataExportHistoryLog",
+    "path": "data-export-history-log",
+    "folder": "data_export_history_log"
+  },
+  {
+    "name": "GenDataExportMigration",
+    "path": "data-export-migration",
+    "folder": "data_export_migration"
+  },
+  {
+    "name": "GenDynamicDashboardBuilder",
+    "path": "dynamic-dashboard-builder",
+    "folder": "dynamic_dashboard_builder"
+  },
+  {
+    "name": "GenEmptyStatesNoResultsTemplate",
+    "path": "empty-states-no-results-template",
+    "folder": "empty_states_no_results_template"
+  },
+  {
+    "name": "GenEnterpriseSsoSamlConfig",
+    "path": "enterprise-sso-saml-config",
+    "folder": "enterprise_sso_saml_config"
+  },
+  {
+    "name": "GenEnterpriseWhitelabelBrandingConfig",
+    "path": "enterprise-whitelabel-branding-config",
+    "folder": "enterprise_whitelabel_branding_config"
+  },
+  {
+    "name": "GenEnterpriseWhitelabelBrandingConfigFixed",
+    "path": "enterprise-whitelabel-branding-config-fixed",
+    "folder": "enterprise_whitelabel_branding_config_fixed"
+  },
+  {
+    "name": "GenErrorResolutionCenter",
+    "path": "error-resolution-center",
+    "folder": "error_resolution_center"
+  },
+  {
+    "name": "GenGlobalDataRetentionArchiving",
+    "path": "global-data-retention-archiving",
+    "folder": "global_data_retention_archiving"
+  },
+  {
+    "name": "GenGlobalSearchIntelligence",
+    "path": "global-search-intelligence",
+    "folder": "global_search_intelligence"
+  },
+  {
+    "name": "GenGlobalSearchUniversalDiscovery",
+    "path": "global-search-universal-discovery",
+    "folder": "global_search_universal_discovery"
+  },
+  {
+    "name": "GenGlobalSystemStatusPage",
+    "path": "global-system-status-page",
+    "folder": "global_system_status_page"
+  },
+  {
+    "name": "GenHelpCenterDocs",
+    "path": "help-center-docs",
+    "folder": "help_center_docs"
+  },
+  {
+    "name": "GenInsightsAiForecasting",
+    "path": "insights-ai-forecasting",
+    "folder": "insights_ai_forecasting"
+  },
+  {
+    "name": "GenInteractiveApiPayloadExplorer",
+    "path": "interactive-api-payload-explorer",
+    "folder": "interactive_api_payload_explorer"
+  },
+  {
+    "name": "GenInteractiveFeatureToursHelpOverlays",
+    "path": "interactive-feature-tours-help-overlays",
+    "folder": "interactive_feature_tours_help_overlays"
+  },
+  {
+    "name": "GenMaintenanceSystemUpdateMode",
+    "path": "maintenance-system-update-mode",
+    "folder": "maintenance_system_update_mode"
+  },
+  {
+    "name": "GenMarketplaceIntegrationsBusinessAdmin",
+    "path": "marketplace-integrations-business-admin",
+    "folder": "marketplace_integrations_business_admin"
+  },
+  {
+    "name": "GenMemberRolePermissionsEditor1",
+    "path": "member-role-permissions-editor-1",
+    "folder": "member_role_permissions_editor_1"
+  },
+  {
+    "name": "GenMemberRolePermissionsEditor2",
+    "path": "member-role-permissions-editor-2",
+    "folder": "member_role_permissions_editor_2"
+  },
+  {
+    "name": "GenMemberRolePermissionMatrix",
+    "path": "member-role-permission-matrix",
+    "folder": "member_role_permission_matrix"
+  },
+  {
+    "name": "GenPrivacyGdprCommandCenter",
+    "path": "privacy-gdpr-command-center",
+    "folder": "privacy_gdpr_command_center"
+  },
+  {
+    "name": "GenReferralLoyaltyDashboard",
+    "path": "referral-loyalty-dashboard",
+    "folder": "referral_loyalty_dashboard"
+  },
+  {
+    "name": "GenSecurityKeyMfaSetup",
+    "path": "security-key-mfa-setup",
+    "folder": "security_key_mfa_setup"
+  },
+  {
+    "name": "GenSecurityThreatMonitoringSuperAdmin",
+    "path": "security-threat-monitoring-super-admin",
+    "folder": "security_threat_monitoring_super_admin"
+  },
+  {
+    "name": "GenStrategicAccountReviews",
+    "path": "strategic-account-reviews",
+    "folder": "strategic_account_reviews"
+  },
+  {
+    "name": "GenSubscriptionPlanComparison",
+    "path": "subscription-plan-comparison",
+    "folder": "subscription_plan_comparison"
+  },
+  {
+    "name": "GenSystemHealthSuperAdmin",
+    "path": "system-health-super-admin",
+    "folder": "system_health_super_admin"
+  },
+  {
+    "name": "GenSystemMaintenanceDowntimeSchedule",
+    "path": "system-maintenance-downtime-schedule",
+    "folder": "system_maintenance_downtime_schedule"
+  },
+  {
+    "name": "GenSystemNotificationCenterSuperAdmin",
+    "path": "system-notification-center-super-admin",
+    "folder": "system_notification_center_super_admin"
+  },
+  {
+    "name": "GenUsageQuotasLimits",
+    "path": "usage-quotas-limits",
+    "folder": "usage_quotas_limits"
+  },
+  {
+    "name": "GenUserFeedbackBugReporting",
+    "path": "user-feedback-bug-reporting",
+    "folder": "user_feedback_bug_reporting"
+  },
+  {
+    "name": "GenWorkflowAutomationsBusinessAdmin",
+    "path": "workflow-automations-business-admin",
+    "folder": "workflow_automations_business_admin"
+  },
+  {
+    "name": "GenWorkspacesOrganizationsSuperAdmin",
+    "path": "workspaces-organizations-super-admin",
+    "folder": "workspaces_organizations_super_admin"
+  }
+]

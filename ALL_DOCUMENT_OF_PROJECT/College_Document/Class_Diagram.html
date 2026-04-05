@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliScan - Class Diagram</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fff;
+            padding: 20px;
+            color: #111;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 36px;
+            border-radius: 10px;
+            box-shadow: 0 1px 12px rgba(0,0,0,0.08);
+        }
+        h1 {
+            text-align: center;
+            color: #222;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #555;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .class-overview,
+        .relationship-section,
+        .description,
+        .legend,
+        .page-break {
+            margin-top: 15px;
+            padding: 14px;
+            background: #f6f6f6;
+            border-radius: 4px;
+            color: #444;
+            line-height: 1.6;
+        }
+        .class-overview {
+            margin: 30px 0;
+            border-left: 4px solid #777;
+        }
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .class-box {
+            border: 1px solid #777;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+        }
+        .class-header {
+            background: #f7f7f7;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            font-weight: 700;
+            color: #222;
+            text-align: center;
+        }
+        .class-attributes,
+        .class-methods {
+            padding: 12px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .attribute,
+        .method {
+            margin: 3px 0;
+            font-family: 'Courier New', monospace;
+            color: #333;
+        }
+        .method:before {
+            content: "+ ";
+            color: #333;
+            font-weight: bold;
+        }
+        .relationship-section {
+            margin: 40px 0;
+        }
+        .relationship-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        .relationship-item {
+            background: #fff;
+            padding: 12px;
+            border-left: 3px solid #777;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .relationship-item strong {
+            color: #222;
+        }
+        .diagram-section {
+            margin: 40px 0;
+            page-break-inside: avoid;
+        }
+        .diagram-title {
+            color: #222;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: #f6f6f6;
+            padding: 10px 15px;
+            border-left: 4px solid #777;
+            border-radius: 4px;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            margin: 15px 0;
+        }
+        .page-break {
+            page-break-after: always;
+            margin: 40px 0;
+            padding: 20px 0;
+            border-top: 1px solid #ddd;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: #fff;
+        }
+        table th,
+        th {
+            background: #f3f3f3;
+            color: #222;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ccc;
+            font-weight: 700;
+        }
+        table td,
+        td {
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            font-size: 13px;
+        }
+        table tr:nth-child(even),
+        tr:nth-child(even) {
+            background: #fbfbfb;
+        }
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            svg {
+                border: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IntelliScan - Class Diagram</h1>
+        <p class="subtitle">Data Model &amp; Object-Oriented Architecture</p>
+
+        <div class="class-overview">
+            <h2 style="color: #1976D2; margin-bottom: 10px;">System Overview</h2>
+            <p>The IntelliScan class diagram shows the core data entities and their relationships. The system includes user management (User, Workspace, Team), contact management (Contact, Card), marketing capabilities (Campaign), integrations (CRMIntegration), AI processing (AIModel), and comprehensive tracking (Analytics, AuditLog).</p>
+        </div>
+
+        <!-- Main Classes Grid -->
+        <div class="diagram-section">
+            <div class="diagram-title">Core Entity Classes</div>
+            <div class="classes-grid">
+                <!-- User Class -->
+                <div class="class-box">
+                    <div class="class-header">User</div>
+                    <div class="class-attributes">
+                        <div class="attribute">id: UUID</div>
+                        <div class="attribute">email: String</div>
+                        <div class="attribute">firstName: String</div>
+                        <div class="attribute">lastName: String</div>
+                        <div class="attribute">role: Enum</div>
+                        <div class="attribute">subscriptionPlan: Enum</div>
+                        <div class="attribute">isActive: Boolean</div>
+                        <div class="attribute">createdAt: DateTime</div>
+                    </div>
+                    <div class="class-methods">
+                        <div class="method">login()</div>
+                        <div class="method">logout()</div>
+                        <div class="method">updateProfile()</div>
+                        <div class="method">changePassword()</div>
+                        <div class="method">getWorkspaces()</div>
+                        <div class="method">hasPermission()</div>
+                    </div>
+                </div>
+
+                <!-- Workspace Class -->
+                <div class="class-box">
+                    <div class="class-header">Workspace</div>
+                    <div class="class-attributes">
+                        <div class="attribute">id: UUID</div>
+                        <div class="attribute">name: String</div>
+                        <div class="attribute">ownerId: UUID</div>
+                        <div class="attribute">plan: Enum</div>
+                        <div class="attribute">storageUsed: Long</div>
+                        <div class="attribute">storageLimit: Long</div>
+                        <div class="attribute">contactCountCurrent: Int</div>
+                        <div class="attribute">memberCount: Int</div>
+                    </div>
+                    <div class="class-methods">
+                        <div class="method">createTeam()</div>
+                        <div class="method">getTeams()</div>
+                        <div class="method">inviteUser()</div>
+                        <div class="method">updatePlan()</div>
+                        <div class="method">getMembers()</div>
+                        <div class="method">getAuditLog()</div>
+                    </div>
+                </div>
+
+                <!-- Team Class -->
+                <div class="class-box">
+                    <div class="class-header">Team</div>
+                    <div class="class-attributes">
+                        <div class="attribute">id: UUID</div>
+                        <div class="attribute">workspaceId: UUID</div>
+                        <div class="attribute">name: String</div>
+                        <div class="attribute">memberCount: Int</div>
+                        <div class="attribute">assignedContactCount: Int</div>
+                        <div class="attribute">createdBy: UUID</div>
+                        <div class="attribute">createdAt: DateTime</div>
+                    </div>
+                    <div class="class-methods">
+                        <div class="method">addMember()</div>
+                        <div class="method">removeMember()</div>
+                        <div class="method">getMembers()</div>
+                        <div class="method">getContacts()</div>
+                        <div class="method">assignContact()</div>
+                    </div>
+                </div>
+
+                <!-- Contact Class -->
+                <div class="class-box">
+                    <div class="class-header">Contact</div>
+                    <div class="class-attributes">
+                        <div class="attribute">id: UUID</div>
+                        <div class="attribute">userId: UUID</div>
+                        <div class="attribute">firstName: String</div>
+                        <div class="attribute">lastName: String</div>
+                        <div class="attribute">email: String</div>
+                        <div class="attribute">phone: String</div>
+                        <div class="attribute">company: String</div>
+                        <div class="attribute">tags: List&lt;String&gt;</div>
+                        <div class="attribute">crmSynced: Boolean</div>
+                    </div>
+                    <div class="class-methods">
+                        <div class="method">save()</div>
+                        <div class="method">update()</div>
+                        <div class="method">merge()</div>
+                        <div class="method">export()</div>
+                        <div class="method">syncToCRM()</div>
+                        <div class="method">getHistory()</div>
+                    </div>
+                </div>
+
+                <!-- Card Class -->
+                <div class="class-box">
+                    <div class="class-header">Card</div>
+                    <div class="class-attributes">
+                        <div class="attribute">id: UUID</div>
+                        <div class="attribute">contactId: UUID</div>
+                        <div class="attribute">imageUrl: String</div>
+                        <div class="attribute">imageSize: Long</div>
+                        <div class="attribute">extractedRawText: String</div>
+                        <div class="attribute">processingStatus: Enum</div>
+                        <div class="attribute">confidence: Float</div>
+                        <div class="attribute">uploadedAt: DateTime</div>
+                    </div>
+                    <div class="class-methods">
+                        <div class="method">extractData()</div>
+                        <div class="method">getConfidenceScores()</div>
+                        <div class="method">retryProcessing()</div>
+                        <div class="method">markForManualReview()</div>
+                        <div class="method">approveExtraction()</div>
+                    </div>
+                </div>
+
+                <!-- Campaign Class -->
+                <div class="class-box">
+                    <div class="class-header">Campaign</div>
+                    <div class="class-attributes">
+                        <div class="attribute">id: UUID</div>
+                        <div class="attribute">workspaceId: UUID</div>
+                        <div class="attribute">name: String</div>
+                        <div class="attribute">subject: String</div>
+                        <div class="attribute">status: Enum</div>
+                        <div class="attribute">recipientCount: Int</div>
+                        <div class="attribute">openCount: Int</div>
+                        <div class="attribute">clickCount: Int</div>
+                    </div>
+                    <div class="class-methods">
+                        <div class="method">create()</div>
+                        <div class="method">schedule()</div>
+                        <div class="method">send()</div>
+                        <div class="method">getMetrics()</div>
+                        <div class="method">trackOpens()</div>
+                        <div class="method">trackClicks()</div>
+                    </div>
+                </div>
+
+                <!-- CRMIntegration Class -->
+                <div class="class-box">
+                    <div class="class-header">CRMIntegration</div>
+                    <div class="class-attributes">
+                        <div class="attribute">id: UUID</div>
+                        <div class="attribute">workspaceId: UUID</div>
+                        <div class="attribute">provider: Enum</div>
+                        <div class="attribute">apiKey: String</div>
+                        <div class="attribute">syncStatus: Enum</div>
+                        <div class="attribute">fieldMappings: JSON</div>
+                        <div class="attribute">autoSyncEnabled: Boolean</div>
+                        <div class="attribute">lastSyncAt: DateTime</div>
+                    </div>
+                    <div class="class-methods">
+                        <div class="method">authenticate()</div>
+                        <div class="method">testConnection()</div>
+                        <div class="method">pushContacts()</div>
+                        <div class="method">pullContacts()</div>
+                        <div class="method">syncSchedule()</div>
+                    </div>
+                </div>
+
+                <!-- AIModel Class -->
+                <div class="class-box">
+                    <div class="class-header">AIModel</div>
+                    <div class="class-attributes">
+                        <div class="attribute">id: UUID</div>
+                        <div class="attribute">name: String</div>
+                        <div class="attribute">modelType: Enum</div>
+                        <div class="attribute">version: String</div>
+                        <div class="attribute">provider: Enum</div>
+                        <div class="attribute">accuracyScore: Float</div>
+                        <div class="attribute">processingTimeMs: Int</div>
+                        <div class="attribute">isActive: Boolean</div>
+                    </div>
+                    <div class="class-methods">
+                        <div class="method">extractData()</div>
+                        <div class="method">validateData()</div>
+                        <div class="method">updateModel()</div>
+                        <div class="method">getAccuracy()</div>
+                        <div class="method">benchmark()</div>
+                    </div>
+                </div>
+
+                <!-- Analytics Class -->
+                <div class="class-box">
+                    <div class="class-header">Analytics</div>
+                    <div class="class-attributes">
+                        <div class="attribute">id: UUID</div>
+                        <div class="attribute">workspaceId: UUID</div>
+                        <div class="attribute">userId: UUID</div>
+                        <div class="attribute">metricName: String</div>
+                        <div class="attribute">metricValue: Float</div>
+                        <div class="attribute">dimensions: JSON</div>
+                        <div class="attribute">timestamp: DateTime</div>
+                    </div>
+                    <div class="class-methods">
+                        <div class="method">recordMetric()</div>
+                        <div class="method">getMetrics()</div>
+                        <div class="method">getMetricTrend()</div>
+                        <div class="method">generateReport()</div>
+                        <div class="method">getDashboardData()</div>
+                    </div>
+                </div>
+
+                <!-- AuditLog Class -->
+                <div class="class-box">
+                    <div class="class-header">AuditLog</div>
+                    <div class="class-attributes">
+                        <div class="attribute">id: UUID</div>
+                        <div class="attribute">workspaceId: UUID</div>
+                        <div class="attribute">userId: UUID</div>
+                        <div class="attribute">action: String</div>
+                        <div class="attribute">resourceType: String</div>
+                        <div class="attribute">resourceId: UUID</div>
+                        <div class="attribute">timestamp: DateTime</div>
+                    </div>
+                    <div class="class-methods">
+                        <div class="method">log()</div>
+                        <div class="method">getAuditTrail()</div>
+                        <div class="method">generateComplianceReport()</div>
+                        <div class="method">searchAuditLog()</div>
+                        <div class="method">exportAuditLog()</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Relationships Section -->
+        <div class="relationship-section">
+            <h2>Class Relationships &amp; Cardinality</h2>
+
+            <h3 style="color: #1976D2; margin-top: 20px; margin-bottom: 10px;">One-to-Many (1 → *) Relationships</h3>
+            <div class="relationship-list">
+                <div class="relationship-item">
+                    <strong>User → Contact</strong><br/>
+                    One user creates many contacts. Referenced as: User.id → Contact.userId
+                </div>
+                <div class="relationship-item">
+                    <strong>User → Workspace</strong><br/>
+                    One user owns/belongs to many workspaces. Cardinality: (1) User [owns] (*) Workspaces
+                </div>
+                <div class="relationship-item">
+                    <strong>Workspace → Team</strong><br/>
+                    One workspace has many teams. Referenced as: Workspace.id → Team.workspaceId
+                </div>
+                <div class="relationship-item">
+                    <strong>Workspace → Campaign</strong><br/>
+                    One workspace has many campaigns. Referenced as: Workspace.id → Campaign.workspaceId
+                </div>
+                <div class="relationship-item">
+                    <strong>Workspace → Analytics</strong><br/>
+                    One workspace generates many metrics. Referenced as: Workspace.id → Analytics.workspaceId
+                </div>
+                <div class="relationship-item">
+                    <strong>Team → Contact</strong><br/>
+                    One team is assigned many contacts. Through: ContactAssignment junction table
+                </div>
+                <div class="relationship-item">
+                    <strong>Contact → Card</strong><br/>
+                    One contact may have multiple card images (front, back). Cardinality: (1) Contact has (1..*) Cards
+                </div>
+                <div class="relationship-item">
+                    <strong>User → Campaign</strong><br/>
+                    One user creates many campaigns. Referenced as: User.id → Campaign.createdBy
+                </div>
+                <div class="relationship-item">
+                    <strong>Workspace → CRMIntegration</strong><br/>
+                    One workspace has multiple CRM integrations. Cardinality: (1) Workspace has (0..* ) CRMIntegrations
+                </div>
+            </div>
+
+            <h3 style="color: #1976D2; margin-top: 20px; margin-bottom: 10px;">One-to-One (1 → 1) Relationships</h3>
+            <div class="relationship-list">
+                <div class="relationship-item">
+                    <strong>Contact → Card (Primary)</strong><br/>
+                    Each contact may have a primary/featured card. Referenced as: Contact.primaryCardId → Card.id (nullable)
+                </div>
+                <div class="relationship-item">
+                    <strong>User → Workspace (Default)</strong><br/>
+                    Each user may have a default workspace. Referenced as: User.defaultWorkspaceId → Workspace.id (nullable)
+                </div>
+            </div>
+
+            <h3 style="color: #1976D2; margin-top: 20px; margin-bottom: 10px;">Many-to-Many (*:*) Relationships</h3>
+            <div class="relationship-list">
+                <div class="relationship-item">
+                    <strong>User ↔ Workspace</strong><br/>
+                    Junction Table: WorkspaceMember (workspaceId, userId, role, joinedAt)
+                </div>
+                <div class="relationship-item">
+                    <strong>User ↔ Team</strong><br/>
+                    Junction Table: TeamMember (teamId, userId, role, joinedAt)
+                </div>
+                <div class="relationship-item">
+                    <strong>Contact ↔ Campaign</strong><br/>
+                    Junction Table: CampaignRecipient (campaignId, contactId, status, sentAt)
+                </div>
+                <div class="relationship-item">
+                    <strong>Workspace ↔ AIModel</strong><br/>
+                    Junction Table: WorkspaceAIModel (workspaceId, aiModelId, isPrimary, enabledAt)
+                </div>
+            </div>
+        </div>
+
+        <!-- Class Diagram Visualization -->
+        <div class="diagram-section">
+            <div class="diagram-title">Visual Class Relationship Diagram</div>
+            <svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+                <!-- User class box -->
+                <rect x="50" y="50" width="150" height="80" fill="#E3F2FD" stroke="#1976D2" stroke-width="2" rx="4"/>
+                <text x="125" y="75" text-anchor="middle" font-weight="bold" font-size="13" fill="#1976D2">User</text>
+                <line x1="50" y1="85" x2="200" y2="85" stroke="#1976D2" stroke-width="1"/>
+                <text x="60" y="100" font-size="10" fill="#333">id, email, role</text>
+                <text x="60" y="115" font-size="10" fill="#333">subscriptionPlan</text>
+
+                <!-- Workspace class box -->
+                <rect x="350" y="50" width="150" height="80" fill="#E3F2FD" stroke="#1976D2" stroke-width="2" rx="4"/>
+                <text x="425" y="75" text-anchor="middle" font-weight="bold" font-size="13" fill="#1976D2">Workspace</text>
+                <line x1="350" y1="85" x2="500" y2="85" stroke="#1976D2" stroke-width="1"/>
+                <text x="360" y="100" font-size="10" fill="#333">id, name, plan</text>
+                <text x="360" y="115" font-size="10" fill="#333">ownerId</text>
+
+                <!-- Team class box -->
+                <rect x="700" y="50" width="150" height="80" fill="#E3F2FD" stroke="#1976D2" stroke-width="2" rx="4"/>
+                <text x="775" y="75" text-anchor="middle" font-weight="bold" font-size="13" fill="#1976D2">Team</text>
+                <line x1="700" y1="85" x2="850" y2="85" stroke="#1976D2" stroke-width="1"/>
+                <text x="710" y="100" font-size="10" fill="#333">id, name</text>
+                <text x="710" y="115" font-size="10" fill="#333">workspaceId</text>
+
+                <!-- Contact class box -->
+                <rect x="200" y="250" width="150" height="100" fill="#C8E6C9" stroke="#388E3C" stroke-width="2" rx="4"/>
+                <text x="275" y="275" text-anchor="middle" font-weight="bold" font-size="13" fill="#388E3C">Contact</text>
+                <line x1="200" y1="285" x2="350" y2="285" stroke="#388E3C" stroke-width="1"/>
+                <text x="210" y="300" font-size="10" fill="#333">id, firstName</text>
+                <text x="210" y="315" font-size="10" fill="#333">email, phone</text>
+                <text x="210" y="330" font-size="10" fill="#333">userId, tags</text>
+
+                <!-- Card class box -->
+                <rect x="50" y="400" width="150" height="80" fill="#FFE0B2" stroke="#F57C00" stroke-width="2" rx="4"/>
+                <text x="125" y="425" text-anchor="middle" font-weight="bold" font-size="13" fill="#F57C00">Card</text>
+                <line x1="50" y1="435" x2="200" y2="435" stroke="#F57C00" stroke-width="1"/>
+                <text x="60" y="450" font-size="10" fill="#333">id, imageUrl</text>
+                <text x="60" y="465" font-size="10" fill="#333">contactId</text>
+
+                <!-- Campaign class box -->
+                <rect x="500" y="250" width="150" height="100" fill="#F3E5F5" stroke="#7B1FA2" stroke-width="2" rx="4"/>
+                <text x="575" y="275" text-anchor="middle" font-weight="bold" font-size="13" fill="#7B1FA2">Campaign</text>
+                <line x1="500" y1="285" x2="650" y2="285" stroke="#7B1FA2" stroke-width="1"/>
+                <text x="510" y="300" font-size="10" fill="#333">id, name, status</text>
+                <text x="510" y="315" font-size="10" fill="#333">workspaceId</text>
+                <text x="510" y="330" font-size="10" fill="#333">openCount</text>
+
+                <!-- CRMIntegration class box -->
+                <rect x="800" y="250" width="150" height="100" fill="#FFCCCC" stroke="#D32F2F" stroke-width="2" rx="4"/>
+                <text x="875" y="275" text-anchor="middle" font-weight="bold" font-size="13" fill="#D32F2F">CRMIntegration</text>
+                <line x1="800" y1="285" x2="950" y2="285" stroke="#D32F2F" stroke-width="1"/>
+                <text x="810" y="300" font-size="10" fill="#333">id, provider</text>
+                <text x="810" y="315" font-size="10" fill="#333">workspaceId</text>
+                <text x="810" y="330" font-size="10" fill="#333">syncStatus</text>
+
+                <!-- Analytics class box -->
+                <rect x="500" y="400" width="150" height="80" fill="#F0F4C3" stroke="#827717" stroke-width="2" rx="4"/>
+                <text x="575" y="425" text-anchor="middle" font-weight="bold" font-size="13" fill="#827717">Analytics</text>
+                <line x1="500" y1="435" x2="650" y2="435" stroke="#827717" stroke-width="1"/>
+                <text x="510" y="450" font-size="10" fill="#333">id, metricName</text>
+                <text x="510" y="465" font-size="10" fill="#333">workspaceId</text>
+
+                <!-- AuditLog class box -->
+                <rect x="800" y="400" width="150" height="80" fill="#E0E0E0" stroke="#424242" stroke-width="2" rx="4"/>
+                <text x="875" y="425" text-anchor="middle" font-weight="bold" font-size="13" fill="#424242">AuditLog</text>
+                <line x1="800" y1="435" x2="950" y2="435" stroke="#424242" stroke-width="1"/>
+                <text x="810" y="450" font-size="10" fill="#333">id, action</text>
+                <text x="810" y="465" font-size="10" fill="#333">workspaceId</text>
+
+                <!-- RELATIONSHIPS -->
+                <!-- User to Workspace (1:*) -->
+                <path d="M 200 85 L 350 85" stroke="#1976D2" stroke-width="2" fill="none" marker-end="url(#arrowhead1)"/>
+                <text x="270" y="80" font-size="11" fill="#1976D2" font-weight="bold">1:*</text>
+
+                <!-- Workspace to Team (1:*) -->
+                <path d="M 500 85 L 700 85" stroke="#1976D2" stroke-width="2" fill="none" marker-end="url(#arrowhead1)"/>
+                <text x="590" y="80" font-size="11" fill="#1976D2" font-weight="bold">1:*</text>
+
+                <!-- Workspace to Contact (1:*) -->
+                <path d="M 425 130 L 315 250" stroke="#388E3C" stroke-width="2" fill="none" marker-end="url(#arrowhead3)"/>
+                <text x="350" y="190" font-size="11" fill="#388E3C" font-weight="bold">1:*</text>
+
+                <!-- Workspace to Campaign (1:*) -->
+                <path d="M 425 130 L 555 250" stroke="#7B1FA2" stroke-width="2" fill="none" marker-end="url(#arrowhead4)"/>
+                <text x="470" y="185" font-size="11" fill="#7B1FA2" font-weight="bold">1:*</text>
+
+                <!-- Workspace to CRMIntegration (1:*) -->
+                <path d="M 500 130 L 825 250" stroke="#D32F2F" stroke-width="2" fill="none" marker-end="url(#arrowhead5)"/>
+                <text x="640" y="185" font-size="11" fill="#D32F2F" font-weight="bold">1:*</text>
+
+                <!-- User to Contact (1:*) -->
+                <path d="M 125 250 L 245 250" stroke="#388E3C" stroke-width="2" fill="none" marker-end="url(#arrowhead3)"/>
+                <text x="180" y="240" font-size="11" fill="#388E3C" font-weight="bold">1:*</text>
+
+                <!-- Contact to Card (1:*) -->
+                <path d="M 220 350 L 135 400" stroke="#F57C00" stroke-width="2" fill="none" marker-end="url(#arrowhead2)"/>
+                <text x="160" y="375" font-size="11" fill="#F57C00" font-weight="bold">1:*</text>
+
+                <!-- Workspace to Analytics (1:*) -->
+                <path d="M 450 130 L 545 400" stroke="#827717" stroke-width="2" fill="none" marker-end="url(#arrowhead6)"/>
+                <text x="490" y="260" font-size="11" fill="#827717" font-weight="bold">1:*</text>
+
+                <!-- Workspace to AuditLog (1:*) -->
+                <path d="M 500 130 L 850 400" stroke="#424242" stroke-width="2" fill="none" marker-end="url(#arrowhead7)"/>
+                <text x="670" y="260" font-size="11" fill="#424242" font-weight="bold">1:*</text>
+
+                <!-- Arrow markers -->
+                <defs>
+                    <marker id="arrowhead1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#1976D2"/>
+                    </marker>
+                    <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#F57C00"/>
+                    </marker>
+                    <marker id="arrowhead3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#388E3C"/>
+                    </marker>
+                    <marker id="arrowhead4" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#7B1FA2"/>
+                    </marker>
+                    <marker id="arrowhead5" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#D32F2F"/>
+                    </marker>
+                    <marker id="arrowhead6" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#827717"/>
+                    </marker>
+                    <marker id="arrowhead7" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#424242"/>
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+
+        <!-- Constraints Table -->
+        <div class="diagram-section">
+            <div class="diagram-title">Data Constraints &amp; Validations</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Constraint Type</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Primary Keys</strong></td>
+                        <td>All IDs are UUIDs (auto-generated), immutable after creation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unique Constraints</strong></td>
+                        <td>User.email (system-wide unique), Contact.email + Contact.workspaceId (unique per workspace), Workspace.domain</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Foreign Keys</strong></td>
+                        <td>All foreign key references include CASCADE delete for child records, SET NULL for audit records</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Email Validation</strong></td>
+                        <td>Must match standard email regex pattern if provided. Unique per system and workspace</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Phone Validation</strong></td>
+                        <td>Must be valid E.164 format if provided. International format with + prefix</td>
+                    </tr>
+                    <tr>
+                        <td><strong>URL Validation</strong></td>
+                        <td>Contact.website and Card.imageUrl must be valid URLs starting with http:// or https://</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Storage Constraints</strong></td>
+                        <td>StorageLimit ≥ StorageUsed always enforced. ContactCountLimit ≥ ContactCountCurrent</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Confidence Scores</strong></td>
+                        <td>Must be Float between 0.0 and 1.0 inclusive. Used for quality assessment</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Soft Deletes</strong></td>
+                        <td>Contacts and Users support soft delete (deletedAt timestamp) rather than hard delete for audit trail</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

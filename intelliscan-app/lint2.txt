@@ -1,0 +1,28 @@
+﻿
+> intelliscan-app@0.0.0 lint
+> eslint .
+
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\layouts\DashboardLayout.jsx
+  43:47  error  'Icon' is defined but never used  no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\AdvancedApiExplorerSandbox.jsx
+  52:14  error  'err' is defined but never used  no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\EnginePerformance.jsx
+  161:24  error    'Icon' is defined but never used                                                   no-unused-vars
+  162:11  warning  Unused eslint-disable directive (no problems were reported from 'no-unused-vars')
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\MarketplacePage.jsx
+  3:10  error  'useNavigate' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\generated\GenWorkspacesOrganizationsSuperAdmin.jsx
+  151:52  error    'Icon' is defined but never used                                                   no-unused-vars
+  152:13  warning  Unused eslint-disable directive (no problems were reported from 'no-unused-vars')
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\temp_lint_reader.js
+  1:12  error  'require' is not defined  no-undef
+
+✖ 8 problems (6 errors, 2 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.
+

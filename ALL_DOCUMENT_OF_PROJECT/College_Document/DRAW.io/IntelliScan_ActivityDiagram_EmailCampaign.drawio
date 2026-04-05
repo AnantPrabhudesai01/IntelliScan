@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-04-04" version="20.0.0">
+    <diagram name="Activity - Email Campaign" id="activity2">
+        <mxGraphModel dx="1200" dy="900" grid="1">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="start" value="" style="ellipse;html=1;shape=startState;fillColor=#000000;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="550" y="20" width="30" height="30"/>
+                </mxCell>
+                <mxCell id="a1" value="Create Campaign" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#FCE4EC;strokeColor=#D32F2F;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="500" y="80" width="120" height="60"/>
+                </mxCell>
+                <mxCell id="a2" value="Select Recipients" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#FCE4EC;strokeColor=#D32F2F;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="500" y="170" width="120" height="60"/>
+                </mxCell>
+                <mxCell id="a3" value="Compose Email" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#FCE4EC;strokeColor=#D32F2F;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="500" y="260" width="120" height="60"/>
+                </mxCell>
+                <mxCell id="a4" value="Add Templates/Merge Fields" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#FFE0B2;strokeColor=#F57C00;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="260" y="360" width="120" height="60"/>
+                </mxCell>
+                <mxCell id="d1" value="Preview OK?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#F57C00;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="510" y="360" width="100" height="80"/>
+                </mxCell>
+                <mxCell id="a5" value="Schedule Send" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#FFE0B2;strokeColor=#F57C00;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="740" y="360" width="120" height="60"/>
+                </mxCell>
+                <mxCell id="a6" value="Send Campaign" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#E3F2FD;strokeColor=#1565C0;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="500" y="480" width="120" height="60"/>
+                </mxCell>
+                <mxCell id="a7" value="Track Opens" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#E8F5E9;strokeColor=#388E3C;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="260" y="600" width="120" height="60"/>
+                </mxCell>
+                <mxCell id="a8" value="Track Clicks" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#E8F5E9;strokeColor=#388E3C;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="450" y="600" width="120" height="60"/>
+                </mxCell>
+                <mxCell id="a9" value="Generate Report" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#E8F5E9;strokeColor=#388E3C;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="640" y="600" width="120" height="60"/>
+                </mxCell>
+                <mxCell id="end" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="550" y="730" width="30" height="30"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="start" target="a1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="a1" target="a2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="a2" target="a3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="a3" target="a4">
+                    <mxGeometry relative="1" as="geometry"><mxPoint as="sourcePoint" x="500" y="290"/><mxPoint as="targetPoint" x="320" y="360"/></mxGeometry>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="a3" target="d1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="d1" target="a5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="a5" target="a6">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="a6" target="a7">
+                    <mxGeometry relative="1" as="geometry"><mxPoint as="sourcePoint" x="500" y="510"/><mxPoint as="targetPoint" x="320" y="600"/></mxGeometry>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="a6" target="a8">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="a6" target="a9">
+                    <mxGeometry relative="1" as="geometry"><mxPoint as="sourcePoint" x="560" y="510"/><mxPoint as="targetPoint" x="700" y="600"/></mxGeometry>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="a7" target="end">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="a8" target="end">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="a9" target="end">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/>
+      </marker>
+    </defs>
+<style>
+      .shape { fill: #fff; stroke: #000; stroke-width: 2; }
+      .thin { stroke-width: 1.5; }
+      .fillBlack { fill: #000; stroke: #000; stroke-width: 2; }
+      .text { fill: #000; font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+      .textSmall { font-size: 12px; }
+      .textTitle { font-size: 16px; font-weight: 700; }
+      .dashed { stroke-dasharray: 6 6; }
+    </style>
+<rect x="0" y="0" width="1600" height="900" fill="#fff" />
+<rect class="shape" x="240" y="60" width="1120" height="780" rx="8" ry="8" />
+<text class="text textTitle" x="800" y="90" text-anchor="middle">IntelliScan Platform</text>
+<circle class="shape" cx="120" cy="120" r="10" />
+<line class="shape thin" x1="120" y1="130" x2="120" y2="175" />
+<line class="shape thin" x1="102" y1="145" x2="138" y2="145" />
+<line class="shape thin" x1="120" y1="175" x2="102" y2="200" />
+<line class="shape thin" x1="120" y1="175" x2="138" y2="200" />
+<text class="text textSmall" x="120" y="225" text-anchor="middle"><tspan x="120" dy="0">Visitor</tspan></text>
+<circle class="shape" cx="120" cy="330" r="10" />
+<line class="shape thin" x1="120" y1="340" x2="120" y2="385" />
+<line class="shape thin" x1="102" y1="355" x2="138" y2="355" />
+<line class="shape thin" x1="120" y1="385" x2="102" y2="410" />
+<line class="shape thin" x1="120" y1="385" x2="138" y2="410" />
+<text class="text textSmall" x="120" y="435" text-anchor="middle"><tspan x="120" dy="0">User</tspan><tspan x="120" dy="14">(Personal / Pro)</tspan></text>
+<circle class="shape" cx="120" cy="560" r="10" />
+<line class="shape thin" x1="120" y1="570" x2="120" y2="615" />
+<line class="shape thin" x1="102" y1="585" x2="138" y2="585" />
+<line class="shape thin" x1="120" y1="615" x2="102" y2="640" />
+<line class="shape thin" x1="120" y1="615" x2="138" y2="640" />
+<text class="text textSmall" x="120" y="665" text-anchor="middle"><tspan x="120" dy="0">Enterprise</tspan><tspan x="120" dy="14">Admin</tspan></text>
+<circle class="shape" cx="120" cy="760" r="10" />
+<line class="shape thin" x1="120" y1="770" x2="120" y2="815" />
+<line class="shape thin" x1="102" y1="785" x2="138" y2="785" />
+<line class="shape thin" x1="120" y1="815" x2="102" y2="840" />
+<line class="shape thin" x1="120" y1="815" x2="138" y2="840" />
+<text class="text textSmall" x="120" y="865" text-anchor="middle"><tspan x="120" dy="0">Super Admin</tspan></text>
+<circle class="shape" cx="1480" cy="80" r="10" />
+<line class="shape thin" x1="1480" y1="90" x2="1480" y2="135" />
+<line class="shape thin" x1="1462" y1="105" x2="1498" y2="105" />
+<line class="shape thin" x1="1480" y1="135" x2="1462" y2="160" />
+<line class="shape thin" x1="1480" y1="135" x2="1498" y2="160" />
+<text class="text textSmall" x="1480" y="185" text-anchor="middle"><tspan x="1480" dy="0">Payment Gateway</tspan><tspan x="1480" dy="14">(Razorpay)</tspan></text>
+<circle class="shape" cx="1480" cy="200" r="10" />
+<line class="shape thin" x1="1480" y1="210" x2="1480" y2="255" />
+<line class="shape thin" x1="1462" y1="225" x2="1498" y2="225" />
+<line class="shape thin" x1="1480" y1="255" x2="1462" y2="280" />
+<line class="shape thin" x1="1480" y1="255" x2="1498" y2="280" />
+<text class="text textSmall" x="1480" y="305" text-anchor="middle"><tspan x="1480" dy="0">AI Provider</tspan><tspan x="1480" dy="14">(Gemini)</tspan></text>
+<circle class="shape" cx="1480" cy="350" r="10" />
+<line class="shape thin" x1="1480" y1="360" x2="1480" y2="405" />
+<line class="shape thin" x1="1462" y1="375" x2="1498" y2="375" />
+<line class="shape thin" x1="1480" y1="405" x2="1462" y2="430" />
+<line class="shape thin" x1="1480" y1="405" x2="1498" y2="430" />
+<text class="text textSmall" x="1480" y="455" text-anchor="middle"><tspan x="1480" dy="0">Email Provider</tspan><tspan x="1480" dy="14">(SMTP)</tspan></text>
+<circle class="shape" cx="1480" cy="650" r="10" />
+<line class="shape thin" x1="1480" y1="660" x2="1480" y2="705" />
+<line class="shape thin" x1="1462" y1="675" x2="1498" y2="675" />
+<line class="shape thin" x1="1480" y1="705" x2="1462" y2="730" />
+<line class="shape thin" x1="1480" y1="705" x2="1498" y2="730" />
+<text class="text textSmall" x="1480" y="755" text-anchor="middle"><tspan x="1480" dy="0">CRM / Webhook</tspan><tspan x="1480" dy="14">Receivers</tspan></text>
+<ellipse class="shape" cx="520" cy="160" rx="125" ry="34" />
+<text class="text" x="520" y="165" text-anchor="middle"><tspan x="520" dy="0">Sign Up / Sign In</tspan><tspan x="520" dy="14">Restore Session</tspan></text>
+<ellipse class="shape" cx="520" cy="260" rx="125" ry="34" />
+<text class="text" x="520" y="265" text-anchor="middle"><tspan x="520" dy="0">Scan Single Card</tspan></text>
+<ellipse class="shape" cx="520" cy="360" rx="125" ry="34" />
+<text class="text" x="520" y="365" text-anchor="middle"><tspan x="520" dy="0">Scan Group Photo</tspan><tspan x="520" dy="14">(Multi-Card)</tspan></text>
+<ellipse class="shape" cx="520" cy="460" rx="125" ry="34" />
+<text class="text" x="520" y="465" text-anchor="middle"><tspan x="520" dy="0">Batch Upload Queue</tspan></text>
+<ellipse class="shape" cx="520" cy="560" rx="125" ry="34" />
+<text class="text" x="520" y="565" text-anchor="middle"><tspan x="520" dy="0">Scanner Links</tspan><tspan x="520" dy="14">(Kiosk / QR)</tspan></text>
+<ellipse class="shape" cx="520" cy="660" rx="125" ry="34" />
+<text class="text" x="520" y="665" text-anchor="middle"><tspan x="520" dy="0">Manage Contacts</tspan><tspan x="520" dy="14">(Search, Edit, Export)</tspan></text>
+<ellipse class="shape" cx="520" cy="760" rx="125" ry="34" />
+<text class="text" x="520" y="765" text-anchor="middle"><tspan x="520" dy="0">Events &amp; Campaigns</tspan><tspan x="520" dy="14">(Tag Leads)</tspan></text>
+<ellipse class="shape" cx="1040" cy="150" rx="125" ry="34" />
+<text class="text" x="1040" y="155" text-anchor="middle"><tspan x="1040" dy="0">Billing &amp; Plans</tspan><tspan x="1040" dy="14">(Upgrade, Quotas)</tspan></text>
+<ellipse class="shape" cx="1040" cy="250" rx="125" ry="34" />
+<text class="text" x="1040" y="255" text-anchor="middle"><tspan x="1040" dy="0">AI Assistance</tspan><tspan x="1040" dy="14">(Drafts, Coach)</tspan></text>
+<ellipse class="shape" cx="1040" cy="350" rx="125" ry="34" />
+<text class="text" x="1040" y="355" text-anchor="middle"><tspan x="1040" dy="0">Email Marketing</tspan><tspan x="1040" dy="14">(Campaigns, Sequences)</tspan></text>
+<ellipse class="shape" cx="1040" cy="450" rx="125" ry="34" />
+<text class="text" x="1040" y="455" text-anchor="middle"><tspan x="1040" dy="0">Sales Pipeline</tspan><tspan x="1040" dy="14">+ Lead Routing</tspan></text>
+<ellipse class="shape" cx="1040" cy="550" rx="125" ry="34" />
+<text class="text" x="1040" y="555" text-anchor="middle"><tspan x="1040" dy="0">Calendar</tspan><tspan x="1040" dy="14">+ Booking</tspan></text>
+<ellipse class="shape" cx="1040" cy="650" rx="125" ry="34" />
+<text class="text" x="1040" y="655" text-anchor="middle"><tspan x="1040" dy="0">Integrations</tspan><tspan x="1040" dy="14">(CRM, Webhooks)</tspan></text>
+<ellipse class="shape" cx="1040" cy="750" rx="125" ry="34" />
+<text class="text" x="1040" y="755" text-anchor="middle"><tspan x="1040" dy="0">Governance</tspan><tspan x="1040" dy="14">(Policies, Data Quality)</tspan></text>
+<line class="shape thin" x1="170" y1="220" x2="395" y2="160" />
+<line class="shape thin" x1="170" y1="430" x2="395" y2="160" />
+<line class="shape thin" x1="170" y1="430" x2="395" y2="260" />
+<line class="shape thin" x1="170" y1="430" x2="395" y2="360" />
+<line class="shape thin" x1="170" y1="430" x2="395" y2="460" />
+<line class="shape thin" x1="170" y1="430" x2="395" y2="660" />
+<line class="shape thin" x1="170" y1="430" x2="395" y2="760" />
+<line class="shape thin" x1="170" y1="430" x2="395" y2="150" />
+<line class="shape thin" x1="170" y1="430" x2="395" y2="250" />
+<line class="shape thin" x1="170" y1="660" x2="395" y2="560" />
+<line class="shape thin" x1="170" y1="660" x2="395" y2="660" />
+<line class="shape thin" x1="170" y1="660" x2="395" y2="760" />
+<line class="shape thin" x1="170" y1="660" x2="395" y2="150" />
+<line class="shape thin" x1="170" y1="660" x2="395" y2="350" />
+<line class="shape thin" x1="170" y1="660" x2="395" y2="450" />
+<line class="shape thin" x1="170" y1="660" x2="395" y2="550" />
+<line class="shape thin" x1="170" y1="660" x2="395" y2="650" />
+<line class="shape thin" x1="170" y1="660" x2="395" y2="750" />
+<line class="shape thin" x1="170" y1="860" x2="915" y2="750" />
+<line class="shape thin" x1="1165" y1="150" x2="1462" y2="150" />
+<line class="shape thin" x1="1165" y1="250" x2="1462" y2="250" />
+<line class="shape thin" x1="1165" y1="350" x2="1462" y2="350" />
+<line class="shape thin" x1="1165" y1="650" x2="1462" y2="650" />
+</svg>

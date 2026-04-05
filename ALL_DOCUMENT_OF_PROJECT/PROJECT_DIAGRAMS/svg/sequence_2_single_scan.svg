@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="680" viewBox="0 0 1400 680">
+<defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/>
+      </marker>
+    </defs>
+<style>
+      .shape { fill: #fff; stroke: #000; stroke-width: 2; }
+      .thin { stroke-width: 1.5; }
+      .fillBlack { fill: #000; stroke: #000; stroke-width: 2; }
+      .text { fill: #000; font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+      .textSmall { font-size: 12px; }
+      .textTitle { font-size: 16px; font-weight: 700; }
+      .dashed { stroke-dasharray: 6 6; }
+    </style>
+<rect x="0" y="0" width="1400" height="680" fill="#fff" />
+<text class="text textTitle" x="700" y="40" text-anchor="middle">Interaction Diagram: Single Scan -&gt; Save Contact</text>
+<rect class="shape" x="80" y="80" width="160" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="160" y="104" text-anchor="middle"><tspan x="160" dy="0">User</tspan></text>
+<rect class="shape" x="280" y="80" width="180" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="370" y="104" text-anchor="middle"><tspan x="370" dy="0">Scan UI</tspan></text>
+<rect class="shape" x="520" y="80" width="170" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="605" y="104" text-anchor="middle"><tspan x="605" dy="0">Scan API</tspan></text>
+<rect class="shape" x="740" y="80" width="170" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="825" y="104" text-anchor="middle"><tspan x="825" dy="0">Gemini AI</tspan></text>
+<rect class="shape" x="960" y="80" width="190" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="1055" y="104" text-anchor="middle"><tspan x="1055" dy="0">Contacts API</tspan></text>
+<rect class="shape" x="1210" y="80" width="140" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="1280" y="104" text-anchor="middle"><tspan x="1280" dy="0">DB</tspan></text>
+<line class="shape thin dashed" x1="160" y1="118" x2="160" y2="620" />
+<line class="shape thin dashed" x1="370" y1="118" x2="370" y2="620" />
+<line class="shape thin dashed" x1="605" y1="118" x2="605" y2="620" />
+<line class="shape thin dashed" x1="825" y1="118" x2="825" y2="620" />
+<line class="shape thin dashed" x1="1055" y1="118" x2="1055" y2="620" />
+<line class="shape thin dashed" x1="1280" y1="118" x2="1280" y2="620" />
+<line class="shape thin" x1="160" y1="150" x2="370" y2="150" marker-end="url(#arrow)" />
+<text class="text textSmall" x="265" y="142" text-anchor="middle">Upload image</text>
+<line class="shape thin" x1="370" y1="205" x2="605" y2="205" marker-end="url(#arrow)" />
+<text class="text textSmall" x="487.5" y="197" text-anchor="middle">POST /api/scan</text>
+<line class="shape thin" x1="605" y1="260" x2="825" y2="260" marker-end="url(#arrow)" />
+<text class="text textSmall" x="715" y="252" text-anchor="middle">Extract fields (OCR+LLM)</text>
+<line class="shape thin" x1="825" y1="315" x2="605" y2="315" marker-end="url(#arrow)" />
+<text class="text textSmall" x="715" y="307" text-anchor="middle">JSON {fields, confidence}</text>
+<line class="shape thin" x1="605" y1="370" x2="370" y2="370" marker-end="url(#arrow)" />
+<text class="text textSmall" x="487.5" y="362" text-anchor="middle">200 preview payload</text>
+<line class="shape thin" x1="160" y1="425" x2="370" y2="425" marker-end="url(#arrow)" />
+<text class="text textSmall" x="265" y="417" text-anchor="middle">Confirm save</text>
+<line class="shape thin" x1="370" y1="480" x2="1055" y2="480" marker-end="url(#arrow)" />
+<text class="text textSmall" x="712.5" y="472" text-anchor="middle">POST /api/contacts</text>
+<line class="shape thin" x1="1055" y1="535" x2="1280" y2="535" marker-end="url(#arrow)" />
+<text class="text textSmall" x="1167.5" y="527" text-anchor="middle">INSERT contacts</text>
+<line class="shape thin" x1="1280" y1="590" x2="1055" y2="590" marker-end="url(#arrow)" />
+<text class="text textSmall" x="1167.5" y="582" text-anchor="middle">OK</text>
+<line class="shape thin" x1="1055" y1="645" x2="370" y2="645" marker-end="url(#arrow)" />
+<text class="text textSmall" x="712.5" y="637" text-anchor="middle">201 created</text>
+<line class="shape thin" x1="370" y1="700" x2="160" y2="700" marker-end="url(#arrow)" />
+<text class="text textSmall" x="265" y="692" text-anchor="middle">Show success</text>
+</svg>

@@ -1,0 +1,325 @@
+PDF: c:\Users\anant\Desktop\Final_MCA_Sem-4_ProjectGuideliens_2025-26.pdf
+
+=== EXTRACTED TEXT (heuristic) ===
+PREPARED BY
+|
+Prof. Khushbu Patel
+Sardar Vallabhbhai Patel Institute of Techn
+ology, Vasad
+MCA (Semester
+-
+IV
+)
+Subject Code:
+MC04094011
+Subject Name :
+Research Work(Phase
+2)/Major Project
+Project Guidelines and
+Assessment Policy
+Term : 11/12/2025 to 17/04/2026
+Join
+Google classroom
+using
+code :
+m35mfjj4
+Learning Objectives:
+Phase
+2
+enables students to apply and extend the research or project plan developed in Phase
+1, or to take up
+a new project/research problem with industry or academia. The emphasis is on implementation, experimentation,
+validation, analysis, and dissemination.
+It strengthens professional readiness by integrating academic research and
+industrial practice, culminating in a final deliverable that demonstrates mastery of the MCA program outcomes.
+Prerequisites:
+Successful completion of Research Work (Phase
+1 / M
+inor Project)
+.
+Proficiency in chosen domain tools,
+technologies, or resea
+rch methodology.
+Basic project management and documentation skills
+Course Outcomes
+:
+Accomplishments of the student after completing the course, Student will able to
+CO1 :
+Apply research or development methodologies to implement and test a complete
+solution / model / system
+C02 :
+Integrate analytical, programming, and design skills to develop efficient, scalable,
+and ethical solutions
+C03 :
+Conduct experiments, data collec
+tion, validation, and performance evaluation
+C04 :
+Document and present project outcomes in the format of a dissertation or technical Paper
+C05
+Demonstrate teamwork, professional ethics, project management, and effective Communication.
+C06 :
+Exhibit abil
+ity to adapt to industry environment and contribute meaningfully to organizational
+goals (for industrial projects)
+Guidelines for Students Project Work
+A project shall be done individually or in a team consists of at most 3 members.
+Project should be
+from chosen domain/elective and must be feasible and implementable within time and
+resource constraints.
+The project should be free from plagiarism of any kind
+Individual logbook must be prepared and maintained by each student and take signature of projec
+t guide
+on regular basis.
+Coding standards should be followed meticulously. The code should be self
+documented, modular, and
+should use the meaningful naming conventions.
+An External examiner might ask
+the students
+to write the code related to the
+project during the
+examination.
+Project document should be prepared as per the guidelines.
+No make
+up work shall be accepted for missed or failed presentation.
+In case, if a student fail
+s
+to meet the deadlines, he/
+she shall receive zero marks in p
+articular
+parameter.
+Log book, document and PPT are mandatory for project presentation.
+Document Preparation / Documentation:
+Report Formatting:
+Use A4 size page with 1" margin all sides.
+Header should include Project tile and footer should contain page number
+and enrollment numbers.
+Main Heading shoul
+d be of Times New Roman font, 18
+points, Bold.
+Sub Heading shoul
+d be of Times New Roman font, 16
+Sub heading of sub heading
+should be of Times New Roman, 14
+Paragraph
+should be of Times
+New Roman, 12
+points.
+Print out on both the side of page with single line spacing.
+Before chapter 1, give page number in roman letter (Title Page, Project completion Certificate,
+Acknowledgement, Table of Contents/Index with page numbering, and Abstract of
+the project
+work).
+Final document must be as
+Hardbound
+(
+Black book
+copy.
+Final document submission must have the following content in sequence.
+Front page (i.e. t
+itle page) [Refer Annexture
+2]
+Declaration Page
+[Refer Annexture
+3]
+Internship completion certificate
+provided by company
+College
+Certificate (
+provided by guide
+Acknowledge
+Table of Content (INDEX)
+Abstract
+TABLE OF CONTENTS/INDEX
+CH.NO
+CONTENT
+PAGE NO
+1.
+Introduction
+1.1 Existing System
+1.2 Need for the New System
+1.3 Objective of the New System
+1.4 Problem Definition
+1.5 Core Components
+1.6 Development Tools & Technologies
+1.7 Assumptions and Constraints
+Requirement Determination &
+Analysis
+2.1 Functional Requirements
+2.2 Targeted Users
+3
+System Design
+Break up of Internal Marks (200)
+Evalu
+ation
+Code
+Evaluation
+Parameters
+Occurrences
+Marks
+Remarks
+Submission
+Date
+EP1
+Log Book
+1
+20
+To
+be
+sign
+by
+External
+Guide
+and
+Internal
+guides
+regularly
+Weekly
+EP2
+Monthly
+Progress
+Report
+4
+reports
+x
+5
+marks
+each
+1 : 31
+st
+Jan,
+26
+28
+th
+Feb, 2026
+: 28
+Mar,
+026
+17
+Apr
+,
+2026
+EP3
+Mid
+Term
+Presentation
+150
+Presentations
+75
+1 :
+21
+Feb
+EP4
+Reporting
+Attendance
+Minimum 12
+(1 entry per
+week)
+entries
+are required.
+10
+Mandatory to
+report
+at Institute
+every week.
+Every
+Saturday
+of
+this
+semester
+NOTE :
+Softcopy of monthly progress reports will be submit on Google Classroom on or before deadline
+and its
+hardcopy will be submit on Saturday.
+Logbook
+, document and PPT are mandatory for project
+presentation.
+Attendance will be
+taken
+on
+every Saturday.
+Students
+will
+prepare
+log
+book
+as
+per
+the
+format
+given
+in
+Annexure
+Log book will be maintained individually.
+It is
+responsibility
+to
+take
+signature
+external
+internal
+guides on regular basis.
+It
+is
+mandatory
+submit
+hardcopy
+log book
+during presentation and final
+at
+end
+semester.
+Student
+with
+signatures
+both
+Project
+Coordinator.
+Log
+EP2 : Monthly Progress Report
+progress
+consists
+project
+plan
+along
+division
+work
+amongst
+te
+ammates
+would
+have been
+prepared
+got
+signed by
+external project
+guide.
+have
+upload
+softcopy
+Google
+classroom
+latest
+deadlines.
+Also
+submit hardcopy
+respective
+internal guides.
+EP3 : Presentations
+Scheduled date is
+Prepare PPT as per below flow (Presentation 1 Slides outline):
+slide must consists of Project title, team member names, enrollment numbers, guide name
+and presentation date.
+nd
+slide must consists of presentation agenda.
+rd
+slide onwards consists of following content
+Existing System
+Need for the New System
+Annexture
+2: Document front page
+Download the format of
+Document Title Page,
+Declaration Page,
+Logbook,
+Table of content
+from google classroom.

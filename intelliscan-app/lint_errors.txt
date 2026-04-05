@@ -1,0 +1,112 @@
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\components\ActivityTracker.jsx
+  Line 9: Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+   7 |   const location = useLocation();
+   8 |   const { role } = useRole();
+>  9 |   const startTimeRef = useRef(Date.now());
+     |                               ^^^^^^^^^^ Cannot call impure function
+  10 |   const lastPathRef = useRef(location.pathname);
+  11 |
+  12 |   // Helper to send log un-authenticated (allows tracking Anonymous) (react-hooks/purity)
+  Line 26: 'err' is defined but never used. (no-unused-vars)
+  Line 43: React Hook useEffect has a missing dependency: 'sendLog'. Either include it or remove the dependency array. (react-hooks/exhaustive-deps)
+  Line 66: React Hook useEffect has a missing dependency: 'sendLog'. Either include it or remove the dependency array. (react-hooks/exhaustive-deps)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\context\ContactContext.jsx
+  Line 61: Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components. (react-refresh/only-export-components)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\context\RoleContext.jsx
+  Line 16: Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components. (react-refresh/only-export-components)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\layouts\AdminLayout.jsx
+  Line 2: 'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u. (no-unused-vars)
+  Line 301: 'Icon' is defined but never used. (no-unused-vars)
+  Line 416: Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  414 |
+  415 |       <aside className="hidden lg:flex w-64 flex-shrink-0 border-r border-gray-200 dark:border-gray-800 flex-col shadow-sm z-10">
+> 416 |         <SidebarContent />
+      |          ^^^^^^^^^^^^^^ This component is created during render
+  417 |       </aside>
+  418 |
+  419 |       {sidebarOpen && (
+
+  276 |   ];
+  277 |
+> 278 |   const SidebarContent = () => (
+      |                          ^^^^^^^
+> 279 |     <div className="flex flex-col h-full bg-white dark:bg-gray-950">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 280 |       <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-800 shrink-0">
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 375 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 376 |   );
+      | ^^^^ The component is created during render here
+  377 |
+  378 |   return (
+  379 |     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 font-body"> (react-hooks/static-components)
+  Line 423: Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  421 |           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+  422 |           <aside className="relative w-64 bg-white dark:bg-gray-950 flex flex-col shadow-2xl animate-in slide-in-from-left">
+> 423 |             <SidebarContent />
+      |              ^^^^^^^^^^^^^^ This component is created during render
+  424 |           </aside>
+  425 |         </div>
+  426 |       )}
+
+  276 |   ];
+  277 |
+> 278 |   const SidebarContent = () => (
+      |                          ^^^^^^^
+> 279 |     <div className="flex flex-col h-full bg-white dark:bg-gray-950">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 280 |       <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-800 shrink-0">
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 375 |     </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 376 |   );
+      | ^^^^ The component is created during render here
+  377 |
+  378 |   return (
+  379 |     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 font-body"> (react-hooks/static-components)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\layouts\DashboardLayout.jsx
+  Line 3: 'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u. (no-unused-vars)
+  Line 40: 'Icon' is defined but never used. (no-unused-vars)
+  Line 134: 'Icon' is defined but never used. (no-unused-vars)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\AdminDashboard.jsx
+  Line 85: 'orgsData' is defined but never used. (no-unused-vars)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\AdvancedApiExplorerSandbox.jsx
+  Line 52: 'err' is defined but never used. (no-unused-vars)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\AiTrainingTuningSuperAdmin.jsx
+  Line 99: '_' is defined but never used. (no-unused-vars)
+  Line 99: Empty block statement. (no-empty)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\EnginePerformance.jsx
+  Line 47: '_' is defined but never used. (no-unused-vars)
+  Line 47: Empty block statement. (no-empty)
+  Line 159: 'Icon' is defined but never used. (no-unused-vars)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\MarketplacePage.jsx
+  Line 178: 'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u. (no-unused-vars)
+  Line 193: 'form' is defined but never used. (no-unused-vars)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\generated\GenHelpCenterDocs.jsx
+  Line 127: Irregular whitespace not allowed. (no-irregular-whitespace)
+  Line 135: Irregular whitespace not allowed. (no-irregular-whitespace)
+  Line 147: Irregular whitespace not allowed. (no-irregular-whitespace)
+  Line 151: Irregular whitespace not allowed. (no-irregular-whitespace)
+  Line 155: Irregular whitespace not allowed. (no-irregular-whitespace)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\generated\GenSubscriptionPlanComparison.jsx
+  Line 90: 'user' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u. (no-unused-vars)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\generated\GenWorkspacesOrganizationsSuperAdmin.jsx
+  Line 1: 'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u. (no-unused-vars)
+  Line 8: 'generateOrg' is defined but never used. Allowed unused vars must match /^[A-Z_]/u. (no-unused-vars)
+  Line 93: 'nextId' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u. (no-unused-vars)
+  Line 93: 'setNextId' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u. (no-unused-vars)
+  Line 165: 'Icon' is defined but never used. (no-unused-vars)
+File: D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\temp_lint_reader.js
+  Line 1: 'require' is not defined. (no-undef)

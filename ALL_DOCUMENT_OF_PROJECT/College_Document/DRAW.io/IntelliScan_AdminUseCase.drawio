@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-04-04" version="20.0.0">
+    <diagram name="Business Admin" id="admin">
+        <mxGraphModel dx="1200" dy="900" grid="1">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="boundary" value="Business Admin Portal" style="shape=rectangle;html=1;verticalAlign=top;spacingTop=20;fontStyle=1;fontSize=15;strokeColor=#F57C00;strokeWidth=3;dashed=1;rounded=0" vertex="1" parent="1">
+                    <mxGeometry x="250" y="50" width="900" height="700"/>
+                </mxCell>
+                <mxCell id="actor" value="Business Admin" style="shape=ellipse;html=1;verticalAlign=bottom;labelPosition=center;align=center;fontStyle=1;fontSize=12;strokeColor=#000000;strokeWidth=2;fillColor=#FFF3E0" vertex="1" parent="1">
+                    <mxGeometry x="60" y="350" width="80" height="80"/>
+                </mxCell>
+                <mxCell id="uc1" value="Invite Members" style="ellipse;html=1;align=center;fontStyle=1;fontSize=11;strokeColor=#F57C00;strokeWidth=2;fillColor=#FFE0B2" vertex="1" parent="1">
+                    <mxGeometry x="350" y="80" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc2" value="Bulk Upload" style="ellipse;html=1;align=center;fontSize=10;strokeColor=#F57C00;strokeWidth=1.5;fillColor=#FFE0B2" vertex="1" parent="1">
+                    <mxGeometry x="350" y="150" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc3" value="Manage Roles" style="ellipse;html=1;align=center;fontSize=11;strokeColor=#F57C00;strokeWidth=2;fillColor=#FFE0B2" vertex="1" parent="1">
+                    <mxGeometry x="480" y="80" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc4" value="Activity Log" style="ellipse;html=1;align=center;fontSize=11;strokeColor=#1565C0;strokeWidth=2;fillColor=#BBDEFB" vertex="1" parent="1">
+                    <mxGeometry x="610" y="80" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc5" value="View Contacts" style="ellipse;html=1;align=center;fontStyle=1;fontSize=11;strokeColor=#1565C0;strokeWidth=2;fillColor=#90CAF9" vertex="1" parent="1">
+                    <mxGeometry x="350" y="220" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc6" value="Assign" style="ellipse;html=1;align=center;fontSize=10;strokeColor=#D32F2F;strokeWidth=1.5;fillColor=#FFCDD2" vertex="1" parent="1">
+                    <mxGeometry x="350" y="290" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc7" value="Tags" style="ellipse;html=1;align=center;fontSize=10;strokeColor=#D32F2F;strokeWidth=1.5;fillColor=#FFCDD2" vertex="1" parent="1">
+                    <mxGeometry x="480" y="290" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc8" value="Merge Dups" style="ellipse;html=1;align=center;fontSize=10;strokeColor=#388E3C;strokeWidth=1.5;fillColor=#C8E6C9" vertex="1" parent="1">
+                    <mxGeometry x="610" y="290" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc9" value="Setup CRM" style="ellipse;html=1;align=center;fontStyle=1;fontSize=11;strokeColor=#7B1FA2;strokeWidth=2;fillColor=#E1BEE7" vertex="1" parent="1">
+                    <mxGeometry x="740" y="80" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc10" value="Map Fields" style="ellipse;html=1;align=center;fontSize=10;strokeColor=#7B1FA2;strokeWidth=1.5;fillColor=#E1BEE7" vertex="1" parent="1">
+                    <mxGeometry x="740" y="150" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc11" value="Auto Sync" style="ellipse;html=1;align=center;fontSize=10;strokeColor=#7B1FA2;strokeWidth=1.5;fillColor=#E1BEE7" vertex="1" parent="1">
+                    <mxGeometry x="740" y="220" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc12" value="Workspace" style="ellipse;html=1;align=center;fontStyle=1;fontSize=11;strokeColor=#0097A7;strokeWidth=2;fillColor=#B2EBF2" vertex="1" parent="1">
+                    <mxGeometry x="480" y="380" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc13" value="Data Retention" style="ellipse;html=1;align=center;fontSize=10;strokeColor=#0097A7;strokeWidth=1.5;fillColor=#B2EBF2" vertex="1" parent="1">
+                    <mxGeometry x="480" y="450" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc14" value="Features" style="ellipse;html=1;align=center;fontSize=10;strokeColor=#0097A7;strokeWidth=1.5;fillColor=#B2EBF2" vertex="1" parent="1">
+                    <mxGeometry x="610" y="450" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc15" value="Campaigns" style="ellipse;html=1;align=center;fontSize=11;strokeColor=#D32F2F;strokeWidth=2;fillColor=#FFCDD2" vertex="1" parent="1">
+                    <mxGeometry x="740" y="380" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc16" value="Routing Rules" style="ellipse;html=1;align=center;fontSize=11;strokeColor=#388E3C;strokeWidth=2;fillColor=#C8E6C9" vertex="1" parent="1">
+                    <mxGeometry x="350" y="520" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc17" value="Workflows" style="ellipse;html=1;align=center;fontSize=10;strokeColor=#388E3C;strokeWidth=1.5;fillColor=#C8E6C9" vertex="1" parent="1">
+                    <mxGeometry x="480" y="520" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc18" value="Analytics" style="ellipse;html=1;align=center;fontSize=11;strokeColor=#1565C0;strokeWidth=2;fillColor=#BBDEFB" vertex="1" parent="1">
+                    <mxGeometry x="610" y="380" width="100" height="50"/>
+                </mxCell>
+                <mxCell id="uc19" value="Billing" style="ellipse;html=1;align=center;fontSize=11;strokeColor=#5E35B1;strokeWidth=2;fillColor=#D8BFD8" vertex="1" parent="1">
+                    <mxGeometry x="740" y="450" width="100" height="50"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;" edge="1" parent="1" source="actor" target="uc1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;" edge="1" parent="1" source="actor" target="uc3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;" edge="1" parent="1" source="actor" target="uc4">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;" edge="1" parent="1" source="actor" target="uc5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;" edge="1" parent="1" source="actor" target="uc9">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;" edge="1" parent="1" source="actor" target="uc12">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;" edge="1" parent="1" source="actor" target="uc15">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;dashed=1;" edge="1" parent="1" source="uc1" target="uc2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell style="endArrow=open;endSize=12;html=1;dashed=1;" edge="1" parent="1" source="uc5" target="uc6">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

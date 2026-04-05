@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-04-04" version="20.0.0">
+    <diagram name="Sequence - CRM Integration" id="sequence2">
+        <mxGraphModel dx="1200" dy="900" grid="1">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="actor1" value="Admin" style="shape=umlActor;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelPosition=center;align=center;fontStyle=1;fontSize=12;strokeColor=#000000;strokeWidth=2;fillColor=#FFF3E0" vertex="1" parent="1">
+                    <mxGeometry x="80" y="50" width="60" height="80"/>
+                </mxCell>
+                <mxCell id="comp1" value="App Dashboard" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFE0B2;strokeColor=#F57C00;strokeWidth=2;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="230" y="50" width="100" height="40"/>
+                </mxCell>
+                <mxCell id="comp2" value="Sync Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1565C0;strokeWidth=2;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="420" y="50" width="100" height="40"/>
+                </mxCell>
+                <mxCell id="comp3" value="IntelliScan DB" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#388E3C;strokeWidth=2;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="610" y="50" width="100" height="40"/>
+                </mxCell>
+                <mxCell id="comp4" value="CRM API" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;strokeWidth=2;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="800" y="50" width="100" height="40"/>
+                </mxCell>
+                <mxCell id="l1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapeId=comp1;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="280" y="110" width="0" height="540"/>
+                </mxCell>
+                <mxCell id="l2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapeId=comp2;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="470" y="110" width="0" height="540"/>
+                </mxCell>
+                <mxCell id="l3" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapeId=comp3;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="660" y="110" width="0" height="540"/>
+                </mxCell>
+                <mxCell id="l4" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapeId=comp4;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+                    <mxGeometry x="850" y="110" width="0" height="540"/>
+                </mxCell>
+                <mxCell id="m1" value="1: Config CRM" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="actor1" target="comp1">
+                    <mxGeometry relative="1" as="geometry"><mxPoint x="140" y="150" as="sourcePoint"/></mxGeometry>
+                </mxCell>
+                <mxCell id="m2" value="2: Start Sync" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="comp1" target="comp2">
+                    <mxGeometry relative="1" as="geometry"><mxPoint x="330" y="180" as="sourcePoint"/><mxPoint x="470" y="180" as="targetPoint"/></mxGeometry>
+                </mxCell>
+                <mxCell id="m3" value="3: Get Contacts" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="comp2" target="comp3">
+                    <mxGeometry relative="1" as="geometry"><mxPoint x="520" y="210" as="sourcePoint"/><mxPoint x="660" y="210" as="targetPoint"/></mxGeometry>
+                </mxCell>
+                <mxCell id="m4" value="4: Return Contacts" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="comp3" target="comp2">
+                    <mxGeometry relative="1" as="geometry"><mxPoint x="610" y="240" as="sourcePoint"/><mxPoint x="520" y="240" as="targetPoint"/></mxGeometry>
+                </mxCell>
+                <mxCell id="m5" value="5: Authenticate" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="comp2" target="comp4">
+                    <mxGeometry relative="1" as="geometry"><mxPoint x="520" y="270" as="sourcePoint"/><mxPoint x="850" y="270" as="targetPoint"/></mxGeometry>
+                </mxCell>
+                <mxCell id="m6" value="6: Auth Token" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="comp4" target="comp2">
+                    <mxGeometry relative="1" as="geometry"><mxPoint x="800" y="300" as="sourcePoint"/><mxPoint x="520" y="300" as="targetPoint"/></mxGeometry>
+                </mxCell>
+                <mxCell id="m7" value="7: Push Contacts" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="comp2" target="comp4">
+                    <mxGeometry relative="1" as="geometry"><mxPoint x="520" y="330" as="sourcePoint"/><mxPoint x="850" y="330" as="targetPoint"/></mxGeometry>
+                </mxCell>
+                <mxCell id="m8" value="8: Sync Response" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="comp4" target="comp2">
+                    <mxGeometry relative="1" as="geometry"><mxPoint x="800" y="360" as="sourcePoint"/><mxPoint x="520" y="360" as="targetPoint"/></mxGeometry>
+                </mxCell>
+                <mxCell id="m9" value="9: Update Status" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="comp2" target="comp3">
+                    <mxGeometry relative="1" as="geometry"><mxPoint x="520" y="390" as="sourcePoint"/><mxPoint x="660" y="390" as="targetPoint"/></mxGeometry>
+                </mxCell>
+                <mxCell id="m10" value="10: Report Result" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="comp2" target="comp1">
+                    <mxGeometry relative="1" as="geometry"><mxPoint x="420" y="420" as="sourcePoint"/><mxPoint x="330" y="420" as="targetPoint"/></mxGeometry>
+                </mxCell>
+                <mxCell id="m11" value="11: Display Report" style="endArrow=open;endSize=12;html=1;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="comp1" target="actor1">
+                    <mxGeometry relative="1" as="geometry"><mxPoint x="280" y="450" as="sourcePoint"/><mxPoint x="140" y="450" as="targetPoint"/></mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

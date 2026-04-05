@@ -1,0 +1,71 @@
+﻿
+> intelliscan-app@0.0.0 lint
+> eslint .
+
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\components\ActivityTracker.jsx
+  11:28  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+   9 |   const startTimeRef = useRef(null);
+  10 |   if (startTimeRef.current === null) {
+> 11 |     startTimeRef.current = Date.now();
+     |                            ^^^^^^^^^^ Cannot call impure function
+  12 |   }
+  13 |   const lastPathRef = useRef(location.pathname);
+  14 |  react-hooks/purity
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\layouts\DashboardLayout.jsx
+  43:47  error  'Icon' is defined but never used  no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\AdminDashboard.jsx
+  85:38  error  'orgsData' is defined but never used  no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\AdvancedApiExplorerSandbox.jsx
+  52:14  error  'err' is defined but never used  no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\AiTrainingTuningSuperAdmin.jsx
+  99:14  error  '_' is defined but never used  no-unused-vars
+  99:17  error  Empty block statement          no-empty
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\EnginePerformance.jsx
+   47:14  error  '_' is defined but never used     no-unused-vars
+   47:17  error  Empty block statement             no-empty
+  159:24  error  'Icon' is defined but never used  no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\MarketplacePage.jsx
+  178:9   error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  193:30  error  'form' is defined but never used                                                          no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\dashboard\BatchUploadPage.jsx
+  5:17  error  'setFiles' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\generated\GenHelpCenterDocs.jsx
+  127:7   error  Irregular whitespace not allowed  no-irregular-whitespace
+  135:7   error  Irregular whitespace not allowed  no-irregular-whitespace
+  147:30  error  Irregular whitespace not allowed  no-irregular-whitespace
+  151:30  error  Irregular whitespace not allowed  no-irregular-whitespace
+  155:30  error  Irregular whitespace not allowed  no-irregular-whitespace
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\generated\GenSubscriptionPlanComparison.jsx
+  90:9  error  'user' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\generated\GenWorkspacesOrganizationsSuperAdmin.jsx
+    1:27  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u           no-unused-vars
+    8:10  error  'generateOrg' is defined but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+   93:10  error  'nextId' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+   93:18  error  'setNextId' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  165:52  error  'Icon' is defined but never used                                                           no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\workspace\CrmMappingPage.jsx
+  6:18  error  'setFields' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\workspace\RoutingRulesPage.jsx
+  5:17  error  'setRules' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\temp_lint_reader.js
+  1:12  error  'require' is not defined  no-undef
+
+✖ 26 problems (26 errors, 0 warnings)
+

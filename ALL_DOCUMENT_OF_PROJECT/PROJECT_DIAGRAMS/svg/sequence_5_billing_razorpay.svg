@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="660" viewBox="0 0 1400 660">
+<defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/>
+      </marker>
+    </defs>
+<style>
+      .shape { fill: #fff; stroke: #000; stroke-width: 2; }
+      .thin { stroke-width: 1.5; }
+      .fillBlack { fill: #000; stroke: #000; stroke-width: 2; }
+      .text { fill: #000; font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+      .textSmall { font-size: 12px; }
+      .textTitle { font-size: 16px; font-weight: 700; }
+      .dashed { stroke-dasharray: 6 6; }
+    </style>
+<rect x="0" y="0" width="1400" height="660" fill="#fff" />
+<text class="text textTitle" x="700" y="40" text-anchor="middle">Interaction Diagram: Billing Upgrade (Razorpay)</text>
+<rect class="shape" x="90" y="80" width="150" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="165" y="104" text-anchor="middle"><tspan x="165" dy="0">User</tspan></text>
+<rect class="shape" x="270" y="80" width="180" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="360" y="104" text-anchor="middle"><tspan x="360" dy="0">Billing UI</tspan></text>
+<rect class="shape" x="490" y="80" width="180" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="580" y="104" text-anchor="middle"><tspan x="580" dy="0">Billing API</tspan></text>
+<rect class="shape" x="710" y="80" width="180" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="800" y="104" text-anchor="middle"><tspan x="800" dy="0">Razorpay</tspan></text>
+<rect class="shape" x="930" y="80" width="160" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="1010" y="104" text-anchor="middle"><tspan x="1010" dy="0">DB</tspan></text>
+<rect class="shape" x="1140" y="80" width="180" height="38" rx="4" ry="4" />
+<text class="text textSmall" x="1230" y="104" text-anchor="middle"><tspan x="1230" dy="0">Quotas</tspan></text>
+<line class="shape thin dashed" x1="165" y1="118" x2="165" y2="600" />
+<line class="shape thin dashed" x1="360" y1="118" x2="360" y2="600" />
+<line class="shape thin dashed" x1="580" y1="118" x2="580" y2="600" />
+<line class="shape thin dashed" x1="800" y1="118" x2="800" y2="600" />
+<line class="shape thin dashed" x1="1010" y1="118" x2="1010" y2="600" />
+<line class="shape thin dashed" x1="1230" y1="118" x2="1230" y2="600" />
+<line class="shape thin" x1="165" y1="150" x2="360" y2="150" marker-end="url(#arrow)" />
+<text class="text textSmall" x="262.5" y="142" text-anchor="middle">Choose plan</text>
+<line class="shape thin" x1="360" y1="205" x2="580" y2="205" marker-end="url(#arrow)" />
+<text class="text textSmall" x="470" y="197" text-anchor="middle">POST /create-order</text>
+<line class="shape thin" x1="580" y1="260" x2="800" y2="260" marker-end="url(#arrow)" />
+<text class="text textSmall" x="690" y="252" text-anchor="middle">Create order</text>
+<line class="shape thin" x1="800" y1="315" x2="360" y2="315" marker-end="url(#arrow)" />
+<text class="text textSmall" x="580" y="307" text-anchor="middle">Checkout success</text>
+<line class="shape thin" x1="360" y1="370" x2="580" y2="370" marker-end="url(#arrow)" />
+<text class="text textSmall" x="470" y="362" text-anchor="middle">POST /verify-payment</text>
+<line class="shape thin" x1="580" y1="425" x2="1010" y2="425" marker-end="url(#arrow)" />
+<text class="text textSmall" x="795" y="417" text-anchor="middle">Write order + invoice</text>
+<line class="shape thin" x1="580" y1="480" x2="1230" y2="480" marker-end="url(#arrow)" />
+<text class="text textSmall" x="905" y="472" text-anchor="middle">Update tier + quotas</text>
+<line class="shape thin" x1="580" y1="535" x2="360" y2="535" marker-end="url(#arrow)" />
+<text class="text textSmall" x="470" y="527" text-anchor="middle">Return entitlements</text>
+<line class="shape thin" x1="360" y1="590" x2="165" y2="590" marker-end="url(#arrow)" />
+<text class="text textSmall" x="262.5" y="582" text-anchor="middle">Show upgraded plan</text>
+</svg>

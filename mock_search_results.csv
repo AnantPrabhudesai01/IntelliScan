@@ -1,0 +1,10 @@
+#TYPE Selected.Microsoft.PowerShell.Commands.MatchInfo
+"Path","LineNumber","Line"
+"D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\data\mockContacts.js","1","export const mockContacts = ["
+"D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\dashboard\MeetingToolsPage.jsx","8","  // Mock user data for the card preview"
+"D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\generated\GenAdvancedSecurityAuditLogs1.jsx","3","const MOCK_LOGS = ["
+"D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\generated\GenAdvancedSecurityAuditLogs1.jsx","22","    if (!search) return MOCK_LOGS;"
+"D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\generated\GenAdvancedSecurityAuditLogs1.jsx","24","    return MOCK_LOGS.filter(log => "
+"D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\generated\PublicProfile.jsx","11","  // We'll mock it based on the slug for the demonstration."
+"D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\ScanPage.jsx","530","                     <strong>Offline Mock Mode Active:</strong> {multiResults.warning}"
+"D:\Anant\Project\CardToExcel\stitch (1)MoreSCreens\intelliscan-app\src\pages\SettingsPage.jsx","268","        {/* Notifications and Integrations - Mockups when active */}"

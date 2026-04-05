@@ -1,0 +1,2387 @@
+Hello Claude! I am providing you with the complete architectural breakdown, gap analysis, and core source code files for the IntelliScan project. Please read through this entire document to understand the current state of the application.
+
+====================================================
+PART 1: PROJECT ARCHITECTURE, PIPELINES & GAP ANALYSIS
+====================================================
+
+# IntelliScan: Comprehensive Project Analysis & Documentation
+
+## 1. Fully Detailed Project Documentation
+
+### Executive Overview
+IntelliScan is a full-stack, enterprise-grade application for scanning, extracting, and managing professional contacts (digital rolodex) with AI integration. The project bridges a React-based frontend (Vite) and a Node.js/Express backend, heavily relying on Google's Gemini AI for OCR extraction. It supports multi-tenant workspaces, real-time collaboration, and varying roles (User, Business Admin, Super Admin).
+
+### Technology Stack
+**Frontend:**
+- **Framework:** React 19 (via Vite)
+- **Routing:** React Router v7
+- **Styling:** Tailwind CSS v3.4 + PostCSS
+- **Icons:** Lucide React (strictly enforced)
+- **State Management:** React Context API
+- **Data Fetching:** Axios / native Fetch API
+- **Real-time:** Socket.io-client
+
+**Backend:**
+- **Runtime:** Node.js
+- **Framework:** Express.js v5.2
+- **Database:** SQLite3 (Local `database.sqlite` file)
+- **Authentication:** JWT (JSON Web Tokens) with bcryptjs
+- **AI Integration:** Google Generative AI (`@google/generative-ai`)
+- **Real-time:** Socket.io Server
+
+### Architecture Diagram
+
+The system follows a classic client-server model extended with WebSocket capabilities.
+
+```mermaid
+graph TD
+    Client[React Frontend / Vite] -->|REST API & Auth Token| API[Node.js / Express Backend]
+    Client <-->|WebSockets / Socket.io| RT[Real-time Server]
+    API -->|Base64 Image + Prompt| Gemini[Google Gemini AI API]
+    API <-->|SQL Queries| DB[(SQLite Database)]
+```
+
+### Database Schema Explanation (SQLite)
+- **users:** Stores credentials, roles (`user`, `business_admin`, `super_admin`), and workspace assignments.
+- **sessions:** Tracks active logins, IP addresses, location, and device info.
+- **contacts:** The core entity. Stores extracted business card data, confidence scores from AI, scanner ID, and metadata.
+- **events & ai_drafts:** Used for the CRM side, tracking networking events and AI-generated follow-up draft emails.
+- **workspace_chats:** Stores real-time chat messages broadcast via Socket.IO.
+- **engine_config & model_versions:** Stores OCR engine preferences and thresholds for super admins to tune performance.
+
+### Environment Variables
+**Backend (`.env`):**
+- `PORT=5000`
+- `JWT_SECRET=supersecret_intelliscan_key_123`
+- `GEMINI_API_KEY=<Google AI Key>`
+
+### Deployment & Local Setup
+1. **Backend Integration:** 
+   - `cd intelliscan-server` -> `npm install`
+   - Ensure a valid `GEMINI_API_KEY` is in `.env`.
+   - Start with `npm run start` or `npm run dev` (Runs on `localhost:5000`).
+2. **Frontend Run:** 
+   - `cd intelliscan-app` -> `npm install`
+   - Run `npm run dev` (Runs Vite server).
+   - Vite proxies `/api` to `http://127.0.0.1:5000`.
+
+---
+
+## 2. Complete Inventory of Everything in the Project
+
+### Frontend (`intelliscan-app`)
+- **`src/layouts/`**: `PublicLayout.jsx`, `DashboardLayout.jsx`, `AdminLayout.jsx` — Enforces DRY sidebar/header rules.
+- **`src/pages/`**: Contains 23 distinct view components.
+  - **Public:** `LandingPage.jsx`, `SignInPage.jsx`, `SignUpPage.jsx`, `ForgotPassword.jsx`, `OnboardingPage.jsx`.
+  - **User Dashboard:** `ScanPage.jsx`, `ContactsPage.jsx`, `SettingsPage.jsx`.
+  - **Workspace (Business Admin):** `WorkspaceDashboard.jsx`, `WorkspaceContacts.jsx`, `MembersPage.jsx`, `AnalyticsPage.jsx`, `BillingPage.jsx`, `SharedRolodexPage.jsx`.
+  - **Super Admin:** `AdminDashboard.jsx`, `AiTrainingTuningSuperAdmin.jsx`, `EnginePerformance.jsx`, `AdvancedApiExplorerSandbox.jsx`.
+- **`src/components/`**: Reusable generic pieces (e.g., `ActivityTracker`, `Card`, `Button`).
+- **`src/context/`**: `ContactContext.jsx` (Global state for contact lists), `RoleContext.jsx` (User roles).
+- **`vite.config.js`**: Bundler and proxy configuration.
+- **`tailwind.config.js`**: Theming (enforces Dark Mode class).
+
+### Backend (`intelliscan-server`)
+- **`index.js`**: The monolithic core server file. Initializes SQLite tables, Defines REST endpoints, Configures Socket.IO, Connects to Google Gemini API.
+- **`database.sqlite`**: Persistent internal database file.
+
+### Shared & Root
+- **`intelliscan_stitch_technicaladdendum.md`**: Foundational frontend specifications mapping out icon exactness, route abstractions, and the strict `Contact` TypeScript schema rules.
+
+---
+
+## 3. All Pipelines in the Project
+
+### User Journey Pipeline: OCR Scanning Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant Backend
+    participant GeminiAI
+    participant Database
+
+    User->>Frontend: Uploads Business Card Image
+    Frontend->>Frontend: Converts to Base64
+    Frontend->>Backend: POST /api/scan (Auth Token, Base64)
+    Backend->>GeminiAI: Sends prompt + Image
+    GeminiAI-->>Backend: Returns raw JSON string (Extracted Text)
+    Backend->>Backend: Parses and cleans JSON
+    Backend-->>Frontend: 200 OK (Contact Data Object)
+    Frontend->>User: Displays Preview & Confidence Score
+    User->>Frontend: Confirms & Saves
+    Frontend->>Backend: POST /api/contacts
+    Backend->>Database: INSERT INTO contacts
+    Backend-->>Frontend: 201 Created
+```
+
+### Real-Time Collaboration Pipeline
+- **Flow:** User opens `SharedRolodexPage` ➡ Socket.io emits `join-workspace` ➡ Users drag cursors generating `mousemove` events ➡ Emit `cursor-update` ➡ Real-time cursors sync for all attendees. Chat messages are similarly broadcasted and saved asynchronously to SQLite.
+
+### Build and Deployment Pipeline (Implied Node/Vite App)
+1. Commit to Repo.
+2. Build step: `npm run build` in `intelliscan-app` generates static assets in `/dist`.
+3. In production, the `intelliscan-server` can statically host `intelliscan-app/dist` or they can be deployed separately (e.g., Vercel for frontend, Render for backend).
+
+---
+
+## 4. Detailed Gap Analysis – What is Lacking
+
+**Overall Health:** The architecture is modern and feature-rich, but suffers from inconsistencies typical of rapid prototyping and transitioning from static mocks to a live backend.
+
+### 🔴 Critical Issues (The "Nothing is Connected" Problem)
+1. **Inconsistent API Base URLs:** 
+   - **The Bug:** `vite.config.js` correctly proxies `/api` to `http://127.0.0.1:5000`. However, throughout the frontend (e.g., `SharedRolodexPage.jsx`, `SettingsPage.jsx`), developers have hardcoded `fetch('http://localhost:5000/...')`.
+   - **Impact:** Hardcoded URLs bypass the Vite proxy. If CORS is slightly off, or if the user tests from their phone on the same WiFi (`192.168.x.x`), these hardcoded calls will fail entirely, yielding "Network Error" or appearing completely disconnected.
+   - **Fix:** Replace all instances of `http://localhost:5000/api/...` with relative paths `/api/...` or use a globally configured Axios instance.
+
+2. **Google Gemini API Dependency Not Configured:** 
+   - **The Bug:** The core `/api/scan` endpoint relies completely on `process.env.GEMINI_API_KEY`. If the user does not supply this (which usually isn't committed to git), the endpoint throws a 500 error. Because the frontend relies on this scanning, failure causes the core app function to break.
+   - **Fix:** Add robust frontend fallback/mock behavior if the API returns 500, OR bundle a mock AI endpoint for testing. Provide clear UI alerts if keys are missing.
+
+3. **Critical Privilege Escalation (Upgrade Bug):**
+   - **The Bug:** If a user clicks the "Upgrade" button, the system incorrectly routes them to the Super Admin dashboard (or elevates their view privileges), allowing them to see everything a Super Admin sees. 
+   - **Fix:** Remove any frontend state manipulation that alters the user's `role`. Ensure backend JWTs are the sole source of truth for routing guards. Upgrading should strictly adjust workspace tiers, not user roles.
+
+### 🟠 High Severity Issues
+4. **Authentication State Desync:** 
+   - **The Bug:** Auth is handled synchronously by checking `localStorage.getItem('user')` on page load in isolated files, rather than relying strictly on a rigorous `AuthProvider`. If a token expires, the Express backend throws 401 or 403, but the frontend lacks global interceptors to gracefully boot the user back to `/sign-in`.
+   - **Fix:** Implement an Axios interceptor to catch `401 Unauthorized` responses globally and clear local storage / redirect to sign in.
+
+5. **Disconnected Enterprise Feedback Loop:**
+   - **The Bug:** When an Enterprise user submits platform feedback, there is no connection to the Super Admin dashboard. The Super Admin cannot see the feedback or take action on it.
+   - **Fix:** Implement a dedicated API pipeline and SQLite table (`platform_feedback`) fetching directly into the `/admin/dashboard` view, complete with action buttons (Resolve/Reply).
+
+6. **Socket.IO Hardcoding:**
+   - **The Bug:** `SharedRolodexPage.jsx` initializes with `io('http://localhost:5000')`.
+   - **Fix:** Change to `io()` so it infers the host, or feed from an environment variable.
+
+### 🟡 Medium & Low Severity Issues
+5. **Missing Input Sanitization & Validation:** Express uses `req.body` blindly in registration and contact creation. Add `zod` or `joi` to validate backend payload shapes to prevent injection or malformed data breaks.
+6. **Partial Mock Data Reliance:** The *Technical Addendum* insists heavily on a `mockContacts` structure. Some pages may still be mapping this static array instead of the real `ContactContext` data from SQLite.
+7. **Missing Error Boundaries:** React will crash completely if the UI encounters an unhandled exception in rendering null data (e.g., a contact with an unexpectedly missing ID mapping).
+
+### 🔵 Missing Core Features
+8. **Personalized Automated Chatbot:** Both Personal and Enterprise users currently lack a dedicated support/assistant chatbot.
+   - **Fix:** Implement a persistent floating chat interface leveraging the Gemini API. The system prompt must be dynamically injected with the user's context (tier, recent scans, problems) so the AI provides highly customized solutions rather than generic answers.
+
+---
+
+## 5. Screenshots & UI Inventory (Layout Directives)
+
+*Since this analysis is text-generated, below are the exact annotations and layout descriptions of all UI screens specified in the system, to be visually confirmed manually.*
+
+### 1. The Onboarding / Auth Flow (Public Pages)
+- **Landing Page, Sign Up, Sign In:** 
+  - *Layout:* `PublicLayout.jsx` wrapper with Header and Footer. 
+  - *Annotation:* Modern dark/indigo glassmorphism. Uses `<ScanLine size={24}>` for the logo. The Sign In relies on `axios.post('/api/auth/login')`.
+- **Public Scanner Page:**
+  - *Annotation:* Allows guests to scan via a magic link. 
+
+### 2. User Dashboard
+- **Scan Page (`/dashboard/scan`):**
+  - *Layout:* `DashboardLayout.jsx` (Sidebar on Desktop, Bottom Nav on Mobile).
+  - *Annotation:* The primary interaction area. Features an image dropzone sending Base64 to `/api/scan`. Displays a color-coded "Confidence Badge" per rule 3.
+- **Contacts Page (`/dashboard/contacts`):**
+  - *Annotation:* Table view of extracted contacts fetched from the `/api/contacts` SQLite table. Handles `null` fields with a grayed "—" dash.
+
+### 3. Business Admin / Workspace
+- **Workspace Dashboard / Shared Rolodex:**
+  - *Layout:* `AdminLayout.jsx` with full left sidebar menu. 
+  - *Annotation:* Displays the team’s combined scans via real-time WebSocket cursors. Displays live text chat in the corner. Noticeable disconnect issue resides here due to `http://localhost:5000` hardcodes.
+
+### 4. Super Admin Console
+- **Engine Performance & API Sandbox:**
+  - *Annotation:* Highly technical readout. Hits endpoints like `/api/engine/stats` and allows testing raw AI extraction times. 
+
+---
+
+## 6. Full Video Documentation: Script & Storyboard
+
+**Title:** IntelliScan Platform Documentation & Gap Analysis
+**Length:** 10 mins
+
+**[0:00 - 1:30] Scene 1: Introduction & App Overview**
+- *Visual:* Screen recording of the Landing Page opening. Smooth pan over to the Sign In page. 
+- *Voice-Over:* "Welcome to IntelliScan. Today we are walking through the complete project architecture. IntelliScan bridges a React frontend with a Node.js Express backend and an integrated Google Gemini AI engine for high-precision business card OCR."
+
+**[1:30 - 3:30] Scene 2: The Core OCR Pipeline**
+- *Visual:* User logs in, enters the `Scan Page`. Uploads a business card image. 
+- *Voice-Over:* "When a user logs in, auth tokens are distributed via JWT. Here in the dashboard, dropping a card triggers an Axios POST payload containing the Base64 image. The Express server routes this to Google Gemini, retrieving this highly structured JSON data shown on screen."
+
+**[3:30 - 5:30] Scene 3: Enterprise Collaboration**
+- *Visual:* Split Screen showing two browser windows entering the `Shared Rolodex Page` (`/workspace/contacts`). Live cursors start moving via Socket.io.
+- *Voice-Over:* "IntelliScan supports multi-tenant workspaces. Utilizing Socket.IO, we've implemented live cursor tracking and persistent team chat, keeping the sales team entirely synced as cards are scanned live at events."
+
+**[5:30 - 8:00] Scene 4: Gap Analysis & 'Nothing is Connected' Deep Dive**
+- *Visual:* Zoom in on VS Code showing `SharedRolodexPage.jsx` Line 21 (`fetch('http://localhost:5000/api/chats...')`). Contrast with `vite.config.js`. Screen recording shows a "Failed to Fetch" network error in developer tools.
+- *Voice-Over:* "Despite these features, you may experience the 'nothing is connected' issue. Here is why: The frontend uses a mix of relative endpoint paths and hardcoded `localhost:5000` URLs. While relative paths map successfully through Vite's API proxy, the hardcoded URLs bypass the proxy. On deploying or testing across a network, this instantly breaks the fetch requests, severing data flow."
+
+**[8:00 - 10:00] Scene 5: Recommended Next Steps**
+- *Visual:* Bulleted list on screen: "1. Global Axios Instance. 2. Env Vars Check. 3. Global Error Boundaries."
+- *Voice-Over:* "To stabilize IntelliScan for production, our immediate roadmap involves unifying all HTTP calls through a globally configured Axios instance intercepting 401Auth errors, decoupling the hardcoded IPs. Secondly, integrating robust backend error handling for when the Gemini API key is missing. Thank you for watching the architectural breakdown."
+
+---
+
+## Recommended Next Steps to Fix Project (Roadmap)
+1. **[CRITICAL] Normalize API Networking:** Create a `src/api/client.js` file defining an Axios instance with base URL configured dynamically (`import.meta.env.VITE_API_URL || '/api'`). Replace every `fetch` and `axios` call across all 23 components to use this singleton.
+2. **[CRITICAL] Global 401 Interceptor:** Inside `client.js`, add a response interceptor that listens for 401/403 status codes and triggers a client-side routing redirect to `/sign-in` while wiping `localStorage`.
+3. **[HIGH] Centralize WebSockets:** Move the `io()` instantiation into a top-level Context Provider rather than initializing inside `SharedRolodexPage.jsx` directly to prevent zombie connections or port hardcoding issues.
+4. **[HIGH] Secure Environment Credentials:** Provide a `.env.example` file in the backend to ensure developers do not hit 500 errors simply because `GEMINI_API_KEY` was excluded.
+
+
+====================================================
+PART 2: CORE SOURCE CODE REPOSITORIES
+====================================================
+
+### File: Backend Entry (index.js) (intelliscan-server\index.js)
+```javascript
+const express = require('express');
+const cors = require('cors');
+const sqlite3 = require('sqlite3').verbose();
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
+require('dotenv').config();
+
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: { origin: "*", methods: ["GET", "POST"] }
+});
+const PORT = process.env.PORT || 5000;
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecret_intelliscan_key_123';
+
+app.use(cors());
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
+
+// Initialize SQLite DB
+const db = new sqlite3.Database('./database.sqlite', (err) => {
+  if (err) {
+    console.error('Error opening database', err.message);
+  } else {
+    console.log('Connected to the SQLite database.');
+    db.serialize(() => {
+      // Users table
+      db.run(`CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        email TEXT UNIQUE,
+        password TEXT,
+        role TEXT DEFAULT 'user',
+        workspace_id INTEGER
+      )`);
+
+      // Sessions table
+      db.run(`CREATE TABLE IF NOT EXISTS sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        token TEXT,
+        device_info TEXT,
+        ip_address TEXT,
+        location TEXT,
+        last_active DATETIME DEFAULT CURRENT_TIMESTAMP,
+        is_active BOOLEAN DEFAULT 1
+      )`);
+
+      // Contacts table
+      db.run(`CREATE TABLE IF NOT EXISTS contacts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        name TEXT,
+        email TEXT,
+        phone TEXT,
+        company TEXT,
+        job_title TEXT,
+        confidence INTEGER DEFAULT 95,
+        scan_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+        image_url TEXT,
+        notes TEXT,
+        tags TEXT
+      )`);
+
+      // Analytics Logs table
+      db.run(`CREATE TABLE IF NOT EXISTS analytics_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_role TEXT DEFAULT 'anonymous',
+        user_email TEXT,
+        action TEXT,
+        path TEXT,
+        duration_ms INTEGER,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`);
+
+      // Engine Config table (persistent slider values)
+      db.run(`CREATE TABLE IF NOT EXISTS engine_config (
+        key TEXT PRIMARY KEY,
+        value TEXT,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`, () => {
+        // Seed default config values if not present
+        db.run(`INSERT OR IGNORE INTO engine_config (key, value) VALUES ('ocr_threshold', '88')`);
+        db.run(`INSERT OR IGNORE INTO engine_config (key, value) VALUES ('denoising_sensitivity', '42')`);
+        db.run(`INSERT OR IGNORE INTO engine_config (key, value) VALUES ('active_engine', 'gemini')`);
+      });
+
+      // Model Versions table
+      db.run(`CREATE TABLE IF NOT EXISTS model_versions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        version_tag TEXT,
+        description TEXT,
+        ocr_accuracy REAL,
+        avg_latency_ms INTEGER,
+        status TEXT DEFAULT 'standby',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`, () => {
+        // Seed some model versions
+        db.run(`INSERT OR IGNORE INTO model_versions (id, version_tag, description, ocr_accuracy, avg_latency_ms, status) VALUES
+          (1, 'v3.2.1', 'Latest production model with improved handwriting recognition', 98.4, 420, 'active')`);
+        db.run(`INSERT OR IGNORE INTO model_versions (id, version_tag, description, ocr_accuracy, avg_latency_ms, status) VALUES
+          (2, 'v3.1.0', 'Previous stable release. Legal domain optimized.', 96.1, 512, 'standby')`);
+        db.run(`INSERT OR IGNORE INTO model_versions (id, version_tag, description, ocr_accuracy, avg_latency_ms, status) VALUES
+          (3, 'v2.9.8', 'Legacy model. Medical dataset trained.', 91.7, 680, 'standby')`);
+      });
+
+      // API Sandbox calls log
+      db.run(`CREATE TABLE IF NOT EXISTS api_sandbox_calls (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        payload TEXT,
+        response TEXT,
+        status_code INTEGER,
+        latency_ms INTEGER,
+        engine TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`);
+
+      // Events table
+      db.run(`CREATE TABLE IF NOT EXISTS events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        name TEXT,
+        date TEXT,
+        location TEXT,
+        type TEXT,
+        attendees_count INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'active',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`);
+
+      // AI Drafts table
+      db.run(`CREATE TABLE IF NOT EXISTS ai_drafts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        contact_id INTEGER,
+        contact_name TEXT,
+        subject TEXT,
+        body TEXT,
+        status TEXT DEFAULT 'draft',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`);
+
+      // Workspace Chats table
+      db.run(`CREATE TABLE IF NOT EXISTS workspace_chats (
+        id TEXT PRIMARY KEY,
+        workspace_id TEXT,
+        user_name TEXT,
+        message TEXT,
+        color TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`);
+
+      // Digital Cards table
+      db.run(`CREATE TABLE IF NOT EXISTS digital_cards (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER UNIQUE,
+        url_slug TEXT UNIQUE,
+        views INTEGER DEFAULT 0,
+        saves INTEGER DEFAULT 0,
+        theme_color TEXT DEFAULT 'indigo'
+      )`);
+    });
+  }
+});
+
+// Auth Middleware
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+// ==========================================
+// ROUTES
+// ==========================================
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'IntelliScan API is running.' });
+});
+
+// Register
+app.post('/api/auth/register', async (req, res) => {
+  const { name, email, password, role } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userRole = role || 'user';
+    
+    db.run(
+      'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+      [name, email, hashedPassword, userRole],
+      function (err) {
+        if (err) {
+          if (err.message.includes('UNIQUE')) {
+            return res.status(400).json({ error: 'Email already exists' });
+          }
+          return res.status(500).json({ error: err.message });
+        }
+        
+        const token = jwt.sign(
+          { id: this.lastID, email, name, role: userRole }, 
+          process.env.JWT_SECRET, 
+          { expiresIn: '24h' }
+        );
+        
+        res.status(201).json({ 
+          message: 'User registered successfully',
+          token,
+          user: { id: this.lastID, name, email, role: userRole }
+        });
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Login
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+  
+  db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!user) return res.status(401).json({ error: 'Invalid email or password' });
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) return res.status(401).json({ error: 'Invalid email or password' });
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, name: user.name, role: user.role }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '24h' }
+    );
+
+    // Session tracking on login
+    const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
+    const ipAddress = req.ip || 'Unknown IP'; 
+    const location = 'Unknown Location'; // Placeholder, could use a geo-ip service
+
+    db.run(
+      'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+      [user.id, token, deviceInfo, ipAddress, location],
+      function(sessionErr) {
+        if (sessionErr) {
+          console.error('Error inserting session:', sessionErr.message);
+          // Log the error but don't prevent login if session tracking fails
+        }
+        res.json({ 
+          message: 'Logged in successfully',
+          token,
+          user: { id: user.id, name: user.name, email: user.email, role: user.role }
+        });
+      }
+    );
+  });
+});
+
+// Get Current User Info
+app.get('/api/auth/me', authenticateToken, (req, res) => {
+  db.get('SELECT id, name, email, role, workspace_id FROM users WHERE id = ?', [req.user.id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(row);
+  });
+});
+
+// Contacts CRUD
+app.get('/api/contacts/stats', authenticateToken, (req, res) => {
+  db.get('SELECT COUNT(*) as totalScanned, AVG(confidence) as avgConfidence FROM contacts WHERE user_id = ?', [req.user.id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({
+      totalScanned: row.totalScanned || 0,
+      avgConfidence: row.avgConfidence ? Number(row.avgConfidence).toFixed(1) : 0
+    });
+  });
+});
+
+app.get('/api/contacts', authenticateToken, (req, res) => {
+  db.all('SELECT * FROM contacts WHERE user_id = ? ORDER BY scan_date DESC', [req.user.id], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.post('/api/contacts', authenticateToken, (req, res) => {
+  const { name, email, phone, company, job_title, image_url, notes, tags } = req.body;
+  
+  db.run(
+    'INSERT INTO contacts (user_id, name, email, phone, company, job_title, image_url, notes, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    [req.user.id, name, email, phone, company, job_title, image_url, notes, tags],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id: this.lastID, message: 'Contact created successfully' });
+    }
+  );
+});
+
+app.delete('/api/contacts/:id', authenticateToken, (req, res) => {
+  db.run('DELETE FROM contacts WHERE id = ? AND user_id = ?', [req.params.id, req.user.id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Contact deleted successfully', rowsAffected: this.changes });
+  });
+});
+
+app.get('/api/workspace/contacts', authenticateToken, (req, res) => {
+  db.all(
+    `SELECT c.*, u.name as scanner_name 
+     FROM contacts c 
+     JOIN users u ON c.user_id = u.id 
+     WHERE u.workspace_id = (SELECT workspace_id FROM users WHERE id = ?)
+     ORDER BY c.scan_date DESC`,
+    [req.user.id],
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json(rows);
+    }
+  );
+});
+
+// ==========================================
+// ENTERPRISE MOCK API ENDPOINTS
+// ==========================================
+
+app.get('/api/enterprise/audit-logs', authenticateToken, (req, res) => {
+  res.json([
+    { id: 'LOG-001', event: 'USER_LOGIN', user: 'admin@company.com', status: 'SUCCESS', ip: '192.168.1.4', timestamp: new Date().toISOString() },
+    { id: 'LOG-002', event: 'API_KEY_CREATED', user: 'developer@company.com', status: 'SUCCESS', ip: '10.0.0.52', timestamp: new Date(Date.now() - 3600000).toISOString() },
+    { id: 'LOG-003', event: 'DATA_EXPORT', user: 'compliance@company.com', status: 'WARNING', ip: '203.0.113.42', timestamp: new Date(Date.now() - 86400000).toISOString() }
+  ]);
+});
+
+app.get('/api/enterprise/webhooks', authenticateToken, (req, res) => {
+  res.json([
+    { id: 'WH-89FA', url: 'https://api.salesforce.com/services/apexrest/intelliscan', events: ['contact.created', 'scan.completed'], status: 'Active', latency: '124ms' },
+    { id: 'WH-2B3C', url: 'https://hooks.slack.com/services/T0000/B0000/XXXX', events: ['system.alert'], status: 'Failing', latency: 'Timeout' }
+  ]);
+});
+
+app.get('/api/enterprise/system-health', authenticateToken, (req, res) => {
+  res.json({
+    status: 'Operational',
+    components: {
+      api: { status: 'Operational', uptime: '99.99%', load: '12%' },
+      database: { status: 'Operational', uptime: '99.99%', load: '45%' },
+      ocr_engine: { status: 'Operational', uptime: '99.99%', queue_depth: 3 },
+      webhooks: { status: 'Degraded', error_rate: '2.4%' }
+    },
+    last_updated: new Date().toISOString()
+  });
+});
+
+app.get('/api/enterprise/workspaces', authenticateToken, (req, res) => {
+  res.json([
+    { id: 1, name: 'Acme Corp', tier: 'Enterprise', members: 145, active_scanners: 12 },
+    { id: 2, name: 'TechStart LLC', tier: 'Business', members: 42, active_scanners: 3 }
+  ]);
+});
+
+// ==========================================
+// GEMINI OCR API ENDPOINT
+// ==========================================
+
+app.post('/api/scan', authenticateToken, async (req, res) => {
+  try {
+    const { imageBase64, mimeType } = req.body;
+    
+    if (!imageBase64) {
+      return res.status(400).json({ error: 'No image provided' });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: 'GEMINI_API_KEY is not configured on the server. Please add it to your .env file.' });
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const prompt = `Analyze this business card image. Extract the following details into a strict JSON payload (DO NOT wrap in markdown \`\`\`json, just pure JSON). If a field cannot be found, use an empty string. Return ONLY the JSON object.
+{
+  "name": "Full Name",
+  "company": "Company Name",
+  "title": "Job Title",
+  "email": "Email Address",
+  "phone": "Phone Number",
+  "website": "Website URL",
+  "address": "Full Physical Address",
+  "confidence": 95,
+  "engine_used": "Gemini 1.5 Flash"
+}
+Set confidence to your estimated accuracy out of 100 based on the image quality/legibility.`;
+
+    // Remove the data:image prefix if present, Gemini API just wants the raw base64 string
+    const base64Data = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
+
+    const imageParts = [
+      {
+        inlineData: {
+          data: base64Data,
+          mimeType: mimeType || 'image/jpeg'
+        }
+      }
+    ];
+
+    const result = await model.generateContent([prompt, ...imageParts]);
+    const responseText = result.response.text();
+    
+    // Clean up potential markdown formatting from Gemini if it disobeys the prompt
+    let cleanedJson = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
+    console.log("Gemini Extracted Payload:", cleanedJson);
+    const scannedData = JSON.parse(cleanedJson);
+    res.json(scannedData);
+  } catch (error) {
+    console.error('OCR Error:', error);
+    res.status(500).json({ error: 'Failed to process image with Gemini AI', details: error.message });
+  }
+});
+
+// ==========================================
+// ANALYTICS & TRACKING API ENDPOINTS
+// ==========================================
+
+app.post('/api/analytics/log', (req, res) => {
+  const { user_role, user_email, action, path, duration_ms } = req.body;
+  db.run(
+    'INSERT INTO analytics_logs (user_role, user_email, action, path, duration_ms) VALUES (?, ?, ?, ?, ?)',
+    [user_role || 'anonymous', user_email || null, action, path, duration_ms || 0],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(204).send();
+    }
+  );
+});
+
+app.get('/api/analytics/stats', (req, res) => {
+  const queries = {
+    total_visits: 'SELECT COUNT(*) as count FROM analytics_logs WHERE action = "page_view"',
+    total_clicks: 'SELECT COUNT(*) as count FROM analytics_logs WHERE action = "click"',
+    top_paths: 'SELECT path, COUNT(*) as count FROM analytics_logs WHERE action = "page_view" GROUP BY path ORDER BY count DESC LIMIT 5',
+    avg_duration: 'SELECT AVG(duration_ms) as avg FROM analytics_logs WHERE action = "page_view" AND duration_ms > 0',
+    unique_users: 'SELECT COUNT(DISTINCT user_email) as count FROM analytics_logs WHERE user_email IS NOT NULL AND user_email != ""'
+  };
+
+  db.get(queries.total_visits, [], (err, visitsRow) => {
+    db.get(queries.total_clicks, [], (err, clicksRow) => {
+      db.get(queries.avg_duration, [], (err, avgRow) => {
+        db.get(queries.unique_users, [], (err, usersRow) => {
+          db.all(queries.top_paths, [], (err, topPaths) => {
+            res.json({
+              totalVisits: visitsRow ? visitsRow.count : 0,
+              totalClicks: clicksRow ? clicksRow.count : 0,
+              avgTimeSeconds: avgRow && avgRow.avg ? (avgRow.avg / 1000).toFixed(1) : 0,
+              registeredUsersTracked: usersRow ? usersRow.count : 0,
+              topPaths: topPaths || []
+            });
+          });
+        });
+      });
+    });
+  });
+});
+
+// ==========================================
+// SESSION MANAGEMENT API ENDPOINTS
+// ==========================================
+
+app.get('/api/sessions/me', authenticateToken, (req, res) => {
+  db.all('SELECT id, device_info, ip_address, location, last_active, is_active FROM sessions WHERE user_id = ? ORDER BY last_active DESC', [req.user.id], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    // Identify current session by matching token
+    const authHeader = req.headers['authorization'];
+    const currentToken = authHeader && authHeader.split(' ')[1];
+    
+    // We shouldn't send the raw token back, so just use it server side to mark isCurrent
+    // We need the token in the DB to match, let's fetch it too
+    db.all('SELECT id, token FROM sessions WHERE user_id = ?', [req.user.id], (err2, tokenRows) => {
+      if (err2) return res.status(500).json({ error: err2.message });
+      
+      const sessionMap = new Map();
+      tokenRows.forEach(row => sessionMap.set(row.id, row.token));
+      
+      const enrichedRows = rows.map(row => ({
+        ...row,
+        isCurrent: sessionMap.get(row.id) === currentToken
+      }));
+      res.json(enrichedRows);
+    });
+  });
+});
+
+app.delete('/api/sessions/others', authenticateToken, (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const currentToken = authHeader && authHeader.split(' ')[1];
+  
+  db.run('DELETE FROM sessions WHERE user_id = ? AND token != ?', [req.user.id, currentToken], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: `Successfully logged out from ${this.changes} other devices`, count: this.changes });
+  });
+});
+
+app.delete('/api/sessions/:id', authenticateToken, (req, res) => {
+  db.run('DELETE FROM sessions WHERE id = ? AND user_id = ?', [req.params.id, req.user.id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: 'Session not found' });
+    res.json({ message: 'Session revoked successfully' });
+  });
+});
+
+// ==========================================
+// ENGINE CONFIG & PERFORMANCE ENDPOINTS
+// ==========================================
+
+app.get('/api/engine/config', authenticateToken, (req, res) => {
+  db.all('SELECT key, value FROM engine_config', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const config = Object.fromEntries(rows.map(row => [row.key, row.value]));
+    res.json(config);
+  });
+});
+
+app.put('/api/engine/config', authenticateToken, (req, res) => {
+  const updates = req.body;
+  
+  db.serialize(() => {
+    db.run('BEGIN TRANSACTION');
+    
+    // Save each key-value pair
+    for (const [key, value] of Object.entries(updates)) {
+      db.run('INSERT OR REPLACE INTO engine_config (key, value) VALUES (?, ?)', [key, String(value)]);
+    }
+    
+    db.run('COMMIT', (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Settings updated successfully' });
+    });
+  });
+});
+
+app.get('/api/engine/versions', authenticateToken, (req, res) => {
+  db.all('SELECT * FROM model_versions ORDER BY id DESC', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.post('/api/engine/versions/:id/rollback', authenticateToken, (req, res) => {
+  const versionId = req.params.id;
+  db.serialize(() => {
+    db.run('UPDATE model_versions SET status = "standby"');
+    db.run('UPDATE model_versions SET status = "active" WHERE id = ?', [versionId], function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      if (this.changes === 0) return res.status(404).json({ error: 'Version not found' });
+      res.json({ message: 'Rolled back to version successfully' });
+    });
+  });
+});
+
+app.get('/api/engine/stats', authenticateToken, (req, res) => {
+  // Live computed stats based on actual contacts and sandbox executions
+  db.get('SELECT COUNT(*) as total, AVG(confidence) as avgConf FROM contacts', [], (err, contactsRow) => {
+    if (err) return res.status(500).json({ error: err.message });
+    
+    db.get('SELECT COUNT(*) as api_calls, AVG(latency_ms) as latency FROM api_sandbox_calls', [], (err, apiRow) => {
+      res.json({
+        total_scans: contactsRow.total || 0,
+        average_confidence: contactsRow.avgConf || 95,
+        api_requests_24h: apiRow.api_calls || 142,
+        throughput_avg_ms: apiRow.latency || 420,
+        active_nodes: 12,
+        memory_usage: '64%',
+        queue_depth: 3
+      });
+    });
+  });
+});
+
+// ==========================================
+// API SANDBOX ENDPOINTS
+// ==========================================
+
+app.post('/api/sandbox/test', authenticateToken, (req, res) => {
+  const payload = req.body;
+  const start = Date.now();
+  
+  // Simulate AI extraction processing over a document payload
+  setTimeout(() => {
+    const latency = Date.now() - start;
+    const responseData = {
+      status: "success",
+      request_id: "req_" + Math.random().toString(36).substr(2, 8),
+      data: {
+        merchant: "TEST-PAYLOAD-MERCHANT",
+        tax_id: "99-1234567",
+        total: Math.floor(Math.random() * 500) + 50,
+        currency: "USD",
+        meta: {
+          engine: payload.engine || "OCR-PRO-V3",
+          confidence: 0.98
+        }
+      }
+    };
+
+    // Log the API call
+    db.run(
+      'INSERT INTO api_sandbox_calls (user_id, payload, response, status_code, latency_ms, engine) VALUES (?, ?, ?, ?, ?, ?)',
+      [req.user.id, JSON.stringify(payload), JSON.stringify(responseData), 200, latency, payload.engine || "OCR-PRO-V3"],
+      (err) => {
+        if (err) console.error("Could not log API sandbox call", err);
+        res.json({ ...responseData, _latency_ms: latency });
+      }
+    );
+  }, 400); // simulate 400ms processing delay
+});
+
+app.get('/api/sandbox/logs', authenticateToken, (req, res) => {
+  db.all('SELECT * FROM api_sandbox_calls WHERE user_id = ? ORDER BY timestamp DESC LIMIT 20', [req.user.id], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.delete('/api/sandbox/logs', authenticateToken, (req, res) => {
+  db.run('DELETE FROM api_sandbox_calls WHERE user_id = ?', [req.user.id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Logs cleared', count: this.changes });
+  });
+});
+
+// ==========================================
+// PHASE 8: EVENTS, DRAFTS, & CHATS APIs
+// ==========================================
+
+// --- Events API ---
+app.get('/api/events', authenticateToken, (req, res) => {
+  db.all('SELECT * FROM events WHERE user_id = ? ORDER BY date DESC', [req.user.id], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.post('/api/events', authenticateToken, (req, res) => {
+  const { name, date, location, type, attendees_count, status } = req.body;
+  db.run(
+    'INSERT INTO events (user_id, name, date, location, type, attendees_count, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [req.user.id, name, date, location, type, attendees_count || 0, status || 'active'],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id: this.lastID, message: 'Event created successfully' });
+    }
+  );
+});
+
+app.delete('/api/events/:id', authenticateToken, (req, res) => {
+  db.run('DELETE FROM events WHERE id = ? AND user_id = ?', [req.params.id, req.user.id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Event deleted successfully' });
+  });
+});
+
+// --- AI Drafts API ---
+app.get('/api/drafts', authenticateToken, (req, res) => {
+  db.all('SELECT * FROM ai_drafts WHERE user_id = ? ORDER BY created_at DESC', [req.user.id], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.post('/api/drafts', authenticateToken, (req, res) => {
+  const { contact_id, contact_name, subject, body } = req.body;
+  db.run(
+    'INSERT INTO ai_drafts (user_id, contact_id, contact_name, subject, body) VALUES (?, ?, ?, ?, ?)',
+    [req.user.id, contact_id, contact_name, subject, body],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({ id: this.lastID, message: 'Draft saved successfully' });
+    }
+  );
+});
+
+app.put('/api/drafts/:id/send', authenticateToken, (req, res) => {
+  db.run('UPDATE ai_drafts SET status = "sent" WHERE id = ? AND user_id = ?', [req.params.id, req.user.id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Draft marked as sent' });
+  });
+});
+
+app.delete('/api/drafts/:id', authenticateToken, (req, res) => {
+  db.run('DELETE FROM ai_drafts WHERE id = ? AND user_id = ?', [req.params.id, req.user.id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Draft deleted' });
+  });
+});
+
+// --- Workspace Chats API ---
+app.get('/api/chats/:workspaceId', authenticateToken, (req, res) => {
+  db.all('SELECT * FROM workspace_chats WHERE workspace_id = ? ORDER BY timestamp DESC LIMIT 50', [req.params.workspaceId], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows.reverse());
+  });
+});
+
+// --- Digital Card API ---
+app.get('/api/my-card', authenticateToken, (req, res) => {
+  db.get('SELECT * FROM digital_cards WHERE user_id = ?', [req.user.id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (row) {
+      res.json(row);
+    } else {
+      // Auto-provision a digital card for the user
+      const slug = (req.user.name || 'user').toLowerCase().replace(/[^a-z0-9]/g, '') + Math.floor(Math.random() * 1000);
+      db.run('INSERT INTO digital_cards (user_id, url_slug, views, saves) VALUES (?, ?, ?, ?)', 
+        [req.user.id, slug, Math.floor(Math.random() * 500) + 100, Math.floor(Math.random() * 100) + 20], 
+        function(err2) {
+          if (err2) return res.status(500).json({ error: err2.message });
+          db.get('SELECT * FROM digital_cards WHERE id = ?', [this.lastID], (err3, newRow) => {
+            res.json(newRow);
+          });
+      });
+    }
+  });
+});
+
+// ==========================================
+// REAL-TIME COLLABORATION (SOCKET.IO)
+// ==========================================
+io.on('connection', (socket) => {
+  console.log('🔗 Client connected for Real-Time Collab:', socket.id);
+
+  socket.on('join-workspace', (data) => {
+    socket.join('workspace-1');
+    socket.to('workspace-1').emit('user-joined', { id: socket.id, user: data?.user });
+  });
+
+  socket.on('cursor-move', (data) => {
+    socket.to('workspace-1').emit('cursor-update', { id: socket.id, x: data.x, y: data.y, user: data.user, color: data.color });
+  });
+
+  socket.on('send-chat', (data) => {
+    const msgId = Date.now().toString();
+    const isoTime = new Date().toISOString();
+    
+    // Broadcast instantly
+    io.to('workspace-1').emit('new-chat-message', { ...data, id: msgId, timestamp: isoTime });
+    
+    // Save to DB in background
+    db.run('INSERT INTO workspace_chats (id, workspace_id, user_name, message, color, timestamp) VALUES (?, ?, ?, ?, ?, ?)', 
+      [msgId, 'workspace-1', data.user, data.text, data.color, isoTime]);
+  });
+
+  socket.on('disconnect', () => {
+    socket.to('workspace-1').emit('user-left', { id: socket.id });
+    console.log('❌ Client disconnected:', socket.id);
+  });
+});
+
+httpServer.listen(PORT, () => {
+  console.log(`Server is running with WebSockets enabled on port ${PORT}`);
+});
+
+```
+
+### File: Server Package.json (intelliscan-server\package.json)
+```javascript
+{
+  "name": "intelliscan-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "socket.io": "^4.8.3",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
+
+```
+
+### File: Frontend Routes (App.jsx) (intelliscan-app\src\App.jsx)
+```javascript
+import { Routes, Route, Navigate } from 'react-router-dom';
+import DashboardLayout  from './layouts/DashboardLayout';
+import AdminLayout      from './layouts/AdminLayout';
+import RoleGuard        from './components/RoleGuard';
+import DevTools         from './components/DevTools';
+import ActivityTracker  from './components/ActivityTracker';
+
+// Public Pages (Using their own full bespoke layouts now)
+import generatedRoutes from './pages/generated/routes.json';
+const generatedModules = import.meta.glob('./pages/generated/*.jsx', { eager: true });
+
+import LandingPage from './pages/LandingPage';
+import SignInPage from './pages/SignInPage';
+import SignUpPage from './pages/SignUpPage';
+import AdvancedApiExplorerSandbox from './pages/AdvancedApiExplorerSandbox';
+import AiTrainingTuningSuperAdmin from './pages/AiTrainingTuningSuperAdmin';
+import ForgotPassword from './pages/ForgotPassword';
+import OnboardingPage from './pages/OnboardingPage';
+import PublicAnalyticsPage from './pages/PublicAnalyticsPage';
+import ApiDocsPage from './pages/ApiDocsPage';
+
+// User Dashboard Pages
+import ScanPage from './pages/ScanPage';
+import ContactsPage from './pages/ContactsPage';
+import SettingsPage from './pages/SettingsPage';
+import MarketplacePage from './pages/MarketplacePage';
+import FeedbackPage from './pages/FeedbackPage';
+import BatchUploadPage from './pages/dashboard/BatchUploadPage';
+import EventsPage from './pages/dashboard/EventsPage';
+import DraftsPage from './pages/dashboard/DraftsPage';
+import MyCardPage from './pages/dashboard/MyCardPage';
+import CoachPage from './pages/dashboard/CoachPage';
+
+// Workspace / Admin Pages
+import WorkspaceDashboard from './pages/WorkspaceDashboard';
+import WorkspaceContacts from './pages/WorkspaceContacts';
+import MembersPage from './pages/MembersPage';
+import ScannerLinksPage from './pages/ScannerLinksPage';
+import AnalyticsPage from './pages/AnalyticsPage';
+import BillingPage from './pages/BillingPage';
+import CrmMappingPage from './pages/workspace/CrmMappingPage';
+import RoutingRulesPage from './pages/workspace/RoutingRulesPage';
+import DataPoliciesPage from './pages/workspace/DataPoliciesPage';
+import SharedRolodexPage from './pages/workspace/SharedRolodexPage';
+
+// Super Admin Pages
+import AdminDashboard from './pages/AdminDashboard';
+import EnginePerformance from './pages/EnginePerformance';
+import SuperAdminFeedbackPage from './pages/SuperAdminFeedbackPage';
+import CustomModelsPage from './pages/admin/CustomModelsPage';
+import JobQueuesPage from './pages/admin/JobQueuesPage';
+
+// Generic placeholder component for pages not yet migrated
+const PageStub = ({ title }) => (
+  <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
+    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">{title}</h1>
+    <p className="text-gray-500 dark:text-gray-400">This page is currently being migrated from the HTML prototypes.</p>
+  </div>
+);
+
+const RequireAuth = ({ children }) => {
+  const token = localStorage.getItem('token');
+  if (!token) return <Navigate to="/sign-in" replace />;
+  return children;
+};
+
+export default function App() {
+  return (
+    <>
+    <ActivityTracker />
+    <Routes>
+      {/* ── PUBLIC ROUTES WITHOUT PUBLICLAYOUT BLOCK ── */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/public-stats" element={<PublicAnalyticsPage />} />
+      <Route path="/sign-in" element={<SignInPage />} />
+      <Route path="/sign-up" element={<SignUpPage />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/onboarding" element={<OnboardingPage />} />
+      <Route path="/api-docs" element={<ApiDocsPage />} />
+      
+      <Route path="/scan/:token" element={<PageStub title="Public Scanner" />} />
+
+      {/* ── NORMAL USER ROUTES ── */}
+      <Route path="/dashboard/scan"         element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><ScanPage /></DashboardLayout></RoleGuard>} />
+      <Route path="/dashboard/batch-upload" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><BatchUploadPage /></DashboardLayout></RoleGuard>} />
+      <Route path="/dashboard/contacts"     element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><ContactsPage /></DashboardLayout></RoleGuard>} />
+      <Route path="/dashboard/events"       element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><EventsPage /></DashboardLayout></RoleGuard>} />
+      <Route path="/dashboard/drafts"       element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><DraftsPage /></DashboardLayout></RoleGuard>} />
+      <Route path="/dashboard/coach"        element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><CoachPage /></DashboardLayout></RoleGuard>} />
+      <Route path="/dashboard/my-card"      element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><MyCardPage /></DashboardLayout></RoleGuard>} />
+      <Route path="/dashboard/feedback"     element={<RoleGuard allowedRoles={['user', 'business_admin']}><DashboardLayout><FeedbackPage /></DashboardLayout></RoleGuard>} />
+      <Route path="/dashboard/settings"     element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><SettingsPage /></DashboardLayout></RoleGuard>} />
+      <Route path="/marketplace"            element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><MarketplacePage /></DashboardLayout></RoleGuard>} />
+
+      {/* ── BUSINESS ADMIN ROUTES ── */}
+      <Route path="/workspace/dashboard"     element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><WorkspaceDashboard /></AdminLayout></RoleGuard>} />
+      <Route path="/workspace/contacts"      element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><WorkspaceContacts /></AdminLayout></RoleGuard>} />
+      <Route path="/workspace/members"       element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><MembersPage /></AdminLayout></RoleGuard>} />
+      <Route path="/workspace/scanner-links" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><ScannerLinksPage /></AdminLayout></RoleGuard>} />
+      <Route path="/workspace/crm-mapping"   element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><CrmMappingPage /></AdminLayout></RoleGuard>} />
+      <Route path="/workspace/routing-rules" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><RoutingRulesPage /></AdminLayout></RoleGuard>} />
+      <Route path="/workspace/data-policies" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><DataPoliciesPage /></AdminLayout></RoleGuard>} />
+      <Route path="/workspace/analytics"     element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><AnalyticsPage /></AdminLayout></RoleGuard>} />
+      <Route path="/workspace/billing"       element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><BillingPage /></AdminLayout></RoleGuard>} />
+      <Route path="/workspace/shared"        element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><SharedRolodexPage /></AdminLayout></RoleGuard>} />
+
+      {/* ── SUPER ADMIN ROUTES ── */}
+      <Route path="/admin/dashboard"          element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><AdminDashboard /></AdminLayout></RoleGuard>} />
+      <Route path="/admin/engine-performance" element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><EnginePerformance /></AdminLayout></RoleGuard>} />
+      <Route path="/admin/feedback"           element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><SuperAdminFeedbackPage /></AdminLayout></RoleGuard>} />
+      <Route path="/admin/custom-models"      element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><CustomModelsPage /></AdminLayout></RoleGuard>} />
+      <Route path="/admin/job-queues"         element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><JobQueuesPage /></AdminLayout></RoleGuard>} />
+
+      {/* ── MASS MIGRATED AUTO-ROUTES ── */}
+      {generatedRoutes.map(route => {
+        const modulePath = `./pages/generated/${route.name}.jsx`;
+        const Component = generatedModules[modulePath]?.default;
+        if (!Component) return null;
+        return (
+          <Route 
+            key={route.path} 
+            path={route.path} 
+            element={<RequireAuth><AdminLayout role="super_admin"><Component /></AdminLayout></RequireAuth>} 
+          />
+        );
+      })}
+    </Routes>
+    <DevTools />
+    </>
+  );
+}
+
+```
+
+### File: Frontend SignIn Example (intelliscan-app\src\pages\SignInPage.jsx)
+```javascript
+import { Link, useNavigate } from 'react-router-dom';
+import { Mail, Lock, ScanLine, Shield, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
+import axios from 'axios';
+import { useRole } from '../context/RoleContext';
+
+export default function SignInPage() {
+  const navigate = useNavigate();
+  const { setRole } = useRole();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const response = await axios.post('/api/auth/login', { email, password });
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      setRole(user.role);
+      
+      if (user.role === 'super_admin') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'business_admin') {
+        navigate('/workspace/dashboard');
+      } else {
+        navigate('/dashboard/scan');
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to sign in. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <div className="bg-[#0e131f] text-[#dde2f3] min-h-screen selection:bg-indigo-600 selection:text-white overflow-y-auto">
+      {/* Top Navigation Bar */}
+      <header className="fixed top-0 w-full z-50 bg-[#0e131f]">
+        <nav className="flex justify-between items-center px-8 h-16 max-w-7xl mx-auto">
+          <div className="flex items-center gap-2">
+            <Link to="/" className="text-xl font-bold text-white tracking-tighter">IntelliScan</Link>
+          </div>
+          <div className="hidden md:flex items-center gap-8 font-['Manrope'] font-semibold tracking-tight">
+            <a className="text-[#c7c4d8] hover:text-white transition-colors duration-200" href="#">Product</a>
+            <a className="text-[#c7c4d8] hover:text-white transition-colors duration-200" href="#">Solutions</a>
+            <a className="text-[#c7c4d8] hover:text-white transition-colors duration-200" href="#">Pricing</a>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link to="/sign-in" className="text-indigo-500 font-['Manrope'] font-semibold tracking-tight active:scale-95 transition-transform hover:text-white">Sign In</Link>
+            <Link to="/sign-up" className="bg-indigo-600 text-white px-5 py-2 rounded-xl font-['Manrope'] font-semibold tracking-tight active:scale-95 transition-transform">Get Started</Link>
+          </div>
+        </nav>
+      </header>
+
+      {/* Main Content: Sign In Section */}
+      <main className="min-h-screen flex items-center justify-center px-6 pt-16 relative overflow-hidden">
+        {/* Abstract Background Element */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-600/10 rounded-full blur-[120px] -z-10"></div>
+        <div className="w-full max-w-md relative z-10">
+          {/* Glassmorphism Card */}
+          <div className="bg-[#161c28]/80 backdrop-blur-xl border border-white/5 p-8 md:p-10 rounded-[2rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.4)]">
+            {/* Brand Anchor */}
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600/20 mb-6 group transition-all duration-300">
+                <ScanLine className="text-indigo-500 text-3xl group-hover:scale-110 transition-transform" size={32} />
+              </div>
+              <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2 font-headline">Welcome Back</h1>
+              <p className="text-[#c7c4d8] font-medium font-body">Continue your high-precision scanning journey.</p>
+            </div>
+            {/* Form Fields */}
+            <form className="space-y-6" onSubmit={handleLogin}>
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-lg text-sm text-center">
+                  {error}
+                </div>
+              )}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-[#c7c4d8] ml-1 font-body" htmlFor="email">Email Address</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Mail className="text-[#918fa1] text-xl group-focus-within:text-[#c3c0ff] transition-colors" size={20} />
+                  </div>
+                  <input value={email} onChange={(e) => setEmail(e.target.value)} className="font-body block w-full pl-11 pr-4 py-3.5 bg-[#1a202c] border-0 rounded-xl text-[#dde2f3] placeholder:text-[#918fa1]/50 focus:ring-2 focus:ring-indigo-600 transition-all outline-none" id="email" name="email" placeholder="name@company.com" required type="email" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center ml-1">
+                  <label className="text-sm font-semibold text-[#c7c4d8] font-body" htmlFor="password">Password</label>
+                  <Link to="/forgot-password" className="text-xs font-bold text-[#c3c0ff] hover:underline transition-all font-body">Forgot Password?</Link>
+                </div>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Lock className="text-[#918fa1] text-xl group-focus-within:text-[#c3c0ff] transition-colors" size={20} />
+                  </div>
+                  <input value={password} onChange={(e) => setPassword(e.target.value)} className="font-body block w-full pl-11 pr-4 py-3.5 bg-[#1a202c] border-0 rounded-xl text-[#dde2f3] placeholder:text-[#918fa1]/50 focus:ring-2 focus:ring-indigo-600 transition-all outline-none" id="password" name="password" placeholder="••••••••" required type="password" />
+                </div>
+              </div>
+              <button disabled={loading} className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-indigo-600/20 mt-4 font-headline disabled:opacity-50" type="submit">
+                {loading ? 'Signing In...' : 'Sign In'}
+              </button>
+            </form>
+            {/* Divider */}
+            <div className="mt-10 pt-8 border-t border-white/5 text-center">
+              <p className="text-[#c7c4d8] font-medium font-body">
+                Don't have an account? 
+                <Link to="/sign-up" className="text-[#c3c0ff] font-bold hover:underline ml-2 transition-all">Sign Up</Link>
+              </p>
+            </div>
+          </div>
+          {/* Trust Badges */}
+          <div className="mt-8 flex justify-center gap-6 grayscale opacity-40 hover:opacity-80 transition-opacity">
+            <div className="flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase text-[#c7c4d8]">
+              <Shield size={16} /> ISO 27001
+            </div>
+            <div className="flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase text-[#c7c4d8]">
+              <ShieldCheck size={16} /> SOC2 TYPE II
+            </div>
+          </div>
+        </div>
+      </main>
+      
+      {/* Decorative Corner Element */}
+      <div className="fixed bottom-0 right-0 p-12 pointer-events-none opacity-20 hidden lg:block">
+        <div className="w-64 h-64 border-r-2 border-b-2 border-indigo-600/30 rounded-br-[4rem]"></div>
+      </div>
+    </div>
+  );
+}
+
+```
+
+### File: Frontend Workspace Issue (intelliscan-app\src\pages\workspace\SharedRolodexPage.jsx)
+```javascript
+import { Users, Filter, Download, Lock, Building2, LayoutGrid, MessageSquare, Send, X, MousePointer2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { io } from 'socket.io-client';
+
+export default function SharedRolodexPage() {
+  const [search, setSearch] = useState('');
+  const [chatOpen, setChatOpen] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [cursors, setCursors] = useState({});
+  const socketRef = useRef(null);
+
+  const me = JSON.parse(localStorage.getItem('user')) || { name: 'Admin', email: 'admin@test.com' };
+  const myColor = useRef(`hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`);
+
+  useEffect(() => {
+    // 1. Fetch historical workspace chats first
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/chats/workspace-1', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        const data = await res.json();
+        if(res.ok) {
+          // data arrives mapped correctly (message text is data.message instead of data.text)
+          const formatted = data.map(dbRow => ({
+            id: dbRow.id,
+            user: dbRow.user_name,
+            text: dbRow.message,
+            color: dbRow.color,
+            timestamp: dbRow.timestamp
+          }));
+          setMessages(formatted);
+        }
+      } catch(e) { console.error('Failed fetching history', e); }
+    };
+
+    const fetchWorkspaceContacts = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/workspace/contacts', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        const data = await res.json();
+        if(res.ok) setContacts(data);
+      } catch(e) { console.error('Failed fetching contacts', e); }
+    };
+
+    fetchHistory();
+    fetchWorkspaceContacts();
+
+    // 2. Setup Socket connections
+    socketRef.current = io('http://localhost:5000');
+    
+    socketRef.current.emit('join-workspace', { user: me.name });
+
+    socketRef.current.on('new-chat-message', (data) => {
+      setMessages(prev => [...prev, data]);
+    });
+
+    socketRef.current.on('cursor-update', (data) => {
+      setCursors(prev => ({ ...prev, [data.id]: data }));
+    });
+
+    socketRef.current.on('user-left', (data) => {
+      setCursors(prev => {
+        const nc = {...prev};
+        delete nc[data.id];
+        return nc;
+      });
+    });
+
+    const handleMouseMove = (e) => {
+      socketRef.current.emit('cursor-move', { x: e.clientX, y: e.clientY, user: me.name, color: myColor.current });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      socketRef.current.disconnect();
+    };
+  }, []);
+
+  const sendMsg = (e) => {
+    e.preventDefault();
+    if (!msg.trim()) return;
+    socketRef.current.emit('send-chat', { user: me.name, text: msg.trim(), color: myColor.current });
+    setMsg('');
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50">Enterprise Active</span>
+            <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700"></span>
+            <span className="text-xs text-gray-500">Live Team Sync</span>
+          </div>
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
+            Shared Rolodex
+          </h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 max-w-2xl leading-relaxed">
+            Collaborative workspace showing all business cards scanned across your entire sales organization at recent joint events.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="p-2 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-gray-900 transition-colors shadow-sm">
+            <Filter size={18} />
+          </button>
+          <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white font-bold text-sm rounded-xl shadow-sm hover:bg-indigo-700 active:scale-95 transition-all">
+            <Download size={16} /> Export View
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/20">
+          <div className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-xl min-w-[300px] shadow-sm">
+             <Filter size={16} className="text-gray-400" />
+             <input type="text" placeholder="Search across all team contacts..." className="bg-transparent border-none focus:ring-0 p-0 text-sm flex-1 outline-none text-gray-900 dark:text-white placeholder:text-gray-400" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
+          <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-wider text-gray-500">
+             <span className="flex items-center gap-1"><Users size={14} /> 12 Reps Scanning</span>
+             <span className="flex items-center gap-1 text-emerald-500"><Building2 size={14} /> 4,120 Processed</span>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-[#161c28] text-gray-500 dark:text-gray-400 text-[10px] font-black uppercase tracking-[0.15em]">
+                <th className="px-6 py-4">Contact Profile</th>
+                <th className="px-6 py-4">Company</th>
+                <th className="px-6 py-4">Scanned By (Actor)</th>
+                <th className="px-6 py-4">Scan Date</th>
+                <th className="px-6 py-4 text-right">Access</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {contacts.filter(c => c.name?.toLowerCase().includes(search.toLowerCase()) || c.company?.toLowerCase().includes(search.toLowerCase())).map(contact => (
+                <tr key={contact.id} className="hover:bg-gray-50/50 dark:hover:bg-[#161c28]/50 transition-colors group cursor-pointer">
+                  <td className="px-6 py-4">
+                    <div className="font-bold text-gray-900 dark:text-white text-sm">{contact.name}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{contact.job_title || 'N/A'}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 text-xs font-semibold border border-indigo-100 dark:border-indigo-800/50">
+                      {contact.company || 'Unknown'}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                       <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-[10px] font-bold text-gray-700 dark:text-gray-300">
+                         {contact.scanner_name ? contact.scanner_name.split(' ').map(n=>n[0]).join('') : 'U'}
+                       </div>
+                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{contact.scanner_name || 'System'}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500 font-mono">
+                    {new Date(contact.scan_date).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                     <button className="text-gray-400 hover:text-indigo-600 transition-colors" title="Shared Record">
+                       <Lock size={16} />
+                     </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Live Cursors */}
+      {Object.values(cursors).map(c => (
+        <div key={c.id} className="pointer-events-none fixed z-[100] transition-all duration-75 ease-out" style={{ left: c.x, top: c.y }}>
+          <MousePointer2 size={16} fill={c.color} color={c.color} className="drop-shadow-md" style={{ transform: 'rotate(-25deg) translate(-2px, -2px)' }} />
+          <div className="ml-3 mt-1 px-2 py-0.5 rounded text-[10px] font-bold text-white shadow-md whitespace-nowrap" style={{ backgroundColor: c.color }}>
+            {c.user}
+          </div>
+        </div>
+      ))}
+
+      {/* Floating Chat Panel */}
+      <div className="fixed bottom-6 left-6 z-50 flex flex-col items-start">
+        {chatOpen && (
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl w-80 shadow-2xl mb-4 overflow-hidden animate-in slide-in-from-bottom-5">
+             <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-950">
+               <h3 className="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-2"><MessageSquare size={14}/> Team Chat</h3>
+               <button onClick={() => setChatOpen(false)} className="text-gray-400 hover:text-gray-600"><X size={16}/></button>
+             </div>
+             <div className="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50/50 dark:bg-black/20 flex flex-col">
+               {messages.length === 0 ? (
+                 <p className="text-center text-xs text-gray-500 mt-10">No messages yet. Jump in!</p>
+               ) : (
+                 messages.map(m => (
+                   <div key={m.id} className={`flex flex-col ${m.user === me.name ? 'items-end' : 'items-start'} animate-fade-in`}>
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">{m.user === me.name ? 'You' : m.user}</span>
+                      <div className={`px-3 py-2 rounded-xl text-sm ${m.user === me.name ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-sm shadow-sm'}`}>
+                        {m.text}
+                      </div>
+                   </div>
+                 ))
+               )}
+             </div>
+             <form onSubmit={sendMsg} className="p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 flex gap-2">
+               <input value={msg} onChange={e=>setMsg(e.target.value)} placeholder="Type a message..." className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500 border border-transparent" />
+               <button type="submit" className="w-9 h-9 flex items-center justify-center bg-indigo-600 rounded-lg text-white hover:bg-indigo-700 transition-colors"><Send size={14}/></button>
+             </form>
+          </div>
+        )}
+        <button onClick={() => setChatOpen(!chatOpen)} className="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 relative">
+          {chatOpen ? <X size={24} /> : <MessageSquare size={24} />}
+          {!chatOpen && messages.length > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white dark:border-gray-900"></span>}
+        </button>
+      </div>
+
+    </div>
+  );
+}
+
+```
+
+### File: Vite Config (intelliscan-app\vite.config.js)
+```javascript
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:5000',
+        changeOrigin: true
+      }
+    }
+  }})
+
+```
+
+### File: Technical Addendum (intelliscan_stitch_technicaladdendum.md)
+```javascript
+# IntelliScan — CRITICAL TECHNICAL ADDENDUM
+## 4 Mandatory Architectural Rules — Append to Main Screen Prompt
+
+> This is a MANDATORY addendum. Paste this AFTER the 15-screen prompt. These 4 rules override any conflicting patterns Stitch would use by default. Every rule below is NON-NEGOTIABLE.
+
+---
+
+## ⚠️ RULE 1 — ICONOGRAPHY: lucide-react ONLY
+
+You must use `lucide-react` exclusively for every single icon across all 15 screens. No other icon library (react-icons, heroicons, FontAwesome, MUI icons, etc.) is permitted anywhere in the codebase.
+
+Install: `npm install lucide-react`
+
+### Complete Icon Mapping — Use These Exact Names
+
+| UI Element | lucide-react Component |
+|---|---|
+| Home / Dashboard | `<Home />` |
+| Contacts / People | `<Users />` |
+| Single User / Avatar | `<User />` |
+| Building / Company | `<Building2 />` |
+| Scanner / Scan action | `<ScanLine />` |
+| Camera | `<Camera />` |
+| Upload / File | `<Upload />` |
+| Link / URL | `<Link2 />` |
+| QR Code | `<QrCode />` |
+| Analytics / Chart | `<BarChart2 />` |
+| Billing / Credit Card | `<CreditCard />` |
+| Settings / Gear | `<Settings />` |
+| Sign Out / Logout | `<LogOut />` |
+| Copy to clipboard | `<Copy />` |
+| Edit / Pencil | `<Pencil />` |
+| Delete / Trash | `<Trash2 />` |
+| Add / Plus | `<Plus />` |
+| Close / X | `<X />` |
+| Check / Success | `<Check />` |
+| Warning / Alert | `<AlertTriangle />` |
+| Info | `<Info />` |
+| Email / Mail | `<Mail />` |
+| Phone | `<Phone />` |
+| Globe / Website | `<Globe />` |
+| Location / Address | `<MapPin />` |
+| LinkedIn | `<Linkedin />` |
+| Search | `<Search />` |
+| Filter | `<Filter />` |
+| Download / Export | `<Download />` |
+| More options (⋮) | `<MoreVertical />` |
+| Chevron Right | `<ChevronRight />` |
+| Chevron Down | `<ChevronDown />` |
+| External Link | `<ExternalLink />` |
+| Star / Favorite | `<Star />` |
+| Sun (light mode) | `<Sun />` |
+| Moon (dark mode) | `<Moon />` |
+| Menu (hamburger) | `<Menu />` |
+| Bell / Notifications | `<Bell />` |
+| Shield / Security | `<Shield />` |
+| Zap / Fast | `<Zap />` |
+| Activity / Health | `<Activity />` |
+| Key | `<Key />` |
+| Lock | `<Lock />` |
+| Refresh | `<RefreshCw />` |
+| Eye (show password) | `<Eye />` |
+| Eye Off (hide pwd) | `<EyeOff />` |
+| Send (invite) | `<Send />` |
+| Image | `<Image />` |
+| File Text | `<FileText />` |
+| Workspace / Office | `<Briefcase />` |
+| Crown / Admin | `<Crown />` |
+| Toggle / Switch | `<ToggleRight />` |
+
+### Usage Pattern
+```jsx
+import { Home, Users, ScanLine, Trash2 } from 'lucide-react';
+
+// Always pass size and className — never use default size alone
+<Home size={20} className="text-gray-500 dark:text-gray-400" />
+<ScanLine size={24} className="text-indigo-600" />
+```
+
+---
+
+## ⚠️ RULE 2 — DRY LAYOUT ARCHITECTURE: THREE LAYOUT WRAPPERS
+
+**Never duplicate sidebar or navbar code.** Create exactly three layout components and wrap every route in the correct one. This is mandatory — zero exceptions.
+
+### File Structure for Layouts
+```
+src/
+└── layouts/
+    ├── PublicLayout.jsx          ← Landing, Sign In, Sign Up, Onboarding, Public Scanner
+    ├── DashboardLayout.jsx       ← All Normal User pages
+    └── AdminLayout.jsx           ← All Business Admin + Super Admin pages
+```
+
+---
+
+### Layout 1 — `PublicLayout.jsx`
+
+Used by: `/` · `/sign-in` · `/sign-up` · `/forgot-password` · `/onboarding` · `/scan/:token`
+
+```jsx
+// src/layouts/PublicLayout.jsx
+import { Link } from 'react-router-dom';
+import { ScanLine } from 'lucide-react';
+
+export default function PublicLayout({ children, hideFooter = false }) {
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col">
+
+      {/* Public Top Navbar */}
+      <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2">
+            <ScanLine size={24} className="text-indigo-600" />
+            <span className="font-bold text-xl text-gray-900 dark:text-white">IntelliScan</span>
+          </Link>
+          {/* Nav Links */}
+          <nav className="hidden md:flex items-center gap-6">
+            <Link to="/#features" className="text-sm text-gray-600 dark:text-gray-300 hover:text-indigo-600">Features</Link>
+            <Link to="/#pricing" className="text-sm text-gray-600 dark:text-gray-300 hover:text-indigo-600">Pricing</Link>
+          </nav>
+          {/* Auth Buttons */}
+          <div className="flex items-center gap-3">
+            <Link to="/sign-in" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600">Sign In</Link>
+            <Link to="/sign-up" className="text-sm font-medium bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+              Get Started Free
+            </Link>
+            <DarkModeToggle />
+          </div>
+        </div>
+      </header>
+
+      {/* Page Content */}
+      <main className="flex-1">{children}</main>
+
+      {/* Footer */}
+      {!hideFooter && (
+        <footer className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="flex items-center gap-2">
+                <ScanLine size={20} className="text-indigo-600" />
+                <span className="font-semibold text-gray-900 dark:text-white">IntelliScan</span>
+              </div>
+              <div className="flex gap-6 text-sm text-gray-500 dark:text-gray-400">
+                <Link to="/privacy" className="hover:text-indigo-600">Privacy</Link>
+                <Link to="/terms" className="hover:text-indigo-600">Terms</Link>
+                <Link to="/sign-in" className="hover:text-indigo-600">Sign In</Link>
+              </div>
+              <p className="text-sm text-gray-400">© 2026 IntelliScan. All rights reserved.</p>
+            </div>
+          </div>
+        </footer>
+      )}
+    </div>
+  );
+}
+```
+
+---
+
+### Layout 2 — `DashboardLayout.jsx`
+
+Used by: `/dashboard/scan` · `/dashboard/contacts` · `/dashboard/settings`
+
+```jsx
+// src/layouts/DashboardLayout.jsx
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ScanLine, Users, Settings, LogOut, Bell, Sun, Moon, User } from 'lucide-react';
+import { useState } from 'react';
+import { useDarkMode } from '../hooks/useDarkMode';
+
+const navItems = [
+  { to: '/dashboard/scan',     label: 'Scan',     icon: ScanLine },
+  { to: '/dashboard/contacts', label: 'Contacts', icon: Users    },
+  { to: '/dashboard/settings', label: 'Settings', icon: Settings },
+];
+
+export default function DashboardLayout({ children }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isDark, toggle } = useDarkMode();
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+
+      {/* Top Navbar */}
+      <header className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-40 h-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+
+          {/* Left: Logo */}
+          <Link to="/dashboard/scan" className="flex items-center gap-2">
+            <ScanLine size={22} className="text-indigo-600" />
+            <span className="font-bold text-lg text-gray-900 dark:text-white">IntelliScan</span>
+          </Link>
+
+          {/* Center: Nav Links (desktop) */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map(({ to, label, icon: Icon }) => (
+              <Link key={to} to={to}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                  ${location.pathname === to
+                    ? 'bg-indigo-50 dark:bg-indigo-950 text-indigo-600'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
+                <Icon size={16} />
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Right: Plan Badge + Bell + Profile Dropdown */}
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+              FREE
+            </span>
+            <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400">
+              <Bell size={18} />
+            </button>
+
+            {/* Profile Dropdown */}
+            <div className="relative">
+              <button onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
+                  <User size={16} className="text-white" />
+                </div>
+              </button>
+              {profileOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg py-1 z-50">
+                  <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">Jane Smith</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">jane@company.com</p>
+                  </div>
+                  <Link to="/dashboard/settings" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <Settings size={15} /> Settings
+                  </Link>
+                  {/* ✅ DARK MODE TOGGLE — inside profile dropdown */}
+                  <button onClick={toggle}
+                    className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <div className="flex items-center gap-3">
+                      {isDark ? <Sun size={15} /> : <Moon size={15} />}
+                      {isDark ? 'Light Mode' : 'Dark Mode'}
+                    </div>
+                    <div className={`w-9 h-5 rounded-full transition-colors ${isDark ? 'bg-indigo-600' : 'bg-gray-200'} relative`}>
+                      <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-transform ${isDark ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                    </div>
+                  </button>
+                  <button onClick={() => navigate('/sign-in')}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950">
+                    <LogOut size={15} /> Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Bottom Nav */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 flex">
+        {navItems.map(({ to, label, icon: Icon }) => (
+          <Link key={to} to={to}
+            className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition-colors
+              ${location.pathname === to ? 'text-indigo-600' : 'text-gray-500 dark:text-gray-400'}`}>
+            <Icon size={20} />
+            {label}
+          </Link>
+        ))}
+      </nav>
+
+      {/* Page Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
+        {children}
+      </main>
+    </div>
+  );
+}
+```
+
+---
+
+### Layout 3 — `AdminLayout.jsx`
+
+Used by: ALL `/workspace/*` pages AND all `/admin/*` pages
+
+```jsx
+// src/layouts/AdminLayout.jsx
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useDarkMode } from '../hooks/useDarkMode';
+import {
+  ScanLine, Home, Users, Link2, BarChart2, CreditCard,
+  Settings, LogOut, Bell, Sun, Moon, Menu, X, User, Crown, Activity
+} from 'lucide-react';
+
+// Separate nav configs for Business Admin vs Super Admin
+const businessAdminNav = [
+  { to: '/workspace/dashboard',      label: 'Dashboard',      icon: Home       },
+  { to: '/workspace/contacts',       label: 'All Contacts',   icon: Users      },
+  { to: '/workspace/members',        label: 'Members',        icon: User       },
+  { to: '/workspace/scanner-links',  label: 'Scanner Links',  icon: Link2      },
+  { to: '/workspace/analytics',      label: 'Analytics',      icon: BarChart2  },
+  { to: '/workspace/billing',        label: 'Billing',        icon: CreditCard },
+  { to: '/workspace/settings',       label: 'Settings',       icon: Settings   },
+];
+
+const superAdminNav = [
+  { to: '/admin/dashboard',          label: 'Platform Overview', icon: Crown    },
+  { to: '/admin/workspaces',         label: 'Workspaces',        icon: Users    },
+  { to: '/admin/engine-performance', label: 'Engine Performance',icon: Activity },
+  { to: '/admin/system-health',      label: 'System Health',     icon: Home     },
+  { to: '/admin/settings',           label: 'Settings',          icon: Settings },
+];
+
+export default function AdminLayout({ children, role = 'business_admin' }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isDark, toggle } = useDarkMode();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  const navItems = role === 'super_admin' ? superAdminNav : businessAdminNav;
+
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full">
+      {/* Logo */}
+      <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-800">
+        <Link to="/" className="flex items-center gap-2">
+          <ScanLine size={22} className="text-indigo-600" />
+          <span className="font-bold text-lg text-gray-900 dark:text-white">IntelliScan</span>
+        </Link>
+      </div>
+
+      {/* Role Badge */}
+      <div className="px-4 pt-4 pb-2">
+        <span className={`text-xs font-bold px-2.5 py-1 rounded-full
+          ${role === 'super_admin'
+            ? 'bg-violet-100 dark:bg-violet-950 text-violet-700 dark:text-violet-300'
+            : 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300'}`}>
+          {role === 'super_admin' ? '👑 SUPER ADMIN' : '🏢 BUSINESS ADMIN'}
+        </span>
+      </div>
+
+      {/* Nav Items */}
+      <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
+        {navItems.map(({ to, label, icon: Icon }) => (
+          <Link key={to} to={to}
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+              ${location.pathname === to
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
+            <Icon size={18} />
+            {label}
+          </Link>
+        ))}
+      </nav>
+
+      {/* Bottom: User Profile */}
+      <div className="border-t border-gray-200 dark:border-gray-800 p-4">
+        <div className="relative">
+          <button onClick={() => setProfileOpen(!profileOpen)}
+            className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800">
+            <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0">
+              <User size={16} className="text-white" />
+            </div>
+            <div className="flex-1 text-left min-w-0">
+              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">Jane Smith</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">jane@company.com</p>
+            </div>
+          </button>
+
+          {profileOpen && (
+            <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg py-1 z-50">
+              {/* ✅ DARK MODE TOGGLE — inside profile dropdown */}
+              <button onClick={toggle}
+                className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
+                <div className="flex items-center gap-3">
+                  {isDark ? <Sun size={15} /> : <Moon size={15} />}
+                  {isDark ? 'Light Mode' : 'Dark Mode'}
+                </div>
+                <div className={`w-9 h-5 rounded-full transition-colors ${isDark ? 'bg-indigo-600' : 'bg-gray-200'} relative`}>
+                  <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-transform ${isDark ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                </div>
+              </button>
+              <Link to={role === 'super_admin' ? '/admin/settings' : '/workspace/settings'}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
+                <Settings size={15} /> Settings
+              </Link>
+              <button onClick={() => navigate('/sign-in')}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950">
+                <LogOut size={15} /> Sign Out
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
+
+      {/* Desktop Sidebar — always visible ≥ lg */}
+      <aside className="hidden lg:flex w-60 flex-shrink-0 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 flex-col">
+        <SidebarContent />
+      </aside>
+
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <aside className="relative w-60 bg-white dark:bg-gray-950 flex flex-col shadow-xl">
+            <SidebarContent />
+          </aside>
+        </div>
+      )}
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+        {/* Top Bar (mobile hamburger + page title area) */}
+        <header className="lg:hidden h-16 flex items-center justify-between px-4 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
+          <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+            <Menu size={22} className="text-gray-600 dark:text-gray-300" />
+          </button>
+          <div className="flex items-center gap-2">
+            <ScanLine size={20} className="text-indigo-600" />
+            <span className="font-bold text-gray-900 dark:text-white">IntelliScan</span>
+          </div>
+          <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+            <Bell size={20} className="text-gray-600 dark:text-gray-300" />
+          </button>
+        </header>
+
+        {/* Scrollable Page Content */}
+        <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### Route Wiring — Apply layouts in `App.jsx`
+
+```jsx
+// src/App.jsx — Wire every route to its correct layout
+import { Routes, Route } from 'react-router-dom';
+import PublicLayout   from './layouts/PublicLayout';
+import DashboardLayout from './layouts/DashboardLayout';
+import AdminLayout    from './layouts/AdminLayout';
+
+// Public Pages
+import LandingPage       from './pages/LandingPage';
+import SignInPage        from './pages/SignInPage';
+import SignUpPage        from './pages/SignUpPage';
+import ForgotPassword    from './pages/ForgotPassword';
+import OnboardingPage    from './pages/OnboardingPage';
+import PublicScannerPage from './pages/PublicScannerPage';
+
+// Normal User Pages
+import ScanPage          from './pages/dashboard/ScanPage';
+import ContactsPage      from './pages/dashboard/ContactsPage';
+import SettingsPage      from './pages/dashboard/SettingsPage';
+
+// Business Admin Pages
+import WorkspaceDashboard from './pages/workspace/WorkspaceDashboard';
+import WorkspaceContacts  from './pages/workspace/WorkspaceContacts';
+import MembersPage        from './pages/workspace/MembersPage';
+import ScannerLinksPage   from './pages/workspace/ScannerLinksPage';
+import AnalyticsPage      from './pages/workspace/AnalyticsPage';
+import BillingPage        from './pages/workspace/BillingPage';
+
+// Super Admin Pages
+import AdminDashboard     from './pages/admin/AdminDashboard';
+import EnginePerformance  from './pages/admin/EnginePerformance';
+
+export default function App() {
+  return (
+    <Routes>
+      {/* ── PUBLIC ROUTES ── */}
+      <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
+      <Route path="/sign-in" element={<PublicLayout hideFooter><SignInPage /></PublicLayout>} />
+      <Route path="/sign-up" element={<PublicLayout hideFooter><SignUpPage /></PublicLayout>} />
+      <Route path="/forgot-password" element={<PublicLayout hideFooter><ForgotPassword /></PublicLayout>} />
+      <Route path="/onboarding" element={<PublicLayout hideFooter><OnboardingPage /></PublicLayout>} />
+      <Route path="/scan/:token" element={<PublicLayout hideFooter><PublicScannerPage /></PublicLayout>} />
+
+      {/* ── NORMAL USER ROUTES ── */}
+      <Route path="/dashboard/scan"     element={<DashboardLayout><ScanPage /></DashboardLayout>} />
+      <Route path="/dashboard/contacts" element={<DashboardLayout><ContactsPage /></DashboardLayout>} />
+      <Route path="/dashboard/settings" element={<DashboardLayout><SettingsPage /></DashboardLayout>} />
+
+      {/* ── BUSINESS ADMIN ROUTES ── */}
+      <Route path="/workspace/dashboard"     element={<AdminLayout role="business_admin"><WorkspaceDashboard /></AdminLayout>} />
+      <Route path="/workspace/contacts"      element={<AdminLayout role="business_admin"><WorkspaceContacts /></AdminLayout>} />
+      <Route path="/workspace/members"       element={<AdminLayout role="business_admin"><MembersPage /></AdminLayout>} />
+      <Route path="/workspace/scanner-links" element={<AdminLayout role="business_admin"><ScannerLinksPage /></AdminLayout>} />
+      <Route path="/workspace/analytics"     element={<AdminLayout role="business_admin"><AnalyticsPage /></AdminLayout>} />
+      <Route path="/workspace/billing"       element={<AdminLayout role="business_admin"><BillingPage /></AdminLayout>} />
+
+      {/* ── SUPER ADMIN ROUTES ── */}
+      <Route path="/admin/dashboard"          element={<AdminLayout role="super_admin"><AdminDashboard /></AdminLayout>} />
+      <Route path="/admin/engine-performance" element={<AdminLayout role="super_admin"><EnginePerformance /></AdminLayout>} />
+    </Routes>
+  );
+}
+```
+
+---
+
+## ⚠️ RULE 3 — STRICT MOCK DATA SCHEMA
+
+Every contact object used anywhere in the UI — tables, cards, recent scans, contact drawers, export previews — MUST conform to this exact TypeScript-style schema:
+
+```typescript
+interface Contact {
+  id: string;                           // UUID string e.g. "c1a2b3c4-..."
+  name: string | null;                  // Full name from card
+  title: string | null;                 // Job title e.g. "VP of Sales"
+  company: string | null;               // Company name e.g. "Acme Corp"
+  email: string | null;                 // Work email
+  phone: string | null;                 // Phone number with country code
+  website: string | null;               // Company website URL
+  address: string | null;               // Physical address (can be multi-line)
+  linkedin: string | null;              // LinkedIn profile URL
+  confidence: number;                   // Float 0.00–1.00 e.g. 0.97
+  engine_used: 'gemini' | 'tesseract';  // Which AI engine processed this card
+}
+```
+
+### Complete Mock Dataset — Use This Verbatim
+
+```javascript
+// src/data/mockContacts.js
+export const mockContacts = [
+  {
+    id: "c1a2b3c4-0001-4f3a-a1b2-000000000001",
+    name: "Rajesh Mehta",
+    title: "Chief Technology Officer",
+    company: "TechNova Solutions",
+    email: "rajesh.mehta@technova.io",
+    phone: "+91 98765 43210",
+    website: "https://technova.io",
+    address: "Level 5, Cyber City, Gurugram, Haryana 122002",
+    linkedin: "https://linkedin.com/in/rajeshmehta",
+    confidence: 0.98,
+    engine_used: "gemini"
+  },
+  {
+    id: "c1a2b3c4-0002-4f3a-a1b2-000000000002",
+    name: "Priya Sharma",
+    title: "Head of Product",
+    company: "Fintech Dynamics",
+    email: "priya.sharma@fintechdyn.com",
+    phone: "+91 87654 32109",
+    website: "https://fintechdyn.com",
+    address: "BKC, Bandra East, Mumbai, Maharashtra 400051",
+    linkedin: "https://linkedin.com/in/priyasharma",
+    confidence: 0.95,
+    engine_used: "gemini"
+  },
+  {
+    id: "c1a2b3c4-0003-4f3a-a1b2-000000000003",
+    name: "Arjun Patel",
+    title: "Sales Director",
+    company: "CloudEdge Pvt Ltd",
+    email: "arjun@cloudedge.in",
+    phone: "+91 76543 21098",
+    website: "https://cloudedge.in",
+    address: "SG Highway, Ahmedabad, Gujarat 380054",
+    linkedin: null,
+    confidence: 0.91,
+    engine_used: "gemini"
+  },
+  {
+    id: "c1a2b3c4-0004-4f3a-a1b2-000000000004",
+    name: "Sneha Iyer",
+    title: "Marketing Manager",
+    company: "BrandWave Agency",
+    email: "sneha.iyer@brandwave.co",
+    phone: "+91 65432 10987",
+    website: null,
+    address: "Koramangala, Bengaluru, Karnataka 560034",
+    linkedin: "https://linkedin.com/in/snehaiyer",
+    confidence: 0.88,
+    engine_used: "tesseract"
+  },
+  {
+    id: "c1a2b3c4-0005-4f3a-a1b2-000000000005",
+    name: "Vikram Nair",
+    title: "Founder & CEO",
+    company: "StartupLabs Inc.",
+    email: "vikram@startuplabs.in",
+    phone: "+91 54321 09876",
+    website: "https://startuplabs.in",
+    address: "T-Hub, HITEC City, Hyderabad, Telangana 500081",
+    linkedin: "https://linkedin.com/in/vikramnair",
+    confidence: 0.97,
+    engine_used: "gemini"
+  },
+  {
+    id: "c1a2b3c4-0006-4f3a-a1b2-000000000006",
+    name: "Ananya Das",
+    title: "Business Development Lead",
+    company: "GrowthAxis",
+    email: null,
+    phone: "+91 43210 98765",
+    website: "https://growthaxis.com",
+    address: "Sector 62, Noida, Uttar Pradesh 201301",
+    linkedin: null,
+    confidence: 0.73,
+    engine_used: "tesseract"
+  },
+  {
+    id: "c1a2b3c4-0007-4f3a-a1b2-000000000007",
+    name: "Rohan Kapoor",
+    title: "VP Engineering",
+    company: "DeepStack Technologies",
+    email: "rohan.kapoor@deepstack.dev",
+    phone: "+91 32109 87654",
+    website: "https://deepstack.dev",
+    address: "Powai, Mumbai, Maharashtra 400076",
+    linkedin: "https://linkedin.com/in/rohankapoor",
+    confidence: 0.99,
+    engine_used: "gemini"
+  },
+  {
+    id: "c1a2b3c4-0008-4f3a-a1b2-000000000008",
+    name: "Meera Krishnan",
+    title: "Chief Financial Officer",
+    company: "Horizon Capital",
+    email: "meera.k@horizoncap.in",
+    phone: "+91 21098 76543",
+    website: null,
+    address: "Anna Salai, Chennai, Tamil Nadu 600002",
+    linkedin: "https://linkedin.com/in/meerakrishnan",
+    confidence: 0.94,
+    engine_used: "gemini"
+  }
+];
+```
+
+### Field Rendering Rules
+
+When rendering a contact field that is `null`:
+```jsx
+// Show a dash and grayed-out style — never crash on null
+<span className={value ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-600"}>
+  {value ?? "—"}
+</span>
+```
+
+When rendering `confidence` score:
+```jsx
+// Color-coded badge
+const confidenceColor = confidence >= 0.95 ? 'text-green-700 bg-green-100 dark:bg-green-950 dark:text-green-400'
+  : confidence >= 0.80 ? 'text-yellow-700 bg-yellow-100 dark:bg-yellow-950 dark:text-yellow-400'
+  : 'text-red-700 bg-red-100 dark:bg-red-950 dark:text-red-400';
+
+<span className={`text-xs font-medium px-2 py-0.5 rounded-full ${confidenceColor}`}>
+  {Math.round(confidence * 100)}% match
+</span>
+```
+
+When rendering `engine_used`:
+```jsx
+<span className={`text-xs font-semibold px-2 py-0.5 rounded-full
+  ${engine_used === 'gemini'
+    ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300'
+    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
+  {engine_used === 'gemini' ? '✦ Gemini AI' : 'OCR'}
+</span>
+```
+
+---
+
+## ⚠️ RULE 4 — DARK MODE ARCHITECTURE
+
+### Setup: Tailwind Config
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  darkMode: 'class',   // ← REQUIRED: class-based dark mode (not 'media')
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  theme: { extend: {} },
+  plugins: [],
+}
+```
+
+### useDarkMode Hook
+
+```javascript
+// src/hooks/useDarkMode.js
+import { useState, useEffect } from 'react';
+
+export function useDarkMode() {
+  const [isDark, setIsDark] = useState(() => {
+    // Persist preference in localStorage
+    const stored = localStorage.getItem('intelliscan-dark-mode');
+    if (stored !== null) return stored === 'true';
+    // Fall back to system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDark) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('intelliscan-dark-mode', String(isDark));
+  }, [isDark]);
+
+  const toggle = () => setIsDark(prev => !prev);
+
+  return { isDark, toggle };
+}
+```
+
+### Initialize in App Root
+
+```jsx
+// src/main.jsx
+import { StrictMode, useEffect } from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
+
+// Apply dark class on initial load BEFORE first render (prevents flash)
+const stored = localStorage.getItem('intelliscan-dark-mode');
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+if (stored === 'true' || (stored === null && prefersDark)) {
+  document.documentElement.classList.add('dark');
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <StrictMode><App /></StrictMode>
+);
+```
+
+### Dark Mode Color Pairs — Apply to EVERY Component
+
+For every element, always include both light and dark classes:
+
+| Element | Light | Dark |
+|---|---|---|
+| Page background | `bg-gray-50` | `dark:bg-gray-900` |
+| Card / surface | `bg-white` | `dark:bg-gray-950` |
+| Sidebar | `bg-white` | `dark:bg-gray-950` |
+| Elevated card | `bg-white shadow-sm` | `dark:bg-gray-900 dark:border dark:border-gray-800` |
+| Modal | `bg-white` | `dark:bg-gray-900` |
+| Border | `border-gray-200` | `dark:border-gray-800` |
+| Primary text | `text-gray-900` | `dark:text-white` |
+| Secondary text | `text-gray-600` | `dark:text-gray-300` |
+| Muted text | `text-gray-400` | `dark:text-gray-500` |
+| Input background | `bg-white` | `dark:bg-gray-800` |
+| Input border | `border-gray-300` | `dark:border-gray-600` |
+| Input text | `text-gray-900` | `dark:text-white` |
+| Input placeholder | `placeholder-gray-400` | `dark:placeholder-gray-500` |
+| Table header | `bg-gray-50` | `dark:bg-gray-900` |
+| Table row hover | `hover:bg-gray-50` | `dark:hover:bg-gray-800` |
+| Divider | `divide-gray-200` | `dark:divide-gray-800` |
+| Nav active | `bg-indigo-50 text-indigo-600` | `dark:bg-indigo-950 dark:text-indigo-400` |
+| Badge gray | `bg-gray-100 text-gray-600` | `dark:bg-gray-800 dark:text-gray-300` |
+| Badge indigo | `bg-indigo-100 text-indigo-700` | `dark:bg-indigo-950 dark:text-indigo-300` |
+| Badge green | `bg-green-100 text-green-700` | `dark:bg-green-950 dark:text-green-400` |
+| Badge amber | `bg-amber-100 text-amber-700` | `dark:bg-amber-950 dark:text-amber-400` |
+| Badge red | `bg-red-100 text-red-700` | `dark:bg-red-950 dark:text-red-400` |
+
+### Example Component With Correct Dark Mode
+
+```jsx
+// A stat card with correct light + dark classes
+function StatCard({ label, value, change, icon: Icon }) {
+  return (
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{label}</p>
+        <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-950 rounded-lg flex items-center justify-center">
+          <Icon size={20} className="text-indigo-600 dark:text-indigo-400" />
+        </div>
+      </div>
+      <p className="text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{change}</p>
+    </div>
+  );
+}
+```
+
+---
+
+## FINAL CHECKLIST — Stitch Must Verify Before Output
+
+Before generating any component, confirm:
+
+- [ ] Every icon imported from `lucide-react` only — zero other icon libraries
+- [ ] Every page route wrapped in `<PublicLayout>`, `<DashboardLayout>`, or `<AdminLayout>` — never raw
+- [ ] Sidebar and navbar code exists in ONE place only — the layout files
+- [ ] Every contact object matches the exact mock schema (id, name, title, company, email, phone, website, address, linkedin, confidence, engine_used)
+- [ ] `engine_used` is always `'gemini'` or `'tesseract'` — never any other string
+- [ ] `confidence` is a float 0.00–1.00 — never a percentage integer
+- [ ] `tailwind.config.js` has `darkMode: 'class'`
+- [ ] Every component has BOTH light and dark Tailwind classes on every background, border, and text element
+- [ ] Dark mode toggle is inside the profile dropdown in both `DashboardLayout` and `AdminLayout`
+- [ ] `useDarkMode` hook reads and writes to `localStorage` under key `'intelliscan-dark-mode'`
+- [ ] Initial dark class applied in `main.jsx` before first React render (no flash on reload)
+
+
+
+1. Global State (Mock Backend):
+Do not hardcode the mockContacts array directly inside the page components. You must create a React Context called <ContactProvider> (or use Zustand) that holds the contacts array and provides addContact(), deleteContact(), and updateContact() methods. Wrap the application in this provider so that if I "scan" a card on the Scan page, it actually appears on the Contacts page.
+
+2. Role-Based Routing (Guards):
+In App.jsx, do not leave the /workspace/* and /admin/* routes unprotected. Create a <RoleGuard allowedRoles={['business_admin', 'super_admin']}> component that wraps these routes. If a user without the correct role tries to access them, render a <Navigate to="/sign-in" /> redirect.
+```
+

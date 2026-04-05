@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+<defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/>
+      </marker>
+    </defs>
+<style>
+      .shape { fill: #fff; stroke: #000; stroke-width: 2; }
+      .thin { stroke-width: 1.5; }
+      .fillBlack { fill: #000; stroke: #000; stroke-width: 2; }
+      .text { fill: #000; font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+      .textSmall { font-size: 12px; }
+      .textTitle { font-size: 16px; font-weight: 700; }
+      .dashed { stroke-dasharray: 6 6; }
+    </style>
+<rect x="0" y="0" width="1200" height="760" fill="#fff" />
+<text class="text textTitle" x="600" y="40" text-anchor="middle">Activity Diagram: Authenticate &amp; Restore Session</text>
+<circle class="fillBlack" cx="600" cy="90" r="10" />
+<rect class="shape" x="340" y="120" width="520" height="54" rx="12" ry="12" />
+<text class="text" x="600" y="143" text-anchor="middle"><tspan x="600" dy="0">User opens IntelliScan (web)</tspan></text>
+<line class="shape thin" x1="600" y1="110" x2="600" y2="120" />
+<rect class="shape" x="340" y="202" width="520" height="54" rx="12" ry="12" />
+<text class="text" x="600" y="225" text-anchor="middle"><tspan x="600" dy="0">Check localStorage token + user snapshot</tspan></text>
+<line class="shape thin" x1="600" y1="192" x2="600" y2="202" />
+<rect class="shape" x="330" y="284" width="540" height="54" rx="12" ry="12" />
+<text class="text" x="600" y="307" text-anchor="middle"><tspan x="600" dy="0">Call API: GET /api/auth/me (validate token)</tspan></text>
+<line class="shape thin" x1="600" y1="274" x2="600" y2="284" />
+<line class="shape thin" x1="600" y1="356" x2="600" y2="366" />
+<polygon class="shape" points="600,351 670,396 600,441 530,396" />
+<text class="text textSmall" x="600" y="400" text-anchor="middle">Token
+valid?</text>
+<line class="shape thin" x1="670" y1="396" x2="770" y2="406" marker-end="url(#arrow)" />
+<text class="text textSmall" x="720" y="384" text-anchor="middle">Yes</text>
+<rect class="shape" x="660" y="436" width="440" height="54" rx="12" ry="12" />
+<text class="text" x="880" y="459" text-anchor="middle"><tspan x="880" dy="0">Hydrate Auth Context</tspan><tspan x="880" dy="14">(role, tier, quotas)</tspan></text>
+<line class="shape thin" x1="880" y1="416" x2="880" y2="436" />
+<rect class="shape" x="660" y="518" width="440" height="54" rx="12" ry="12" />
+<text class="text" x="880" y="541" text-anchor="middle"><tspan x="880" dy="0">Route to Dashboard</tspan><tspan x="880" dy="14">(Protected Routes)</tspan></text>
+<line class="shape thin" x1="880" y1="490" x2="880" y2="518" />
+<circle class="shape" cx="880" cy="616" r="14" />
+<circle class="fillBlack" cx="880" cy="616" r="8" />
+<line class="shape thin" x1="880" y1="572" x2="880" y2="602" />
+<line class="shape thin" x1="530" y1="396" x2="430" y2="406" marker-end="url(#arrow)" />
+<text class="text textSmall" x="480" y="384" text-anchor="middle">No</text>
+<rect class="shape" x="100" y="436" width="440" height="54" rx="12" ry="12" />
+<text class="text" x="320" y="459" text-anchor="middle"><tspan x="320" dy="0">Clear token + user</tspan><tspan x="320" dy="14">(localStorage cleanup)</tspan></text>
+<line class="shape thin" x1="320" y1="416" x2="320" y2="436" />
+<rect class="shape" x="100" y="518" width="440" height="54" rx="12" ry="12" />
+<text class="text" x="320" y="541" text-anchor="middle"><tspan x="320" dy="0">Show Sign In page</tspan></text>
+<line class="shape thin" x1="320" y1="490" x2="320" y2="518" />
+<circle class="shape" cx="320" cy="616" r="14" />
+<circle class="fillBlack" cx="320" cy="616" r="8" />
+<line class="shape thin" x1="320" y1="572" x2="320" y2="602" />
+</svg>
