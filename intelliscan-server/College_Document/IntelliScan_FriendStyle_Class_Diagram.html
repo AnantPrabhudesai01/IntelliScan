@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IntelliScan Class Diagram - Reference Style</title>
+<!-- 
+Meticulously recreated visual aesthetic from user-provided image reference.
+Features:
+- Generic top-to-bottom branching hierarchy
+- Light green 'C' icon
+- 2-compartment box layout (omitting method block)
+- Straight associations combined with right-edge Bezier curves
+- Native SVG rendering matching enterprise engineering diagrams
+-->
+<style>
+    body { 
+        font-family: sans-serif; 
+        background: #ffffff; 
+        text-align: center; 
+        padding: 40px;
+    }
+    .diagram-container { 
+        border: 1px solid #ccc; 
+        padding: 40px; 
+        display: inline-block; 
+        background-color: #fff; 
+        margin-top: 20px;
+    }
+    .box { 
+        fill: #fdfdfd; 
+        stroke: #888; 
+        stroke-width: 1.5; 
+    }
+    .divider { 
+        stroke: #888; 
+        stroke-width: 1.5; 
+    }
+    .relation { 
+        stroke: #888; 
+        stroke-width: 1.5; 
+        fill: none; 
+    }
+    .compose { 
+        fill: #555; 
+        stroke: #555; 
+        stroke-width: 1.5; 
+    }
+    text { 
+        font-family: Arial, sans-serif; 
+        pointer-events: none; 
+    }
+    .attr { 
+        fill: #444; 
+        font-size: 13px; 
+    }
+    .title { 
+        fill: #222; 
+        font-size: 14px; 
+        font-weight: normal; 
+        text-anchor: start;
+        dominant-baseline: middle;
+    }
+    .c-icon-circle { 
+        fill: #E5F5E9; 
+        stroke: #54A562; 
+        stroke-width: 1.5; 
+    }
+    .c-icon-text { 
+        fill: #54A562; 
+        font-size: 12px; 
+        font-weight: bold; 
+        text-anchor: middle;
+        dominant-baseline: middle;
+    }
+    .multiplicity { 
+        fill: #666; 
+        font-size: 12px; 
+        font-weight: bold; 
+    }
+</style>
+</head>
+<body>
+
+    <h2 style="border-bottom:2px solid #000; display:inline-block; padding-bottom:5px;">IntelliScan System View (Alt Topology)</h2>
+    <br>
+    <p>Rendered perfectly adhering to the visual constraints provided in the reference image.</p>
+
+    <div class="diagram-container">
+        <svg width="1050" height="1050">
+            
+            <!-- ===================== RELATIONS & LINES ===================== -->
+            
+            <!-- User -> Workspace -->
+            <line x1="500" y1="190" x2="500" y2="250" class="relation" />
+            <text x="510" y="205" class="multiplicity">1</text>
+            <text x="510" y="240" class="multiplicity">0..*</text>
+
+            <!-- Workspace -> EventCampaign -->
+            <polygon points="380,390 375,397 380,404 385,397" class="compose" />
+            <line x1="380" y1="404" x2="180" y2="450" class="relation" />
+            <text x="390" y="415" class="multiplicity">1</text>
+            <text x="200" y="445" class="multiplicity">0..*</text>
+
+            <!-- Workspace -> ContactRecord -->
+            <polygon points="500,390 495,397 500,404 505,397" class="compose" />
+            <line x1="500" y1="404" x2="500" y2="450" class="relation" />
+            <text x="510" y="415" class="multiplicity">1</text>
+            <text x="510" y="440" class="multiplicity">0..*</text>
+
+            <!-- Workspace -> EmailSequence -->
+            <polygon points="620,390 615,397 620,404 625,397" class="compose" />
+            <line x1="620" y1="404" x2="820" y2="450" class="relation" />
+            <text x="630" y="415" class="multiplicity">1</text>
+            <text x="800" y="445" class="multiplicity">0..*</text>
+
+            <!-- EmailSequence -> SequenceTemplate -->
+            <line x1="820" y1="590" x2="820" y2="650" class="relation" />
+            <text x="800" y="610" class="multiplicity">1</text>
+            <text x="830" y="640" class="multiplicity">1</text>
+
+            <!-- SequenceTemplate -> SMTPRelay -->
+            <line x1="820" y1="790" x2="820" y2="850" class="relation" />
+            <text x="800" y="810" class="multiplicity">0..*</text>
+            <text x="830" y="840" class="multiplicity">1</text>
+
+            <!-- Curved Line: EmailSequence -> SMTPRelay -->
+            <path d="M 950,520 Q 1050,720 950,920" class="relation" />
+            <text x="965" y="540" class="multiplicity">1</text>
+            <text x="960" y="910" class="multiplicity">1</text>
+
+            <!-- ===================== CLASSES & BOXES ===================== -->
+
+            <!-- Box 1: User -->
+            <rect x="370" y="50" width="260" height="140" class="box" />
+            <line x1="370" y1="85" x2="630" y2="85" class="divider" />
+            <circle cx="470" cy="67" r="10" class="c-icon-circle" />
+            <text x="470" y="68" class="c-icon-text">C</text>
+            <text x="490" y="68" class="title">User</text>
+            <text x="380" y="105" class="attr">userId : String</text>
+            <text x="380" y="120" class="attr">role : String</text>
+            <text x="380" y="135" class="attr">isEmployee : Boolean</text>
+            <text x="380" y="150" class="attr">accessLevel : String</text>
+            <text x="380" y="165" class="attr">lastLogin : DateTime</text>
+
+            <!-- Box 2: Workspace -->
+            <rect x="370" y="250" width="260" height="140" class="box" />
+            <line x1="370" y1="285" x2="630" y2="285" class="divider" />
+            <circle cx="435" cy="267" r="10" class="c-icon-circle" />
+            <text x="435" y="268" class="c-icon-text">C</text>
+            <text x="455" y="268" class="title">WorkspaceAccount</text>
+            <text x="380" y="305" class="attr">workspaceId : String</text>
+            <text x="380" y="320" class="attr">companyName : String</text>
+            <text x="380" y="335" class="attr">routingRules : String</text>
+            <text x="380" y="350" class="attr">apiQuotaLimit : Int</text>
+            <text x="380" y="365" class="attr">status : String</text>
+
+            <!-- Box 3: EventCampaign -->
+            <rect x="50" y="450" width="260" height="140" class="box" />
+            <line x1="50" y1="485" x2="310" y2="485" class="divider" />
+            <circle cx="120" cy="467" r="10" class="c-icon-circle" />
+            <text x="120" y="468" class="c-icon-text">C</text>
+            <text x="140" y="468" class="title">EventCampaign</text>
+            <text x="60" y="505" class="attr">eventId : String</text>
+            <text x="60" y="520" class="attr">eventName : String</text>
+            <text x="60" y="535" class="attr">targetCapacity : Decimal</text>
+            <text x="60" y="550" class="attr">toleranceRange : String</text>
+            <text x="60" y="565" class="attr">validationCode : String</text>
+
+            <!-- Box 4: ContactRecord -->
+            <rect x="370" y="450" width="260" height="140" class="box" />
+            <line x1="370" y1="485" x2="630" y2="485" class="divider" />
+            <circle cx="445" cy="467" r="10" class="c-icon-circle" />
+            <text x="445" y="468" class="c-icon-text">C</text>
+            <text x="465" y="468" class="title">ContactRecord</text>
+            <text x="380" y="505" class="attr">recordId : String</text>
+            <text x="380" y="520" class="attr">leadType : String</text>
+            <text x="380" y="535" class="attr">classification : String</text>
+            <text x="380" y="550" class="attr">confidenceRange : String</text>
+            <text x="380" y="565" class="attr">pipelineStage : String</text>
+
+            <!-- Box 5: EmailSequence -->
+            <rect x="690" y="450" width="260" height="140" class="box" />
+            <line x1="690" y1="485" x2="950" y2="485" class="divider" />
+            <circle cx="755" cy="467" r="10" class="c-icon-circle" />
+            <text x="755" y="468" class="c-icon-text">C</text>
+            <text x="775" y="468" class="title">EmailSequence</text>
+            <text x="700" y="505" class="attr">sequenceId : String</text>
+            <text x="700" y="520" class="attr">selectionStatus : String</text>
+            <text x="700" y="535" class="attr">validationNotes : String</text>
+
+            <!-- Box 6: SequenceTemplate -->
+            <rect x="690" y="650" width="260" height="140" class="box" />
+            <line x1="690" y1="685" x2="950" y2="685" class="divider" />
+            <circle cx="745" cy="667" r="10" class="c-icon-circle" />
+            <text x="745" y="668" class="c-icon-text">C</text>
+            <text x="765" y="668" class="title">SequenceTemplate</text>
+            <text x="700" y="705" class="attr">templateId : String</text>
+            <text x="700" y="720" class="attr">templateName : String</text>
+            <text x="700" y="735" class="attr">functionalDesc : String</text>
+            <text x="700" y="750" class="attr">deliveryProtocol : String</text>
+            <text x="700" y="765" class="attr">status : String</text>
+
+            <!-- Box 7: SMTPRelay -->
+            <rect x="690" y="850" width="260" height="140" class="box" />
+            <line x1="690" y1="885" x2="950" y2="885" class="divider" />
+            <circle cx="760" cy="867" r="10" class="c-icon-circle" />
+            <text x="760" y="868" class="c-icon-text">C</text>
+            <text x="780" y="868" class="title">SMTPRelay</text>
+            <text x="700" y="905" class="attr">relayId : String</text>
+            <text x="700" y="920" class="attr">capacityLevel : String</text>
+            <text x="700" y="935" class="attr">bandwidthRange : String</text>
+            <text x="700" y="950" class="attr">efficiencyRating : String</text>
+            <text x="700" y="965" class="attr">availabilityStatus : String</text>
+
+        </svg>
+    </div>
+
+</body>
+</html>

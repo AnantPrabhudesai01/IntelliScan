@@ -74,9 +74,8 @@ export default function OnboardingPage() {
         <div className="flex items-center justify-center mb-12 gap-3">
           {[0, 1, 2].map(i => (
             <div key={i} className="flex items-center gap-3">
-              <div className={`h-1.5 w-16 rounded-full transition-all duration-500 ${
-                i <= step ? 'bg-indigo-600' : 'bg-[#242a36]'
-              }`}></div>
+              <div className={`h-1.5 w-16 rounded-full transition-all duration-500 ${i <= step ? 'bg-indigo-600' : 'bg-[#242a36]'
+                }`}></div>
             </div>
           ))}
         </div>
@@ -160,11 +159,10 @@ export default function OnboardingPage() {
                       <button
                         key={crm.id}
                         onClick={() => setFormData(prev => ({ ...prev, crm: crm.id }))}
-                        className={`p-4 rounded-xl border text-left transition-all ${
-                          formData.crm === crm.id
+                        className={`p-4 rounded-xl border text-left transition-all ${formData.crm === crm.id
                             ? 'bg-indigo-600/10 border-indigo-500 ring-2 ring-indigo-500/30'
                             : 'bg-[#1a202c] border-[#464555]/30 hover:border-[#464555]'
-                        }`}
+                          }`}
                       >
                         <Icon size={20} className={formData.crm === crm.id ? 'text-indigo-400 mb-2' : 'text-[#918fa1] mb-2'} />
                         <p className="text-sm font-bold text-white">{crm.name}</p>
@@ -183,11 +181,10 @@ export default function OnboardingPage() {
                     <button
                       key={size.value}
                       onClick={() => setFormData(prev => ({ ...prev, teamSize: size.value }))}
-                      className={`p-3 rounded-xl border text-center transition-all ${
-                        formData.teamSize === size.value
+                      className={`p-3 rounded-xl border text-center transition-all ${formData.teamSize === size.value
                           ? 'bg-indigo-600/10 border-indigo-500 ring-2 ring-indigo-500/30'
                           : 'bg-[#1a202c] border-[#464555]/30 hover:border-[#464555]'
-                      }`}
+                        }`}
                     >
                       <p className="text-lg font-extrabold text-white">{size.label}</p>
                       <p className="text-[10px] text-[#918fa1] mt-0.5">{size.desc}</p>
@@ -208,15 +205,13 @@ export default function OnboardingPage() {
                   <button
                     key={uc.id}
                     onClick={() => toggleUseCase(uc.id)}
-                    className={`w-full flex items-center gap-4 p-5 rounded-xl border text-left transition-all ${
-                      selected
+                    className={`w-full flex items-center gap-4 p-5 rounded-xl border text-left transition-all ${selected
                         ? 'bg-indigo-600/10 border-indigo-500 ring-2 ring-indigo-500/30'
                         : 'bg-[#1a202c] border-[#464555]/30 hover:border-[#464555]'
-                    }`}
+                      }`}
                   >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                      selected ? 'bg-indigo-600/20' : 'bg-[#242a36]'
-                    }`}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${selected ? 'bg-indigo-600/20' : 'bg-[#242a36]'
+                      }`}>
                       {selected ? <Check size={20} className="text-indigo-400" /> : <Icon size={20} className="text-[#918fa1]" />}
                     </div>
                     <div className="flex-1">

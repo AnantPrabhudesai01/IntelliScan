@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useContacts } from '../context/ContactContext';
 import { Upload, Camera, RefreshCw, Lightbulb, Sparkles, Save, Edit3, X, ZoomIn, FileText, Layers, CheckCircle2, Users, Zap } from 'lucide-react';
 import { getStoredToken } from '../utils/auth';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 
 export default function ScanPage() {
   const { addContact } = useContacts();
@@ -11,6 +12,7 @@ export default function ScanPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [scanMode, setScanMode] = useState('single'); // 'single' | 'multi' | 'batch'
   const [multiResults, setMultiResults] = useState(null);
+  const [hoveredCardIdx, setHoveredCardIdx] = useState(null);
   const [savedMap, setSavedMap] = useState({}); // { idx: 'saved' | 'saving' | 'duplicate' | 'error' }
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [batchProgress, setBatchProgress] = useState({ total: 0, done: 0, processing: false });
@@ -19,9 +21,38 @@ export default function ScanPage() {
   const fileInputRef = useRef(null);
   const [switchToGroupBanner, setSwitchToGroupBanner] = useState(false);
   const [quotaData, setQuotaData] = useState(null);
+  const [batchLimit, setBatchLimit] = useState(10);
   const [events, setEvents] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState('');
   const [mutualInfo, setMutualInfo] = useState({ count: 0, company: '' });
+  const [locationData, setLocationData] = useState(null);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [healthData, setHealthData] = useState(null);
+  const [isCheckingHealth, setIsCheckingHealth] = useState(false);
+  const [showHealthModal, setShowHealthModal] = useState(false);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          try {
+            const res = await fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lon + '&format=json');
+            const data = await res.json();
+            setLocationData({
+              latitude: lat,
+              longitude: lon,
+              location_name: data.address?.city || data.address?.town || data.address?.country || 'Unknown Location'
+            });
+          } catch(e) {
+            setLocationData({ latitude: lat, longitude: lon, location_name: 'Locating...' });
+          }
+        },
+        (err) => console.log('Geolocation error', err)
+      );
+    }
+  }, []);
 
   useEffect(() => {
     const token = getStoredToken();
@@ -49,8 +80,21 @@ export default function ScanPage() {
       }
     };
 
+    const fetchAccess = async () => {
+      try {
+        const res = await fetch('/api/access/me', { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) return;
+        const data = await res.json();
+        const limit = Number(data?.limits?.batch_upload_limit || 10);
+        setBatchLimit(Number.isFinite(limit) && limit > 0 ? limit : 10);
+      } catch (err) {
+        console.error('Access fetch failed:', err);
+      }
+    };
+
     fetchQuota();
     fetchEvents();
+    fetchAccess();
 
     const onQuotaUpdate = () => fetchQuota();
     window.addEventListener('quota-update', onQuotaUpdate);
@@ -79,11 +123,16 @@ export default function ScanPage() {
   };
 
   const processBatchImages = async (files) => {
-    const capped = files.slice(0, 20);
+    const effectiveLimit = Math.min(Math.max(Number(batchLimit) || 10, 1), 200);
+    const capped = files.slice(0, effectiveLimit);
+    setErrorMsg('');
+    if (files.length > capped.length) {
+      setErrorMsg(`Batch upload limit: only the first ${effectiveLimit} images will be processed on your current plan.`);
+    }
     setBatchResults([]);
     setBatchSavedMap({});
     setBatchProgress({ total: capped.length, done: 0, processing: true });
-    setErrorMsg('');
+    // Keep any limit warning above; clear scan errors otherwise.
     const token = getStoredToken();
     const pending = capped.map((file, idx) => new Promise((resolve) => {
       const reader = new FileReader();
@@ -113,7 +162,7 @@ export default function ScanPage() {
   const saveBatchCard = async (result, idx) => {
     setBatchSavedMap(prev => ({ ...prev, [idx]: 'saving' }));
     try {
-      await addContact({ ...result.data, image_url: null, scan_date: new Date().toISOString(), engine_used: 'Gemini Batch' });
+      await addContact({ ...result.data, image_url: null, scan_date: new Date().toISOString(), engine_used: 'Gemini Batch', ...(locationData || {}) });
       setBatchSavedMap(prev => ({ ...prev, [idx]: 'saved' }));
       window.dispatchEvent(new Event('quota-update'));
     } catch (err) {
@@ -122,10 +171,11 @@ export default function ScanPage() {
   };
 
   const saveAllBatch = async () => {
-    for (const result of batchResults) {
-      if (result.status === 'ok' && !batchSavedMap[result.idx]) {
-        await saveBatchCard(result, result.idx);
-      }
+    const list = scanMode === 'batch' ? batchResults : (multiResults?.cards || []).map((c, i) => ({ data: c, idx: i, status: 'ok' }));
+    const filtered = list.filter(r => r.status === 'ok' && (scanMode === 'batch' ? batchSavedMap[r.idx] : savedMap[r.idx]) !== 'saved');
+    if (filtered.length === 0) return;
+    for (const item of filtered) {
+      await saveBatchCard(item, item.idx);
     }
   };
 
@@ -165,7 +215,7 @@ export default function ScanPage() {
           setSwitchToGroupBanner(true);
           return;
         }
-        throw new Error(extracted.error || 'Failed to connect to the Gemini OCR Engine.');
+        throw new Error(extracted.error || 'The Extraction Engine encountered a technical issue. Please try a clearer photo.');
       }
       
       if (!extracted.name && !extracted.company && !extracted.email) {
@@ -174,8 +224,9 @@ export default function ScanPage() {
       }
 
       setScannedData(extracted);
+      setIsScanning(false); 
 
-      // Duplicate check
+      // Duplicate check (runs in background)
       try {
         const contactsRes = await fetch('/api/contacts', { headers: { Authorization: `Bearer ${token}` } });
         if (contactsRes.ok) {
@@ -201,9 +252,10 @@ export default function ScanPage() {
       }
 
     } catch (err) {
-      setErrorMsg(err.message || 'Failed to connect to the Gemini OCR Engine.');
-    } finally {
+      setErrorMsg(err.message || 'Connection lost: The IntelliScan backend is not responding.');
       setIsScanning(false);
+    } finally {
+      // Logic handled in try/catch to improve UI responsiveness 
     }
   };
 
@@ -259,7 +311,8 @@ export default function ScanPage() {
         event_id: selectedEventId || null,
         scan_date: new Date().toISOString(),
         image_url: selectedImage,
-        engine_used: multiResults?.engine_used || 'Gemini 2.5 Multi'
+        engine_used: multiResults?.engine_used || 'Gemini 2.5 Multi',
+        ...(locationData || {})
       });
       setSavedMap(prev => ({ ...prev, [idx]: 'saved' }));
       window.dispatchEvent(new Event('quota-update'));
@@ -278,6 +331,25 @@ export default function ScanPage() {
     }
   };
 
+  const checkAiHealth = async () => {
+    setIsCheckingHealth(true);
+    setHealthData(null);
+    try {
+      const token = getStoredToken();
+      const res = await fetch('/api/admin/ai-health', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to reach health endpoint');
+      const data = await res.json();
+      setHealthData(data);
+      setShowHealthModal(true);
+    } catch (err) {
+      alert('Diagnostic Error: ' + err.message);
+    } finally {
+      setIsCheckingHealth(false);
+    }
+  };
+
   const handleSave = async () => {
     if (scannedData) {
       try {
@@ -285,6 +357,7 @@ export default function ScanPage() {
           id: Date.now().toString(),
           image_url: selectedImage,
           event_id: selectedEventId || null,
+          ...(locationData || {}),
           ...scannedData
         });
         setScannedData(null);
@@ -295,7 +368,7 @@ export default function ScanPage() {
         const status = err?.response?.status;
         const apiMsg = err?.response?.data?.error || err?.response?.data?.message;
         if (status === 409) {
-          setErrorMsg('Duplicate Detected: You have already scanned this exact contact card!');
+          setShowDuplicateModal(true);
         } else if (status === 403) {
           setErrorMsg(apiMsg || 'Credit points exhausted. Please upgrade to continue saving scans.');
         } else {
@@ -333,7 +406,7 @@ export default function ScanPage() {
           )}
           
           {/* Mode Toggle */}
-          <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit self-start shadow-inner border border-gray-200 dark:border-gray-700">
+          <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
             <button 
               onClick={() => { setScanMode('single'); setMultiResults(null); setScannedData(null); setSelectedImage(null); }}
               className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${scanMode === 'single' ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
@@ -341,10 +414,9 @@ export default function ScanPage() {
               <FileText size={14} /> Single Card
             </button>
             {(() => {
-              const obj = quotaData || {};
-              // Enforce tier locking. Always fallback to unlocked if state isn't here yet.
-              const isLocked = obj.tier === 'personal' && (obj.group_scans_used >= obj.group_scans_limit);
-              
+              const used = quotaData?.group_scans_used || 0;
+              const limit = quotaData?.group_limits?.group || 1;
+              const isLocked = quotaData?.tier === 'personal' && used >= limit;
               return (
                 <button 
                   onClick={() => { 
@@ -405,7 +477,65 @@ export default function ScanPage() {
             </div>
           )}
 
-          {/* Batch Results */}
+          {/* Group Photo Results */}
+          {multiResults && (
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm animate-fade-in group/multi">
+              <div className="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-indigo-50/30 dark:bg-indigo-900/10">
+                <div>
+                  <h3 className="font-extrabold text-gray-900 dark:text-white flex items-center gap-2 uppercase tracking-tight text-sm">
+                    <Sparkles size={16} className="text-indigo-500" />
+                    Intelligent Group Capture
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5 font-medium">{multiResults.cards.length} distinct cards extracted from one image</p>
+                </div>
+                <div className="flex gap-2">
+                   <button 
+                    onClick={() => { setMultiResults(null); setSavedMap({}); setSelectedImage(null); }}
+                    className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-xl text-xs font-bold hover:bg-red-50 hover:text-red-500 transition-all active:scale-95"
+                   >
+                      Discard All
+                   </button>
+                   <button onClick={saveAllBatch} className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20">
+                      <Save size={14} /> Save All
+                   </button>
+                </div>
+              </div>
+              <div className="divide-y divide-gray-100 dark:divide-gray-800 max-h-[350px] overflow-y-auto custom-scrollbar">
+                {multiResults.cards.map((card, idx) => {
+                  const status = savedMap[idx];
+                  const result = { data: card, idx, status: 'ok' };
+                  return (
+                    <div 
+                      key={idx} 
+                      onMouseEnter={() => setHoveredCardIdx(idx)}
+                      onMouseLeave={() => setHoveredCardIdx(null)}
+                      className={`flex items-center gap-4 px-5 py-4 transition-colors ${hoveredCardIdx === idx ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''}`}
+                    >
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[11px] font-black transition-all ${hoveredCardIdx === idx ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>{idx + 1}</div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-gray-900 dark:text-white text-sm truncate">{card.name || '—'}</p>
+                        <p className="text-xs text-gray-500 truncate">{card.company || ''} {card.title ? `· ${card.title}` : ''}</p>
+                      </div>
+                      <div className="shrink-0">
+                        {status === 'saved' ? (
+                          <span className="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-full flex items-center gap-1"><CheckCircle2 size={12} /> Saved</span>
+                        ) : status === 'duplicate' ? (
+                          <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">Duplicate</span>
+                        ) : (
+                          <button onClick={() => saveBatchCard(result, idx)} disabled={status === 'saving'}
+                            className="text-xs font-bold px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-60 flex items-center gap-1">
+                            {status === 'saving' ? <><RefreshCw size={10} className="animate-spin" /> Saving</> : <><Save size={10} /> Save</>}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Batch Mode Results */}
           {batchResults.length > 0 && !batchProgress.processing && (
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
               <div className="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
@@ -503,13 +633,13 @@ export default function ScanPage() {
               type="file" 
               ref={fileInputRef} 
               className="hidden" 
-              accept="image/png, image/jpeg, border image/webp" 
+              accept="image/png, image/jpeg, image/webp" 
               onChange={handleFileUpload} 
             />
             
             <div 
               onClick={() => !isScanning && fileInputRef.current.click()}
-              className={`relative bg-white dark:bg-gray-900 p-8 rounded-2xl border-2 border-dashed ${isScanning ? 'border-indigo-400 bg-indigo-50 dark:bg-gray-800' : 'border-gray-300 dark:border-gray-700 hover:border-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-800'} flex flex-col items-center justify-center min-h-[300px] text-center transition-all cursor-pointer shadow-sm group-hover:shadow-indigo-500/10`}
+              className={`relative bg-white dark:bg-gray-900 p-8 rounded-2xl border ${isScanning ? 'border-indigo-400 bg-indigo-50 dark:bg-gray-800' : 'border-gray-200/80 dark:border-gray-700 hover:border-indigo-400 hover:bg-gray-50/50 dark:hover:bg-gray-800'} flex flex-col items-center justify-center min-h-[300px] text-center transition-all cursor-pointer shadow-[var(--shadow-vibrant)] group-hover:shadow-xl`}
             >
               <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-500">
                 {isScanning ? (
@@ -537,13 +667,21 @@ export default function ScanPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200/80 dark:border-gray-800 shadow-[var(--shadow-vibrant)]">
             <h4 className="text-xs font-black uppercase tracking-widest text-amber-600 mb-4 flex items-center gap-2">
               <Lightbulb size={16} /> Pro Tip
             </h4>
             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
               Ensure you have set exactly <code>GEMINI_API_KEY</code> in the server <code>.env</code> file. Our integration parses skewed images and complex fonts effortlessly via student tier access.
             </p>
+            <button 
+              onClick={checkAiHealth}
+              disabled={isCheckingHealth}
+              className="mt-4 w-full py-2 px-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all flex items-center justify-center gap-2"
+            >
+              {isCheckingHealth ? <RefreshCw size={12} className="animate-spin" /> : <Zap size={12} />}
+              {isCheckingHealth ? 'Running Diagnostics...' : 'Check System & AI Health'}
+            </button>
           </div>
         </div>
 
@@ -553,14 +691,6 @@ export default function ScanPage() {
           {/* ────── MULTI RESULTS VIEW ────── */}
           {scanMode === 'multi' && multiResults && (
             <div className="space-y-6 animate-in fade-in duration-500">
-               {multiResults.warning && (
-                 <div className="bg-amber-50 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 p-4 rounded-xl border border-amber-300 dark:border-amber-700 font-bold text-[13px] flex items-center gap-3 shadow-sm">
-                   <Lightbulb size={20} className="text-amber-600 dark:text-amber-400 shrink-0" />
-                   <div>
-                     <strong>Offline Mock Mode Active:</strong> {multiResults.warning}
-                   </div>
-                 </div>
-               )}
                <div className="flex items-center justify-between bg-white dark:bg-gray-900 p-5 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
@@ -664,7 +794,7 @@ export default function ScanPage() {
 
           {/* ────── SINGLE EXTRACTION VIEW ────── */}
           {scanMode === 'single' && (
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-6 md:p-8 rounded-2xl shadow-xl relative overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 rounded-2xl shadow-[var(--shadow-vibrant)] relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
               
               <div className="flex justify-between items-start mb-8 relative">
@@ -672,8 +802,15 @@ export default function ScanPage() {
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white font-headline">Extraction Preview</h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Live OCR Processing</p>
                 </div>
-                <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-3 py-1 rounded-full text-[10px] font-bold border border-amber-200 dark:border-amber-800/50 flex items-center gap-1">
-                  <Sparkles size={14} /> ✦ Gemini AI
+                <div className="flex flex-col items-end gap-2">
+                  <div className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border flex items-center gap-2 shadow-sm ${
+                    scannedData?.engine_used?.includes('Gemini') || scannedData?.engine_used?.includes('ChatGPT')
+                      ? 'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/40 dark:text-indigo-400 dark:border-indigo-800/40'
+                      : 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-400 dark:border-emerald-800/40'
+                  }`}>
+                    <Sparkles size={12} className={scannedData?.engine_used?.includes('Gemini') ? 'animate-pulse' : ''} />
+                    {scannedData?.engine_used?.includes('Gemini') || scannedData?.engine_used?.includes('ChatGPT') ? '✦ AI Enabled' : '✦ Local Smart Mode'}
+                  </div>
                 </div>
               </div>
 
@@ -769,21 +906,146 @@ export default function ScanPage() {
 
           {/* Scanned Image Preview */}
           {(selectedImage || scannedData) && (
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-2 relative group overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in">
-              <img 
-                className={`w-full max-h-[300px] object-contain rounded-xl transition-all duration-700 ${scannedData || multiResults ? 'grayscale-0 opacity-100' : 'grayscale-[0.5] opacity-60'}`} 
-                src={selectedImage} 
-                alt="Scan preview" 
-              />
-              <div className="absolute bottom-4 left-4 flex justify-between items-center">
-                <span className="bg-gray-900/80 backdrop-blur px-2 py-1 rounded text-[9px] font-bold text-white uppercase tracking-widest flex items-center gap-1">
-                  <FileText size={10} /> OCR Source
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-2 relative group overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in aspect-video">
+              <div className="relative w-full h-full overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-950">
+                <img 
+                  className={`w-full h-full object-contain transition-all duration-700 ${scannedData || multiResults ? 'grayscale-0 opacity-100' : 'grayscale-[0.5] opacity-60'}`} 
+                  src={selectedImage} 
+                  alt="Scan preview" 
+                />
+                
+                {/* Visual Mapper Overlays */}
+                {multiResults && multiResults.cards && (
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                    {multiResults.cards.map((card, idx) => {
+                      if (!card.box_2d || !Array.isArray(card.box_2d)) return null;
+                      const [ymin, xmin, ymax, xmax] = card.box_2d;
+                      const isHovered = hoveredCardIdx === idx;
+                      const isSaved = savedMap[idx] === 'saved';
+                      
+                      return (
+                        <g key={idx}>
+                          <rect
+                            x={xmin}
+                            y={ymin}
+                            width={xmax - xmin}
+                            height={ymax - ymin}
+                            fill={isHovered ? 'rgba(79, 70, 229, 0.15)' : 'transparent'}
+                            stroke={isHovered ? '#4f46e5' : isSaved ? '#10b981' : 'rgba(79, 70, 229, 0.3)'}
+                            strokeWidth={isHovered ? '4' : '2'}
+                            strokeDasharray={isSaved ? '' : '10,5'}
+                            className="transition-all duration-200"
+                          />
+                          {isHovered && (
+                             <text
+                               x={xmin}
+                               y={ymin - 10}
+                               fill="#4f46e5"
+                               className="text-[24px] font-black"
+                             >
+                               {card.name || `#${idx+1}`}
+                             </text>
+                          )}
+                        </g>
+                      );
+                    })}
+                  </svg>
+                )}
+              </div>
+              
+              <div className="absolute bottom-4 left-4 flex justify-between items-center z-10">
+                <span className="bg-gray-900/80 backdrop-blur px-2 py-1 rounded text-[9px] font-bold text-white uppercase tracking-widest flex items-center gap-1 shadow-lg">
+                  <FileText size={10} /> Visual Mapper Mode
                 </span>
               </div>
             </div>
           )}
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={showDuplicateModal}
+        type="warning"
+        title="Duplicate Contact Detected"
+        message="This contact (or their email) already exists in your Shared Rolodex. To prevent data fragmentation, we've blocked this save automatically. You can check your existing contacts to find this record."
+        confirmText="Understood"
+        onConfirm={() => setShowDuplicateModal(false)}
+        onCancel={() => setShowDuplicateModal(false)}
+      />
+
+      {/* AI Health Modal */}
+      {showHealthModal && healthData && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-[#161c28] w-full max-w-lg rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-2xl relative">
+            <button onClick={() => setShowHealthModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X size={20} /></button>
+            
+            <div className="mb-6">
+              <h3 className="text-xl font-bold font-headline dark:text-white flex items-center gap-2">
+                <Zap className="text-indigo-500" /> AI System Diagnostics
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">Real-time connectivity results for your configured engines.</p>
+            </div>
+
+            <div className="space-y-4">
+              {['gemini', 'openai'].map(engine => {
+                const status = healthData[engine];
+                const isHealthy = status?.status === 'healthy';
+                return (
+                  <div key={engine} className={`p-4 rounded-xl border ${isHealthy ? 'bg-emerald-50/30 border-emerald-200 dark:border-emerald-800/50' : 'bg-red-50/30 border-red-200 dark:border-red-800/50'}`}>
+                    <div className="flex justify-between items-center mb-2">
+                      <h4 className="font-black uppercase text-[11px] tracking-widest text-gray-500">{engine === 'gemini' ? 'Google Gemini AI' : 'OpenAI ChatGPT'}</h4>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${isHealthy ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                        {status?.status || 'Unknown'}
+                      </span>
+                    </div>
+                    {isHealthy ? (
+                      <p className="text-xs text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
+                        <CheckCircle2 size={14} /> Ready for high-fidelity extraction (Model: {status.modelUsed})
+                      </p>
+                    ) : (
+                      <div className="space-y-3">
+                        <p className="text-xs text-red-600 dark:text-red-400 font-bold">{status?.error || 'Unknown Error'}</p>
+                        
+                        {/* FIX GUIDELINES */}
+                        <div className="p-3 bg-white/50 dark:bg-black/20 rounded-lg border border-red-100 dark:border-red-900/30">
+                          <p className="text-[10px] font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">How to Fix:</p>
+                          {status?.code === 429 ? (
+                            <a href="https://platform.openai.com/account/billing" target="_blank" rel="noreferrer" className="text-[10px] text-indigo-600 dark:text-indigo-400 flex items-center gap-1 hover:underline">
+                              <Layers size={10} /> Add Credits to OpenAI Dashboard →
+                            </a>
+                          ) : status?.code === 404 ? (
+                            <a href="https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com" target="_blank" rel="noreferrer" className="text-[10px] text-indigo-600 dark:text-indigo-400 flex items-center gap-1 hover:underline">
+                              <Layers size={10} /> Enable Generative AI API in Google Console →
+                            </a>
+                          ) : (
+                            <p className="text-[10px] text-gray-500 italic">Verify your .env file has the correct GEMINI_API_KEY/OPENAI_API_KEY with no extra spaces.</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              <div className="p-4 rounded-xl border bg-indigo-50/30 border-indigo-200 dark:border-indigo-800/50">
+                <div className="flex justify-between items-center mb-2">
+                  <h4 className="font-black uppercase text-[11px] tracking-widest text-indigo-500">IntelliScan Local Engine</h4>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-indigo-100 text-indigo-600">STABLE</span>
+                </div>
+                <p className="text-xs text-indigo-700 dark:text-indigo-400 flex items-center gap-2">
+                  <CheckCircle2 size={14} /> Ready as high-accuracy fallback (Tesseract + Heuristics)
+                </p>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => setShowHealthModal(false)}
+              className="mt-8 w-full py-4 bg-gray-900 dark:bg-white dark:text-gray-900 text-white font-black rounded-xl hover:opacity-90 transition-opacity"
+            >
+              CLOSE DIAGNOSTICS
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

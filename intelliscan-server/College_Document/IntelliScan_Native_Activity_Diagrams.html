@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IntelliScan Activity Diagrams</title>
+<!-- 
+100% Native HTML and SVG.
+Zero colors used.
+Zero Markdown or Mermaid code used.
+Matches exactly the classic UML style from the reference image.
+-->
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #ffffff;
+        color: #000000;
+        text-align: center;
+        padding: 40px;
+    }
+    h2 {
+        border-bottom: 1px solid #000;
+        display: inline-block;
+        padding-bottom: 5px;
+        margin-bottom: 20px;
+    }
+    .diagram-container {
+        border: 1px solid #000;
+        padding: 30px;
+        display: inline-block;
+        margin-bottom: 70px;
+        background-color: #fff;
+    }
+    svg {
+        display: block;
+        margin: 0 auto;
+    }
+    rect {
+        fill: none;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    polygon {
+        fill: none;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    circle {
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    line, polyline, path {
+        fill: none;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    text {
+        fill: #000;
+        font-size: 12px;
+        pointer-events: none;
+        text-anchor: middle;
+        dominant-baseline: middle;
+    }
+    .decision-text {
+        font-size: 11px;
+    }
+</style>
+</head>
+<body>
+
+    <h1>IntelliScan Activity Flow Diagrams</h1>
+    <p style="margin-bottom: 50px;">Rendered exactly matching reference guidelines. No colors, no third-party code.</p>
+
+    <!-- Global Arrow Definition -->
+    <svg width="0" height="0" style="display:block;">
+        <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse">
+                <polygon points="0 1, 10 5, 0 9" fill="#000" />
+            </marker>
+        </defs>
+    </svg>
+
+
+    <!-- ========================================================
+         DIAGRAM 1: Core Scanning & CRM Workflow
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>IntelliScan App - Capture &amp; Pipeline Data Flow</h2><br>
+        <svg width="800" height="960">
+            <!-- Start Node -->
+            <circle cx="400" cy="40" r="10" fill="#000" />
+            
+            <line x1="400" y1="50" x2="400" y2="80" marker-end="url(#arrow)" />
+
+            <!-- Action: Dashboard Screen -->
+            <rect x="330" y="80" width="140" height="40" rx="10" ry="10" />
+            <text x="400" y="100">Dashboard Screen</text>
+
+            <line x1="400" y1="120" x2="400" y2="150" marker-end="url(#arrow)" />
+
+            <!-- Decision: Select Feature -->
+            <polygon points="400,150 460,170 400,190 340,170" />
+            <text x="310" y="150" class="decision-text">Select Feature?</text>
+
+            <!-- Path: Camera -->
+            <polyline points="340,170 250,170 250,210" marker-end="url(#arrow)" />
+            <text x="295" y="160">Scan Card</text>
+            <rect x="190" y="210" width="120" height="40" rx="10" ry="10" />
+            <text x="250" y="230">Use Camera UI</text>
+
+            <!-- Path: Upload -->
+            <line x1="400" y1="190" x2="400" y2="210" marker-end="url(#arrow)" />
+            <text x="425" y="200">Upload</text>
+            <rect x="340" y="210" width="120" height="40" rx="10" ry="10" />
+            <text x="400" y="230">Pick Image File</text>
+
+            <!-- Path: Manual Typing -->
+            <polyline points="460,170 550,170 550,210" marker-end="url(#arrow)" />
+            <text x="505" y="160">Type Manually</text>
+            <rect x="490" y="210" width="120" height="40" rx="10" ry="10" />
+            <text x="550" y="230">Enter Contact Data</text>
+
+            <!-- Merge Bar -->
+            <line x1="250" y1="250" x2="250" y2="280" marker-end="url(#arrow)" />
+            <line x1="400" y1="250" x2="400" y2="280" marker-end="url(#arrow)" />
+            <line x1="550" y1="250" x2="550" y2="280" marker-end="url(#arrow)" />
+            <line x1="200" y1="280" x2="600" y2="280" stroke-width="2" />
+
+            <line x1="400" y1="280" x2="400" y2="310" marker-end="url(#arrow)" />
+
+            <!-- Action: Gemini AI -->
+            <rect x="320" y="310" width="160" height="40" rx="10" ry="10" />
+            <text x="400" y="330">Extract Data (Gemini AI)</text>
+
+            <line x1="400" y1="350" x2="400" y2="390" marker-end="url(#arrow)" />
+
+            <!-- Decision: Data Accurate? -->
+            <polygon points="400,390 460,410 400,430 340,410" />
+            <text x="320" y="390" class="decision-text">Is Data Accurate?</text>
+
+            <!-- Path No -->
+            <polyline points="460,410 550,410 550,440" marker-end="url(#arrow)" />
+            <text x="505" y="400">No</text>
+            <rect x="490" y="440" width="120" height="40" rx="10" ry="10" />
+            <text x="550" y="460">Manual Correct</text>
+            <!-- Loop back -->
+            <polyline points="550,480 550,500 400,500" />
+
+            <!-- Path Yes -->
+            <line x1="400" y1="430" x2="400" y2="520" marker-end="url(#arrow)" />
+            <text x="415" y="450">Yes</text>
+
+            <!-- Action: Deduplication -->
+            <rect x="320" y="520" width="160" height="40" rx="10" ry="10" />
+            <text x="400" y="540">Check Shared Rolodex</text>
+
+            <line x1="400" y1="560" x2="400" y2="600" marker-end="url(#arrow)" />
+
+            <!-- Decision: Is Duplicate? -->
+            <polygon points="400,600 460,620 400,640 340,620" />
+            <text x="320" y="600" class="decision-text">Found Duplicate?</text>
+
+            <!-- Path Yes (Merge) -->
+            <polyline points="460,620 550,620 550,650" marker-end="url(#arrow)" />
+            <text x="505" y="610">Yes</text>
+            <rect x="490" y="650" width="120" height="40" rx="10" ry="10" />
+            <text x="550" y="670">Merge Contact</text>
+
+            <!-- Path No (Pipeline) -->
+            <line x1="400" y1="640" x2="400" y2="650" marker-end="url(#arrow)" />
+            <text x="415" y="645">No</text>
+            <rect x="330" y="650" width="140" height="40" rx="10" ry="10" />
+            <text x="400" y="670">Save to Deal Pipeline</text>
+
+            <!-- Bottom Merge Line (Simulating the App flow menu style) -->
+            <line x1="400" y1="690" x2="400" y2="720" marker-end="url(#arrow)" />
+            <line x1="550" y1="690" x2="550" y2="720" marker-end="url(#arrow)" />
+            <line x1="300" y1="720" x2="600" y2="720" stroke-width="1.5" />
+
+            <line x1="400" y1="720" x2="400" y2="750" marker-end="url(#arrow)" />
+
+            <!-- Return sequence -->
+            <rect x="340" y="750" width="120" height="40" rx="10" ry="10" />
+            <text x="400" y="770">Access Menu</text>
+
+            <line x1="400" y1="790" x2="400" y2="820" marker-end="url(#arrow)" />
+
+            <rect x="350" y="820" width="100" height="40" rx="10" ry="10" />
+            <text x="400" y="840">Logout (Return)</text>
+
+            <!-- End point -->
+            <line x1="400" y1="860" x2="400" y2="890" marker-end="url(#arrow)" />
+            <circle cx="400" cy="900" r="10" fill="none" />
+            <circle cx="400" cy="900" r="6" fill="#000" stroke="none" />
+        </svg>
+    </div>
+
+
+
+    <!-- ========================================================
+         DIAGRAM 2: Email Campaign Sequences Workflow
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>IntelliScan Email &amp; Sequence Automations Flow</h2><br>
+        <svg width="800" height="880">
+            <!-- Start Node -->
+            <circle cx="400" cy="40" r="10" fill="#000" />
+            
+            <line x1="400" y1="50" x2="400" y2="80" marker-end="url(#arrow)" />
+
+            <!-- Action -->
+            <rect x="320" y="80" width="160" height="40" rx="10" ry="10" />
+            <text x="400" y="100">Select Target CRM Leads</text>
+
+            <line x1="400" y1="120" x2="400" y2="150" marker-end="url(#arrow)" />
+
+            <!-- Decision -->
+            <polygon points="400,150 460,170 400,190 340,170" />
+            <text x="300" y="150" class="decision-text">Sequence Context?</text>
+
+            <!-- Path 1 (Left) -->
+            <polyline points="340,170 250,170 250,210" marker-end="url(#arrow)" />
+            <text x="295" y="160">Follow-Up</text>
+            <rect x="180" y="210" width="140" height="40" rx="10" ry="10" />
+            <text x="250" y="230">Use Sales Follow-up</text>
+
+            <!-- Path 2 (Middle) -->
+            <line x1="400" y1="190" x2="400" y2="210" marker-end="url(#arrow)" />
+            <text x="430" y="200">Event</text>
+            <rect x="330" y="210" width="140" height="40" rx="10" ry="10" />
+            <text x="400" y="230">Use Trade Show Setup</text>
+
+            <!-- Path 3 (Right) -->
+            <polyline points="460,170 550,170 550,210" marker-end="url(#arrow)" />
+            <text x="505" y="160">Custom</text>
+            <rect x="480" y="210" width="140" height="40" rx="10" ry="10" />
+            <text x="550" y="230">Use Custom Prompt</text>
+
+            <!-- Merge Bar -->
+            <line x1="250" y1="250" x2="250" y2="280" marker-end="url(#arrow)" />
+            <line x1="400" y1="250" x2="400" y2="280" marker-end="url(#arrow)" />
+            <line x1="550" y1="250" x2="550" y2="280" marker-end="url(#arrow)" />
+            <line x1="200" y1="280" x2="600" y2="280" stroke-width="2" />
+
+            <line x1="400" y1="280" x2="400" y2="310" marker-end="url(#arrow)" />
+
+            <!-- Action: Build Draft -->
+            <rect x="290" y="310" width="220" height="40" rx="10" ry="10" />
+            <text x="400" y="330">AI Composer Generates Email Draft</text>
+
+            <line x1="400" y1="350" x2="400" y2="390" marker-end="url(#arrow)" />
+
+            <!-- Decision: Validate -->
+            <polygon points="400,390 460,410 400,430 340,410" />
+            <text x="320" y="390" class="decision-text">Draft Approved?</text>
+
+            <!-- Path No -->
+            <polyline points="460,410 550,410 550,440" marker-end="url(#arrow)" />
+            <text x="505" y="400">No</text>
+            <rect x="490" y="440" width="120" height="40" rx="10" ry="10" />
+            <text x="550" y="460">Edit Manually</text>
+            <!-- Loop back sideways to avoid the path -->
+            <polyline points="610,460 650,460 650,330 510,330" marker-end="url(#arrow)" />
+
+            <!-- Path Yes -->
+            <line x1="400" y1="430" x2="400" y2="520" marker-end="url(#arrow)" />
+            <text x="415" y="450">Yes</text>
+
+            <!-- Action: Database -->
+            <rect x="310" y="520" width="180" height="40" rx="10" ry="10" />
+            <text x="400" y="540">Queue Email in Database</text>
+
+            <line x1="400" y1="560" x2="400" y2="600" marker-end="url(#arrow)" />
+
+            <!-- Action: Engine -->
+            <rect x="310" y="600" width="180" height="40" rx="10" ry="10" />
+            <text x="400" y="620">CRON Engine Dispatch Loop</text>
+
+            <line x1="400" y1="640" x2="400" y2="680" marker-end="url(#arrow)" />
+
+            <!-- Action: SMTP -->
+            <rect x="320" y="680" width="160" height="40" rx="10" ry="10" />
+            <text x="400" y="700">SMTP Provider Transmits</text>
+
+            <!-- End -->
+            <line x1="400" y1="720" x2="400" y2="760" marker-end="url(#arrow)" />
+            <circle cx="400" cy="770" r="10" fill="none" />
+            <circle cx="400" cy="770" r="6" fill="#000" stroke="none" />
+        </svg>
+    </div>
+
+</body>
+</html>

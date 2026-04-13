@@ -1,7 +1,8 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../api/client';
 import { useRole } from '../context/RoleContext';
+import { safeReadStoredUser } from '../utils/auth';
 
 export default function ActivityTracker() {
   const location = useLocation();
@@ -15,18 +16,12 @@ export default function ActivityTracker() {
 
   // Helper to send log un-authenticated (allows tracking Anonymous)
   const sendLog = useCallback((action, path, duration_ms, detail = '') => {
-    let user = null;
-    try {
-      const userStr = localStorage.getItem('user');
-      user = userStr ? JSON.parse(userStr) : null;
-    } catch (e) {
-      console.error('Tracker data parse fail:', e);
-    }
-    const userEmail = user ? user.email : null;
+    const user = safeReadStoredUser();
+    const userEmail = user?.email || null;
     
     const combinedAction = action + (detail ? ` -> ${detail}` : '');
     
-    axios.post('/api/analytics/log', {
+    apiClient.post('/analytics/log', {
       user_role: role || 'anonymous',
       user_email: userEmail,
       action: combinedAction,

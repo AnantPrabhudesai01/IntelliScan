@@ -1,40 +1,62 @@
-import { Zap, ArrowRight, PlayCircle, ScanLine, Share2, Sparkles, Shield, Lock, CheckCircle, Star, Globe } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { getStoredToken, resolveHomeRoute, safeReadStoredUser } from '../utils/auth';
+import { Zap, ArrowRight, PlayCircle, ScanLine, Share2, Sparkles, Shield, Lock, CheckCircle, Star, AlertCircle, X } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { getStoredToken, resolveHomeRoute, safeReadStoredUser, tryDecodeJwtPayload } from '../utils/auth';
+import PublicLayout from '../layouts/PublicLayout';
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
+    // Check for Auth0 error params in URL
+    const params = new URLSearchParams(location.search);
+    const error = params.get('error');
+    const errorDescription = params.get('error_description');
+    
+    if (error) {
+      setAuthError({
+        title: error.replace(/_/g, ' '),
+        message: errorDescription || 'An unexpected error occurred during authentication.'
+      });
+      // Clean up the URL without refreshing
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     const token = getStoredToken();
     const user = safeReadStoredUser();
-    if (token && user?.role) {
-      navigate(resolveHomeRoute(user), { replace: true });
+    if (token && !error) {
+      const decoded = tryDecodeJwtPayload(token);
+      const role = user?.role || decoded?.role || 'user';
+      const tier = user?.tier || decoded?.tier || 'personal';
+      navigate(resolveHomeRoute({ role, tier }), { replace: true });
     }
-  }, [navigate]);
+  }, [navigate, location]);
 
   return (
-    <div className="bg-[#0e131f] text-[#dde2f3] min-h-screen selection:bg-indigo-600 selection:text-white">
-      {/* Top Navigation Shell */}
-      <header className="bg-[#0e131f] sticky top-0 z-50">
-        <nav className="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-black text-white font-headline">IntelliScan</span>
-          </div>
-          <div className="hidden md:flex items-center gap-8">
-            <a className="text-[#c7c4d8] hover:bg-[#1a202c] transition-colors font-body font-medium px-3 py-2 rounded-xl" href="#features">Features</a>
-            <a className="text-[#c7c4d8] hover:bg-[#1a202c] transition-colors font-body font-medium px-3 py-2 rounded-xl" href="#pricing">Pricing</a>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link to="/sign-in" className="text-[#c7c4d8] font-body font-medium hover:text-white transition-colors">Sign In</Link>
-            <Link to="/sign-up" className="bg-indigo-600 text-[#dad7ff] px-5 py-2.5 rounded-xl font-bold font-body active:scale-95 duration-150 transition-all shadow-lg shadow-indigo-600/20">Sign Up</Link>
-          </div>
-        </nav>
-      </header>
-      
-      <main>
-        {/* Hero Section */}
+    <PublicLayout>
+      <div className="selection:bg-indigo-600 selection:text-white">
+        <main>
+          {/* Auth Error Notification */}
+          {authError && (
+            <div className="max-w-7xl mx-auto px-6 pt-8 animate-in fade-in slide-in-from-top-4 duration-500">
+              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-start gap-4 backdrop-blur-md">
+                <div className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center text-red-500 shrink-0">
+                  <AlertCircle size={22} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-red-400 font-bold capitalize mb-0.5">{authError.title}</h4>
+                  <p className="text-red-300/80 text-sm whitespace-pre-wrap">{authError.message}</p>
+                </div>
+                <button onClick={() => setAuthError(null)} className="text-red-400/50 hover:text-red-400 transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Hero Section */}
         <section className="relative pt-20 pb-32 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-indigo-600/5 to-transparent pointer-events-none"></div>
           <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -195,22 +217,23 @@ export default function LandingPage() {
                 <div>
                   <span className="text-[#c7c4d8] font-bold text-sm uppercase tracking-widest mb-4 block">Personal</span>
                   <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-4xl font-black text-white">$0</span>
+                    <span className="text-2xl font-bold text-[#c7c4d8]">₹</span>
+                    <span className="text-4xl font-black text-white">0</span>
                     <span className="text-[#c7c4d8]">/mo</span>
                   </div>
                   <ul className="space-y-4 mb-8">
                     <li className="flex items-center gap-3 text-sm text-[#c7c4d8]">
-                      <CheckCircle size={16} className="text-[#c3c0ff]" /> 50 Scans per month
+                      <CheckCircle size={16} className="text-[#c3c0ff]" /> 10 scans per month
                     </li>
                     <li className="flex items-center gap-3 text-sm text-[#c7c4d8]">
-                      <CheckCircle size={16} className="text-[#c3c0ff]" /> Standard AI Engine
+                      <CheckCircle size={16} className="text-[#c3c0ff]" /> Basic AI extraction
                     </li>
                     <li className="flex items-center gap-3 text-sm text-[#c7c4d8]">
-                      <CheckCircle size={16} className="text-[#c3c0ff]" /> vCard Export
+                      <CheckCircle size={16} className="text-[#c3c0ff]" /> CSV and vCard export
                     </li>
                   </ul>
                 </div>
-                <button className="w-full py-3 rounded-xl border border-[#464555]/30 text-white font-bold hover:bg-[#242a36] transition-all font-headline">Start Free</button>
+                <Link to="/sign-up" className="w-full py-3 rounded-xl border border-[#464555]/30 text-white font-bold hover:bg-[#242a36] transition-all font-headline text-center">Start Free</Link>
               </div>
               
               {/* Pro Plan */}
@@ -221,25 +244,26 @@ export default function LandingPage() {
                 <div>
                   <span className="text-gray-300 font-bold text-sm uppercase tracking-widest mb-4 block">Pro Team</span>
                   <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-4xl font-black text-white">$29</span>
+                    <span className="text-2xl font-bold text-gray-300">₹</span>
+                    <span className="text-4xl font-black text-white">999</span>
                     <span className="text-gray-300">/mo</span>
                   </div>
                   <ul className="space-y-4 mb-8">
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle size={16} className="text-indigo-400" /> Unlimited Scans
+                      <CheckCircle size={16} className="text-indigo-400" /> 100 scans per month
                     </li>
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle size={16} className="text-indigo-400" /> Premium Gemini OCR
+                      <CheckCircle size={16} className="text-indigo-400" /> AI Coach and Sequences
                     </li>
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle size={16} className="text-indigo-400" /> CRM Direct Integration
+                      <CheckCircle size={16} className="text-indigo-400" /> Digital card and batch upload
                     </li>
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle size={16} className="text-indigo-400" /> Team Shared Contacts
+                      <CheckCircle size={16} className="text-indigo-400" /> Priority support
                     </li>
                   </ul>
                 </div>
-                <button className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold hover:brightness-110 transition-all font-headline">Go Pro</button>
+                <Link to="/sign-up" className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold hover:brightness-110 transition-all font-headline text-center">Go Pro</Link>
               </div>
               
               {/* Enterprise Plan */}
@@ -247,7 +271,9 @@ export default function LandingPage() {
                 <div>
                   <span className="text-[#c7c4d8] font-bold text-sm uppercase tracking-widest mb-4 block">Enterprise</span>
                   <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-4xl font-black text-white">Custom</span>
+                    <span className="text-2xl font-bold text-[#c7c4d8]">₹</span>
+                    <span className="text-4xl font-black text-white">4,999</span>
+                    <span className="text-[#c7c4d8]">/mo</span>
                   </div>
                   <ul className="space-y-4 mb-8">
                     <li className="flex items-center gap-3 text-sm text-[#c7c4d8]">
@@ -284,27 +310,8 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-      </main>
-
-      {/* Footer Shell */}
-      <footer className="bg-[#0e131f] border-t border-[#c7c4d8]/10 mt-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto">
-          <div className="mb-8 md:mb-0 text-center md:text-left">
-            <span className="text-sm font-bold text-white mb-2 block font-headline">IntelliScan</span>
-            <p className="font-['Inter'] text-xs text-[#c7c4d8]">© 2024 IntelliScan AI. Precision OCR.</p>
-          </div>
-          <div className="flex gap-8">
-            <a className="font-['Inter'] text-xs text-[#c7c4d8] hover:text-white transition-colors" href="#">Privacy</a>
-            <a className="font-['Inter'] text-xs text-[#c7c4d8] hover:text-white transition-colors" href="#">Terms</a>
-            <a className="font-['Inter'] text-xs text-[#c7c4d8] hover:text-white transition-colors" href="#">API Docs</a>
-            <a className="font-['Inter'] text-xs text-[#c7c4d8] hover:text-white transition-colors" href="#">Contact</a>
-          </div>
-          <div className="mt-8 md:mt-0 flex gap-4">
-            <Globe className="text-[#c7c4d8] cursor-pointer hover:text-white transition-colors" size={20} />
-            <Share2 className="text-[#c7c4d8] cursor-pointer hover:text-white transition-colors" size={20} />
-          </div>
-        </div>
-      </footer>
-    </div>
+        </main>
+      </div>
+    </PublicLayout>
   );
 }

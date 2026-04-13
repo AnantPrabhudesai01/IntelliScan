@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IntelliScan UML Class Diagram</title>
+<!-- 
+100% Native HTML and SVG Class Diagram.
+Zero colors used.
+Matches strict classic UML standards for Composition, Aggregation, and Associations.
+No external libraries (Mermaid/DrawIO) utilized.
+-->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        color: #000000;
+        text-align: center;
+        padding: 40px;
+    }
+    h2 {
+        border-bottom: 2px solid #000;
+        display: inline-block;
+        padding-bottom: 5px;
+        margin-bottom: 30px;
+    }
+    .diagram-container {
+        border: 2px solid #000;
+        padding: 40px;
+        display: inline-block;
+        margin-bottom: 40px;
+        background-color: #fff;
+    }
+    svg {
+        display: block;
+        margin: 0 auto;
+    }
+    .box {
+        fill: #fff;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    .divider {
+        stroke: #000;
+        stroke-width: 1.5;
+        fill: none;
+    }
+    .relation {
+        stroke: #000;
+        stroke-width: 1.5;
+        fill: none;
+    }
+    .aggregate {
+        fill: #fff;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    .compose {
+        fill: #000;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    text {
+        fill: #000;
+        font-size: 13px;
+        font-family: monospace;
+        pointer-events: none;
+        dominant-baseline: middle;
+    }
+    .class-title {
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+        text-anchor: middle;
+        font-size: 16px;
+    }
+    .multiplicity {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+    <h1>IntelliScan Database Object Relational Architecture</h1>
+    <p style="margin-bottom: 50px;">Rigid UML Class Diagram showing DB Objects, Multiplicities, attributes, and available methods.</p>
+
+    <!-- ========================================================
+         MAIN DIAGRAM
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>Global Class Architecture Graph</h2><br>
+        <svg width="1150" height="1050">
+            <!-- ======================= RELATIONSHIP LINES ======================= -->
+            
+            <!-- Workspace <>- User (Aggregation 1 to 0..*) -->
+            <polygon points="450,160 443,155 436,160 443,165" class="aggregate" />
+            <line x1="436" y1="160" x2="290" y2="160" class="relation" />
+            <text x="440" y="148" class="multiplicity">1</text>
+            <text x="305" y="148" class="multiplicity">0..*</text>
+
+            <!-- Workspace <*>-- Contact (Composition 1 to 0..*) -->
+            <polygon points="570,300 575,307 570,314 565,307" class="compose" />
+            <line x1="570" y1="314" x2="570" y2="400" class="relation" />
+            <text x="580" y="325" class="multiplicity">1</text>
+            <text x="580" y="385" class="multiplicity">0..*</text>
+
+            <!-- Workspace <*>-- Event (Composition 1 to 0..*) -->
+            <polygon points="690,160 697,155 704,160 697,165" class="compose" />
+            <line x1="704" y1="160" x2="850" y2="160" class="relation" />
+            <text x="715" y="148" class="multiplicity">1</text>
+            <text x="835" y="148" class="multiplicity">0..*</text>
+
+            <!-- User -- Contact (Association 1 to 0..*) -->
+            <polyline points="170,300 170,450 450,450" class="relation" />
+            <text x="180" y="315" class="multiplicity">1</text>
+            <text x="430" y="440" class="multiplicity">0..*</text>
+
+            <!-- User -- CalendarBooking (Association 1 to 0..*) -->
+            <polyline points="90,300 90,875 450,875" class="relation" />
+            <text x="105" y="315" class="multiplicity">1</text>
+            <text x="430" y="865" class="multiplicity">0..*</text>
+
+            <!-- Contact -- ScannedImage (Association 1 to 0..1) -->
+            <line x1="450" y1="510" x2="290" y2="510" class="relation" />
+            <text x="440" y="500" class="multiplicity">1</text>
+            <text x="305" y="500" class="multiplicity">0..1</text>
+
+            <!-- Contact -- EmailCampaign (Association 1 to 0..*) -->
+            <line x1="690" y1="510" x2="850" y2="510" class="relation" />
+            <text x="700" y="500" class="multiplicity">1</text>
+            <text x="835" y="500" class="multiplicity">0..*</text>
+
+            <!-- Contact -- CalendarBooking (Association 1 to 0..*) -->
+            <line x1="570" y1="650" x2="570" y2="750" class="relation" />
+            <text x="580" y="665" class="multiplicity">1</text>
+            <text x="580" y="735" class="multiplicity">0..*</text>
+
+            <!-- ======================= CLASS BOXES ======================= -->
+
+            <!-- Class: USER -->
+            <rect x="50" y="50" width="240" height="250" class="box" />
+            <line x1="50" y1="80" x2="290" y2="80" class="divider" />
+            <line x1="50" y1="190" x2="290" y2="190" class="divider" />
+            <text x="170" y="65" class="class-title">User (Auth)</text>
+            <text x="60" y="100">+ auth_id : UUID</text>
+            <text x="60" y="120">+ email : String</text>
+            <text x="60" y="140">+ password_hash : String</text>
+            <text x="60" y="160">+ is_active : Boolean</text>
+            <text x="60" y="180">+ role_level : Int</text>
+            <text x="60" y="210">+ login(creds): JWT</text>
+            <text x="60" y="230">+ assignRole(role): void</text>
+
+            <!-- Class: WORKSPACE -->
+            <rect x="450" y="50" width="240" height="250" class="box" />
+            <line x1="450" y1="80" x2="690" y2="80" class="divider" />
+            <line x1="450" y1="190" x2="690" y2="190" class="divider" />
+            <text x="570" y="65" class="class-title">Workspace</text>
+            <text x="460" y="100">+ workspace_id : UUID</text>
+            <text x="460" y="120">+ company_name : String</text>
+            <text x="460" y="140">+ api_quota : Int</text>
+            <text x="460" y="160">+ routing_rules : JSON</text>
+            <text x="460" y="180">+ crm_api_keys : JSON</text>
+            <text x="460" y="210">+ addNewMember(User): void</text>
+            <text x="460" y="230">+ consumeQuota(): boolean</text>
+
+            <!-- Class: EVENT -->
+            <rect x="850" y="50" width="240" height="250" class="box" />
+            <line x1="850" y1="80" x2="1090" y2="80" class="divider" />
+            <line x1="850" y1="190" x2="1090" y2="190" class="divider" />
+            <text x="970" y="65" class="class-title">Event Node</text>
+            <text x="860" y="100">+ event_id : UUID</text>
+            <text x="860" y="120">+ name : String</text>
+            <text x="860" y="140">+ date_start : Date</text>
+            <text x="860" y="160">+ date_end : Date</text>
+            <text x="860" y="180">+ booth_qrcode : URL</text>
+            <text x="860" y="210">+ generateBarcode(): PNG</text>
+            <text x="860" y="230">+ fetchAssocLeads(): Array</text>
+
+            <!-- Class: SCANNED IMAGE -->
+            <rect x="50" y="400" width="240" height="250" class="box" />
+            <line x1="50" y1="430" x2="290" y2="430" class="divider" />
+            <line x1="50" y1="560" x2="290" y2="560" class="divider" />
+            <text x="170" y="415" class="class-title">ScannedImage</text>
+            <text x="60" y="450">+ internal_id : UUID</text>
+            <text x="60" y="470">+ bucket_s3_url : String</text>
+            <text x="60" y="490">+ raw_blob : binary</text>
+            <text x="60" y="510">+ ai_confidence : Float</text>
+            <text x="60" y="530">+ timestamp : Date</text>
+            <text x="60" y="580">+ uploadFileStream(): String</text>
+            <text x="60" y="600">+ runVisionOCR(): JSON</text>
+
+            <!-- Class: CONTACT -->
+            <rect x="450" y="400" width="240" height="250" class="box" />
+            <line x1="450" y1="430" x2="690" y2="430" class="divider" />
+            <line x1="450" y1="560" x2="690" y2="560" class="divider" />
+            <text x="570" y="415" class="class-title">Contact Record</text>
+            <text x="460" y="450">+ contact_id : UUID</text>
+            <text x="460" y="470">+ first_name : String</text>
+            <text x="460" y="490">+ last_name : String</text>
+            <text x="460" y="510">+ email_addr : String</text>
+            <text x="460" y="530">+ company : String</text>
+            <text x="460" y="550">+ pipeline_stage : Enum</text>
+            <text x="460" y="580">+ checkDuplicate(): boolean</text>
+            <text x="460" y="600">+ exportToCRM(): Result</text>
+            <text x="460" y="620">+ advancePipeline(): void</text>
+
+            <!-- Class: EMAIL CAMPAIGN -->
+            <rect x="850" y="400" width="240" height="250" class="box" />
+            <line x1="850" y1="430" x2="1090" y2="430" class="divider" />
+            <line x1="850" y1="560" x2="1090" y2="560" class="divider" />
+            <text x="970" y="415" class="class-title">EmailCampaign Job</text>
+            <text x="860" y="450">+ job_id : UUID</text>
+            <text x="860" y="470">+ trigger_time : Date</text>
+            <text x="860" y="490">+ subject_line : String</text>
+            <text x="860" y="510">+ email_body : Text</text>
+            <text x="860" y="530">+ status : Enum</text>
+            <text x="860" y="580">+ executeSendSMTP(): void</text>
+            <text x="860" y="600">+ completeJob(): void</text>
+
+            <!-- Class: CALENDAR BOOKING -->
+            <rect x="450" y="750" width="240" height="250" class="box" />
+            <line x1="450" y1="780" x2="690" y2="780" class="divider" />
+            <line x1="450" y1="900" x2="690" y2="900" class="divider" />
+            <text x="570" y="765" class="class-title">Calendar Booking</text>
+            <text x="460" y="800">+ booking_id : UUID</text>
+            <text x="460" y="820">+ start_time : DateTime</text>
+            <text x="460" y="840">+ end_time : DateTime</text>
+            <text x="460" y="860">+ guest_notes : String</text>
+            <text x="460" y="880">+ meeting_url : String</text>
+            <text x="460" y="920">+ validateOverlap(): bool</text>
+            <text x="460" y="940">+ triggerInvites(): void</text>
+
+        </svg>
+    </div>
+
+</body>
+</html>

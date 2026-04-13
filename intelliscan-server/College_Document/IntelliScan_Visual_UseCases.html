@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliScan Use Case Diagrams</title>
+    <!-- We load Mermaid.js which will automatically convert the text below into beautiful visual diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#e0e7ff',
+                primaryTextColor: '#1e293b',
+                primaryBorderColor: '#6366f1',
+                lineColor: '#94a3b8',
+                secondaryColor: '#f1f5f9',
+                tertiaryColor: '#ffffff'
+            }
+        });
+    </script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            padding: 40px; 
+            background: #f8fafc; 
+            color: #334155;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 { text-align: center; color: #0f172a; font-size: 2.5rem; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 50px; font-size: 1.1rem; }
+        .diagram-container { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); 
+            margin-bottom: 60px; 
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .diagram-title {
+            text-align: left;
+            color: #334155;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+        }
+        .instruction {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            margin-bottom: 40px;
+            border: 1px solid #bfdbfe;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>IntelliScan Architecture</h1>
+    <div class="subtitle">Complete Visual Use Case Diagrams for Academic Report</div>
+
+    <div class="instruction">
+        📸 <strong>Instructions:</strong> Simply take a screenshot of each white box below and paste it directly into your Word Document!
+    </div>
+
+    <!-- 1. COMPREHENSIVE OVERVIEW -->
+    <div class="diagram-container">
+        <h2 class="diagram-title">1. High-Level Comprehensive System Overview</h2>
+        <div class="mermaid">
+        flowchart LR
+            %% Actors
+            Pub(("👤\nPublic User"))
+            Member(("👔\nSales Rep"))
+            Admin(("🏢\nEnterprise Admin"))
+            Super(("🛠️\nSuper Admin"))
+
+            %% System Boundary
+            subgraph IntelliScan ["IntelliScan Platform Boundary"]
+                direction TB
+                subgraph Sales & Lead Capture
+                    UC1(["Scan Business Card with AI"])
+                    UC2(["Manage Kanban Pipeline"])
+                    UC3(["Send AI Follow-up Email"])
+                end
+                
+                subgraph Enterprise Management
+                    UC4(["Configure Routing Rules"])
+                    UC5(["Manage Shared Rolodex"])
+                    UC6(["Launch Mass Email Campaigns"])
+                end
+
+                subgraph Public Interfaces
+                    UC7(["View Digital Business Card"])
+                    UC8(["Book Calendar Meeting"])
+                end
+
+                subgraph Deep System Admin
+                    UC9(["Tune AI OCR Models"])
+                    UC10(["Monitor System Queues"])
+                end
+            end
+
+            %% Connections
+            Pub --> UC7
+            Pub --> UC8
+            
+            Member --> UC1
+            Member --> UC2
+            Member --> UC3
+            
+            Admin --> UC4
+            Admin --> UC5
+            Admin --> UC6
+            Admin --> UC1
+            
+            Super --> UC9
+            Super --> UC10
+        </div>
+    </div>
+
+    <!-- 2. SALES REP -->
+    <div class="diagram-container">
+        <h2 class="diagram-title">2. Sales Representative (Member) Use Cases</h2>
+        <div class="mermaid">
+        flowchart LR
+            Actor(("👔\nSales Rep"))
+            
+            subgraph Data Capture
+                direction TB
+                SC1(["Upload Business Card Image"])
+                SC2(["Review AI Extracted Data"])
+                SC3(["Trigger CRM Export"])
+            end
+            
+            subgraph Pipeline & Communication
+                direction TB
+                PL1(["Move Deal to Next Stage"])
+                PL2(["Draft Email via AI Composer"])
+                PL3(["Chat with Team on Contact"])
+            end
+
+            Actor --> SC1
+            SC1 -.->|"<< includes >>"| SC2
+            SC2 -.->|"<< extends >>"| SC3
+            
+            Actor --> PL1
+            Actor --> PL2
+            Actor --> PL3
+        </div>
+    </div>
+
+    <!-- 3. ENTERPRISE ADMIN -->
+    <div class="diagram-container">
+        <h2 class="diagram-title">3. Enterprise Admin Use Cases</h2>
+        <div class="mermaid">
+        flowchart LR
+            Actor(("🏢\nEnterprise Admin"))
+            
+            subgraph Administration
+                direction TB
+                AD1(["Manage Team Members"])
+                AD2(["Set Workspace Data Policies"])
+                AD3(["Create Lead Routing Rules"])
+            end
+            
+            subgraph Marketing & Data Quality
+                direction TB
+                MQ1(["Merge Duplicate Contacts"])
+                MQ2(["Create Audience Segments"])
+                MQ3(["View Campaign Analytics"])
+            end
+
+            Actor --> AD1
+            Actor --> AD2
+            Actor --> AD3
+            Actor --> MQ1
+            Actor --> MQ2
+            Actor --> MQ3
+        </div>
+    </div>
+
+    <!-- 4. SUPER ADMIN -->
+    <div class="diagram-container">
+        <h2 class="diagram-title">4. Platform Super Admin Use Cases</h2>
+        <div class="mermaid">
+        flowchart LR
+            Actor(("🛠️\nSuper Admin"))
+            
+            subgraph Engine Health
+                direction TB
+                EH1(["View System Incident Center"])
+                EH2(["Restart Failed CRM Syncs"])
+                EH3(["Monitor Tracking Queues"])
+            end
+            
+            subgraph AI Configuration
+                direction TB
+                AI1(["A/B Test Custom Models"])
+                AI2(["Tune Confidence Thresholds"])
+                AI3(["Test in API Sandbox"])
+            end
+
+            Actor --> EH1
+            EH1 -.->|"<< extends >>"| EH2
+            Actor --> EH3
+            
+            Actor --> AI1
+            Actor --> AI2
+            Actor --> AI3
+        </div>
+    </div>
+
+    <!-- 5. PUBLIC USER -->
+    <div class="diagram-container">
+        <h2 class="diagram-title">5. Public Unauthenticated User Use Cases</h2>
+        <div class="mermaid">
+        flowchart LR
+            Actor(("👤\nPublic User"))
+            
+            subgraph External Interfaces
+                direction TB
+                EX1(["Access /profile/slug URL"])
+                EX2(["Download vCard to Phone"])
+                EX3(["Select Meeting Time Slot"])
+                EX4(["Submit Booking Notes"])
+            end
+
+            Actor --> EX1
+            EX1 -.->|"<< extends >>"| EX2
+            
+            Actor --> EX3
+            EX3 -.->|"<< includes >>"| EX4
+        </div>
+    </div>
+
+</body>
+</html>

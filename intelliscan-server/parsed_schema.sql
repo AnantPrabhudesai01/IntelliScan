@@ -6,7 +6,7 @@ CREATE TABLE users (
         password TEXT,
         role TEXT DEFAULT 'user',
         workspace_id INTEGER
-      , tier TEXT DEFAULT 'personal');
+      , tier TEXT DEFAULT 'personal', google_id TEXT);
 
 -- Table: contacts
 CREATE TABLE contacts (
@@ -21,7 +21,7 @@ CREATE TABLE contacts (
         image_url TEXT,
         notes TEXT,
         tags TEXT
-      , event_id INTEGER, inferred_industry TEXT, inferred_seniority TEXT, confidence INTEGER DEFAULT 95, engine_used TEXT, workspace_scope INTEGER, crm_synced INTEGER DEFAULT 0, crm_synced_at DATETIME);
+      , event_id INTEGER, inferred_industry TEXT, inferred_seniority TEXT, confidence INTEGER DEFAULT 95, engine_used TEXT, workspace_scope INTEGER, crm_synced INTEGER DEFAULT 0, crm_synced_at DATETIME, deal_score INTEGER DEFAULT 0, deal_status TEXT DEFAULT 'None', linkedin_url TEXT, linkedin_photo TEXT, linkedin_bio TEXT, ai_enrichment_news TEXT, search_vector TEXT);
 
 -- Table: analytics_logs
 CREATE TABLE analytics_logs (
@@ -126,7 +126,7 @@ CREATE TABLE user_quotas (
         user_id INTEGER PRIMARY KEY,
         used_count INTEGER DEFAULT 0,
         limit_amount INTEGER DEFAULT 100
-      , group_scans_used INTEGER DEFAULT 0);
+      , group_scans_used INTEGER DEFAULT 0, last_reset_date DATETIME);
 
 -- Table: routing_rules
 CREATE TABLE routing_rules (
@@ -526,3 +526,84 @@ CREATE TABLE crm_sync_log (
         message TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
+
+-- Table: ai_models
+CREATE TABLE ai_models (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        status TEXT DEFAULT 'deployed', -- 'deployed', 'training', 'paused'
+        accuracy REAL,
+        latency_ms INTEGER,
+        calls_30d INTEGER DEFAULT 0,
+        vram_gb REAL,
+        type TEXT NOT NULL, -- 'gemini', 'openai', 'tesseract', 'custom'
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+
+-- Table: deals
+CREATE TABLE deals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        contact_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        workspace_id INTEGER,
+        stage TEXT DEFAULT 'Prospect', -- Prospect, Qualified, Proposal, Closed
+        value REAL DEFAULT 0,
+        expected_close DATETIME,
+        notes TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(contact_id) REFERENCES contacts(id) ON DELETE CASCADE,
+        FOREIGN KEY(user_id) REFERENCES users(id)
+      );
+
+-- Table: webhooks
+CREATE TABLE webhooks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        workspace_id INTEGER,
+        url TEXT NOT NULL,
+        event_type TEXT DEFAULT 'on_scan', -- on_scan, on_deal_update
+        is_active INTEGER DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+
+-- Table: email_sequences
+CREATE TABLE email_sequences (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        status TEXT DEFAULT 'active', -- active, paused, archived
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(user_id) REFERENCES users(id)
+      );
+
+-- Table: email_sequence_steps
+CREATE TABLE email_sequence_steps (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sequence_id INTEGER NOT NULL,
+        order_index INTEGER NOT NULL,
+        subject TEXT NOT NULL,
+        html_body TEXT NOT NULL,
+        delay_days INTEGER DEFAULT 0,
+        FOREIGN KEY(sequence_id) REFERENCES email_sequences(id) ON DELETE CASCADE
+      );
+
+-- Table: contact_sequences
+CREATE TABLE contact_sequences (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        contact_id INTEGER NOT NULL,
+        sequence_id INTEGER NOT NULL,
+        status TEXT DEFAULT 'active', -- active, completed, stopped
+        current_step_index INTEGER DEFAULT 0,
+        next_send_at DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(contact_id) REFERENCES contacts(id) ON DELETE CASCADE,
+        FOREIGN KEY(sequence_id) REFERENCES email_sequences(id) ON DELETE CASCADE
+      );
+
+-- Table: marketplace_apps
+CREATE TABLE marketplace_apps (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category TEXT, description TEXT, icon_type TEXT, color TEXT, installed BOOLEAN DEFAULT 0);
+
+-- Table: platform_feedback
+CREATE TABLE platform_feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, subject TEXT, message TEXT, user_email TEXT, status TEXT DEFAULT 'pending');

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Burnt Chart - IntelliScan</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <style>
+        body { 
+            font-family: "Segoe UI", Arial, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background-color: #2D2D2D; 
+            margin: 0; 
+        }
+        .chart-container { 
+            background-color: white; 
+            padding: 40px; 
+            border-radius: 4px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5); 
+            width: 800px; 
+            height: 500px;
+        }
+        .instructions {
+            position: absolute;
+            top: 20px;
+            color: white;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h3>Chart Generator Ready!</h3>
+        <p>Take a screenshot of the white box below using the Snipping Tool (Windows + Shift + S)<br>and paste it into your MS Word document.</p>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="burntChart"></canvas>
+    </div>
+
+    <script>
+        Chart.register(ChartDataLabels);
+        const ctx = document.getElementById('burntChart').getContext('2d');
+        const data = {
+            labels: ['Sprint 2', 'Sprint 3', 'Sprint 4', 'Sprint 5', 'Sprint 6', 'Sprint 7'],
+            datasets: [
+                {
+                    label: 'Planned Hours',
+                    data: [240, 240, 240, 240, 240, 240],
+                    borderColor: '#4472C4',
+                    backgroundColor: '#4472C4',
+                    borderWidth: 2,
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 0
+                },
+                {
+                    label: 'Earned Values',
+                    data: [8.3, 8.3, 14, 10, 7.9, 8.3],
+                    borderColor: '#C00000',
+                    backgroundColor: '#C00000',
+                    borderWidth: 2,
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 0
+                }
+            ]
+        };
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { 
+                        display: true, 
+                        text: 'Burnt Chart', 
+                        font: { size: 16, weight: 'normal', family: 'Arial' },
+                        color: '#555',
+                        padding: { bottom: 30 }
+                    },
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { 
+                            usePointStyle: false, 
+                            boxWidth: 40,
+                            boxHeight: 2,
+                            color: '#555',
+                            padding: 20
+                        } 
+                    },
+                    datalabels: {
+                        color: '#000',
+                        align: 'center',
+                        anchor: 'center',
+                        backgroundColor: 'white',
+                        font: { size: 10, family: 'Arial' },
+                        padding: 0,
+                        formatter: function(value) { 
+                            return value; 
+                        }
+                    }
+                },
+                layout: {
+                    padding: { left: 10, right: 10, top: 10, bottom: 10 }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 300,
+                        ticks: { 
+                            stepSize: 50,
+                            color: '#777',
+                            font: { size: 10 }
+                        },
+                        grid: { 
+                            color: '#E5E5E5',
+                            drawBorder: false
+                        },
+                        border: { display: false }
+                    },
+                    x: {
+                        grid: { 
+                            display: false 
+                        },
+                        ticks: {
+                            color: '#777',
+                            font: { size: 10 }
+                        },
+                        border: { display: false }
+                    }
+                }
+            }
+        };
+        new Chart(ctx, config);
+    </script>
+</body>
+</html>

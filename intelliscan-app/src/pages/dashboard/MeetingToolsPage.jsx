@@ -1,13 +1,20 @@
-import { useState } from 'react';
-import { Smartphone, Download, Share2, Camera, Video, Monitor, Layout, CheckCircle } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Smartphone, Download, Share2, Camera, Video, Monitor, Layout, CheckCircle, ExternalLink } from 'lucide-react';
+import { safeReadStoredUser } from '../../utils/auth.js';
+import { toPng } from 'html-to-image';
+import { useNavigate } from 'react-router-dom';
 
 export default function MeetingToolsPage() {
+  const navigate = useNavigate();
+  const previewRef = useRef(null);
   const [selectedBg, setSelectedBg] = useState('dark-modern');
+  const [aspectRatio, setAspectRatio] = useState('16:9');
   const [isDownloading, setIsDownloading] = useState(false);
 
-  // Mock user data for the card preview
-  const user = JSON.parse(localStorage.getItem('user') || '{"name": "Anant", "role": "Enterprise User"}');
-  const profileUrl = `${window.location.origin}/u/anant-pro`;
+  const storedUser = safeReadStoredUser();
+  const displayName = storedUser?.name || (storedUser?.email ? storedUser.email.split('@')[0] : 'Your Name');
+  const profileSlug = storedUser?.email ? storedUser.email.split('@')[0] : 'profile';
+  const profileUrl = `${window.location.origin}/u/${encodeURIComponent(profileSlug)}`;
 
   const backgrounds = [
     { id: 'dark-modern', name: 'Dark Modern', color: 'bg-[#0e131f]', accent: 'bg-indigo-600' },
@@ -16,9 +23,28 @@ export default function MeetingToolsPage() {
     { id: 'cyber-neon', name: 'Cyber Neon', color: 'bg-black', accent: 'bg-purple-600' }
   ];
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
+    if (!previewRef.current) return;
     setIsDownloading(true);
-    setTimeout(() => setIsDownloading(false), 2000);
+    try {
+      const dataUrl = await toPng(previewRef.current, { cacheBust: true, quality: 1.0, pixelRatio: 2 });
+      const link = document.createElement('a');
+      link.download = `intelliscan-presence-${selectedBg}-${aspectRatio.replace(':', '-')}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Download failed:', err);
+    }
+    setIsDownloading(false);
+  };
+
+  const handleShare = (type) => {
+    if (type === 'profile') {
+      window.open(profileUrl, '_blank');
+    } else if (type === 'linkedin') {
+      const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`;
+      window.open(linkedinUrl, '_blank');
+    }
   };
 
   return (
@@ -67,10 +93,18 @@ export default function MeetingToolsPage() {
                 <Monitor size={18} className="text-indigo-500" /> Platform Optimization
               </h3>
               <div className="space-y-3">
-                 {['Zoom / Google Meet (16:9)', 'Microsoft Teams (Fixed)', 'Mobile Portrait (9:16)'].map((p, i) => (
-                    <button key={p} className={`w-full flex items-center justify-between p-4 rounded-2xl border ${i===0 ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/10 text-indigo-600' : 'border-gray-100 dark:border-gray-800 text-gray-400'}`}>
-                       <span className="font-bold text-sm tracking-tight">{p}</span>
-                       <CheckCircle size={16} className={i===0 ? 'opacity-100' : 'opacity-0'} />
+                 {[
+                   { label: 'Zoom / Google Meet (16:9)', ratio: '16:9' },
+                   { label: 'Microsoft Teams (4:3)', ratio: '4:3' },
+                   { label: 'Mobile Portrait (9:16)', ratio: '9:16' }
+                 ].map((p, i) => (
+                    <button 
+                      key={p.ratio} 
+                      onClick={() => setAspectRatio(p.ratio)}
+                      className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${aspectRatio === p.ratio ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/10 text-indigo-600' : 'border-gray-100 dark:border-gray-800 text-gray-400 hover:border-gray-200 dark:hover:border-gray-700'}`}
+                    >
+                       <span className="font-bold text-sm tracking-tight">{p.label}</span>
+                       <CheckCircle size={16} className={aspectRatio === p.ratio ? 'opacity-100' : 'opacity-0'} />
                     </button>
                  ))}
               </div>
@@ -90,9 +124,15 @@ export default function MeetingToolsPage() {
               <Video size={18} className="text-indigo-500" /> Multi-Layer Asset Preview
            </h3>
            
-           <div className="relative group">
+           <div className="relative group max-w-4xl mx-auto">
               {/* The Virtual Background Preview */}
-              <div className={`aspect-video rounded-[3rem] overflow-hidden shadow-2xl relative border-8 border-white dark:border-gray-800 ${backgrounds.find(b => b.id === selectedBg).color} transition-all duration-700`}>
+              <div 
+                ref={previewRef}
+                className={`rounded-[3rem] overflow-hidden shadow-2xl relative border-8 border-white dark:border-gray-800 transition-all duration-700 ${backgrounds.find(b => b.id === selectedBg).color} ${
+                  aspectRatio === '16:9' ? 'aspect-video' : 
+                  aspectRatio === '4:3' ? 'aspect-[4/3]' : 'aspect-[9/16] max-w-sm mx-auto'
+                }`}
+              >
                  
                  {/* Decorative elements */}
                  <div className="absolute top-0 right-0 w-1/3 h-full bg-indigo-600/10 skew-x-[-12deg] translate-x-1/2"></div>
@@ -110,7 +150,7 @@ export default function MeetingToolsPage() {
                        />
                     </div>
                     <div>
-                       <h4 className="text-2xl font-black text-white italic tracking-tighter mb-1 uppercase">{user.name}</h4>
+                       <h4 className="text-2xl font-black text-white italic tracking-tighter mb-1 uppercase">{displayName}</h4>
                        <p className="text-indigo-300 font-bold tracking-widest text-[10px] uppercase mb-4">Enterprise Consultant</p>
                        <p className="text-white/60 text-[10px] font-medium leading-normal italic px-1">
                           Scan to save my details & view my portfolio instantly from anywhere in the world.
@@ -130,25 +170,30 @@ export default function MeetingToolsPage() {
               </div>
            </div>
 
-           {/* Mobile Handout Preview */}
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
-              <div className="bg-white dark:bg-[#161c28] border border-gray-100 dark:border-gray-800 p-8 rounded-[2.5rem] flex items-center gap-6 group hover:border-indigo-500 transition-all cursor-pointer">
+              <div 
+                onClick={() => handleShare('linkedin')}
+                className="bg-white dark:bg-[#161c28] border border-gray-100 dark:border-gray-800 p-8 rounded-[2.5rem] flex items-center gap-6 group hover:border-indigo-500 transition-all cursor-pointer"
+              >
                  <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
                     <Smartphone size={32} />
                  </div>
                  <div>
-                    <h4 className="font-black text-gray-900 dark:text-white uppercase italic">Mobile Handout</h4>
-                    <p className="text-xs text-gray-400 font-bold">Square QR for LinkedIn Bio</p>
+                    <h4 className="font-black text-gray-900 dark:text-white uppercase italic flex items-center gap-2">Mobile Handout <ExternalLink size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" /></h4>
+                    <p className="text-xs text-gray-400 font-bold">Share to LinkedIn Bio</p>
                  </div>
               </div>
 
-              <div className="bg-white dark:bg-[#161c28] border border-gray-100 dark:border-gray-800 p-8 rounded-[2.5rem] flex items-center gap-6 group hover:border-indigo-500 transition-all cursor-pointer">
+              <div 
+                onClick={() => handleShare('profile')}
+                className="bg-white dark:bg-[#161c28] border border-gray-100 dark:border-gray-800 p-8 rounded-[2.5rem] flex items-center gap-6 group hover:border-indigo-500 transition-all cursor-pointer"
+              >
                  <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
                     <Share2 size={32} />
                  </div>
                  <div>
-                    <h4 className="font-black text-gray-900 dark:text-white uppercase italic">Digital Profile</h4>
-                    <p className="text-xs text-gray-400 font-bold">Public Microsite Settings</p>
+                    <h4 className="font-black text-gray-900 dark:text-white uppercase italic flex items-center gap-2">Digital Profile <ExternalLink size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" /></h4>
+                    <p className="text-xs text-gray-400 font-bold">Public Microsite View</p>
                  </div>
               </div>
            </div>

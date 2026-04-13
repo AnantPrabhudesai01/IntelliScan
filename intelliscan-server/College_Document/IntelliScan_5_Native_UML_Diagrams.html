@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IntelliScan - 5 Detailed UML Use Case Diagrams</title>
+    <!-- 
+      100% NATIVE SVG. No Mermaid.js. Pure Black and White.
+      These are built mathematically to match standard UML Draw.io aesthetics exactly as requested.
+    -->
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #ffffff; padding: 40px; text-align: center; color: #000000; }
+        .diagram-wrapper { background-color: white; border: 1px solid #000; margin: 0 auto 80px auto; padding: 30px; max-width: 900px; text-align: left; }
+        h1 { margin-bottom: 5px; font-size: 24px; text-align: center; }
+        .subtitle { color: #000; margin-bottom: 50px; text-align: center; }
+        h2 { border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0; font-size: 18px; }
+        svg { display: block; margin: 20px auto; background: white; }
+        
+        /* Strict Black and White SVG Styles */
+        text { font-size: 13px; fill: #000; pointer-events: none; text-anchor: middle; alignment-baseline: middle; }
+        .actor-text { font-weight: bold; font-size: 14px; }
+        .italic-text { font-style: italic; font-size: 12px; }
+        ellipse { fill: #ffffff; stroke: #000000; stroke-width: 1.5; }
+        line, path, polyline { stroke: #000000; stroke-width: 1.5; fill: none; }
+        .dashed { stroke-dasharray: 6,4; }
+        .boundary { fill: none; stroke: #000000; stroke-width: 1.5; }
+        .boundary-title { font-weight: bold; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <h1>IntelliScan Architecture</h1>
+    <div class="subtitle">Complete Set of 5 Detailed Black &amp; White UML Use Case Diagrams</div>
+
+    <!-- Arrow Definition used across all SVGs -->
+    <svg width="0" height="0" style="display:block;">
+        <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#000000" />
+            </marker>
+        </defs>
+    </svg>
+
+    <!-- ==========================================
+         DIAGRAM 1: HIGH-LEVEL SYSTEM
+         ========================================== -->
+    <div class="diagram-wrapper">
+        <h2>1. Global System Roles Overview</h2>
+        <svg width="850" height="600" viewBox="0 0 850 600">
+            <!-- Boundary -->
+            <rect x="250" y="50" width="350" height="500" class="boundary" />
+            <text x="425" y="75" class="boundary-title">IntelliScan Core Platform</text>
+
+            <!-- Use Cases -->
+            <ellipse cx="425" cy="150" rx="140" ry="30" /> <text x="425" y="150">Book Meetings &amp; View Digital Cards</text>
+            <ellipse cx="425" cy="250" rx="140" ry="30" /> <text x="425" y="250">Scan Contacts &amp; Run Kanban Pipelines</text>
+            <ellipse cx="425" cy="350" rx="140" ry="30" /> <text x="425" y="350">Configure Team Routing &amp; Campaigns</text>
+            <ellipse cx="425" cy="450" rx="140" ry="30" /> <text x="425" y="450">System Diagnostics &amp; AI Thresholds</text>
+
+            <!-- Actor: Public User (Top Left) -->
+            <circle cx="100" cy="110" r="14" fill="none" stroke="#000" stroke-width="1.5" />
+            <line x1="100" y1="124" x2="100" y2="180" /><line x1="60" y1="140" x2="140" y2="140" />
+            <line x1="100" y1="180" x2="70" y2="230" /><line x1="100" y1="180" x2="130" y2="230" />
+            <text x="100" y="255" class="actor-text">Public User</text>
+            <line x1="140" y1="150" x2="285" y2="150" />
+
+            <!-- Actor: Sales Rep (Bottom Left) -->
+            <circle cx="100" cy="350" r="14" fill="none" stroke="#000" stroke-width="1.5" />
+            <line x1="100" y1="364" x2="100" y2="420" /><line x1="60" y1="380" x2="140" y2="380" />
+            <line x1="100" y1="420" x2="70" y2="470" /><line x1="100" y1="420" x2="130" y2="470" />
+            <text x="100" y="495" class="actor-text">Sales Rep</text>
+            <line x1="140" y1="380" x2="285" y2="250" />
+
+            <!-- Actor: Super Admin (Bottom Right) -->
+            <circle cx="750" cy="350" r="14" fill="none" stroke="#000" stroke-width="1.5" />
+            <line x1="750" y1="364" x2="750" y2="420" /><line x1="710" y1="380" x2="790" y2="380" />
+            <line x1="750" y1="420" x2="720" y2="470" /><line x1="750" y1="420" x2="780" y2="470" />
+            <text x="750" y="495" class="actor-text">Super Admin</text>
+            <line x1="710" y1="380" x2="565" y2="450" />
+
+            <!-- Actor: Enterprise Admin (Top Right) -->
+            <circle cx="750" cy="200" r="14" fill="none" stroke="#000" stroke-width="1.5" />
+            <line x1="750" y1="214" x2="750" y2="270" /><line x1="710" y1="230" x2="790" y2="230" />
+            <line x1="750" y1="270" x2="720" y2="320" /><line x1="750" y1="270" x2="780" y2="320" />
+            <text x="750" y="345" class="actor-text">Enterprise Admin</text>
+            <line x1="710" y1="240" x2="565" y2="350" />
+        </svg>
+    </div>
+
+
+    <!-- ==========================================
+         DIAGRAM 2: SALES REP WORKFLOW
+         ========================================== -->
+    <div class="diagram-wrapper">
+        <h2>2. Sales Representative (Workspace Member) Workflows</h2>
+        <svg width="850" height="460" viewBox="0 0 850 460">
+            <!-- Boundary -->
+            <rect x="250" y="30" width="550" height="400" class="boundary" />
+            <text x="525" y="55" class="boundary-title">IntelliScan Lead Capture &amp; Pipeline</text>
+
+            <!-- Actor -->
+            <circle cx="100" cy="180" r="14" fill="none" stroke="#000" stroke-width="1.5" />
+            <line x1="100" y1="194" x2="100" y2="250" /><line x1="60" y1="210" x2="140" y2="210" />
+            <line x1="100" y1="250" x2="70" y2="300" /><line x1="100" y1="250" x2="130" y2="300" />
+            <text x="100" y="325" class="actor-text">Sales Rep</text>
+
+            <!-- Use Cases -->
+            <ellipse cx="400" cy="120" rx="110" ry="30" /> <text x="400" y="120">Scan Card Image via UI</text>
+            <ellipse cx="650" cy="120" rx="100" ry="30" /> <text x="650" y="120">Extract Demographics</text>
+            
+            <ellipse cx="400" cy="240" rx="110" ry="30" /> <text x="400" y="240">Move Deal in Pipeline</text>
+            <ellipse cx="650" cy="240" rx="100" ry="30" /> <text x="650" y="240">Update Deal Value</text>
+
+            <ellipse cx="400" cy="360" rx="110" ry="30" /> <text x="400" y="360">Draft Assigned Email</text>
+            <ellipse cx="650" cy="360" rx="100" ry="30" /> <text x="650" y="360">Approve AI Send</text>
+
+            <!-- Connections -->
+            <line x1="140" y1="210" x2="290" y2="120" />
+            <line x1="140" y1="210" x2="290" y2="240" />
+            <line x1="140" y1="210" x2="290" y2="360" />
+
+            <!-- Includes/Extends -->
+            <line x1="510" y1="120" x2="550" y2="120" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="530" y="105" class="italic-text">&lt;&lt;include&gt;&gt;</text>
+
+            <line x1="550" y1="240" x2="510" y2="240" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="530" y="225" class="italic-text">&lt;&lt;extend&gt;&gt;</text>
+
+            <line x1="510" y1="360" x2="550" y2="360" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="530" y="345" class="italic-text">&lt;&lt;include&gt;&gt;</text>
+        </svg>
+    </div>
+
+
+    <!-- ==========================================
+         DIAGRAM 3: ENTERPRISE ADMIN WORKFLOW
+         ========================================== -->
+    <div class="diagram-wrapper">
+        <h2>3. Enterprise Admin Workflows</h2>
+        <svg width="850" height="460" viewBox="0 0 850 460">
+            <!-- Boundary -->
+            <rect x="250" y="30" width="550" height="400" class="boundary" />
+            <text x="525" y="55" class="boundary-title">Enterprise Workspace Administration</text>
+
+            <!-- Actor -->
+            <circle cx="100" cy="180" r="14" fill="none" stroke="#000" stroke-width="1.5" />
+            <line x1="100" y1="194" x2="100" y2="250" /><line x1="60" y1="210" x2="140" y2="210" />
+            <line x1="100" y1="250" x2="70" y2="300" /><line x1="100" y1="250" x2="130" y2="300" />
+            <text x="100" y="325" class="actor-text">Enterprise Admin</text>
+
+            <!-- Use Cases -->
+            <ellipse cx="400" cy="120" rx="110" ry="30" /> <text x="400" y="120">Create Lead Routing Rules</text>
+            <ellipse cx="650" cy="120" rx="100" ry="30" /> <text x="650" y="120">Define Trigger Tags</text>
+            
+            <ellipse cx="400" cy="240" rx="110" ry="30" /> <text x="400" y="240">Merge Scanned Duplicates</text>
+            <ellipse cx="650" cy="240" rx="100" ry="30" /> <text x="650" y="240">Flag Confidence Scores</text>
+
+            <ellipse cx="400" cy="360" rx="110" ry="30" /> <text x="400" y="360">Create Audience Segments</text>
+            <ellipse cx="650" cy="360" rx="100" ry="30" /> <text x="650" y="360">Send Auto-Campaigns</text>
+
+            <!-- Connections -->
+            <line x1="140" y1="210" x2="290" y2="120" />
+            <line x1="140" y1="210" x2="290" y2="240" />
+            <line x1="140" y1="210" x2="290" y2="360" />
+
+            <!-- Includes/Extends -->
+            <line x1="510" y1="120" x2="550" y2="120" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="530" y="105" class="italic-text">&lt;&lt;include&gt;&gt;</text>
+
+            <line x1="550" y1="240" x2="510" y2="240" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="530" y="225" class="italic-text">&lt;&lt;extend&gt;&gt;</text>
+
+            <line x1="510" y1="360" x2="550" y2="360" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="530" y="345" class="italic-text">&lt;&lt;include&gt;&gt;</text>
+        </svg>
+    </div>
+
+
+    <!-- ==========================================
+         DIAGRAM 4: SUPER ADMIN WORKFLOW
+         ========================================== -->
+    <div class="diagram-wrapper">
+        <h2>4. Platform Super Admin Workflows</h2>
+        <svg width="850" height="340" viewBox="0 0 850 340">
+            <!-- Boundary -->
+            <rect x="250" y="30" width="550" height="300" class="boundary" />
+            <text x="525" y="55" class="boundary-title">IntelliScan Engine Control Center</text>
+
+            <!-- Actor -->
+            <circle cx="100" cy="110" r="14" fill="none" stroke="#000" stroke-width="1.5" />
+            <line x1="100" y1="124" x2="100" y2="180" /><line x1="60" y1="140" x2="140" y2="140" />
+            <line x1="100" y1="180" x2="70" y2="230" /><line x1="100" y1="180" x2="130" y2="230" />
+            <text x="100" y="255" class="actor-text">Super Admin</text>
+
+            <!-- Use Cases -->
+            <ellipse cx="400" cy="130" rx="120" ry="30" /> <text x="400" y="130">Refresh Global API Tokens</text>
+            <ellipse cx="660" cy="130" rx="100" ry="30" /> <text x="660" y="130">Monitor Webhooks</text>
+            
+            <ellipse cx="400" cy="250" rx="120" ry="30" /> <text x="400" y="250">Tune Gemini OCR Models</text>
+            <ellipse cx="660" cy="250" rx="100" ry="30" /> <text x="660" y="250">Fix System Exceptions</text>
+
+            <!-- Connections -->
+            <line x1="140" y1="140" x2="280" y2="130" />
+            <line x1="140" y1="140" x2="280" y2="250" />
+
+            <!-- Includes/Extends -->
+            <line x1="520" y1="130" x2="560" y2="130" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="540" y="115" class="italic-text">&lt;&lt;include&gt;&gt;</text>
+
+            <line x1="560" y1="250" x2="520" y2="250" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="540" y="235" class="italic-text">&lt;&lt;extend&gt;&gt;</text>
+        </svg>
+    </div>
+
+
+    <!-- ==========================================
+         DIAGRAM 5: PUBLIC USER WORKFLOW
+         ========================================== -->
+    <div class="diagram-wrapper">
+        <h2>5. Public User (External) Workflows</h2>
+        <svg width="850" height="340" viewBox="0 0 850 340">
+            <!-- Boundary -->
+            <rect x="250" y="30" width="550" height="300" class="boundary" />
+            <text x="525" y="55" class="boundary-title">IntelliScan Open Interfaces</text>
+
+            <!-- Actor -->
+            <circle cx="100" cy="110" r="14" fill="none" stroke="#000" stroke-width="1.5" />
+            <line x1="100" y1="124" x2="100" y2="180" /><line x1="60" y1="140" x2="140" y2="140" />
+            <line x1="100" y1="180" x2="70" y2="230" /><line x1="100" y1="180" x2="130" y2="230" />
+            <text x="100" y="255" class="actor-text">Public User</text>
+
+            <!-- Use Cases -->
+            <ellipse cx="400" cy="130" rx="120" ry="30" /> <text x="400" y="130">Access Shareable Profile</text>
+            <ellipse cx="660" cy="130" rx="100" ry="30" /> <text x="660" y="130">Download vCard</text>
+            
+            <ellipse cx="400" cy="250" rx="120" ry="30" /> <text x="400" y="250">Select Meeting Shot</text>
+            <ellipse cx="660" cy="250" rx="100" ry="30" /> <text x="660" y="250">Submit Booking Info</text>
+
+            <!-- Connections -->
+            <line x1="140" y1="140" x2="280" y2="130" />
+            <line x1="140" y1="140" x2="280" y2="250" />
+
+            <!-- Includes/Extends -->
+            <line x1="560" y1="130" x2="520" y2="130" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="540" y="115" class="italic-text">&lt;&lt;extend&gt;&gt;</text>
+
+            <line x1="520" y1="250" x2="560" y2="250" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="540" y="235" class="italic-text">&lt;&lt;include&gt;&gt;</text>
+        </svg>
+    </div>
+
+</body>
+</html>

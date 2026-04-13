@@ -102,67 +102,14 @@ export default function GenSubscriptionPlanComparison() {
 
   const handleUpgradePro = async () => {
     if (!isLoggedIn) { navigate('/sign-up?plan=pro'); return; }
-    
-    try {
-      showToast('Processing simulated payment for Professional upgrade (₹49/mo)...');
-      const token = getStoredToken();
-      const res = await fetch('/api/user/simulate-upgrade', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ plan: 'pro' })
-      });
-      
-      if (res.ok) {
-        const userData = JSON.parse(localStorage.getItem('user') || '{}');
-        userData.tier = 'pro';
-        localStorage.setItem('user', JSON.stringify(userData));
-        
-        showToast('Success! Your account is now PROFESSIONAL. Refreshing...');
-        setTimeout(() => {
-          navigate('/dashboard/scan');
-          window.location.reload();
-        }, 1500);
-      } else {
-        showToast('Upgrade failed. Please try again.');
-      }
-    } catch (err) {
-      console.error(err);
-      showToast('Error connecting to upgrade service.');
-    }
+    showToast('Redirecting to Billing...');
+    navigate('/dashboard/billing');
   };
 
   const handleEnterpriseUpgrade = async () => {
     if (!isLoggedIn) { navigate('/sign-up?plan=enterprise'); return; }
-    
-    try {
-      showToast('Initiating Enterprise Provisioning (Simulation)...');
-      const token = getStoredToken();
-      const res = await fetch('/api/user/simulate-upgrade', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ plan: 'enterprise' })
-      });
-      
-      if (res.ok) {
-        const userData = JSON.parse(localStorage.getItem('user') || '{}');
-        userData.tier = 'enterprise';
-        localStorage.setItem('user', JSON.stringify(userData));
-        
-        showToast('Success! Enterprise Access Granted. Boosting credits...');
-        setTimeout(() => {
-          navigate('/dashboard/scan');
-          window.location.reload();
-        }, 1500);
-      }
-    } catch (err) {
-      console.error(err);
-    }
+    showToast('Redirecting to Billing...');
+    navigate('/dashboard/billing');
   };
 
   const handleStartTrial = () => {
@@ -252,7 +199,7 @@ export default function GenSubscriptionPlanComparison() {
             </ul>
           </div>
           <button onClick={handleEnterpriseUpgrade} className="w-full py-3.5 rounded-xl border-2 border-indigo-600 bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20">
-            <Zap size={18} /> Simulate Enterprise Upgrade
+            <Zap size={18} /> Upgrade to Enterprise
           </button>
         </div>
       </div>

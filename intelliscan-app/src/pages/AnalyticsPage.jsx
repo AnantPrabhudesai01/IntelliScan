@@ -93,7 +93,7 @@ export default function AnalyticsPage() {
     return (
       <div className="p-6 md:p-8 max-w-7xl mx-auto animate-pulse space-y-8">
         <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded-lg w-1/3"></div>
-        <div className="grid grid-cols-4 gap-6">{[1,2,3,4].map(i => <div key={i} className="h-32 bg-gray-100 dark:bg-[#161c28] rounded-2xl border border-gray-200 dark:border-gray-800"></div>)}</div>
+        <div className="grid grid-cols-4 gap-6">{[1, 2, 3, 4].map(i => <div key={i} className="h-32 bg-gray-100 dark:bg-[#161c28] rounded-2xl border border-gray-200 dark:border-gray-800"></div>)}</div>
         <div className="h-80 bg-gray-100 dark:bg-[#161c28] rounded-2xl border border-gray-200 dark:border-gray-800"></div>
       </div>
     );
@@ -112,11 +112,10 @@ export default function AnalyticsPage() {
             <button
               key={range}
               onClick={() => setTimeRange(range)}
-              className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
-                timeRange === range
+              className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${timeRange === range
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-              }`}
+                }`}
             >
               {range}
             </button>
@@ -175,7 +174,7 @@ export default function AnalyticsPage() {
           </div>
           <div className="h-64 flex items-end gap-1 relative mt-4">
             <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-              {[0,1,2,3].map(i => <div key={i} className="border-t border-gray-100 dark:border-gray-800 w-full h-px"></div>)}
+              {[0, 1, 2, 3].map(i => <div key={i} className="border-t border-gray-100 dark:border-gray-800 w-full h-px"></div>)}
             </div>
             {data.scan_volume.map((h, i) => (
               <div key={i} className="flex-1 group relative flex flex-col justify-end items-center">
@@ -287,12 +286,11 @@ export default function AnalyticsPage() {
           <div className="space-y-3">
             {data.top_networkers.map((user, i) => (
               <div key={i} className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors group">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black shrink-0 ${
-                  i === 0 ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50'
-                  : i === 1 ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700'
-                  : i === 2 ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-800/50'
-                  : 'bg-gray-50 dark:bg-gray-900 text-gray-400 border border-gray-200 dark:border-gray-800'
-                }`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black shrink-0 ${i === 0 ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50'
+                    : i === 1 ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700'
+                      : i === 2 ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-800/50'
+                        : 'bg-gray-50 dark:bg-gray-900 text-gray-400 border border-gray-200 dark:border-gray-800'
+                  }`}>
                   {i + 1}
                 </div>
                 <div className="flex-1 min-w-0">

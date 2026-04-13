@@ -1,0 +1,425 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<title>IntelliScan Detailed Data Dictionary</title>
+<xml>
+  <w:WordDocument>
+    <w:View>Print</w:View>
+    <w:Zoom>100</w:Zoom>
+    <w:DoNotOptimizeForBrowser/>
+  </w:WordDocument>
+</xml>
+<style>
+    body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; color: #000; }
+    h1 { font-size: 24pt; text-align: center; margin-bottom: 0pt; }
+    h3 { font-size: 14pt; text-align: center; font-weight: normal; margin-top: 4pt; }
+    h2 { font-size: 16pt; margin-top: 24pt; margin-bottom: 6pt; border-bottom: 1pt solid black; }
+    p.desc { font-style: italic; margin-top: 4pt; margin-bottom: 12pt; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 24pt; }
+    th { background-color: #d9d9d9; font-weight: bold; border: 1pt solid black; padding: 6pt; text-align: left; }
+    td { border: 1pt solid black; padding: 6pt; text-align: left; vertical-align: top; }
+    .center { text-align: center; }
+    .bold { font-weight: bold; }
+</style>
+</head>
+<body>
+
+    <h1>Data Dictionary</h1>
+    <h3>IntelliScan CRM &amp; OCR Engine Architecture</h3>
+    
+    <p>This document defines the highly detailed schema structure, constraints, and data definitions for the core operational tables of the IntelliScan project database. It explicitly outlines the constraints required to maintain referential integrity across the multi-tenant architecture.</p>
+
+    <!-- TABLE 1: WORKSPACES -->
+    <h2>1. Table: Workspaces</h2>
+    <p class="desc">Description: Core architectural tenant representing an enterprise or company isolating system data.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th class="center">Size</th>
+                <th class="center">Constraint</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="bold">workspace_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">PK</td>
+                <td>Unique identifier for the tenant company.</td>
+            </tr>
+            <tr>
+                <td class="bold">company_name</td>
+                <td>VARCHAR</td>
+                <td class="center">255</td>
+                <td class="center">NN</td>
+                <td>Official business name mapped to the tenant.</td>
+            </tr>
+            <tr>
+                <td class="bold">max_users</td>
+                <td>INT</td>
+                <td class="center">4</td>
+                <td class="center">-</td>
+                <td>Current seat limit for users (Default: 5).</td>
+            </tr>
+            <tr>
+                <td class="bold">quota_scans</td>
+                <td>INT</td>
+                <td class="center">4</td>
+                <td class="center">-</td>
+                <td>Monthly limits for Gemini Vision AI parsing calls.</td>
+            </tr>
+            <tr>
+                <td class="bold">created_at</td>
+                <td>DATETIME</td>
+                <td class="center">8</td>
+                <td class="center">NN</td>
+                <td>Timestamp for the creation of the Workspace context.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 2: USERS -->
+    <h2>2. Table: Users</h2>
+    <p class="desc">Description: Account and authentication matrix for accessing the dashboard.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th class="center">Size</th>
+                <th class="center">Constraint</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="bold">user_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">PK</td>
+                <td>Primary authentication identity.</td>
+            </tr>
+            <tr>
+                <td class="bold">workspace_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">FK</td>
+                <td>Binds the user directly to the Workspace enterprise level.</td>
+            </tr>
+            <tr>
+                <td class="bold">email_address</td>
+                <td>VARCHAR</td>
+                <td class="center">255</td>
+                <td class="center">NN, UQ</td>
+                <td>Login credentials ensuring globally unique values.</td>
+            </tr>
+            <tr>
+                <td class="bold">password_hash</td>
+                <td>VARCHAR</td>
+                <td class="center">255</td>
+                <td class="center">NN</td>
+                <td>Secure Bcrypt hashing generated array for standard storage.</td>
+            </tr>
+            <tr>
+                <td class="bold">rbac_role</td>
+                <td>VARCHAR</td>
+                <td class="center">50</td>
+                <td class="center">NN</td>
+                <td>Authorization string defining scope ('Owner', 'Admin', 'User').</td>
+            </tr>
+            <tr>
+                <td class="bold">is_active</td>
+                <td>BOOLEAN</td>
+                <td class="center">1</td>
+                <td class="center">-</td>
+                <td>Flag determining access standing (Default: True).</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 3: CONTACTS -->
+    <h2>3. Table: Contacts (Leads)</h2>
+    <p class="desc">Description: Primary entity mapped from extracted Business Card OCR processes encapsulating lead records.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th class="center">Size</th>
+                <th class="center">Constraint</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="bold">contact_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">PK</td>
+                <td>Definitive primary key for a successfully uploaded lead.</td>
+            </tr>
+            <tr>
+                <td class="bold">workspace_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">FK</td>
+                <td>Tenant ownership preventing scope leaks.</td>
+            </tr>
+            <tr>
+                <td class="bold">first_name</td>
+                <td>VARCHAR</td>
+                <td class="center">100</td>
+                <td class="center">-</td>
+                <td>Extracted First Name from structured Gemini model output.</td>
+            </tr>
+            <tr>
+                <td class="bold">last_name</td>
+                <td>VARCHAR</td>
+                <td class="center">100</td>
+                <td class="center">-</td>
+                <td>Extracted Last Name resolving empty arrays.</td>
+            </tr>
+            <tr>
+                <td class="bold">email_address</td>
+                <td>VARCHAR</td>
+                <td class="center">255</td>
+                <td class="center">-</td>
+                <td>Primary mechanism for matching automated email CRON sequences.</td>
+            </tr>
+            <tr>
+                <td class="bold">company_title</td>
+                <td>VARCHAR</td>
+                <td class="center">255</td>
+                <td class="center">-</td>
+                <td>Entity representation or organizational role of the lead.</td>
+            </tr>
+            <tr>
+                <td class="bold">pipeline_stage</td>
+                <td>VARCHAR</td>
+                <td class="center">50</td>
+                <td class="center">NN</td>
+                <td>CRM Tracking (Default: 'New Lead').</td>
+            </tr>
+            <tr>
+                <td class="bold">confidence_score</td>
+                <td>DECIMAL</td>
+                <td class="center">(5,2)</td>
+                <td class="center">NN</td>
+                <td>The certainty margin outputted by the LLM logic check.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 4: SCANNED IMAGES -->
+    <h2>4. Table: Scanned_Images</h2>
+    <p class="desc">Description: Raw storage matrix that handles the heavy byte transactions before OCR application.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th class="center">Size</th>
+                <th class="center">Constraint</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="bold">image_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">PK</td>
+                <td>Identifier mapped to the file uploaded from the mobile device.</td>
+            </tr>
+            <tr>
+                <td class="bold">contact_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">FK</td>
+                <td>Associates the raw blob logically to the refined Contact mapping.</td>
+            </tr>
+            <tr>
+                <td class="bold">s3_bucket_url</td>
+                <td>VARCHAR</td>
+                <td class="center">500</td>
+                <td class="center">NN</td>
+                <td>Absolute cloud linkage for image delivery back to the frontend.</td>
+            </tr>
+            <tr>
+                <td class="bold">raw_ocr_json</td>
+                <td>TEXT</td>
+                <td class="center">-</td>
+                <td class="center">-</td>
+                <td>Massive string capturing the absolute unmodified return from Gemini.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 5: EVENTS -->
+    <h2>5. Table: Events</h2>
+    <p class="desc">Description: Grouping logic separating different trade-shows and networking functions.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th class="center">Size</th>
+                <th class="center">Constraint</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="bold">event_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">PK</td>
+                <td>Top-level scope variable.</td>
+            </tr>
+            <tr>
+                <td class="bold">workspace_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">FK</td>
+                <td>Ties the event strictly to the parent Workspace account.</td>
+            </tr>
+            <tr>
+                <td class="bold">event_name</td>
+                <td>VARCHAR</td>
+                <td class="center">255</td>
+                <td class="center">NN</td>
+                <td>The UI displayed string describing the convention or meeting.</td>
+            </tr>
+            <tr>
+                <td class="bold">start_date</td>
+                <td>DATE</td>
+                <td class="center">8</td>
+                <td class="center">NN</td>
+                <td>Enforces when scanning limits/QR codes activate.</td>
+            </tr>
+            <tr>
+                <td class="bold">custom_qr_url</td>
+                <td>VARCHAR</td>
+                <td class="center">500</td>
+                <td class="center">-</td>
+                <td>The generated public-facing lead ingestion portal for this event.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 6: EMAIL SEQUENCES -->
+    <h2>6. Table: Email_Campaign_Nodes</h2>
+    <p class="desc">Description: Background task processing queue parsed hourly to dispatch SMTP relays based on schedule.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th class="center">Size</th>
+                <th class="center">Constraint</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="bold">campaign_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">PK</td>
+                <td>Core tracking element for a single outgoing step.</td>
+            </tr>
+            <tr>
+                <td class="bold">target_contact_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">FK</td>
+                <td>The ultimate recipient of the email transmission.</td>
+            </tr>
+            <tr>
+                <td class="bold">trigger_delay_days</td>
+                <td>INT</td>
+                <td class="center">4</td>
+                <td class="center">-</td>
+                <td>How long the daemon should wait before attempting execution.</td>
+            </tr>
+            <tr>
+                <td class="bold">html_rendered_body</td>
+                <td>TEXT</td>
+                <td class="center">-</td>
+                <td class="center">NN</td>
+                <td>The customized HTML text block prepared for NodeMailer handling.</td>
+            </tr>
+            <tr>
+                <td class="bold">delivery_status</td>
+                <td>VARCHAR</td>
+                <td class="center">50</td>
+                <td class="center">NN</td>
+                <td>Execution map tracking state ('Queued', 'Sent', 'Bounced').</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 7: CALENDAR BOOKINGS -->
+    <h2>7. Table: Calendar_Bookings</h2>
+    <p class="desc">Description: Public widget interactions validating available logical time slots without overlaps.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Data Type</th>
+                <th class="center">Size</th>
+                <th class="center">Constraint</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="bold">booking_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">PK</td>
+                <td>Master key establishing the confirmed reservation.</td>
+            </tr>
+            <tr>
+                <td class="bold">host_user_id</td>
+                <td>UUID</td>
+                <td class="center">36</td>
+                <td class="center bold">FK</td>
+                <td>Ties the booking block to the User holding the master schedule.</td>
+            </tr>
+            <tr>
+                <td class="bold">guest_email</td>
+                <td>VARCHAR</td>
+                <td class="center">255</td>
+                <td class="center">NN</td>
+                <td>Extrapolated text required to fire ICS attachment emails.</td>
+            </tr>
+            <tr>
+                <td class="bold">start_block</td>
+                <td>DATETIME</td>
+                <td class="center">8</td>
+                <td class="center">NN</td>
+                <td>Lock defining the earliest timestamp of the booking period.</td>
+            </tr>
+            <tr>
+                <td class="bold">end_block</td>
+                <td>DATETIME</td>
+                <td class="center">8</td>
+                <td class="center">NN</td>
+                <td>Lock defining the termination of the booking period (preventing overlaps).</td>
+            </tr>
+            <tr>
+                <td class="bold">meeting_url</td>
+                <td>VARCHAR</td>
+                <td class="center">500</td>
+                <td class="center">-</td>
+                <td>Bridge connection URL linking to Google Meet / Zoom auto-generation.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

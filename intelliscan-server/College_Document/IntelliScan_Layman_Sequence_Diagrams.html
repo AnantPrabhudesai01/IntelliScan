@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IntelliScan Sequence Diagrams - Layman Version</title>
+<!-- 
+100% Native HTML and SVG Sequence Diagrams.
+Zero colors used.
+Zero Markdown or Mermaid code used.
+Matches strict classic UML Sequence Diagram specifications, but written in non-technical business language.
+-->
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #ffffff;
+        color: #000000;
+        text-align: center;
+        padding: 40px;
+    }
+    h2 {
+        border-bottom: 1px solid #000;
+        display: inline-block;
+        padding-bottom: 5px;
+        margin-bottom: 20px;
+    }
+    .diagram-container {
+        border: 1px solid #000;
+        padding: 30px;
+        display: inline-block;
+        margin-bottom: 70px;
+        background-color: #fff;
+    }
+    svg {
+        display: block;
+        margin: 0 auto;
+    }
+    .box {
+        fill: #fff;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    .active {
+        fill: #fff;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    .lifeline {
+        stroke: #000;
+        stroke-width: 1;
+        stroke-dasharray: 8,5;
+    }
+    .solid {
+        stroke: #000;
+        stroke-width: 1.5;
+        fill: none;
+    }
+    .dashed {
+        stroke: #000;
+        stroke-width: 1.5;
+        fill: none;
+        stroke-dasharray: 6,4;
+    }
+    text {
+        fill: #000;
+        font-size: 13px;
+        pointer-events: none;
+        text-anchor: middle;
+    }
+    .title-text {
+        font-weight: bold;
+        dominant-baseline: middle;
+    }
+</style>
+</head>
+<body>
+
+    <h1>IntelliScan Workflow Explanations (Non-Technical Version)</h1>
+    <p style="margin-bottom: 50px;">These Sequence Diagrams explain EXACTLY what happens under the hood, but translated into plain English for business stakeholders.</p>
+
+    <!-- Global Arrow Definitions -->
+    <svg width="0" height="0" style="display:block;">
+        <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto-start-reverse">
+                <polygon points="0 0, 10 4, 0 8" fill="#000" />
+            </marker>
+            <marker id="open-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto-start-reverse">
+                <polyline points="0 1, 9 4, 0 7" fill="none" stroke="#000" stroke-width="1.5" />
+            </marker>
+        </defs>
+    </svg>
+
+
+    <!-- ========================================================
+         DIAGRAM 1: Core AI Card Scanning & DB Integration (Layman)
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>1. How the App Scans a Business Card</h2><br>
+        <svg width="840" height="600">
+            <!-- Lifelines -->
+            <line x1="100" y1="70" x2="100" y2="580" class="lifeline" />
+            <line x1="260" y1="70" x2="260" y2="580" class="lifeline" />
+            <line x1="420" y1="70" x2="420" y2="580" class="lifeline" />
+            <line x1="580" y1="70" x2="580" y2="580" class="lifeline" />
+            <line x1="740" y1="70" x2="740" y2="580" class="lifeline" />
+
+            <!-- Headers -->
+            <rect x="40" y="30" width="120" height="40" class="box" /> <text x="100" y="55" class="title-text">You (The User)</text>
+            <rect x="200" y="30" width="120" height="40" class="box" /> <text x="260" y="55" class="title-text">IntelliScan App</text>
+            <rect x="360" y="30" width="120" height="40" class="box" /> <text x="420" y="55" class="title-text">The "Brain"</text>
+            <rect x="520" y="30" width="120" height="40" class="box" /> <text x="580" y="55" class="title-text">AI Assistant</text>
+            <rect x="680" y="30" width="120" height="40" class="box" /> <text x="740" y="55" class="title-text">Secure Storage</text>
+
+            <!-- Activation Boxes -->
+            <rect x="92" y="100" width="16" height="430" class="active" /> <!-- User -->
+            <rect x="252" y="110" width="16" height="410" class="active" /> <!-- UI -->
+            <rect x="412" y="150" width="16" height="340" class="active" /> <!-- Brain -->
+            <rect x="572" y="190" width="16" height="80" class="active" /> <!-- AI -->
+            <rect x="732" y="290" width="16" height="60" class="active" /> <!-- DB Read -->
+            <rect x="732" y="370" width="16" height="60" class="active" /> <!-- DB Write -->
+
+            <!-- Interactions -->
+            <!-- 1 --> 
+            <line x1="108" y1="120" x2="252" y2="120" class="solid" marker-end="url(#arrow)" /> 
+            <text x="180" y="112">Take photo of business card</text>
+            
+            <!-- 2 --> 
+            <line x1="268" y1="160" x2="412" y2="160" class="solid" marker-end="url(#arrow)" /> 
+            <text x="340" y="152">Pass photo securely to Brain</text>
+            
+            <!-- 3 --> 
+            <line x1="428" y1="200" x2="572" y2="200" class="solid" marker-end="url(#arrow)" /> 
+            <text x="500" y="192">Please read the text from this image</text>
+            
+            <!-- 4 --> 
+            <line x1="572" y1="260" x2="428" y2="260" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="500" y="252">Return cleaned up contact details</text>
+            
+            <!-- 5 --> 
+            <line x1="428" y1="300" x2="732" y2="300" class="solid" marker-end="url(#arrow)" /> 
+            <text x="580" y="292">Check if we already saved this person</text>
+            
+            <!-- 6 --> 
+            <line x1="732" y1="340" x2="428" y2="340" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="580" y="332">Nope, this person is new</text>
+            
+            <!-- 7 --> 
+            <line x1="428" y1="380" x2="732" y2="380" class="solid" marker-end="url(#arrow)" /> 
+            <text x="580" y="372">Save the new contact permanently</text>
+            
+            <!-- 8 --> 
+            <line x1="732" y1="420" x2="428" y2="420" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="580" y="412">Contact saved successfully</text>
+            
+            <!-- 9 --> 
+            <line x1="428" y1="470" x2="268" y2="470" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="340" y="462">Processing done, here is the result</text>
+            
+            <!-- 10 --> 
+            <line x1="252" y1="510" x2="108" y2="510" class="solid" marker-end="url(#arrow)" /> 
+            <text x="180" y="502">Show organized contact on your screen</text>
+            
+        </svg>
+    </div>
+
+
+    <!-- ========================================================
+         DIAGRAM 2: Automated Background Cron Workflow (Layman)
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>2. How Automatic Email Sequences Actually Work</h2><br>
+        <svg width="840" height="660">
+            <!-- Lifelines -->
+            <line x1="100" y1="70" x2="100" y2="640" class="lifeline" />
+            <line x1="260" y1="70" x2="260" y2="640" class="lifeline" />
+            <line x1="420" y1="70" x2="420" y2="640" class="lifeline" />
+            <line x1="580" y1="70" x2="580" y2="640" class="lifeline" />
+            <line x1="740" y1="70" x2="740" y2="640" class="lifeline" />
+
+            <!-- Headers -->
+            <rect x="40" y="30" width="120" height="40" class="box" /> <text x="100" y="55" class="title-text">You (The User)</text>
+            <rect x="200" y="30" width="120" height="40" class="box" /> <text x="260" y="55" class="title-text">IntelliScan App</text>
+            <rect x="360" y="30" width="120" height="40" class="box" /> <text x="420" y="55" class="title-text">The "Brain"</text>
+            <rect x="520" y="30" width="120" height="40" class="box" /> <text x="580" y="55" class="title-text">Auto-Scheduler</text>
+            <rect x="680" y="30" width="120" height="40" class="box" /> <text x="740" y="55" class="title-text">Email Provider</text>
+
+            <!-- Activation Boxes -->
+            <rect x="92" y="100" width="16" height="230" class="active" /> <!-- User Enrollment -->
+            <rect x="252" y="110" width="16" height="210" class="active" /> <!-- React Enrollment -->
+            <rect x="412" y="150" width="16" height="130" class="active" /> <!-- Brain Enroll Phase -->
+            
+            <rect x="572" y="380" width="16" height="230" class="active" /> <!-- Scheduler Execution -->
+            <rect x="412" y="440" width="16" height="40" class="active" /> <!-- Brain Query -->
+            <rect x="412" y="590" width="16" height="40" class="active" /> <!-- Brain Update -->
+            <rect x="732" y="510" width="16" height="50" class="active" /> <!-- SMTP -->
+
+            <!-- Phase 1: Enrollment -->
+            <text x="420" y="90" font-weight="bold" font-style="italic">Part 1: Setup &amp; Enroll</text>
+            
+            <line x1="108" y1="120" x2="252" y2="120" class="solid" marker-end="url(#arrow)" /> 
+            <text x="180" y="112">Select people and pick an email message</text>
+            
+            <line x1="268" y1="160" x2="412" y2="160" class="solid" marker-end="url(#arrow)" /> 
+            <text x="340" y="152">Turn on automatic emails for them</text>
+            
+            <!-- Brain Self Loop -->
+            <polyline points="428,190 460,190 460,220 428,220" class="solid" marker-end="url(#arrow)" />
+            <text x="520" y="205" font-style="italic">Mark as "Waiting to send" in memory</text>
+
+            <line x1="412" y1="260" x2="268" y2="260" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="340" y="252">Confirm emails are scheduled</text>
+            
+            <line x1="252" y1="300" x2="108" y2="300" class="solid" marker-end="url(#arrow)" /> 
+            <text x="180" y="292">Show "Success" popup on screen</text>
+
+            <!-- Time Ellapse Break -->
+            <line x1="50" y1="350" x2="790" y2="350" stroke="#000" stroke-width="1" stroke-dasharray="10,10" />
+            <text x="420" y="350" font-style="italic" style="background:#fff; padding:0 10px;"> ... Fast-Forward a few days to the follow-up date ... </text>
+
+            <!-- Phase 2: Execution -->
+            <text x="420" y="380" font-weight="bold" font-style="italic">Part 2: Checking and Sending</text>
+
+            <!-- Scheduler Self Loop -->
+            <polyline points="588,390 620,390 620,420 588,420" class="solid" marker-end="url(#arrow)" />
+            <text x="690" y="405" font-style="italic">Wake up and check what's due</text>
+
+            <line x1="572" y1="450" x2="428" y2="450" class="solid" marker-end="url(#arrow)" /> 
+            <text x="500" y="442">Who needs an email sent right now?</text>
+
+            <line x1="428" y1="470" x2="572" y2="470" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="500" y="462">Give list of people due today</text>
+
+            <line x1="588" y1="520" x2="732" y2="520" class="solid" marker-end="url(#arrow)" /> 
+            <text x="660" y="512">Please deliver these specific emails</text>
+
+            <line x1="732" y1="550" x2="588" y2="550" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="660" y="542">Emails successfully delivered!</text>
+
+            <line x1="572" y1="600" x2="428" y2="600" class="solid" marker-end="url(#arrow)" /> 
+            <text x="500" y="592">Mark those files as "Sent"</text>
+        </svg>
+    </div>
+
+
+
+    <!-- ========================================================
+         DIAGRAM 3: Public Booking Interface (Layman)
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>3. How Clients Book Meetings with You</h2><br>
+        <svg width="840" height="700">
+            <!-- Lifelines -->
+            <line x1="100" y1="70" x2="100" y2="680" class="lifeline" />
+            <line x1="260" y1="70" x2="260" y2="680" class="lifeline" />
+            <line x1="420" y1="70" x2="420" y2="680" class="lifeline" />
+            <line x1="580" y1="70" x2="580" y2="680" class="lifeline" />
+            <line x1="740" y1="70" x2="740" y2="680" class="lifeline" />
+
+            <!-- Headers -->
+            <rect x="40" y="30" width="120" height="40" class="box" /> <text x="100" y="55" class="title-text">Your Client</text>
+            <rect x="200" y="30" width="120" height="40" class="box" /> <text x="260" y="55" class="title-text">Public Website</text>
+            <rect x="360" y="30" width="120" height="40" class="box" /> <text x="420" y="55" class="title-text">The "Brain"</text>
+            <rect x="520" y="30" width="120" height="40" class="box" /> <text x="580" y="55" class="title-text">Secure Storage</text>
+            <rect x="680" y="30" width="120" height="40" class="box" /> <text x="740" y="55" class="title-text">Your Calendar App</text>
+
+            <!-- Activation Boxes -->
+            <rect x="92" y="100" width="16" height="570" class="active" /> <!-- Public -->
+            <rect x="252" y="110" width="16" height="550" class="active" /> <!-- React -->
+            <rect x="412" y="150" width="16" height="150" class="active" /> <!-- Brain Read -->
+            <rect x="572" y="190" width="16" height="60" class="active" /> <!-- DB Read -->
+            
+            <rect x="412" y="400" width="16" height="230" class="active" /> <!-- Brain Write -->
+            <rect x="572" y="440" width="16" height="60" class="active" /> <!-- DB Write -->
+            <rect x="732" y="520" width="16" height="60" class="active" /> <!-- Cal -->
+
+            <!-- View Action -->
+            <line x1="108" y1="120" x2="252" y2="120" class="solid" marker-end="url(#arrow)" /> 
+            <text x="180" y="112">Click the unique link you sent them</text>
+            
+            <line x1="268" y1="160" x2="412" y2="160" class="solid" marker-end="url(#arrow)" /> 
+            <text x="340" y="152">What times are available to meet?</text>
+            
+            <line x1="428" y1="200" x2="572" y2="200" class="solid" marker-end="url(#arrow)" /> 
+            <text x="500" y="192">Check your real-time schedule</text>
+            
+            <line x1="572" y1="240" x2="428" y2="240" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="500" y="232">Return safe, open time slots</text>
+
+            <line x1="412" y1="280" x2="268" y2="280" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="340" y="272">Send those open slots to the website</text>
+            
+            <line x1="252" y1="320" x2="108" y2="320" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="180" y="312">Show the calendar so they can pick a time</text>
+
+            <!-- Booking Submission -->
+            <line x1="108" y1="370" x2="252" y2="370" class="solid" marker-end="url(#arrow)" /> 
+            <text x="180" y="362">Pick a time and type their email</text>
+
+            <line x1="268" y1="410" x2="412" y2="410" class="solid" marker-end="url(#arrow)" /> 
+            <text x="340" y="402">Request to officially book this time</text>
+
+            <line x1="428" y1="450" x2="572" y2="450" class="solid" marker-end="url(#arrow)" /> 
+            <text x="500" y="442">Save this reservation to memory</text>
+
+            <line x1="572" y1="490" x2="428" y2="490" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="500" y="482">Saved perfectly</text>
+
+            <!-- Exiting to GSuite -->
+            <line x1="428" y1="530" x2="732" y2="530" class="solid" marker-end="url(#arrow)" /> 
+            <text x="580" y="522">Automatically create Meeting Invite!</text>
+
+            <line x1="732" y1="570" x2="428" y2="570" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="580" y="562">Invites sent to everyone</text>
+
+            <line x1="412" y1="610" x2="268" y2="610" class="dashed" marker-end="url(#open-arrow)" /> 
+            <text x="340" y="602">Booking process is officially done</text>
+
+            <line x1="252" y1="650" x2="108" y2="650" class="solid" marker-end="url(#arrow)" /> 
+            <text x="180" y="642">Show "Success!" screen to Client</text>
+
+        </svg>
+    </div>
+
+</body>
+</html>

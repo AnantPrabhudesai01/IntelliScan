@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { useDarkMode } from '../hooks/useDarkMode';
+import { useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import ChatbotWidget from '../components/ChatbotWidget';
 import { useRole } from '../context/RoleContext';
 import { resolveHomeRoute, safeReadStoredUser, setStoredUser } from '../utils/auth';
@@ -10,6 +10,8 @@ import {
   Shield, Database, Cpu, Webhook, Briefcase, FileText, ChevronDown, ChevronRight,
   X, Key, Globe, Bell as BellIcon, Lock, Mail, Smartphone, Save, Check, AlertTriangle, Building, MessageSquare, GitCommit, ListTree, Zap, Layers, Trophy, Calendar
 } from 'lucide-react';
+import { useNotifications } from '../context/NotificationContext';
+import NotificationCenter from '../components/NotificationCenter';
 
 const businessAdminNav = [
   { section: 'Overview', items: [
@@ -64,7 +66,7 @@ const superAdminNav = [
   ]}
 ];
 
-function AdminSettingsPanel({ user, role, onClose, onSave, toggleDark, isDark }) {
+function AdminSettingsPanel({ user, role, onClose, onSave, toggleDark, isDarkMode }) {
   const [tab, setTab] = useState('profile');
   const [form, setForm] = useState({
     name: user.name || 'Admin User',
@@ -93,124 +95,124 @@ function AdminSettingsPanel({ user, role, onClose, onSave, toggleDark, isDark })
   ];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-white dark:bg-[#1a2035] border border-gray-200 dark:border-white/10 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60" onClick={onClose}>
+      <div className="bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-700 rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-5 border-b border-gray-100 dark:border-white/10 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">{form.name.charAt(0)}</span>
+            <div className="w-9 h-9 rounded-full bg-brand flex items-center justify-center">
+              <span className="text-white font-bold text-base">{form.name.charAt(0)}</span>
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Account Settings</h2>
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${role === 'super_admin' ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400' : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'}`}>
+              <h2 className="text-base font-bold text-gray-900 dark:text-white">Account Settings</h2>
+              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${role === 'super_admin' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' : 'bg-brand-50 text-brand-600'}`}>
                 {role === 'super_admin' ? 'Super Admin' : 'Enterprise Admin'}
               </span>
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-white"><X size={22} /></button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-white"><X size={20} /></button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-100 dark:border-white/10 px-6 flex-shrink-0">
+        <div className="flex border-b border-gray-100 dark:border-gray-800 px-5 flex-shrink-0">
           {tabs.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition-all ${tab === t.id ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400' : 'border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}>
-              <t.icon size={14} /> {t.label}
+              className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold border-b-2 transition-all ${tab === t.id ? 'border-brand text-brand' : 'border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}>
+              <t.icon size={13} /> {t.label}
             </button>
           ))}
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-5">
           {tab === 'profile' && (
             <>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Full Name</label>
+                  <label className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Full Name</label>
                   <input value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))}
-                    className="w-full mt-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+                    className="w-full mt-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand/40 outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email Address</label>
+                  <label className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email Address</label>
                   <input value={form.email} onChange={e => setForm(f => ({...f, email: e.target.value}))}
-                    className="w-full mt-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+                    className="w-full mt-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand/40 outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Phone</label>
+                  <label className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Phone</label>
                   <input value={form.phone} onChange={e => setForm(f => ({...f, phone: e.target.value}))}
-                    className="w-full mt-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+                    className="w-full mt-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand/40 outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Timezone</label>
+                  <label className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Timezone</label>
                   <select value={form.timezone} onChange={e => setForm(f => ({...f, timezone: e.target.value}))}
-                    className="w-full mt-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    className="w-full mt-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-brand/40 outline-none">
                     {['UTC-8 (Pacific)', 'UTC-5 (Eastern)', 'UTC+0 (London)', 'UTC+1 (Berlin)', 'UTC+5:30 (India)', 'UTC+8 (Singapore)', 'UTC+10 (Sydney)'].map(tz => (
                       <option key={tz} value={tz}>{tz}</option>
                     ))}
                   </select>
                 </div>
               </div>
-              <div className="p-4 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl border border-indigo-100 dark:border-indigo-500/20">
-                <p className="text-xs text-indigo-700 dark:text-indigo-300 font-medium">
+              <div className="p-3 bg-brand-50 dark:bg-brand-900/20 rounded-lg border border-brand-100 dark:border-brand-800/30">
+                <p className="text-xs text-brand-700 dark:text-brand-300 font-medium">
                   <strong>Role:</strong> {role === 'super_admin' ? 'Super Admin — Full platform access with infrastructure control' : 'Business Admin — Workspace management and team analytics'}
                 </p>
               </div>
             </>
           )}
           {tab === 'notifications' && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[
                 { key: 'notifications_email', label: 'Email Notifications', desc: 'Receive system alerts and summaries by email' },
                 { key: 'notifications_security', label: 'Security Alerts', desc: 'Get notified of suspicious login attempts or policy violations' },
                 { key: 'notifications_system', label: 'System Events', desc: 'Infrastructure state changes, scaling events, rollbacks' },
               ].map(item => (
-                <label key={item.key} className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-all">
+                <label key={item.key} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
                   <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{item.label}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{item.label}</p>
                     <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
                   </div>
-                  <div className={`w-12 h-6 rounded-full transition-all relative ${form[item.key] ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-700'}`}
+                  <div className={`w-10 h-5 rounded-full transition-all relative cursor-pointer ${form[item.key] ? 'bg-brand' : 'bg-gray-300 dark:bg-gray-700'}`}
                     onClick={() => setForm(f => ({...f, [item.key]: !f[item.key]}))}>
-                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${form[item.key] ? 'left-7' : 'left-1'}`} />
+                    <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${form[item.key] ? 'left-[22px]' : 'left-0.5'}`} />
                   </div>
                 </label>
               ))}
             </div>
           )}
           {tab === 'security' && (
-            <div className="space-y-4">
-              <label className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-all">
-                <div className="flex items-center gap-3">
-                  <Smartphone size={18} className="text-indigo-500" />
+            <div className="space-y-3">
+              <label className="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+                <div className="flex items-center gap-2.5">
+                  <Smartphone size={16} className="text-brand" />
                   <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">Two-Factor Authentication</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Two-Factor Authentication</p>
                     <p className="text-xs text-gray-500 mt-0.5">Add an extra layer of login security via authenticator app</p>
                   </div>
                 </div>
-                <div className={`w-12 h-6 rounded-full transition-all relative ${form.two_factor ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-700'}`}
+                <div className={`w-10 h-5 rounded-full transition-all relative ${form.two_factor ? 'bg-brand' : 'bg-gray-300 dark:bg-gray-700'}`}
                   onClick={() => setForm(f => ({...f, two_factor: !f.two_factor}))}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${form.two_factor ? 'left-7' : 'left-1'}`} />
+                  <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${form.two_factor ? 'left-[22px]' : 'left-0.5'}`} />
                 </div>
               </label>
-              <div className="p-4 rounded-xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
-                <p className="text-sm font-bold text-gray-900 dark:text-white mb-2">Session Timeout</p>
+              <div className="p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Session Timeout</p>
                 <select value={form.session_timeout} onChange={e => setForm(f => ({...f, session_timeout: e.target.value}))}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/10 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-brand/40">
                   {['15', '30', '60', '120'].map(m => <option key={m} value={m}>{m} minutes</option>)}
                 </select>
               </div>
-              <div className="p-4 bg-amber-50 dark:bg-amber-500/10 rounded-xl border border-amber-100 dark:border-amber-500/20 flex gap-3">
-                <AlertTriangle size={18} className="text-amber-500 flex-shrink-0 mt-0.5" />
+              <div className="p-3 bg-amber-50 dark:bg-amber-500/10 rounded-lg border border-amber-100 dark:border-amber-500/20 flex gap-2">
+                <AlertTriangle size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-amber-700 dark:text-amber-300">Last sign-in: Today at 03:08 from Windows · Chrome 124. <span className="font-bold underline cursor-pointer">View all sessions</span></p>
               </div>
             </div>
           )}
           {tab === 'platform' && role === 'super_admin' && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle size={14} className="text-amber-400" />
-                <p className="text-xs text-amber-400 font-bold">Super Admin Only — Platform-wide settings</p>
+            <div className="space-y-3">
+              <div className="flex items-center gap-1.5 mb-2">
+                <AlertTriangle size={13} className="text-amber-400" />
+                <p className="text-[10px] text-amber-400 font-bold">Super Admin Only — Platform-wide settings</p>
               </div>
               {[
                 { icon: Globe, label: 'Default Scan Region', desc: 'Primary inference region for new organizations', val: 'US-East' },
@@ -218,26 +220,26 @@ function AdminSettingsPanel({ user, role, onClose, onSave, toggleDark, isDark })
                 { icon: Key, label: 'Platform API Rate Limit', desc: 'Max API calls per workspace per minute', val: '2,000 req/min' },
                 { icon: Building, label: 'Max Orgs per License Tier', desc: 'Enterprise plan organization cap', val: '500 orgs' },
               ].map(item => (
-                <div key={item.label} className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
-                  <div className="flex items-center gap-3">
-                    <item.icon size={16} className="text-indigo-400" />
+                <div key={item.label} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+                  <div className="flex items-center gap-2.5">
+                    <item.icon size={15} className="text-brand" />
                     <div>
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">{item.label}</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{item.label}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
                     </div>
                   </div>
-                  <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-1 rounded-lg">{item.val}</span>
+                  <span className="text-[10px] font-mono font-bold text-brand bg-brand/10 border border-brand/20 px-2 py-1 rounded-md">{item.val}</span>
                 </div>
               ))}
-              <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
-                <div className="flex items-center gap-3">
-                  <Mail size={16} className="text-indigo-400" />
+              <div className="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+                <div className="flex items-center gap-2.5">
+                  <Mail size={15} className="text-brand" />
                   <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">Global Announcement Email</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Global Announcement Email</p>
                     <p className="text-xs text-gray-500 mt-0.5">Send a platform-wide notice to all organization admins</p>
                   </div>
                 </div>
-                <button className="text-xs font-bold text-indigo-400 border border-indigo-500/30 px-3 py-1.5 rounded-lg hover:bg-indigo-500/10 transition-all">
+                <button className="text-xs font-semibold text-brand border border-brand/30 px-3 py-1 rounded-md hover:bg-brand/10 transition-all">
                   Compose
                 </button>
               </div>
@@ -246,13 +248,13 @@ function AdminSettingsPanel({ user, role, onClose, onSave, toggleDark, isDark })
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-5 border-t border-gray-100 dark:border-white/10 flex items-center justify-between flex-shrink-0">
-          <button onClick={toggleDark} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white transition-colors">
-            {isDark ? <Sun size={16} /> : <Moon size={16} />} {isDark ? 'Light Mode' : 'Dark Mode'}
+        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between flex-shrink-0">
+          <button onClick={toggleDark} className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white transition-colors">
+            {isDarkMode ? <Sun size={15} /> : <Moon size={15} />} {isDarkMode ? 'Light Mode' : 'Dark Mode'}
           </button>
           <button onClick={handleSave}
-            className={`flex items-center gap-2 px-6 py-2 rounded-xl font-bold text-sm transition-all active:scale-95 ${saved ? 'bg-green-600 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}>
-            {saved ? <><Check size={16} /> Saved!</> : <><Save size={16} /> Save Changes</>}
+            className={`flex items-center gap-1.5 px-5 py-2 rounded-lg font-semibold text-sm transition-all active:scale-95 ${saved ? 'bg-green-600 text-white' : 'bg-brand hover:bg-brand-light text-white'}`}>
+            {saved ? <><Check size={15} /> Saved!</> : <><Save size={15} /> Save Changes</>}
           </button>
         </div>
       </div>
@@ -263,9 +265,9 @@ function AdminSettingsPanel({ user, role, onClose, onSave, toggleDark, isDark })
 export default function AdminLayout({ children, role = 'business_admin' }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isDark, toggle } = useDarkMode();
+  const { isDarkMode, toggleTheme } = useTheme();
   const { signOut } = useRole();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -286,105 +288,128 @@ export default function AdminLayout({ children, role = 'business_admin' }) {
     setStoredUser(updated);
   };
 
-  const NOTIFS = [
-    { type: 'warn', msg: 'EU-Central node latency exceeded 150ms', time: '2m ago' },
-    { type: 'info', msg: "Workspace 'Quantum_AI' migrated to NODE_04", time: '8m ago' },
-    { type: 'err',  msg: 'DB replication timeout on AS-South cluster', time: '14m ago' },
-    { type: 'info', msg: 'OCR confidence score reached 98.4% avg', time: '31m ago' },
-  ];
+  const { unreadCount } = useNotifications();
 
-  const renderSidebarContent = () => (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-950">
-      <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-800 shrink-0">
-        <Link to={homePath} className="flex items-center gap-2">
-          <ScanLine size={22} className="text-indigo-600" />
-          <span className="font-bold text-lg text-gray-900 dark:text-white">IntelliScan</span>
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handler = () => setProfileOpen(false);
+    if (profileOpen) document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [profileOpen]);
+
+  const renderSidebarContent = ({ isMobile = false } = {}) => (
+    <div className="flex flex-col h-full bg-[#21132E] text-white select-none">
+      {/* Logo */}
+      <div className="h-14 flex items-center px-4 border-b border-[#3D2650] shrink-0">
+        <Link to={homePath} className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center flex-shrink-0">
+            <ScanLine size={18} className="text-white" />
+          </div>
+          <span className="font-bold text-[15px] tracking-tight text-white">IntelliScan</span>
         </Link>
+        {isMobile && (
+          <button onClick={() => setMobileSidebarOpen(false)} className="ml-auto p-1.5 text-sidebar-text hover:text-white rounded-md hover:bg-sidebar-hover transition-colors">
+            <X size={18} />
+          </button>
+        )}
       </div>
 
-      <div className="px-4 pt-4 pb-2 shrink-0">
-        <span className={`text-[10px] font-bold px-2 py-1 rounded w-full flex justify-center tracking-wider
+      {/* Role Badge */}
+      <div className="px-3 pt-3 pb-1.5 shrink-0">
+        <span className={`text-[9px] font-bold px-2 py-1 rounded w-full flex justify-center tracking-wider
           ${role === 'super_admin'
-            ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400'
-            : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'}`}>
+            ? 'bg-purple-500/20 text-purple-300'
+            : 'bg-brand/30 text-brand-200'}`}>
           {role === 'super_admin' ? 'SUPER ADMIN' : 'ENTERPRISE ADMIN'}
         </span>
       </div>
 
-      <nav className="flex-1 px-3 py-2 space-y-4 overflow-y-auto style-scrollbar">
+      {/* Nav Groups */}
+      <nav className="flex-1 px-2.5 py-2 space-y-4 overflow-y-auto sidebar-scroll">
         {navGroups.map((group, idx) => (
           <div key={idx}>
-            <h4 className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{group.section}</h4>
+            <h4 className="px-3 text-[9px] font-bold text-sidebar-text/60 uppercase tracking-widest mb-1.5">{group.section}</h4>
             <div className="space-y-0.5">
-              {group.items.map(({ to, label, icon: Icon }) => (
-                <Link key={to} to={to}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors
-                    ${location.pathname === to
-                      ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50'}`}>
-                  {Icon && <Icon size={16} />}
-                  {label}
-                </Link>
-              ))}
+              {group.items.map(({ to, label, icon: Icon }) => {
+                const isActive = location.pathname === to;
+                return (
+                  <Link key={to} to={to}
+                    onClick={() => isMobile && setMobileSidebarOpen(false)}
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] font-medium transition-all relative
+                      ${isActive
+                        ? 'bg-sidebar-active text-white'
+                        : 'text-sidebar-text hover:bg-sidebar-hover hover:text-white'}`}>
+                    {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-brand-light rounded-r-full" />}
+                    {Icon && <Icon size={16} className={isActive ? 'text-brand-light' : 'text-sidebar-text'} />}
+                    <span className="truncate">{label}</span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         ))}
       </nav>
 
-      <div className="border-t border-gray-200 dark:border-gray-800 p-4 shrink-0 bg-gray-50 dark:bg-gray-900/50">
+      {/* Profile Footer */}
+      <div className="border-t border-[#3D2650] p-3 shrink-0">
         <div className="relative">
-          <button onClick={() => setProfileOpen(!profileOpen)}
-            className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
-            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0">
+          <button onClick={(e) => { e.stopPropagation(); setProfileOpen(!profileOpen); }}
+            className="w-full flex items-center gap-2.5 p-2 rounded-lg hover:bg-sidebar-hover transition-colors">
+            <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center flex-shrink-0">
               <span className="text-white text-xs font-bold">{user.name.charAt(0)}</span>
             </div>
             <div className="flex-1 text-left min-w-0">
-              <p className="text-xs font-bold text-gray-900 dark:text-white truncate">{user.name}</p>
-              <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+              <p className="text-[12px] font-semibold text-white truncate">{user.name}</p>
+              <p className="text-[10px] text-sidebar-text truncate">{user.email}</p>
             </div>
           </button>
 
           {profileOpen && (
-            <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl py-1 z-50 overflow-hidden">
-              {/* User info header */}
+            <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl py-1 z-50 overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-brand flex items-center justify-center">
                     <span className="text-white font-bold">{user.name.charAt(0)}</span>
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{user.name}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{user.name}</p>
                     <p className="text-[10px] text-gray-500">{user.email}</p>
                   </div>
                 </div>
                 <div className="mt-2">
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded uppercase ${role === 'super_admin' ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400' : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'}`}>
+                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${role === 'super_admin' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' : 'bg-brand-50 text-brand-600'}`}>
                     {role === 'super_admin' ? 'Super Admin' : 'Workspace Admin'}
                   </span>
                 </div>
               </div>
 
               <button onClick={() => { setSettingsOpen(true); setProfileOpen(false); }}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                <div className="flex items-center gap-3 font-medium"><Settings size={15} /> Settings</div>
+                className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div className="flex items-center gap-2.5 font-medium"><Settings size={14} /> Settings</div>
                 <ChevronRight size={14} className="text-gray-400" />
               </button>
               <button onClick={() => { setNotifOpen(true); setProfileOpen(false); }}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800 transition-colors">
-                <div className="flex items-center gap-3 font-medium"><BellIcon size={15} /> Notifications <span className="ml-1 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">{NOTIFS.length}</span></div>
+                className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800 transition-colors">
+                <div className="flex items-center gap-2.5 font-medium">
+                  <BellIcon size={14} /> Notifications 
+                  {unreadCount > 0 && (
+                    <span className="ml-1 w-4 h-4 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </div>
                 <ChevronRight size={14} className="text-gray-400" />
               </button>
-              <button onClick={toggle}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800">
-                <div className="flex items-center gap-3 font-medium">
-                  {isDark ? <Sun size={15} /> : <Moon size={15} />}
-                  {isDark ? 'Light Mode' : 'Dark Mode'}
+              <button onClick={toggleTheme}
+                className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-2.5 font-medium">
+                  {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
+                  {isDarkMode ? 'Light Mode' : 'Dark Mode'}
                 </div>
               </button>
               <button onClick={handleSignOut}
-                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors">
-                <LogOut size={15} /> Sign Out
+                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors">
+                <LogOut size={14} /> Sign Out
               </button>
             </div>
           )}
@@ -394,83 +419,79 @@ export default function AdminLayout({ children, role = 'business_admin' }) {
   );
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 font-body">
+    <div className="flex h-screen bg-[#F0F0F0] dark:bg-[#111118] font-body">
       {settingsOpen && (
         <AdminSettingsPanel
           user={user} role={role}
           onClose={() => setSettingsOpen(false)}
           onSave={handleSaveSettings}
-          toggleDark={toggle} isDark={isDark}
+          toggleDark={toggleTheme} isDarkMode={isDarkMode}
         />
       )}
-      {notifOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:justify-end bg-black/40 backdrop-blur-sm" onClick={() => setNotifOpen(false)}>
-          <div className="bg-white dark:bg-[#1a2035] border border-gray-200 dark:border-white/10 rounded-2xl w-full sm:w-96 sm:mr-4 sm:mb-4 shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-white/10">
-              <h3 className="font-bold text-gray-900 dark:text-white">Notifications</h3>
-              <button onClick={() => setNotifOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-white"><X size={18} /></button>
-            </div>
-            <div className="divide-y divide-gray-100 dark:divide-white/5 max-h-80 overflow-y-auto">
-              {NOTIFS.map((n, i) => (
-                <div key={i} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                  <div className="flex gap-3">
-                    <span className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${n.type === 'err' ? 'bg-red-500' : n.type === 'warn' ? 'bg-amber-500' : 'bg-indigo-500'}`} />
-                    <div>
-                      <p className="text-sm text-gray-800 dark:text-gray-200">{n.msg}</p>
-                      <p className="text-[10px] text-gray-400 mt-1">{n.time}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="px-6 py-3 border-t border-gray-100 dark:border-white/10 text-center">
-              <button className="text-xs text-indigo-500 font-bold hover:underline">Mark all as read</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <NotificationCenter isOpen={notifOpen} onClose={() => setNotifOpen(false)} />
 
-      <aside className="hidden lg:flex w-64 flex-shrink-0 border-r border-gray-200 dark:border-gray-800 flex-col shadow-sm z-10">
+      {/* Desktop Sidebar — always visible */}
+      <aside className="hidden lg:flex w-60 flex-shrink-0 flex-col shadow-lg z-10">
         {renderSidebarContent()}
       </aside>
 
-      {sidebarOpen && (
+      {/* Mobile Sidebar Overlay */}
+      {mobileSidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-          <aside className="relative w-64 bg-white dark:bg-gray-950 flex flex-col shadow-2xl animate-in slide-in-from-left">
-            {renderSidebarContent()}
+          <div className="fixed inset-0 bg-black/60" onClick={() => setMobileSidebarOpen(false)} />
+          <aside className="relative w-60 flex flex-col shadow-2xl z-10">
+            {renderSidebarContent({ isMobile: true })}
           </aside>
         </div>
       )}
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        <header className="lg:hidden h-16 flex items-center justify-between px-4 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-20">
-          <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300">
+        {/* Mobile Top Bar */}
+        <header className="lg:hidden h-12 flex items-center justify-between px-4 bg-white dark:bg-[#1A1A2E] border-b border-gray-200 dark:border-gray-800 sticky top-0 z-20 shadow-sm">
+          <button onClick={() => setMobileSidebarOpen(true)} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300">
             <Menu size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <ScanLine size={18} className="text-indigo-600" />
-            <span className="font-bold text-sm text-gray-900 dark:text-white tracking-tight">IntelliScan Enterprise</span>
+            <ScanLine size={16} className="text-brand" />
+            <span className="font-bold text-sm text-gray-900 dark:text-white tracking-tight">IntelliScan Admin</span>
           </div>
-          <button onClick={() => setNotifOpen(true)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 relative">
+          <button onClick={() => setNotifOpen(true)} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 relative">
             <Bell size={18} />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-950" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full" />
+            )}
           </button>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scroll-smooth">
+        {/* Desktop Slim Header */}
+        <header className="hidden lg:flex h-12 items-center justify-between px-5 bg-white dark:bg-[#1A1A2E] border-b border-gray-200 dark:border-gray-800 shadow-sm z-10">
+          <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-gray-400 dark:text-gray-500">{role === 'super_admin' ? 'Platform' : 'Workspace'}</span>
+            <ChevronRight size={14} className="text-gray-300 dark:text-gray-600" />
+            <span className="font-semibold text-gray-800 dark:text-white capitalize">
+              {location.pathname.split('/').pop()?.replace(/-/g, ' ') || 'Overview'}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setNotifOpen(true)} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors relative">
+              <Bell size={17} />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full" />
+              )}
+            </button>
+            <button onClick={toggleTheme} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors">
+              {isDarkMode ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth">
           <div className="max-w-[1400px] mx-auto">
             {children}
           </div>
         </main>
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
-        .style-scrollbar::-webkit-scrollbar { width: 4px; }
-        .style-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .style-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(156, 163, 175, 0.3); border-radius: 20px; }
-        .dark .style-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(75, 85, 99, 0.4); }
-      `}} />
       <ChatbotWidget role={role} />
     </div>
   );

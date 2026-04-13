@@ -12,53 +12,85 @@ export default {
         body: ['Inter', 'sans-serif'],
       },
       colors: {
+        // ── Odoo/Zoho Enterprise Palette ──
+        brand: {
+          DEFAULT: '#714B67',     // Odoo signature purple
+          light: '#875A7B',       // Lighter hover state
+          dark: '#5B3D54',        // Pressed/active
+          50: '#F5EFF4',
+          100: '#EBDFE9',
+          200: '#D7BFD3',
+          300: '#C39FBD',
+          400: '#AF7FA7',
+          500: '#875A7B',
+          600: '#714B67',
+          700: '#5B3D54',
+          800: '#452E40',
+          900: '#2F1F2D',
+          950: '#1A1119',
+        },
+        sidebar: {
+          DEFAULT: '#21132E',     // Deep purple-navy sidebar bg
+          hover: '#2D1B3D',       // Hover state in sidebar
+          active: '#3A2450',      // Active item background
+          border: '#3D2650',      // Dividers inside sidebar
+          text: '#BBA8C8',        // Muted nav text
+          'text-active': '#FFFFFF',
+        },
+        accent: {
+          DEFAULT: '#1890FF',     // Zoho blue for secondary actions
+          light: '#40A9FF',
+          dark: '#096DD9',
+        },
+        // Surface system (Odoo-style light grays)
+        surface: {
+          DEFAULT: '#F0F0F0',
+          container: '#FFFFFF',
+          'container-low': '#E8E8E8',
+          'container-high': '#D5D5D5',
+          'container-highest': '#94A3B8',
+        },
+        'on-surface': {
+          DEFAULT: '#1A1A2E',
+          variant: '#555566',
+        },
+        // Keep compatibility with existing pages
         primary: {
-          DEFAULT: '#3f51b5',
-          container: '#e8eaf6',
+          DEFAULT: '#714B67',
+          container: '#F5EFF4',
         },
         'on-primary': {
           DEFAULT: '#ffffff',
-          container: '#1a237e',
+          container: '#2F1F2D',
         },
         secondary: {
-          DEFAULT: '#009688',
-          container: '#e0f2f1',
+          DEFAULT: '#1890FF',
+          container: '#E6F7FF',
         },
         'on-secondary': {
           DEFAULT: '#ffffff',
-          container: '#004d40',
+          container: '#003A8C',
         },
         tertiary: {
-          DEFAULT: '#ff9800',
-          container: '#fff3e0',
+          DEFAULT: '#FA8C16',
+          container: '#FFF7E6',
         },
         'on-tertiary': {
           DEFAULT: '#ffffff',
-          container: '#e65100',
+          container: '#AD4E00',
         },
         error: {
-          DEFAULT: '#f44336',
-          container: '#ffebee',
+          DEFAULT: '#F5222D',
+          container: '#FFF1F0',
         },
         'on-error': {
           DEFAULT: '#ffffff',
-          container: '#b71c1c',
-        },
-        surface: {
-          DEFAULT: '#f8fafc',
-          container: '#f1f5f9',
-          'container-low': '#e2e8f0',
-          'container-high': '#cbd5e1',
-          'container-highest': '#94a3b8',
-        },
-        'on-surface': {
-          DEFAULT: '#0f172a',
-          variant: '#475569',
+          container: '#A8071A',
         },
         outline: {
-          DEFAULT: '#94a3b8',
-          variant: '#cbd5e1',
-        }
+          DEFAULT: '#D9D9D9',
+          variant: '#E8E8E8',
+        },
       },
     },
   },

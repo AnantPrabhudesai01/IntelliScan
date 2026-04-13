@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { CalendarDays, ChevronDown, Bell, Zap, Users, BarChart2, Cpu, FileText, RefreshCw, ArrowUpRight } from 'lucide-react';
+import { CalendarDays, ChevronDown, Bell, Zap, Users, BarChart2, Cpu, FileText, RefreshCw, ArrowUpRight, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getStoredToken } from '../utils/auth';
 
@@ -20,6 +20,26 @@ export default function WorkspaceDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+
+  const handleWhatsApp = async (contact_id) => {
+    try {
+      const token = getStoredToken();
+      const res = await fetch('/api/messaging/whatsapp-followup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ contact_id })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send message');
+      alert('Location-aware WhatsApp Follow-up sent!');
+    } catch (e) {
+      alert('Error triggering WhatsApp: ' + e.message);
+    }
+  };
 
   const fetchData = async (showRefresh = false) => {
     if (showRefresh) setRefreshing(true);
@@ -173,7 +193,7 @@ export default function WorkspaceDashboard() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800">
-                    {['Contact Name', 'Company', 'Scanned By', 'Confidence', 'Time'].map(h => (
+                    {['Contact Name', 'Company', 'Scanned By', 'Confidence', 'Time', 'Follow-up'].map(h => (
                       <th key={h} className="px-6 py-4 text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">{h}</th>
                     ))}
                   </tr>
@@ -204,6 +224,17 @@ export default function WorkspaceDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400 font-medium">{timeAgo(contact.scan_date)}</td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleWhatsApp(contact.id);
+                          }}
+                          className="px-3 py-1.5 flex items-center gap-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-xs font-bold transition-colors border border-emerald-200"
+                        >
+                          <MessageCircle size={14} /> Send WhatsApp
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

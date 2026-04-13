@@ -1,0 +1,33 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style>
+    body { font-family: Arial, sans-serif; line-height: 1.8; color: #ffffff; background-color: #1a1a1a; padding: 40px; }
+    /* The image shows a dark background but the document itself should be white for printing usually. 
+       However, I will use a clean professional look that matches the spacing of the image. */
+    .content { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; background-color: #fff; padding: 40px; border-radius: 8px; }
+    h1 { font-size: 18pt; font-weight: bold; margin-bottom: 30px; color: #000; }
+    .ref-item { font-size: 11pt; margin-bottom: 12px; }
+    a { color: #007bff; text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="content">
+    <h1>6. &nbsp;&nbsp; Bibliography: -</h1>
+
+    <div class="ref-item">React Documentation - Retrieved from: <a href="https://react.dev/">https://react.dev/</a></div>
+    <div class="ref-item">Node.js Official Documentation - Retrieved from: <a href="https://nodejs.org/en">https://nodejs.org/en</a></div>
+    <div class="ref-item">Express.js – Web Framework for Node.js - Retrieved from: <a href="https://expressjs.com/">https://expressjs.com/</a></div>
+    <div class="ref-item">Gemini AI / Google DeepMind Documentation - Retrieved from: <a href="https://ai.google.dev/">https://ai.google.dev/</a></div>
+    <div class="ref-item">SQLite Database Official Documentation - Retrieved from: <a href="https://www.sqlite.org/">https://www.sqlite.org/</a></div>
+    <div class="ref-item">Lucide React Icon Library Documentation - Retrieved from: <a href="https://lucide.dev/">https://lucide.dev/</a></div>
+    <div class="ref-item">Tesseract OCR Engine Documentation - Retrieved from: <a href="https://tesseract-ocr.github.io/">https://tesseract-ocr.github.io/</a></div>
+    <div class="ref-item">Razorpay Payment Gateway API Documentation - Retrieved from: <a href="https://razorpay.com/docs/">https://razorpay.com/docs/</a></div>
+    <div class="ref-item">Salesforce CRM Product Documentation - Retrieved from: <a href="https://www.salesforce.com/">https://www.salesforce.com/</a></div>
+    <div class="ref-item">HubSpot CRM Integration Documentation - Retrieved from: <a href="https://www.hubspot.com/">https://www.hubspot.com/</a></div>
+    <div class="ref-item">Agile Manifesto & Principles - Retrieved from: <a href="https://agilemanifesto.org/">https://agilemanifesto.org/</a></div>
+</div>
+
+</body>
+</html>

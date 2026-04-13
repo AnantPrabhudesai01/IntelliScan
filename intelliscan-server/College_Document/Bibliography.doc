@@ -1,0 +1,53 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style>
+    body { font-family: 'Times New Roman', serif; line-height: 1.6; color: #333; padding: 40px; }
+    h1 { font-size: 24pt; text-align: center; color: #0b3d91; margin-bottom: 30px; border-bottom: 2px solid #0b3d91; padding-bottom: 15px; font-weight: bold; }
+    h2 { font-size: 16pt; margin-top: 30px; color: #1a1a1a; border-left: 5px solid #0b3d91; padding-left: 10px; background: #f4f7f9; }
+    ul { list-style-type: disc; margin-left: 40px; }
+    li { font-size: 12pt; margin-bottom: 12px; text-align: justify; }
+    .author { font-weight: bold; }
+    .title { font-style: italic; }
+    .footer { font-size: 10pt; color: #777; text-align: center; margin-top: 50px; border-top: 1px solid #eee; padding-top: 20px; }
+</style>
+</head>
+<body>
+
+<h1>Bibliography & References</h1>
+
+<h2>1. Official Framework & API Documentation</h2>
+<ul>
+    <li><span class="author">Meta Open Source.</span> (2024). <span class="title">React Documentation: A JavaScript Library for Building User Interfaces.</span> Retrieved from https://react.dev/</li>
+    <li><span class="author">Node.js Foundation.</span> (2024). <span class="title">Node.js v20.x Documentation.</span> Official API Reference. Retrieved from https://nodejs.org/api/</li>
+    <li><span class="author">Google DeepMind.</span> (2024). <span class="title">Gemini API Documentation: Generative AI for Developers.</span> Google Cloud. Retrieved from https://ai.google.dev/docs</li>
+    <li><span class="author">SQLite Consortium.</span> (2024). <span class="title">SQL Architecture and Syntax Reference.</span> Retrieved from https://www.sqlite.org/docs.html</li>
+    <li><span class="author">OpenAI Research.</span> (2024). <span class="title">GPT-4V System Card and Image Interpretation Models.</span> Retrieved from https://openai.com/research/</li>
+</ul>
+
+<h2>2. Academic Papers & Research Journals</h2>
+<ul>
+    <li><span class="author">Vaswani, A., et al.</span> (2017). <span class="title">"Attention Is All You Need."</span> Advances in Neural Information Processing Systems (NeurIPS). [Reference for Transformer Architecture used in Gemini/LLMs].</li>
+    <li><span class="author">Smith, R.</span> (2007). <span class="title">"An Overview of the Tesseract OCR Engine."</span> Ninth International Conference on Document Analysis and Recognition (ICDAR).</li>
+    <li><span class="author">Fielding, R. T.</span> (2000). <span class="title">"Architectural Styles and the Design of Network-based Software Architectures."</span> UC Irvine. [Foundational paper for REST API architecture used in IntelliScan].</li>
+</ul>
+
+<h2>3. Software Engineering & Architecture Textbooks</h2>
+<ul>
+    <li><span class="author">Martin, R. C.</span> (2008). <span class="title">"Clean Code: A Handbook of Agile Software Craftsmanship."</span> Prentice Hall.</li>
+    <li><span class="author">Richards, M., & Ford, N.</span> (2020). <span class="title">"Fundamentals of Software Architecture: An Engineering Approach."</span> O'Reilly Media.</li>
+    <li><span class="author">Fowler, M.</span> (2002). <span class="title">"Patterns of Enterprise Application Architecture."</span> Addison-Wesley.</li>
+</ul>
+
+<h2>4. Data Privacy & Industry Standards</h2>
+<ul>
+    <li><span class="author">European Union.</span> (2016). <span class="title">"General Data Protection Regulation (GDPR) Guidelines for PII Redaction."</span> Official Journal of the EU.</li>
+    <li><span class="author">OWASP Foundation.</span> (2024). <span class="title">"Top 10 Web Application Security Risks."</span> Retrieved from https://owasp.org/www-project-top-ten/</li>
+</ul>
+
+<div class="footer">
+    Final Project Submission: IntelliScan CRM Platform - Academic Reference List
+</div>
+
+</body>
+</html>

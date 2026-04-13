@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Send, MessageSquare, AlertCircle, Lightbulb, HelpCircle, CheckCircle2 } from 'lucide-react';
+import apiClient from '../api/client';
 
 export default function FeedbackPage() {
   const [type, setType] = useState('feature');
@@ -8,11 +9,13 @@ export default function FeedbackPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate network delay
-    setTimeout(() => {
+    
+    try {
+      await apiClient.post('/feedbacks', { type, subject, message });
+      
       setIsSubmitting(false);
       setIsSuccess(true);
       setTimeout(() => {
@@ -20,8 +23,11 @@ export default function FeedbackPage() {
         setSubject('');
         setMessage('');
         setType('feature');
-      }, 4000);
-    }, 1500);
+      }, 3000);
+    } catch (err) {
+      console.error(err);
+      setIsSubmitting(false);
+    }
   };
 
   const types = [

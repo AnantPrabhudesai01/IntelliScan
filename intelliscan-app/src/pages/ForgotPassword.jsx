@@ -1,7 +1,22 @@
 import { Link } from 'react-router-dom';
 import { Mail, ArrowLeft, KeyRound, ShieldCheck, HelpCircle } from 'lucide-react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useState } from 'react';
 
 export default function ForgotPassword() {
+  const { loginWithRedirect, isLoading } = useAuth0();
+  const [email, setEmail] = useState('');
+
+  const handleReset = (e) => {
+    e.preventDefault();
+    loginWithRedirect({
+      authorizationParams: {
+        initial_screen: 'forgot-password',
+        login_hint: email
+      }
+    });
+  };
+
   return (
     <div className="bg-[#0e131f] text-[#dde2f3] min-h-screen flex items-center justify-center p-4 relative overflow-hidden font-body">
       {/* Background Ambience */}
@@ -25,10 +40,10 @@ export default function ForgotPassword() {
 
           <h1 className="text-3xl font-bold text-white mb-3 font-headline">Reset Password</h1>
           <p className="text-[#918fa1] text-lg leading-relaxed mb-8 font-body">
-            Enter the email address associated with your account and we'll send you a secure link to reset your password.
+            You will be redirected to our secure authentication portal to safely reset your password.
           </p>
 
-          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); }}>
+          <form className="space-y-6" onSubmit={handleReset}>
             <div className="space-y-2">
               <label className="text-sm font-semibold text-[#c7c4d8] font-body" htmlFor="email">Email Address</label>
               <div className="relative group">
@@ -36,14 +51,16 @@ export default function ForgotPassword() {
                   <Mail size={20} className="text-[#918fa1] group-focus-within:text-[#c3c0ff] transition-colors" />
                 </div>
                 <input 
+                   value={email}
+                   onChange={(e) => setEmail(e.target.value)}
                   className="font-body w-full bg-[#1a202c] border-none rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-[#918fa1]/50 focus:ring-2 focus:ring-indigo-600/40 transition-all outline-none" 
                   id="email" placeholder="name@company.com" required type="email"
                 />
               </div>
             </div>
 
-            <button className="w-full bg-indigo-600 hover:bg-[#3323cc] text-white font-bold py-4 rounded-xl shadow-[0_4px_14px_0_rgba(79,70,229,0.25)] active:scale-[0.98] transition-all font-headline" type="submit">
-              Send Reset Link
+            <button disabled={isLoading} className="w-full bg-indigo-600 hover:bg-[#3323cc] text-white font-bold py-4 rounded-xl shadow-[0_4px_14px_0_rgba(79,70,229,0.25)] active:scale-[0.98] transition-all font-headline disabled:opacity-50" type="submit">
+              {isLoading ? 'Connecting...' : 'Continue to Reset Portal'}
             </button>
           </form>
         </div>
@@ -55,7 +72,7 @@ export default function ForgotPassword() {
           </div>
           <div className="bg-[#1a202c] p-4 rounded-xl border border-white/5 flex items-start gap-3">
             <HelpCircle size={20} className="text-[#c3c0ff] shrink-0 mt-0.5" />
-            <p className="text-xs text-[#918fa1] font-medium leading-relaxed font-body">Need help? <a href="#" className="text-[#da7ff] hover:underline">Support</a>.</p>
+            <p className="text-xs text-[#918fa1] font-medium leading-relaxed font-body">Need help? <a href="#" className="text-[#c3c0ff] hover:underline">Support</a>.</p>
           </div>
         </div>
       </div>

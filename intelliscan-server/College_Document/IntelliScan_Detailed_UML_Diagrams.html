@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliScan Detailed Access & Role UML</title>
+    <!-- 
+      This is a highly optimized, handcrafted native SVG designed to be beautiful, 
+      perfectly aligned, and explicitly detail which feature can be accessed by whom.
+    -->
+    <style>
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background-color: #f1f5f9; 
+            padding: 20px; 
+            text-align: center; 
+            color: #1e293b;
+        }
+        h1 { margin-bottom: 5px; font-size: 32px; color: #0f172a; }
+        p { color: #475569; margin-bottom: 30px; font-size: 16px; }
+        .canvas-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            margin: 0 auto;
+            display: inline-block;
+            padding: 20px;
+            border: 1px solid #cbd5e1;
+        }
+        
+        /* SVG Styles */
+        text { font-size: 14px; font-weight: 500; fill: #0f172a; pointer-events: none; text-anchor: middle; alignment-baseline: middle; }
+        .actor-title { font-size: 16px; font-weight: bold; fill: #1e293b; }
+        .boundary-title { font-size: 22px; font-weight: 800; fill: #94a3b8; }
+        .category-title { font-size: 18px; font-weight: bold; fill: #64748b; text-decoration: underline; }
+        
+        ellipse { fill: #ffffff; stroke: #3b82f6; stroke-width: 2.5; transition: fill 0.2s; }
+        ellipse:hover { fill: #eff6ff; stroke: #2563eb; }
+        
+        .line { stroke: #94a3b8; stroke-width: 1.5; fill: none; }
+        .line-admin { stroke: #10b981; stroke-width: 2; fill: none; }
+        .line-super { stroke: #8b5cf6; stroke-width: 2; fill: none; }
+        .line-public { stroke: #f59e0b; stroke-width: 2; fill: none; }
+        .line-member { stroke: #3b82f6; stroke-width: 2; fill: none; }
+
+        .boundary { fill: none; stroke: #cbd5e1; stroke-width: 3; stroke-dasharray: 10,5; rx: 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>IntelliScan Comprehensive Role Access Diagram</h1>
+    <p>A beautifully rendered, detailed UML mapping of exactly <strong>what feature can be accessed by whom</strong>.</p>
+
+    <div class="canvas-container">
+        <!-- SVG Canvas -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="1300" height="900" viewBox="0 0 1300 900">
+            
+            <!-- Definitions for arrows -->
+            <defs>
+                <marker id="arrow-member" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" /></marker>
+                <marker id="arrow-public" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b" /></marker>
+                <marker id="arrow-admin" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#10b981" /></marker>
+                <marker id="arrow-super" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#8b5cf6" /></marker>
+            </defs>
+
+            <!-- System Boundary -->
+            <rect x="250" y="40" width="800" height="820" class="boundary" />
+            <text x="650" y="80" class="boundary-title">IntelliScan Intelligent CRM Platform</text>
+
+            <!-- Column Titles -->
+            <text x="450" y="130" class="category-title">Core Sales &amp; Contact Features</text>
+            <text x="850" y="130" class="category-title">Admin &amp; Enterprise Configuration</text>
+
+            <!-- ==============================================
+                 USE CASES (Ellipses)
+                 ============================================== -->
+            
+            <!-- COLUMN 1: Basic & Sales Features (x=450) -->
+            <g id="uc-scan">
+                <ellipse cx="450" cy="200" rx="140" ry="32" />
+                <text x="450" y="200">Scan Card &amp; Extract Data (AI)</text>
+            </g>
+            <g id="uc-pipeline">
+                <ellipse cx="450" cy="300" rx="140" ry="32" />
+                <text x="450" y="300">Manage Pipeline &amp; Deal Stages</text>
+            </g>
+            <g id="uc-email">
+                <ellipse cx="450" cy="400" rx="140" ry="32" />
+                <text x="450" y="400">Draft Follow-Ups via AI Composer</text>
+            </g>
+            <g id="uc-chat">
+                <ellipse cx="450" cy="500" rx="140" ry="32" />
+                <text x="450" y="500">Collaborate in Shared Rolodex</text>
+            </g>
+            <g id="uc-kiosk">
+                <ellipse cx="450" cy="600" rx="140" ry="32" />
+                <text x="450" y="600">Setup iPad Kiosk Mode</text>
+            </g>
+            
+            <!-- Public Interfaces (Bottom Col 1) -->
+            <g id="uc-publiccard">
+                <ellipse cx="450" cy="740" rx="140" ry="32" stroke="#f59e0b" />
+                <text x="450" y="740">View Digital Business Card (/profile)</text>
+            </g>
+            <g id="uc-booking">
+                <ellipse cx="450" cy="820" rx="140" ry="32" stroke="#f59e0b" />
+                <text x="450" y="820">Select Meeting Slot via Calendar</text>
+            </g>
+
+            <!-- COLUMN 2: Admin Features (x=850) -->
+            <g id="uc-routing">
+                <ellipse cx="850" cy="200" rx="140" ry="32" stroke="#10b981" />
+                <text x="850" y="200">Configure Lead Routing Rules</text>
+            </g>
+            <g id="uc-dedupe">
+                <ellipse cx="850" cy="300" rx="140" ry="32" stroke="#10b981" />
+                <text x="850" y="300">Merge Workspace Duplicates</text>
+            </g>
+            <g id="uc-campaigns">
+                <ellipse cx="850" cy="400" rx="140" ry="32" stroke="#10b981" />
+                <text x="850" y="400">Launch Mass Enterprise Campaigns</text>
+            </g>
+            <g id="uc-crmsync">
+                <ellipse cx="850" cy="500" rx="140" ry="32" stroke="#10b981" />
+                <text x="850" y="500">Configure CRM Export Mappings</text>
+            </g>
+
+            <!-- Super Admin Features (Bottom Col 2) -->
+            <g id="uc-aitune">
+                <ellipse cx="850" cy="660" rx="140" ry="32" stroke="#8b5cf6" />
+                <text x="850" y="660">Tune Google Gemini OCR Models</text>
+            </g>
+            <g id="uc-queues">
+                <ellipse cx="850" cy="740" rx="140" ry="32" stroke="#8b5cf6" />
+                <text x="850" y="740">Monitor CRON Engine API Queues</text>
+            </g>
+            <g id="uc-sandbox">
+                <ellipse cx="850" cy="820" rx="140" ry="32" stroke="#8b5cf6" />
+                <text x="850" y="820">Manage Webhooks &amp; Sandbox</text>
+            </g>
+
+
+            <!-- ==============================================
+                 ACTORS (Stick Figures)
+                 ============================================== -->
+            
+            <!-- Actor 1: Sales Rep (Top Left) -->
+            <g id="actor-sales" stroke="#3b82f6" fill="none" stroke-width="2.5">
+                <circle cx="120" cy="320" r="18" />
+                <line x1="120" y1="338" x2="120" y2="410" />
+                <line x1="70" y1="360" x2="170" y2="360" />
+                <line x1="120" y1="410" x2="80" y2="480" />
+                <line x1="120" y1="410" x2="160" y2="480" />
+            </g>
+            <text x="120" y="510" class="actor-title" fill="#3b82f6">Sales Rep / Member</text>
+
+            <!-- Actor 2: Public User (Bottom Left) -->
+            <g id="actor-public" stroke="#f59e0b" fill="none" stroke-width="2.5">
+                <circle cx="120" cy="700" r="18" />
+                <line x1="120" y1="718" x2="120" y2="790" />
+                <line x1="70" y1="740" x2="170" y2="740" />
+                <line x1="120" y1="790" x2="80" y2="860" />
+                <line x1="120" y1="790" x2="160" y2="860" />
+            </g>
+            <text x="120" y="890" class="actor-title" fill="#f59e0b">Public Unauthenticated User</text>
+
+            <!-- Actor 3: Enterprise Admin (Top Right) -->
+            <g id="actor-eadmin" stroke="#10b981" fill="none" stroke-width="2.5">
+                <circle cx="1180" cy="320" r="18" />
+                <line x1="1180" y1="338" x2="1180" y2="410" />
+                <line x1="1130" y1="360" x2="1230" y2="360" />
+                <line x1="1180" y1="410" x2="1140" y2="480" />
+                <line x1="1180" y1="410" x2="1220" y2="480" />
+            </g>
+            <text x="1180" y="510" class="actor-title" fill="#10b981">Enterprise Admin</text>
+
+            <!-- Actor 4: Super Admin (Bottom Right) -->
+            <g id="actor-sadmin" stroke="#8b5cf6" fill="none" stroke-width="2.5">
+                <circle cx="1180" cy="680" r="18" />
+                <line x1="1180" y1="698" x2="1180" y2="770" />
+                <line x1="1130" y1="720" x2="1230" y2="720" />
+                <line x1="1180" y1="770" x2="1140" y2="840" />
+                <line x1="1180" y1="770" x2="1220" y2="840" />
+            </g>
+            <text x="1180" y="870" class="actor-title" fill="#8b5cf6">Super Admin (System)</text>
+
+
+            <!-- ==============================================
+                 CONNECTIONS (Paths/Lines explicitly showing WHO accesses WHAT)
+                 ============================================== -->
+            
+            <!-- Left Side Connections (Sales Rep) -->
+            <path d="M 180 360 L 310 200" class="line-member" marker-end="url(#arrow-member)" /> <!-- To Scan -->
+            <path d="M 180 360 L 310 300" class="line-member" marker-end="url(#arrow-member)" /> <!-- To Pipeline -->
+            <path d="M 180 360 L 310 400" class="line-member" marker-end="url(#arrow-member)" /> <!-- To Draft EMail -->
+            <path d="M 180 360 L 310 500" class="line-member" marker-end="url(#arrow-member)" /> <!-- To Chat -->
+            <path d="M 180 360 L 310 600" class="line-member" marker-end="url(#arrow-member)" /> <!-- To Kiosk -->
+
+            <!-- Left Side Connections (Public User) -->
+            <path d="M 180 740 L 310 740" class="line-public" marker-end="url(#arrow-public)" /> <!-- To Digital Card -->
+            <path d="M 180 740 L 310 820" class="line-public" marker-end="url(#arrow-public)" /> <!-- To Calendar Slot -->
+
+            <!-- Right Side Connections (Enterprise Admin) -->
+            <!-- Connects to Admin Features -->
+            <path d="M 1120 360 L 990 200" class="line-admin" marker-end="url(#arrow-admin)" /> <!-- To Routing -->
+            <path d="M 1120 360 L 990 300" class="line-admin" marker-end="url(#arrow-admin)" /> <!-- To Dedupe -->
+            <path d="M 1120 360 L 990 400" class="line-admin" marker-end="url(#arrow-admin)" /> <!-- To Campaigns -->
+            <path d="M 1120 360 L 990 500" class="line-admin" marker-end="url(#arrow-admin)" /> <!-- To CRM Sync -->
+            <!-- Connects to Sales Features (Since Admin can interact with team data) -->
+            <!-- Using curved paths so they don't overlap wildly -->
+            <path d="M 1120 360 Q 1000 130 590 200" class="line-admin" marker-end="url(#arrow-admin)" /> <!-- To Scan Data -->
+            <path d="M 1120 360 Q 1000 240 590 300" class="line-admin" marker-end="url(#arrow-admin)" /> <!-- To Pipeline -->
+
+            <!-- Right Side Connections (Super Admin) -->
+            <path d="M 1120 720 L 990 660" class="line-super" marker-end="url(#arrow-super)" /> <!-- To Tune AI -->
+            <path d="M 1120 720 L 990 740" class="line-super" marker-end="url(#arrow-super)" /> <!-- To Monitor Queues -->
+            <path d="M 1120 720 L 990 820" class="line-super" marker-end="url(#arrow-super)" /> <!-- To Manage Webhooks -->
+
+        </svg>
+    </div>
+
+</body>
+</html>

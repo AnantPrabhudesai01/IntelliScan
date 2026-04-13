@@ -37,14 +37,17 @@ export default function DraftsPage() {
         }
       });
       const data = await res.json();
+      if (!res.ok) {
+        showToast(data?.error || 'Failed to send draft. Please configure SMTP and retry.');
+        return;
+      }
+
       if (data.sent) {
         setDrafts(prev => prev.filter(d => d.id !== id));
         showToast(`✅ ${data.message}`);
-      } else if (data.success === false && data.message) {
-        showToast(data.message);
       } else {
-        setDrafts(prev => prev.map(d => d.id === id ? { ...d, status: 'sent' } : d));
-        showToast(data.message || 'Draft dispatched!');
+        // Backend only responds success when email is actually sent.
+        showToast(data?.message || 'Draft sent.');
       }
     } catch(err) {
       console.error('Failed to send draft:', err);

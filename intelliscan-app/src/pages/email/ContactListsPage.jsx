@@ -3,6 +3,7 @@ import { Users, Plus, Search, Mail, Trash2, ArrowRight, Upload, Filter, Calendar
 import { Link, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { getStoredToken } from '../../utils/auth.js';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 
 export default function ContactListsPage() {
   const [lists, setLists] = useState([]);
@@ -11,6 +12,10 @@ export default function ContactListsPage() {
   const [newList, setNewList] = useState({ name: '', description: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+
+  // Delete Modal State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   async function fetchLists() {
     try {
@@ -54,15 +59,23 @@ export default function ContactListsPage() {
 
   const handleDeleteList = async (e, id) => {
     e.stopPropagation();
-    if (!window.confirm('Are you sure? This will NOT delete contacts, just the list grouping.')) return;
+    setPendingDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteList = async () => {
+    if (!pendingDeleteId) return;
     try {
-      await fetch(`/api/email/lists/${id}`, {
+      await fetch(`/api/email/lists/${pendingDeleteId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${getStoredToken()}` }
       });
       fetchLists();
     } catch (err) {
       console.error('Delete list failed:', err);
+    } finally {
+      setShowDeleteModal(false);
+      setPendingDeleteId(null);
     }
   };
 
@@ -73,6 +86,16 @@ export default function ContactListsPage() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
+      <ConfirmationModal 
+        isOpen={showDeleteModal}
+        title="Delete Audience Segment"
+        message="Are you sure you want to delete this list? Please note: This will NOT delete the contacts themselves, but it will permanently remove this segment grouping and any associated campaign history for this list."
+        confirmText="Remove Segment"
+        cancelText="Keep Segment"
+        type="danger"
+        onConfirm={confirmDeleteList}
+        onCancel={() => setShowDeleteModal(false)}
+      />
       <div className="flex justify-between items-end">
         <div>
           <h1 className="text-4xl font-black text-white tracking-widest uppercase mb-2">Audience <span className="text-indigo-500">Segments</span></h1>

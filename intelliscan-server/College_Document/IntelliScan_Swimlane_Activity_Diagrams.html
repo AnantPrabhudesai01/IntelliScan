@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IntelliScan Swimlane Activity Diagrams</title>
+<!-- 
+100% Native HTML and SVG. 
+Zero colors used. Zero Markdown or Mermaid.
+Matches exactly the System/User Swimlane layout requested in the new image.
+-->
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+        background-color: #ffffff;
+        color: #000000;
+        text-align: center;
+        padding: 40px;
+    }
+    h2 {
+        border-bottom: 2px solid #000;
+        display: inline-block;
+        padding-bottom: 5px;
+        margin-bottom: 30px;
+    }
+    .diagram-container {
+        border: 2px solid #000;
+        padding: 0;
+        display: inline-block;
+        margin-bottom: 80px;
+        background-color: #fff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    svg {
+        display: block;
+        background: #fff;
+    }
+    rect.box { fill: none; stroke: #000; stroke-width: 1.5; }
+    polygon.diamond { fill: none; stroke: #000; stroke-width: 1.5; }
+    circle.node { stroke: #000; stroke-width: 1.5; fill: #000; }
+    circle.node-end { stroke: #000; stroke-width: 2; fill: none; }
+    line, polyline, path { fill: none; stroke: #000; stroke-width: 1.5; }
+    text {
+        fill: #000;
+        font-size: 13px;
+        font-family: inherit;
+        pointer-events: none;
+        text-anchor: middle;
+        dominant-baseline: middle;
+    }
+    .swimlane { fill: none; stroke: #000; stroke-width: 2; }
+    .header-text { font-weight: bold; font-size: 16px; font-style: italic; }
+    .cond { font-size: 12px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+    <h1>IntelliScan Client / Server Swimlane Workflows</h1>
+    <p style="margin-bottom: 50px;">Detailed Activity Diagrams mapping User Actions vs System Backend Logic</p>
+
+    <!-- Global Arrow Definition -->
+    <svg width="0" height="0" style="display:block;">
+        <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto-start-reverse">
+                <polygon points="0 1, 8 4, 0 7" fill="#000" />
+            </marker>
+        </defs>
+    </svg>
+
+
+    <!-- ========================================================
+         DIAGRAM 1: AUTHENTICATION & RBAC
+         ======================================================== -->
+    <div class="diagram-container">
+        <svg width="800" height="650">
+            <!-- Swimlane Borders -->
+            <rect x="0" y="0" width="400" height="650" class="swimlane" />
+            <rect x="400" y="0" width="400" height="650" class="swimlane" />
+            <line x1="0" y1="40" x2="800" y2="40" class="swimlane" />
+            <text x="200" y="20" class="header-text">Client Application (User)</text>
+            <text x="600" y="20" class="header-text">IntelliScan Core System</text>
+
+            <!-- Start Node -->
+            <circle cx="200" cy="70" r="10" class="node" />
+            <line x1="200" y1="80" x2="200" y2="100" marker-end="url(#arrow)" />
+
+            <!-- Login Action -->
+            <rect x="130" y="100" width="140" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="120">Submit Account Login</text>
+
+            <!-- Cross to System -->
+            <polyline points="270,120 600,120 600,140" marker-end="url(#arrow)" />
+
+            <!-- Validate DB -->
+            <polygon points="600,140 680,160 600,180 520,160" class="diamond" />
+            <text x="600" y="160">Valid Credentials?</text>
+            
+            <!-- Invalid Path -->
+            <polyline points="520,160 200,160 200,200" marker-end="url(#arrow)" />
+            <text x="490" y="150" class="cond">No</text>
+            <rect x="130" y="200" width="140" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="220">Show Incorrect Alert</text>
+            <!-- Loop back to login -->
+            <polyline points="130,220 80,220 80,120 130,120" marker-end="url(#arrow)" />
+
+            <!-- Valid Path -->
+            <line x1="600" y1="180" x2="600" y2="240" marker-end="url(#arrow)" />
+            <text x="615" y="210" class="cond">Yes</text>
+
+            <!-- RBAC Check -->
+            <polygon points="600,240 680,260 600,280 520,260" class="diamond" />
+            <text x="600" y="260">Is Enterprise Admin?</text>
+
+            <!-- Admin Yes Path -->
+            <polyline points="680,260 740,260 740,330 670,330" marker-end="url(#arrow)" />
+            <text x="710" y="250" class="cond">Yes</text>
+            <rect x="530" y="310" width="140" height="40" rx="10" ry="10" class="box" />
+            <text x="600" y="330">Assign Admin Privileges</text>
+            
+            <!-- Return Admin Dashboard -->
+            <polyline points="530,330 200,330 200,380" marker-end="url(#arrow)" />
+            <rect x="120" y="380" width="160" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="400">Load Setup Dashboard UI</text>
+            
+            <!-- Admin End -->
+            <line x1="200" y1="420" x2="200" y2="470" marker-end="url(#arrow)" />
+            <circle cx="200" cy="480" r="10" class="node-end" />
+            <circle cx="200" cy="480" r="5" class="node" />
+
+            <!-- Admin No Path (Sales Rep) -->
+            <line x1="600" y1="280" x2="600" y2="440" marker-end="url(#arrow)" />
+            <text x="615" y="300" class="cond">No</text>
+            <rect x="530" y="440" width="140" height="40" rx="10" ry="10" class="box" />
+            <text x="600" y="460">Assign Sales Privileges</text>
+            
+            <!-- Return Member Dashboard -->
+            <polyline points="530,460 200,460 200,510" marker-end="url(#arrow)" />
+            <rect x="120" y="510" width="160" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="530">Load Pipeline Dashboard UI</text>
+
+            <!-- Member End -->
+            <line x1="200" y1="550" x2="200" y2="600" marker-end="url(#arrow)" />
+            <circle cx="200" cy="610" r="10" class="node-end" />
+            <circle cx="200" cy="610" r="5" class="node" />
+        </svg>
+    </div>
+
+
+
+    <!-- ========================================================
+         DIAGRAM 2: AI OCR CARD SCANNING FLOW
+         ======================================================== -->
+    <div class="diagram-container">
+        <svg width="800" height="920">
+            <!-- Swimlane Borders -->
+            <rect x="0" y="0" width="400" height="920" class="swimlane" />
+            <rect x="400" y="0" width="400" height="920" class="swimlane" />
+            <line x1="0" y1="40" x2="800" y2="40" class="swimlane" />
+            <text x="200" y="20" class="header-text">Workspace Client App (User)</text>
+            <text x="600" y="20" class="header-text">Backend AI &amp; Deal Pipeline (System)</text>
+
+            <!-- Start -->
+            <circle cx="200" cy="70" r="10" class="node" />
+            <line x1="200" y1="80" x2="200" y2="110" marker-end="url(#arrow)" />
+
+            <!-- Capture -->
+            <rect x="120" y="110" width="160" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="130">Capture Business Card Image</text>
+
+            <!-- Cross Right -->
+            <polyline points="280,130 600,130 600,160" marker-end="url(#arrow)" />
+
+            <!-- Image Clear Diamond -->
+            <polygon points="600,160 680,180 600,200 520,180" class="diamond" />
+            <text x="600" y="180">Is Image Legible?</text>
+
+            <!-- Image Blur Error Path -->
+            <polyline points="520,180 200,180 200,220" marker-end="url(#arrow)" />
+            <text x="490" y="170" class="cond">No</text>
+            <rect x="130" y="220" width="140" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="240">Show "Blurry" Warning</text>
+            <!-- Loop back to capture -->
+            <polyline points="130,240 80,240 80,130 120,130" marker-end="url(#arrow)" />
+
+            <!-- Execute Gemini Path -->
+            <line x1="600" y1="200" x2="600" y2="260" marker-end="url(#arrow)" />
+            <text x="615" y="230" class="cond">Yes</text>
+            <rect x="490" y="260" width="220" height="40" rx="10" ry="10" class="box" />
+            <text x="600" y="280">Execute Google Gemini AI Extraction</text>
+
+            <line x1="600" y1="300" x2="600" y2="340" marker-end="url(#arrow)" />
+            
+            <!-- Infer Demographics -->
+            <rect x="490" y="340" width="220" height="40" rx="10" ry="10" class="box" />
+            <text x="600" y="360">Infer Missing Seniority &amp; Industry</text>
+
+            <!-- Return Parsed Data -->
+            <polyline points="490,360 200,360 200,410" marker-end="url(#arrow)" />
+            <rect x="120" y="410" width="160" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="430">Display Parsed Data in Form</text>
+
+            <!-- Verify Data Diamond -->
+            <line x1="200" y1="450" x2="200" y2="480" marker-end="url(#arrow)" />
+            <polygon points="200,480 270,500 200,520 130,500" class="diamond" />
+            <text x="200" y="500">Is Data 100% Correct?</text>
+
+            <!-- Verify No (Manual Edit Loop) -->
+            <polyline points="270,500 320,500 320,540" marker-end="url(#arrow)" />
+            <text x="290" y="490" class="cond">No</text>
+            <rect x="250" y="540" width="140" height="40" rx="10" ry="10" class="box" />
+            <text x="320" y="560">Override Text Fields UI</text>
+            <polyline points="320,580 320,600 200,600 200,630" marker-end="url(#arrow)" />
+
+            <!-- Verify Yes -->
+            <line x1="200" y1="520" x2="200" y2="630" marker-end="url(#arrow)" />
+            <text x="215" y="550" class="cond">Yes</text>
+
+            <!-- Save Stage -->
+            <rect x="110" y="630" width="180" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="650">Submit Data to CRM Pipeline</text>
+
+            <!-- Cross Right to DB -->
+            <polyline points="290,650 600,650 600,690" marker-end="url(#arrow)" />
+            
+            <rect x="510" y="690" width="180" height="40" rx="10" ry="10" class="box" />
+            <text x="600" y="710">Persist to Global SQLite DB</text>
+
+            <line x1="600" y1="730" x2="600" y2="780" marker-end="url(#arrow)" />
+            
+            <!-- Routing Engine -->
+            <rect x="500" y="780" width="200" height="40" rx="10" ry="10" class="box" />
+            <text x="600" y="800">Process Team Lead Routing Rules</text>
+
+            <!-- End -->
+            <line x1="600" y1="820" x2="600" y2="860" marker-end="url(#arrow)" />
+            <circle cx="600" cy="870" r="10" class="node-end" />
+            <circle cx="600" cy="870" r="5" class="node" />
+
+        </svg>
+    </div>
+
+
+
+    <!-- ========================================================
+         DIAGRAM 3: PUBLIC CALENDAR BOOKING
+         ======================================================== -->
+    <div class="diagram-container">
+        <svg width="800" height="750">
+            <!-- Swimlane Borders -->
+            <rect x="0" y="0" width="400" height="750" class="swimlane" />
+            <rect x="400" y="0" width="400" height="750" class="swimlane" />
+            <line x1="0" y1="40" x2="800" y2="40" class="swimlane" />
+            <text x="200" y="20" class="header-text">External Lead Browser (Public User)</text>
+            <text x="600" y="20" class="header-text">IntelliScan API Routing (System)</text>
+
+            <!-- Start -->
+            <circle cx="200" cy="70" r="10" class="node" />
+            <line x1="200" y1="80" x2="200" y2="100" marker-end="url(#arrow)" />
+
+            <rect x="110" y="100" width="180" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="120">Access Shareable /profile URL</text>
+
+            <polyline points="290,120 600,120 600,150" marker-end="url(#arrow)" />
+
+            <!-- Integration Diamond -->
+            <polygon points="600,150 690,170 600,190 510,170" class="diamond" />
+            <text x="600" y="170">User Has Calendar Block?</text>
+
+            <!-- No Block Path -->
+            <polyline points="510,170 200,170 200,210" marker-end="url(#arrow)" />
+            <text x="480" y="160" class="cond">No</text>
+            <rect x="110" y="210" width="180" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="230">Hide Meet UI, Render vCard</text>
+            
+            <!-- Quick End -->
+            <line x1="200" y1="250" x2="200" y2="290" marker-end="url(#arrow)" />
+            <circle cx="200" cy="300" r="10" class="node-end" />
+            <circle cx="200" cy="300" r="5" class="node" />
+
+            <!-- Yes Path -->
+            <line x1="600" y1="190" x2="600" y2="250" marker-end="url(#arrow)" />
+            <text x="615" y="220" class="cond">Yes</text>
+
+            <rect x="520" y="250" width="160" height="40" rx="10" ry="10" class="box" />
+            <text x="600" y="270">Fetch Available Time Slots</text>
+
+            <!-- Cross Left render calendar -->
+            <polyline points="520,270 200,270 200,320" marker-end="url(#arrow)" />
+            <rect x="120" y="320" width="160" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="340">Browse Dates &amp; Pick Slot</text>
+
+            <line x1="200" y1="360" x2="200" y2="400" marker-end="url(#arrow)" />
+            
+            <rect x="120" y="400" width="160" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="420">Input Email &amp; Submit Booking</text>
+
+            <!-- Cross Right to Validate -->
+            <polyline points="280,420 600,420 600,460" marker-end="url(#arrow)" />
+
+            <polygon points="600,460 670,480 600,500 530,480" class="diamond" />
+            <text x="600" y="480">Slot Still Available?</text>
+
+            <!-- Slot Taken Error -->
+            <polyline points="530,480 320,480 320,530" marker-end="url(#arrow)" />
+            <text x="490" y="470" class="cond">No</text>
+            <rect x="250" y="530" width="140" height="40" rx="10" ry="10" class="box" />
+            <text x="320" y="550">Prompt "Taken" Error</text>
+            <polyline points="250,550 80,550 80,340 120,340" marker-end="url(#arrow)" />
+
+            <!-- Valid Slot -->
+            <line x1="600" y1="500" x2="600" y2="550" marker-end="url(#arrow)" />
+            <text x="615" y="525" class="cond">Yes</text>
+
+            <rect x="520" y="550" width="160" height="40" rx="10" ry="10" class="box" />
+            <text x="600" y="570">Generate Calendar Event API</text>
+
+            <line x1="600" y1="590" x2="600" y2="620" marker-end="url(#arrow)" />
+            <rect x="530" y="620" width="140" height="40" rx="10" ry="10" class="box" />
+            <text x="600" y="640">Email Calendar Invites</text>
+
+            <!-- Final success render left -->
+            <polyline points="530,640 200,640 200,670" marker-end="url(#arrow)" />
+            <rect x="130" y="670" width="140" height="40" rx="10" ry="10" class="box" />
+            <text x="200" y="690">Render Success Confetti</text>
+            
+            <!-- Confetti End -->
+            <line x1="200" y1="710" x2="200" y2="730" marker-end="url(#arrow)" />
+            <circle cx="200" cy="740" r="10" class="node-end" />
+            <circle cx="200" cy="740" r="5" class="node" />
+        </svg>
+    </div>
+
+</body>
+</html>

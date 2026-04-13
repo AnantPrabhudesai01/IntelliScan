@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../api/client';
 import { Play, Key, Copy, Code, CheckCircle2, Clock, Trash2, List } from 'lucide-react';
 import { getStoredToken } from '../utils/auth.js';
 
@@ -30,7 +30,7 @@ export default function AdvancedApiExplorerSandbox() {
   const fetchLogs = async () => {
     try {
       const token = getStoredToken();
-      const res = await axios.get('/api/sandbox/logs', {
+      const res = await apiClient.get('/sandbox/logs', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setLogs(res.data);
@@ -45,7 +45,7 @@ export default function AdvancedApiExplorerSandbox() {
     try {
       const token = getStoredToken();
       const reqData = JSON.parse(payload);
-      const res = await axios.post('/api/sandbox/test', reqData, {
+      const res = await apiClient.post('/sandbox/test', reqData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setResponse(res.data);
@@ -60,7 +60,7 @@ export default function AdvancedApiExplorerSandbox() {
   const handleClearLogs = async () => {
     try {
       const token = getStoredToken();
-      await axios.delete('/api/sandbox/logs', {
+      await apiClient.delete('/sandbox/logs', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setLogs([]);

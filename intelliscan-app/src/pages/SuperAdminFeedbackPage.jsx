@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageSquare, AlertCircle, Lightbulb, HelpCircle, Check, Clock, User, ArrowRight, CheckCircle2, MoreVertical, Trash2 } from 'lucide-react';
+import apiClient from '../api/client';
 
 const DUMMY_FEEDBACK = [
   {
@@ -49,9 +50,27 @@ const DUMMY_FEEDBACK = [
 ];
 
 export default function SuperAdminFeedbackPage() {
-  const [feedback, setFeedback] = useState(DUMMY_FEEDBACK);
+  const [feedback, setFeedback] = useState([]);
   const [filter, setFilter] = useState('all');
   const [selectedItem, setSelectedItem] = useState(null);
+
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      try {
+        const res = await apiClient.get('/feedbacks');
+        setFeedback(res.data);
+      } catch (err) {
+        console.error('Failed to fetch feedback', err);
+      }
+    };
+
+    // Initial fetch
+    fetchFeedback();
+
+    // Poll every 2 seconds for perfect real-time syncing across browsers
+    const interval = setInterval(fetchFeedback, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   const getIconForType = (type) => {
     switch (type) {
@@ -72,18 +91,27 @@ export default function SuperAdminFeedbackPage() {
   };
 
   const getStatusBadge = (status) => {
-    switch(status) {
-      case 'new': return <span className="px-2 py-1 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-max"><Clock size={12}/> New</span>;
-      case 'reviewed': return <span className="px-2 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-max"><ArrowRight size={12}/> Reviewed</span>;
-      case 'resolved': return <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-max"><CheckCircle2 size={12}/> Resolved</span>;
+    switch (status) {
+      case 'new': return <span className="px-2 py-1 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-max"><Clock size={12} /> New</span>;
+      case 'reviewed': return <span className="px-2 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-max"><ArrowRight size={12} /> Reviewed</span>;
+      case 'resolved': return <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-max"><CheckCircle2 size={12} /> Resolved</span>;
       default: return null;
     }
   };
 
-  const markAs = (id, newStatus) => {
-    setFeedback(feedback.map(f => f.id === id ? { ...f, status: newStatus } : f));
+  const markAs = async (id, newStatus) => {
+    // Optimistic update
+    const updated = feedback.map(f => f.id === id ? { ...f, status: newStatus } : f);
+    setFeedback(updated);
     if (selectedItem && selectedItem.id === id) {
       setSelectedItem({ ...selectedItem, status: newStatus });
+    }
+
+    // Server persistence
+    try {
+      await apiClient.patch(`/feedbacks/${id}/status`, { status: newStatus });
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -123,8 +151,8 @@ export default function SuperAdminFeedbackPage() {
                 key={item.id}
                 onClick={() => setSelectedItem(item)}
                 className={`w-full text-left p-4 rounded-2xl border transition-all 
-                  ${selectedItem?.id === item.id 
-                    ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/30 shadow-sm' 
+                  ${selectedItem?.id === item.id
+                    ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/30 shadow-sm'
                     : 'bg-white dark:bg-[#1a2035] border-gray-200 dark:border-white/5 hover:border-gray-300 dark:hover:border-white/10'}`}
               >
                 <div className="flex justify-between items-start mb-2">
@@ -141,7 +169,7 @@ export default function SuperAdminFeedbackPage() {
                   {item.message}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-medium text-gray-500 flex items-center gap-1.5"><User size={12}/> {item.user}</span>
+                  <span className="text-[11px] font-medium text-gray-500 flex items-center gap-1.5"><User size={12} /> {item.user}</span>
                   {getStatusBadge(item.status)}
                 </div>
               </button>
@@ -174,7 +202,7 @@ export default function SuperAdminFeedbackPage() {
                 </div>
                 <h2 className="text-2xl font-bold font-headline text-gray-900 dark:text-white mb-2">{selectedItem.subject}</h2>
                 <div className="flex items-center gap-4 text-xs text-gray-500">
-                  <span className="flex items-center gap-1"><Clock size={12}/> {new Date(selectedItem.date).toLocaleString()}</span>
+                  <span className="flex items-center gap-1"><Clock size={12} /> {new Date(selectedItem.date).toLocaleString()}</span>
                   <span>Ticket ID: {selectedItem.id}</span>
                   {getStatusBadge(selectedItem.status)}
                 </div>
@@ -199,7 +227,7 @@ export default function SuperAdminFeedbackPage() {
                   </p>
                 </div>
               </div>
-              
+
               {/* Footer Actions */}
               <div className="p-4 border-t border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-black/20 flex gap-3">
                 <input type="text" placeholder="Add an internal note or reply..." className="flex-1 bg-white dark:bg-[#1a2035] border border-gray-200 dark:border-white/10 rounded-xl px-4 text-sm focus:outline-none focus:border-indigo-500" />

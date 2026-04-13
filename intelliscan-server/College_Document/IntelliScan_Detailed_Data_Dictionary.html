@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IntelliScan Detailed Data Dictionary</title>
+<!-- 
+Optimized entirely with aggressive inline-CSS specifically designed to inject 
+perfectly into Microsoft Word when the user uses Ctrl+A / Ctrl+C.
+-->
+<style>
+    body { font-family: 'Times New Roman', Times, serif; padding: 40px; line-height: 1.6; }
+</style>
+</head>
+<body style="font-family: 'Times New Roman', Times, serif; color: #000; background: #fff;">
+
+    <h1 style="text-align: center; font-size: 24pt; margin-bottom: 5px; color: #000;">Data Dictionary</h1>
+    <h3 style="text-align: center; font-size: 14pt; margin-top: 0px; font-weight: normal; color: #333;">IntelliScan CRM &amp; OCR Engine Architecture</h3>
+    <br>
+    <p style="font-size: 12pt; margin-bottom: 30px;">
+        This document defines the highly detailed schema structure, constraints, and data definitions for the core operational tables of the IntelliScan project database. It explicitly outlines the constraints required to maintain referential integrity across the multi-tenant architecture.
+    </p>
+
+    <!-- TABLE 1: WORKSPACES -->
+    <h2 style="font-size: 16pt; margin-bottom: 5px; color: #000;">1. Table: Workspaces</h2>
+    <p style="font-size: 11pt; margin-top: 0px; margin-bottom: 15px; font-style: italic;">Description: Core architectural tenant representing an enterprise or company isolating system data.</p>
+    
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 11pt; border: 1px solid #000;">
+        <thead style="background-color: #d9d9d9;">
+            <tr>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Field Name</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Data Type</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Size</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Constraint</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">workspace_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">PK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Unique identifier for the tenant company.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">company_name</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">255</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">Official business name mapped to the tenant.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">max_users</td>
+                <td style="border: 1px solid #000; padding: 8px;">INT</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">4</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px;">Current seat limit for users (Default: 5).</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">quota_scans</td>
+                <td style="border: 1px solid #000; padding: 8px;">INT</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">4</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px;">Monthly limits for Gemini Vision AI parsing calls.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">created_at</td>
+                <td style="border: 1px solid #000; padding: 8px;">DATETIME</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">8</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">Timestamp for the creation of the Workspace context.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 2: USERS -->
+    <h2 style="font-size: 16pt; margin-bottom: 5px; color: #000;">2. Table: Users</h2>
+    <p style="font-size: 11pt; margin-top: 0px; margin-bottom: 15px; font-style: italic;">Description: Account and authentication matrix for accessing the dashboard.</p>
+    
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 11pt; border: 1px solid #000;">
+        <thead style="background-color: #d9d9d9;">
+            <tr>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Field Name</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Data Type</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Size</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Constraint</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">user_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">PK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Primary authentication identity.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">workspace_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">FK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Binds the user directly to the Workspace enterprise level.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">email_address</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">255</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN, UQ</td>
+                <td style="border: 1px solid #000; padding: 8px;">Login credentials ensuring globally unique values.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">password_hash</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">255</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">Secure Bcrypt hashing generated array for standard storage.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">rbac_role</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">50</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">Authorization string defining scope ('Owner', 'Admin', 'User').</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">is_active</td>
+                <td style="border: 1px solid #000; padding: 8px;">BOOLEAN</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">1</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px;">Flag determining access standing (Default: True).</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 3: CONTACTS -->
+    <h2 style="font-size: 16pt; margin-bottom: 5px; color: #000;">3. Table: Contacts (Leads)</h2>
+    <p style="font-size: 11pt; margin-top: 0px; margin-bottom: 15px; font-style: italic;">Description: Primary entity mapped from extracted Business Card OCR processes encapsulating lead records.</p>
+    
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 11pt; border: 1px solid #000;">
+        <thead style="background-color: #d9d9d9;">
+            <tr>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Field Name</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Data Type</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Size</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Constraint</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">contact_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">PK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Definitive primary key for a successfully uploaded lead.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">workspace_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">FK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Tenant ownership preventing scope leaks.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">first_name</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">100</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px;">Extracted First Name from structured Gemini model output.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">last_name</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">100</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px;">Extracted Last Name resolving empty arrays.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">email_address</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">255</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px;">Primary mechanism for matching automated email CRON sequences.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">company_title</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">255</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px;">Entity representation or organizational role of the lead.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">pipeline_stage</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">50</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">CRM Tracking (Default: 'New Lead').</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">confidence_score</td>
+                <td style="border: 1px solid #000; padding: 8px;">DECIMAL</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">(5,2)</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">The certainty margin outputted by the LLM logic check.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 4: SCANNED IMAGES (BLOBS) -->
+    <h2 style="font-size: 16pt; margin-bottom: 5px; color: #000;">4. Table: Scanned_Images</h2>
+    <p style="font-size: 11pt; margin-top: 0px; margin-bottom: 15px; font-style: italic;">Description: Raw storage matrix that handles the heavy byte transactions before OCR application.</p>
+    
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 11pt; border: 1px solid #000;">
+        <thead style="background-color: #d9d9d9;">
+            <tr>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Field Name</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Data Type</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Size</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Constraint</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">image_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">PK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Identifier mapped to the file uploaded from the mobile device.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">contact_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">FK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Associates the raw blob logically to the refined Contact mapping.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">s3_bucket_url</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">500</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">Absolute cloud linkage for image delivery back to the frontend.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">raw_ocr_json</td>
+                <td style="border: 1px solid #000; padding: 8px;">TEXT</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px;">Massive string capturing the absolute unmodified return from Gemini.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 5: EVENTS -->
+    <h2 style="font-size: 16pt; margin-bottom: 5px; color: #000;">5. Table: Events</h2>
+    <p style="font-size: 11pt; margin-top: 0px; margin-bottom: 15px; font-style: italic;">Description: Grouping logic separating different trade-shows and networking functions.</p>
+    
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 11pt; border: 1px solid #000;">
+        <thead style="background-color: #d9d9d9;">
+            <tr>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Field Name</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Data Type</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Size</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Constraint</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">event_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">PK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Top-level scope variable.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">workspace_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">FK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Ties the event strictly to the parent Workspace account.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">event_name</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">255</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">The UI displayed string describing the convention or meeting.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">start_date</td>
+                <td style="border: 1px solid #000; padding: 8px;">DATE</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">8</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">Enforces when scanning limits/QR codes activate.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">custom_qr_url</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">500</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px;">The generated public-facing lead ingestion portal for this event.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 6: EMAIL SEQUENCES -->
+    <h2 style="font-size: 16pt; margin-bottom: 5px; color: #000;">6. Table: Email_Campaign_Nodes</h2>
+    <p style="font-size: 11pt; margin-top: 0px; margin-bottom: 15px; font-style: italic;">Description: Background task processing queue parsed hourly to dispatch SMTP relays based on date checks.</p>
+    
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 11pt; border: 1px solid #000;">
+        <thead style="background-color: #d9d9d9;">
+            <tr>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Field Name</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Data Type</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Size</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Constraint</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">campaign_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">PK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Core tracking element for a single outgoing step.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">target_contact_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">FK</td>
+                <td style="border: 1px solid #000; padding: 8px;">The ultimate recipient of the email transmission.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">trigger_delay_days</td>
+                <td style="border: 1px solid #000; padding: 8px;">INT</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">4</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px;">How long the daemon should wait before attempting execution (e.g. Day 2, Day 7).</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">html_rendered_body</td>
+                <td style="border: 1px solid #000; padding: 8px;">TEXT</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">The generated and customized HTML text block prepared for NodeMailer handling.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">delivery_status</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">50</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">Execution map tracking state ('Queued', 'Sent', 'Bounced').</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TABLE 7: CALENDAR BOOKINGS -->
+    <h2 style="font-size: 16pt; margin-bottom: 5px; color: #000;">7. Table: Calendar_Bookings</h2>
+    <p style="font-size: 11pt; margin-top: 0px; margin-bottom: 15px; font-style: italic;">Description: Public widget interactions validating available logical time slots without overlaps.</p>
+    
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 11pt; border: 1px solid #000;">
+        <thead style="background-color: #d9d9d9;">
+            <tr>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Field Name</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Data Type</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Size</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: center;">Constraint</th>
+                <th style="border: 1px solid #000; padding: 8px; text-align: left;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">booking_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">PK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Master key establishing the confirmed reservation.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">host_user_id</td>
+                <td style="border: 1px solid #000; padding: 8px;">UUID</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">36</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">FK</td>
+                <td style="border: 1px solid #000; padding: 8px;">Ties the booking block to the User holding the master schedule.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">guest_email</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">255</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">Extrapolated text required to fire ICS attachment emails.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">start_block</td>
+                <td style="border: 1px solid #000; padding: 8px;">DATETIME</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">8</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">Lock defining the earliest timestamp of the booking period.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">end_block</td>
+                <td style="border: 1px solid #000; padding: 8px;">DATETIME</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">8</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">NN</td>
+                <td style="border: 1px solid #000; padding: 8px;">Lock defining the termination of the booking period (preventing overlaps).</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">meeting_url</td>
+                <td style="border: 1px solid #000; padding: 8px;">VARCHAR</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">500</td>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center;">-</td>
+                <td style="border: 1px solid #000; padding: 8px;">Bridge connection URL linking to Google Meet / Zoom auto-generation.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

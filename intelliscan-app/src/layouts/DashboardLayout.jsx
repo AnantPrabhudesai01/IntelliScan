@@ -1,18 +1,25 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ScanLine, Users, Settings, LogOut, Bell, Sun, Moon, Zap, Store, MessageSquare, UploadCloud, Calendar, Mail, Menu, User, ChevronDown, Target, Smartphone, X, BarChart2, ListTree, Monitor, Sparkles, Palette, Trophy, Layers, Webhook } from 'lucide-react';
+import { ScanLine, Users, Settings, LogOut, Bell, Sun, Moon, Zap, Store, MessageSquare, UploadCloud, Calendar, Mail, Menu, User, ChevronDown, Target, Smartphone, X, BarChart2, ListTree, Monitor, Sparkles, Palette, Trophy, Layers, Webhook, Search, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useDarkMode } from '../hooks/useDarkMode';
+import { useTheme } from '../context/ThemeContext';
 import ChatbotWidget from '../components/ChatbotWidget';
 import SignalsCard from '../components/SignalsCard';
 import { useRole } from '../context/RoleContext';
 import { getStoredToken, safeReadStoredUser } from '../utils/auth';
+import LanguageToggle from '../components/LanguageToggle';
+
+import { useNotifications } from '../context/NotificationContext';
+import NotificationCenter from '../components/NotificationCenter';
 
 export default function DashboardLayout({ children }) {
+  const [notifOpen, setNotifOpen] = useState(false);
+  const { unreadCount } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
-  const { isDark, toggle } = useDarkMode();
+  const { isDarkMode, toggleTheme } = useTheme();
   const { signOut } = useRole();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [quotaOpen, setQuotaOpen] = useState(false);
   const [quota, setQuota] = useState({ used: 0, limit: 100, tier: 'personal' });
@@ -28,7 +35,6 @@ export default function DashboardLayout({ children }) {
           ? 'PRO'
           : 'FREE';
 
-  // Dynamic Navigation Items based on tier
   const dynamicNavItems = [
     { to: '/dashboard/scan',        label: 'Scan',          icon: ScanLine },
     { to: '/dashboard/contacts',    label: 'Contacts',      icon: Users    },
@@ -38,7 +44,7 @@ export default function DashboardLayout({ children }) {
     { to: '/dashboard/drafts',      label: 'AI Drafts',     icon: Mail },
     { to: '/dashboard/coach',       label: 'AI Coach',      icon: Target },
     { to: '/dashboard/email-marketing', label: 'Email Marketing', icon: Mail },
-    { to: '/dashboard/email/sequences', label: 'AI Sequences', icon: Zap, tag: 'NEW' },
+    { to: '/dashboard/email-marketing/automations', label: 'AI Sequences', icon: Zap, tag: 'NEW' },
     { to: '/workspace/analytics', label: 'Analytics', icon: BarChart2, tag: workspaceTag },
     { to: '/workspace/org-chart', label: 'Org Chart', icon: ListTree, tag: workspaceTag },
     { to: '/dashboard/presence',    label: 'Meeting Presence', icon: Monitor },
@@ -50,17 +56,18 @@ export default function DashboardLayout({ children }) {
     { to: '/dashboard/settings',    label: 'Settings',      icon: Settings },
   ];
 
-  const isEnterpriseOrHigher = quota?.tier === 'enterprise' || user?.role === 'business_admin' || user?.role === 'super_admin';
-  const isProOrHigher = isEnterpriseOrHigher || quota?.tier === 'pro';
-  const enterpriseOnlyLabels = ['Email Marketing', 'Analytics', 'Org Chart', 'Meeting Presence', 'Event Kiosk', 'Apps'];
-  const proOrHigherLabels = ['Card Creator'];
+  const isEnterpriseOrHigher = (quota?.tier || '').toLowerCase() === 'enterprise' || user?.role === 'business_admin' || user?.role === 'super_admin';
+  const isProOrHigher = isEnterpriseOrHigher || (quota?.tier || '').toLowerCase() === 'pro';
+
+  // Plan gating (matches project docs: Free should not show Pro/Enterprise-only modules)
+  const enterpriseOnlyLabels = ['Leaderboard', 'Analytics', 'Org Chart'];
+  const proOrHigherLabels = ['Calendar', 'AI Coach', 'Email Marketing', 'AI Sequences', 'Meeting Presence', 'Event Kiosk', 'Digital Card', 'Card Creator', 'Apps'];
   
   const filteredNavItems = dynamicNavItems.filter(item => {
     if (enterpriseOnlyLabels.includes(item.label) && !isEnterpriseOrHigher) return false;
     if (proOrHigherLabels.includes(item.label) && !isProOrHigher) return false;
     return true;
   });
-
 
   const handleSignOut = () => {
     signOut();
@@ -90,182 +97,240 @@ export default function DashboardLayout({ children }) {
     return () => window.removeEventListener('quota-update', handleQuotaUpdate);
   }, [location.pathname]);
 
-  const renderSidebarContent = () => (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-950">
-      {/* Logo header inside sidebar */}
-      <div className="h-16 flex items-center justify-between px-5 border-b border-gray-200 dark:border-gray-800 shrink-0">
-        <Link to="/dashboard/scan" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    const handler = () => { setProfileOpen(false); setQuotaOpen(false); };
+    if (profileOpen || quotaOpen) document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [profileOpen, quotaOpen]);
+
+  const sidebarWidth = sidebarCollapsed ? 'w-[68px]' : 'w-60';
+
+  const renderSidebarContent = ({ isMobile = false } = {}) => (
+    <div className="flex flex-col h-full bg-[#21132E] text-white select-none">
+      {/* Logo */}
+      <div className={`h-14 flex items-center ${sidebarCollapsed && !isMobile ? 'justify-center px-2' : 'px-4'} border-b border-[#3D2650] shrink-0`}>
+        <Link to="/dashboard/scan" className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center flex-shrink-0">
             <ScanLine className="text-white" size={18} />
           </div>
-          <span className="font-extrabold text-lg tracking-tight text-gray-900 dark:text-white">IntelliScan</span>
+          {(!sidebarCollapsed || isMobile) && (
+            <span className="font-bold text-[15px] tracking-tight text-white truncate">IntelliScan</span>
+          )}
         </Link>
-        <button onClick={() => setSidebarOpen(false)} className="p-2 text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-          <X size={18} />
-        </button>
+        {isMobile && (
+          <button onClick={() => setMobileSidebarOpen(false)} className="ml-auto p-1.5 text-sidebar-text hover:text-white rounded-md hover:bg-sidebar-hover transition-colors">
+            <X size={18} />
+          </button>
+        )}
       </div>
-          <div className="flex-1 flex flex-col gap-1 px-4 py-4 overflow-y-auto">
-            {filteredNavItems.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 group ${
-                  location.pathname === item.to
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                    : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-400 dark:hover:text-white'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <item.icon size={20} className={location.pathname === item.to ? 'text-white' : 'text-gray-400 group-hover:text-indigo-500'} />
-                  <span>{item.label}</span>
-                </div>
-                {item.tag && (
-                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-lg uppercase tracking-tighter ${
-                    location.pathname === item.to ? 'bg-white/20 text-white' : 'bg-indigo-100 text-indigo-600'
-                  }`}>
-                    {item.tag}
-                  </span>
-                )}
-              </Link>
-            ))}
-          </div>
 
-      {/* Plan Status */}
-      <div className="px-5 pb-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-        <div className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-widest mb-2">Plan Status</div>
-        <h4 className="font-bold text-sm text-gray-900 dark:text-white mb-2 uppercase tracking-wider">
-          {quota.tier === 'enterprise' ? 'ENTERPRISE PLAN' : quota.tier === 'pro' ? 'PRO PLAN' : 'FREE PLAN'}
-        </h4>
-        <div className="space-y-1.5 mb-3">
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-600 dark:text-gray-400">Credit Points</span>
-            <span className="font-bold text-gray-900 dark:text-white">{quota.used} / {quota.limit}</span>
-          </div>
-          <div className="w-full bg-gray-100 dark:bg-gray-800 h-1.5 rounded-full overflow-hidden">
-            <div className="bg-indigo-500 h-full rounded-full transition-all" style={{ width: `${Math.min((quota.used / quota.limit) * 100, 100)}%` }}></div>
+      {/* Nav Items */}
+      <nav className={`flex-1 ${sidebarCollapsed && !isMobile ? 'px-1.5' : 'px-2.5'} py-3 overflow-y-auto sidebar-scroll space-y-0.5`}>
+        {filteredNavItems.map((item) => {
+          const isActive = location.pathname === item.to;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={() => isMobile && setMobileSidebarOpen(false)}
+              title={sidebarCollapsed && !isMobile ? item.label : undefined}
+              className={`flex items-center gap-2.5 ${sidebarCollapsed && !isMobile ? 'justify-center px-2 py-2.5' : 'px-3 py-2'} rounded-md text-[13px] font-medium transition-all duration-150 group relative ${
+                isActive
+                  ? 'bg-sidebar-active text-white'
+                  : 'text-sidebar-text hover:bg-sidebar-hover hover:text-white'
+              }`}
+            >
+              {isActive && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-brand-light rounded-r-full" />
+              )}
+              <item.icon size={18} className={`flex-shrink-0 ${isActive ? 'text-brand-light' : 'text-sidebar-text group-hover:text-white'}`} />
+              {(!sidebarCollapsed || isMobile) && (
+                <>
+                  <span className="truncate flex-1">{item.label}</span>
+                  {item.tag && (
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-tight ${
+                      item.tag === 'NEW' ? 'bg-green-500/20 text-green-300' : 'bg-brand/30 text-brand-200'
+                    }`}>
+                      {item.tag}
+                    </span>
+                  )}
+                </>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Plan Status — only when expanded */}
+      {(!sidebarCollapsed || isMobile) && (
+        <div className="px-3 pb-3 border-t border-[#3D2650] pt-3">
+          <div className="bg-sidebar-hover rounded-lg p-3">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-[10px] font-bold uppercase text-sidebar-text tracking-wider">
+                {user?.role === 'super_admin' ? 'Super Admin' : user?.role === 'business_admin' ? 'Business Admin' : (quota.tier === 'enterprise' ? 'Enterprise' : quota.tier === 'pro' ? 'Pro' : 'Free Plan')}
+              </span>
+              <span className="text-[10px] font-bold text-brand-light">{quota.used}/{quota.limit}</span>
+            </div>
+            <div className="w-full bg-[#1A1119] h-1.5 rounded-full overflow-hidden mb-2.5">
+              <div className="bg-brand h-full rounded-full transition-all" style={{ width: `${Math.min((quota.used / quota.limit) * 100, 100)}%` }} />
+            </div>
+            <Link to="/subscription-plan-comparison" className="w-full py-1.5 bg-brand hover:bg-brand-light text-white font-semibold text-[11px] rounded-md flex items-center justify-center gap-1.5 transition-colors">
+              <Zap size={12} /> Upgrade
+            </Link>
           </div>
         </div>
-        <Link to="/subscription-plan-comparison" className="w-full py-2 bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 shadow-sm border border-gray-100 dark:border-gray-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 hover:shadow-md transition-all">
-          <Zap size={14} className="text-amber-500" fill="currentColor" /> Upgrade
-        </Link>
-      </div>
+      )}
 
       {/* Profile */}
-      <div className="border-t border-gray-200 dark:border-gray-800 p-4 shrink-0">
-        <div className="flex items-center gap-3 p-2 rounded-xl">
-          <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0">
-            <span className="text-white text-sm font-bold">{user.name.charAt(0)}</span>
+      <div className={`border-t border-[#3D2650] ${sidebarCollapsed && !isMobile ? 'p-2' : 'p-3'} shrink-0`}>
+        <div className={`flex items-center ${sidebarCollapsed && !isMobile ? 'justify-center' : 'gap-2.5'} py-1`}>
+          <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center flex-shrink-0">
+            <span className="text-white text-xs font-bold">{user.name.charAt(0)}</span>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{user.name}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
-          </div>
+          {(!sidebarCollapsed || isMobile) && (
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-semibold text-white truncate">{user.name}</p>
+              <p className="text-[10px] text-sidebar-text truncate">{user.email}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 font-body overflow-hidden">
-      {/* Inline sidebar — pushes content right, no overlay, no double-header */}
-      {sidebarOpen && (
-        <aside className="w-64 shrink-0 bg-white dark:bg-gray-950 flex flex-col border-r border-gray-200 dark:border-gray-800 shadow-sm overflow-y-auto">
-          {renderSidebarContent()}
-        </aside>
+    <div className="flex h-screen bg-[var(--surface)] dark:bg-[var(--surface)] font-body overflow-hidden transition-colors duration-300">
+      {/* ── Desktop Sidebar (always visible) ── */}
+      <aside className={`hidden lg:flex ${sidebarWidth} flex-shrink-0 flex-col transition-all duration-200 shadow-lg z-20`}>
+        {renderSidebarContent()}
+      </aside>
+
+      {/* ── Mobile Sidebar Overlay ── */}
+      {mobileSidebarOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          <div className="fixed inset-0 bg-black/60" onClick={() => setMobileSidebarOpen(false)} />
+          <aside className="relative w-60 flex flex-col shadow-2xl z-10">
+            {renderSidebarContent({ isMobile: true })}
+          </aside>
+        </div>
       )}
 
-
-      {/* Main Content Area */}
+      {/* ── Main Content Area ── */}
       <div className="flex-1 flex flex-col min-w-0 relative h-full">
-        {/* Universal Top Header */}
-        <header className="h-16 flex items-center justify-between px-4 sm:px-6 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 shrink-0">
-          <div className="flex items-center gap-3">
+        {/* Enterprise Top Header */}
+        <header className="h-12 flex items-center justify-between px-4 bg-[var(--surface-card)] dark:bg-[var(--surface-card)] border-b border-[var(--border-subtle)] shrink-0 shadow-sm z-10">
+          <div className="flex items-center gap-2">
+            {/* Mobile hamburger */}
             <button 
-              onClick={() => setSidebarOpen(!sidebarOpen)} 
-              className="p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors"
+              onClick={() => setMobileSidebarOpen(true)} 
+              className="lg:hidden p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors"
             >
-              <Menu size={22} />
+              <Menu size={20} />
             </button>
-            {/* Hide logo in header when sidebar is open — sidebar has its own logo */}
-            {!sidebarOpen && (
-              <Link to="/dashboard/scan" className="flex items-center gap-2">
-                <ScanLine size={22} className="text-indigo-600" />
-                <span className="font-bold text-lg text-gray-900 dark:text-white hidden sm:block">IntelliScan</span>
-              </Link>
-            )}
+            {/* Desktop collapse toggle */}
+            <button 
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)} 
+              className="hidden lg:flex p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors"
+            >
+              <Menu size={18} />
+            </button>
+
+            {/* Breadcrumb-style page title */}
+            <div className="hidden sm:flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-gray-400 dark:text-gray-500">Dashboard</span>
+              <ChevronRight size={14} className="text-gray-300 dark:text-gray-600" />
+              <span className="font-semibold text-gray-800 dark:text-white capitalize">
+                {location.pathname.split('/').pop()?.replace(/-/g, ' ') || 'Overview'}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Quota & Upgrade Section (Desktop only for header) */}
-            <div className="hidden sm:flex items-center gap-2 relative">
+          <div className="flex items-center gap-2">
+            {/* Quota Badge */}
+            <div className="hidden sm:flex items-center relative">
               <button 
-                onClick={() => setQuotaOpen(!quotaOpen)}
-                className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full transition-colors ${quota.tier === 'enterprise' ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-500/20' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'}`}
+                onClick={(e) => { e.stopPropagation(); setQuotaOpen(!quotaOpen); setProfileOpen(false); }}
+                className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:border-brand dark:hover:border-brand text-gray-600 dark:text-gray-300 transition-colors"
               >
-                {quota.tier === 'enterprise' ? 'ENTERPRISE' : 'FREE'} <ChevronDown size={14} />
+                {quota.tier === 'enterprise' ? 'Enterprise' : quota.tier === 'pro' ? 'Pro' : 'Free'}
+                <ChevronDown size={12} />
               </button>
               
               {quotaOpen && (
-                <div className="absolute top-10 right-0 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-xl p-4 z-50 animate-fade-in">
+                <div className="absolute top-9 right-0 w-60 bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-4 z-50 animate-fade-in">
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Plan Quota</span>
-                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{quota.limit > quota.used ? `${quota.limit - quota.used} Credits Left` : 'Quota Exceeded'}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Plan Quota</span>
+                    <span className="text-[10px] font-bold text-brand">{quota.limit > quota.used ? `${quota.limit - quota.used} Left` : 'Exceeded'}</span>
                   </div>
-                  <div className="space-y-1 mb-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Credits Used</span>
+                  <div className="space-y-1 mb-3">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-500 dark:text-gray-400">Credits Used</span>
                       <span className="font-bold text-gray-900 dark:text-white">{quota.used} / {quota.limit}</span>
                     </div>
-                    <div className="w-full bg-gray-100 dark:bg-gray-800 h-2 rounded-full overflow-hidden">
-                      <div className="bg-indigo-500 h-full rounded-full transition-all" style={{ width: `${Math.min((quota.used / quota.limit) * 100, 100)}%` }}></div>
+                    <div className="w-full bg-gray-100 dark:bg-gray-800 h-1.5 rounded-full overflow-hidden">
+                      <div className="bg-brand h-full rounded-full transition-all" style={{ width: `${Math.min((quota.used / quota.limit) * 100, 100)}%` }} />
                     </div>
                   </div>
-                  <p className="text-[11px] text-gray-500 leading-relaxed mb-4">You are on the free tier. Upgrade for unlimited automated data extraction and bulk Excel exports.</p>
-                  <Link to="/subscription-plan-comparison" onClick={() => setQuotaOpen(false)} className="w-full py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold text-xs rounded-lg flex items-center justify-center gap-2 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors">
-                    View Enterprise Plans
+                  <Link to="/subscription-plan-comparison" onClick={() => setQuotaOpen(false)} className="w-full py-1.5 bg-brand/10 text-brand font-semibold text-xs rounded-md flex items-center justify-center gap-1.5 hover:bg-brand/20 transition-colors">
+                    View Plans
                   </Link>
                 </div>
               )}
-
-              <Link to="/subscription-plan-comparison" className="flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-sm transition-all shadow-amber-500/20">
-                <Zap size={12} fill="currentColor" /> Upgrade
-              </Link>
             </div>
 
-            <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 hidden sm:block">
+            {/* Upgrade */}
+            <Link to="/subscription-plan-comparison" className="hidden sm:flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-md bg-brand hover:bg-brand-light text-white transition-colors">
+              <Zap size={11} /> Upgrade
+            </Link>
+
+            {/* Notifications */}
+            <button 
+              onClick={() => setNotifOpen(true)}
+              className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors relative"
+            >
               <Bell size={18} />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-[#1A1A2E]" />
+              )}
             </button>
+
+            <NotificationCenter isOpen={notifOpen} onClose={() => setNotifOpen(false)} />
+
+            {/* Dark Mode */}
+            <button onClick={toggleTheme} className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors">
+              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+
+            {/* Language */}
+            <div className="hidden sm:block">
+              <LanguageToggle />
+            </div>
 
             {/* Profile Dropdown */}
             <div className="relative">
               <button 
                 onClick={(e) => { e.stopPropagation(); setProfileOpen(!profileOpen); setQuotaOpen(false); }}
-                className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="flex items-center gap-1.5 p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
-                <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">{user.name.charAt(0)}</span>
+                <div className="w-7 h-7 rounded-full bg-brand flex items-center justify-center">
+                  <span className="text-white text-[10px] font-bold">{user.name.charAt(0)}</span>
                 </div>
+                <ChevronDown size={12} className="text-gray-400 hidden sm:block" />
               </button>
               {profileOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg py-2 z-50 animate-fade-in">
-                  <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 mb-1">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+                <div className="absolute right-0 mt-1 w-52 bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl py-1 z-50 animate-fade-in">
+                  <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{user.name}</p>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
                   </div>
-                  <Link to="/dashboard/settings" onClick={() => setProfileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <Settings size={16} /> Settings
+                  <Link to="/dashboard/settings" onClick={() => setProfileOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <Settings size={15} /> Settings
                   </Link>
-                  <button onClick={toggle}
-                    className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <div className="flex items-center gap-3">
-                      {isDark ? <Sun size={16} /> : <Moon size={16} />}
-                      {isDark ? 'Light Mode' : 'Dark Mode'}
-                    </div>
-                  </button>
-                  <div className="h-px bg-gray-100 dark:bg-gray-800 my-1"></div>
+                  <div className="h-px bg-gray-100 dark:bg-gray-800" />
                   <button onClick={handleSignOut}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors">
-                    <LogOut size={16} /> Sign Out
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors">
+                    <LogOut size={15} /> Sign Out
                   </button>
                 </div>
               )}
@@ -273,19 +338,13 @@ export default function DashboardLayout({ children }) {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scroll-smooth bg-gray-50 dark:bg-gray-900">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth">
           <div className="max-w-7xl mx-auto h-full">
             {children}
           </div>
         </main>
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
-        .style-scrollbar::-webkit-scrollbar { width: 4px; }
-        .style-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .style-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(156, 163, 175, 0.3); border-radius: 20px; }
-        .dark .style-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(75, 85, 99, 0.4); }
-      `}} />
       <ChatbotWidget role="user" />
     </div>
   );

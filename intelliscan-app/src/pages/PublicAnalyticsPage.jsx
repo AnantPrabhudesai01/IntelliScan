@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../api/client';
 import { Activity, MousePointerClick, Users, Clock, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export default function PublicAnalyticsPage() {
@@ -10,7 +10,7 @@ export default function PublicAnalyticsPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get('/api/analytics/stats');
+        const res = await apiClient.get('/analytics/stats');
         setStats(res.data);
       } catch (err) {
         console.error('Failed to fetch stats', err);

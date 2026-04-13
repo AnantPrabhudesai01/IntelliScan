@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IntelliScan Sequence Diagrams</title>
+<!-- 
+100% Native HTML and SVG Sequence Diagrams.
+Zero colors used.
+Zero Markdown or Mermaid code used.
+Matches strict classic UML Sequence Diagram specifications.
+-->
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #ffffff;
+        color: #000000;
+        text-align: center;
+        padding: 40px;
+    }
+    h2 {
+        border-bottom: 1px solid #000;
+        display: inline-block;
+        padding-bottom: 5px;
+        margin-bottom: 20px;
+    }
+    .diagram-container {
+        border: 1px solid #000;
+        padding: 30px;
+        display: inline-block;
+        margin-bottom: 70px;
+        background-color: #fff;
+    }
+    svg {
+        display: block;
+        margin: 0 auto;
+    }
+    .box {
+        fill: #fff;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    .active {
+        fill: #fff;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    .lifeline {
+        stroke: #000;
+        stroke-width: 1;
+        stroke-dasharray: 8,5;
+    }
+    .solid {
+        stroke: #000;
+        stroke-width: 1.5;
+        fill: none;
+    }
+    .dashed {
+        stroke: #000;
+        stroke-width: 1.5;
+        fill: none;
+        stroke-dasharray: 6,4;
+    }
+    text {
+        fill: #000;
+        font-size: 13px;
+        pointer-events: none;
+        text-anchor: middle;
+    }
+    .title-text {
+        font-weight: bold;
+        dominant-baseline: middle;
+    }
+</style>
+</head>
+<body>
+
+    <h1>IntelliScan Core UML Sequence Diagrams</h1>
+    <p style="margin-bottom: 50px;">Rendered exactly matching UML guidelines. Pure Black &amp; White native SVG mapping interaction chronologies.</p>
+
+    <!-- Global Arrow Definitions -->
+    <svg width="0" height="0" style="display:block;">
+        <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto-start-reverse">
+                <polygon points="0 0, 10 4, 0 8" fill="#000" />
+            </marker>
+            <marker id="open-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto-start-reverse">
+                <polyline points="0 1, 9 4, 0 7" fill="none" stroke="#000" stroke-width="1.5" />
+            </marker>
+        </defs>
+    </svg>
+
+
+    <!-- ========================================================
+         DIAGRAM 1: Core AI Card Scanning & DB Integration
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>1. Architecture Flow: AI OCR Business Card Capture</h2><br>
+        <svg width="840" height="600">
+            <!-- Lifelines -->
+            <line x1="100" y1="70" x2="100" y2="580" class="lifeline" />
+            <line x1="260" y1="70" x2="260" y2="580" class="lifeline" />
+            <line x1="420" y1="70" x2="420" y2="580" class="lifeline" />
+            <line x1="580" y1="70" x2="580" y2="580" class="lifeline" />
+            <line x1="740" y1="70" x2="740" y2="580" class="lifeline" />
+
+            <!-- Headers -->
+            <rect x="40" y="30" width="120" height="40" class="box" /> <text x="100" y="55" class="title-text">Workspace User</text>
+            <rect x="200" y="30" width="120" height="40" class="box" /> <text x="260" y="55" class="title-text">React Frontend</text>
+            <rect x="360" y="30" width="120" height="40" class="box" /> <text x="420" y="55" class="title-text">Express API</text>
+            <rect x="520" y="30" width="120" height="40" class="box" /> <text x="580" y="55" class="title-text">Google Gemini</text>
+            <rect x="680" y="30" width="120" height="40" class="box" /> <text x="740" y="55" class="title-text">SQLite Database</text>
+
+            <!-- Activation Boxes -->
+            <rect x="92" y="100" width="16" height="430" class="active" /> <!-- User -->
+            <rect x="252" y="110" width="16" height="410" class="active" /> <!-- React -->
+            <rect x="412" y="150" width="16" height="340" class="active" /> <!-- API -->
+            <rect x="572" y="190" width="16" height="80" class="active" /> <!-- Gemini -->
+            <rect x="732" y="290" width="16" height="60" class="active" /> <!-- DB Read -->
+            <rect x="732" y="370" width="16" height="60" class="active" /> <!-- DB Write -->
+
+            <!-- Interactions -->
+            <line x1="108" y1="120" x2="252" y2="120" class="solid" marker-end="url(#arrow)" /> <text x="180" y="112">Upload Card Image</text>
+            <line x1="268" y1="160" x2="412" y2="160" class="solid" marker-end="url(#arrow)" /> <text x="340" y="152">POST /api/scan (Image Auth)</text>
+            <line x1="428" y1="200" x2="572" y2="200" class="solid" marker-end="url(#arrow)" /> <text x="500" y="192">POST vision/analyze</text>
+            <line x1="572" y1="260" x2="428" y2="260" class="dashed" marker-end="url(#open-arrow)" /> <text x="500" y="252">return {JSON Demographics}</text>
+            <line x1="428" y1="300" x2="732" y2="300" class="solid" marker-end="url(#arrow)" /> <text x="580" y="292">SELECT fuzzy_match (Duplicate check)</text>
+            <line x1="732" y1="340" x2="428" y2="340" class="dashed" marker-end="url(#open-arrow)" /> <text x="580" y="332">return NotFound = false</text>
+            <line x1="428" y1="380" x2="732" y2="380" class="solid" marker-end="url(#arrow)" /> <text x="580" y="372">INSERT INTO contacts_db</text>
+            <line x1="732" y1="420" x2="428" y2="420" class="dashed" marker-end="url(#open-arrow)" /> <text x="580" y="412">return 201 Created</text>
+            <line x1="428" y1="470" x2="268" y2="470" class="dashed" marker-end="url(#open-arrow)" /> <text x="340" y="462">return Success payload + DB Row</text>
+            <line x1="252" y1="510" x2="108" y2="510" class="solid" marker-end="url(#arrow)" /> <text x="180" y="502">Render Scanned Output UI</text>
+            
+        </svg>
+    </div>
+
+
+    <!-- ========================================================
+         DIAGRAM 2: Automated Background Cron Workflow
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>2. Architecture Flow: Email Sequences &amp; Background Automation</h2><br>
+        <svg width="840" height="660">
+            <!-- Lifelines -->
+            <line x1="100" y1="70" x2="100" y2="640" class="lifeline" />
+            <line x1="260" y1="70" x2="260" y2="640" class="lifeline" />
+            <line x1="420" y1="70" x2="420" y2="640" class="lifeline" />
+            <line x1="580" y1="70" x2="580" y2="640" class="lifeline" />
+            <line x1="740" y1="70" x2="740" y2="640" class="lifeline" />
+
+            <!-- Headers -->
+            <rect x="40" y="30" width="120" height="40" class="box" /> <text x="100" y="55" class="title-text">Workspace Admin</text>
+            <rect x="200" y="30" width="120" height="40" class="box" /> <text x="260" y="55" class="title-text">React Frontend</text>
+            <rect x="360" y="30" width="120" height="40" class="box" /> <text x="420" y="55" class="title-text">Express Backend</text>
+            <rect x="520" y="30" width="120" height="40" class="box" /> <text x="580" y="55" class="title-text">Job/CRON Engine</text>
+            <rect x="680" y="30" width="120" height="40" class="box" /> <text x="740" y="55" class="title-text">SMTP Server</text>
+
+            <!-- Activation Boxes -->
+            <rect x="92" y="100" width="16" height="230" class="active" />
+            <rect x="252" y="110" width="16" height="210" class="active" />
+            <rect x="412" y="150" width="16" height="130" class="active" />
+            
+            <rect x="572" y="380" width="16" height="230" class="active" />
+            <rect x="412" y="440" width="16" height="40" class="active" />
+            <rect x="412" y="590" width="16" height="40" class="active" />
+            <rect x="732" y="510" width="16" height="50" class="active" />
+
+            <!-- Phase 1: Enrollment -->
+            <text x="420" y="90" font-weight="bold" font-style="italic">Phase 1: Setup &amp; Enroll</text>
+            
+            <line x1="108" y1="120" x2="252" y2="120" class="solid" marker-end="url(#arrow)" /> <text x="180" y="112">Select Leads &amp; Sequence</text>
+            <line x1="268" y1="160" x2="412" y2="160" class="solid" marker-end="url(#arrow)" /> <text x="340" y="152">POST /api/seq/enroll</text>
+            <polyline points="428,190 460,190 460,220 428,220" class="solid" marker-end="url(#arrow)" /> <text x="520" y="205" font-style="italic">Persist to SQLite Status=Draft</text>
+            <line x1="412" y1="260" x2="268" y2="260" class="dashed" marker-end="url(#open-arrow)" /> <text x="340" y="252">return 200 OK Status</text>
+            <line x1="252" y1="300" x2="108" y2="300" class="solid" marker-end="url(#arrow)" /> <text x="180" y="292">Update UI to "Enrolled"</text>
+
+            <!-- Time Ellapse Break -->
+            <line x1="50" y1="350" x2="790" y2="350" stroke="#000" stroke-width="1" stroke-dasharray="10,10" />
+            <text x="420" y="350" font-style="italic" style="background:#fff; padding:0 10px;"> ... Time Elapses based on Sequence Delay Settings ... </text>
+
+            <!-- Phase 2: Execution -->
+            <text x="420" y="380" font-weight="bold" font-style="italic">Phase 2: Job Execution Check</text>
+
+            <polyline points="588,390 620,390 620,420 588,420" class="solid" marker-end="url(#arrow)" /> <text x="690" y="405" font-style="italic">processPendingSequences()</text>
+            <line x1="572" y1="450" x2="428" y2="450" class="solid" marker-end="url(#arrow)" /> <text x="500" y="442">GET Due Output Data</text>
+            <line x1="428" y1="470" x2="572" y2="470" class="dashed" marker-end="url(#open-arrow)" /> <text x="500" y="462">return Array [ContactsToEmail]</text>
+            <line x1="588" y1="520" x2="732" y2="520" class="solid" marker-end="url(#arrow)" /> <text x="660" y="512">sendTemplate(Contact Payload)</text>
+            <line x1="732" y1="550" x2="588" y2="550" class="dashed" marker-end="url(#open-arrow)" /> <text x="660" y="542">SMTP 250 OK Delivered</text>
+            <line x1="572" y1="600" x2="428" y2="600" class="solid" marker-end="url(#arrow)" /> <text x="500" y="592">Update Data Record (Status=Sent)</text>
+        </svg>
+    </div>
+
+
+
+    <!-- ========================================================
+         DIAGRAM 3: Public Booking Interface
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>3. Architecture Flow: Public Calendar Scheduling Interface</h2><br>
+        <svg width="840" height="700">
+            <line x1="100" y1="70" x2="100" y2="680" class="lifeline" />
+            <line x1="260" y1="70" x2="260" y2="680" class="lifeline" />
+            <line x1="420" y1="70" x2="420" y2="680" class="lifeline" />
+            <line x1="580" y1="70" x2="580" y2="680" class="lifeline" />
+            <line x1="740" y1="70" x2="740" y2="680" class="lifeline" />
+
+            <rect x="40" y="30" width="120" height="40" class="box" /> <text x="100" y="55" class="title-text">Public User (Lead)</text>
+            <rect x="200" y="30" width="120" height="40" class="box" /> <text x="260" y="55" class="title-text">React Application</text>
+            <rect x="360" y="30" width="120" height="40" class="box" /> <text x="420" y="55" class="title-text">Express Backend</text>
+            <rect x="520" y="30" width="120" height="40" class="box" /> <text x="580" y="55" class="title-text">SQLite Rolodex</text>
+            <rect x="680" y="30" width="120" height="40" class="box" /> <text x="740" y="55" class="title-text">Google Workspace</text>
+
+            <rect x="92" y="100" width="16" height="570" class="active" /> 
+            <rect x="252" y="110" width="16" height="550" class="active" /> 
+            
+            <rect x="412" y="150" width="16" height="150" class="active" /> 
+            <rect x="572" y="190" width="16" height="60" class="active" /> 
+            
+            <rect x="412" y="400" width="16" height="230" class="active" /> 
+            <rect x="572" y="440" width="16" height="60" class="active" /> 
+            <rect x="732" y="520" width="16" height="60" class="active" /> 
+
+            <!-- Interactions -->
+            <line x1="108" y1="120" x2="252" y2="120" class="solid" marker-end="url(#arrow)" /> <text x="180" y="112">Enter Shareable /profile/[UID]</text>
+            <line x1="268" y1="160" x2="412" y2="160" class="solid" marker-end="url(#arrow)" /> <text x="340" y="152">GET /api/calendar/[UID]</text>
+            <line x1="428" y1="200" x2="572" y2="200" class="solid" marker-end="url(#arrow)" /> <text x="500" y="192">SELECT available meeting blocks</text>
+            <line x1="572" y1="240" x2="428" y2="240" class="dashed" marker-end="url(#open-arrow)" /> <text x="500" y="232">return Workspace Slot Blocks Payload</text>
+            <line x1="412" y1="280" x2="268" y2="280" class="dashed" marker-end="url(#open-arrow)" /> <text x="340" y="272">return 200 OK + Availability JSON</text>
+            <line x1="252" y1="320" x2="108" y2="320" class="dashed" marker-end="url(#open-arrow)" /> <text x="180" y="312">Render Interactive Calendar Grid</text>
+
+            <line x1="108" y1="370" x2="252" y2="370" class="solid" marker-end="url(#arrow)" /> <text x="180" y="362">Select Slot &amp; Input Attendee Form</text>
+            <line x1="268" y1="410" x2="412" y2="410" class="solid" marker-end="url(#arrow)" /> <text x="340" y="402">POST /api/calendar/book (Validation)</text>
+            <line x1="428" y1="450" x2="572" y2="450" class="solid" marker-end="url(#arrow)" /> <text x="500" y="442">INSERT Booking Event Record</text>
+            <line x1="572" y1="490" x2="428" y2="490" class="dashed" marker-end="url(#open-arrow)" /> <text x="500" y="482">return Transaction Success</text>
+
+            <line x1="428" y1="530" x2="732" y2="530" class="solid" marker-end="url(#arrow)" /> <text x="580" y="522">Deliver Generated ICS Calendar Invites</text>
+            <line x1="732" y1="570" x2="428" y2="570" class="dashed" marker-end="url(#open-arrow)" /> <text x="580" y="562">Invites Dispatched successfully</text>
+            <line x1="412" y1="610" x2="268" y2="610" class="dashed" marker-end="url(#open-arrow)" /> <text x="340" y="602">return 201 Created Response</text>
+            <line x1="252" y1="650" x2="108" y2="650" class="solid" marker-end="url(#arrow)" /> <text x="180" y="642">Render Confetti Success View</text>
+        </svg>
+    </div>
+
+
+
+    <!-- ========================================================
+         DIAGRAM 4: GLOBAL WHOLE-PROJECT MACRO LIFECYCLE
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>4. MACRO LEVEL: Global System Architecture Sequence</h2><br>
+        <svg width="1020" height="1060">
+            <!-- Lifelines (Wider Canvas) -->
+            <line x1="100" y1="70" x2="100" y2="1040" class="lifeline" />
+            <line x1="260" y1="70" x2="260" y2="1040" class="lifeline" />
+            <line x1="420" y1="70" x2="420" y2="1040" class="lifeline" />
+            <line x1="580" y1="70" x2="580" y2="1040" class="lifeline" />
+            <line x1="740" y1="70" x2="740" y2="1040" class="lifeline" />
+            <line x1="900" y1="70" x2="900" y2="1040" class="lifeline" />
+
+            <!-- Headers -->
+            <rect x="40" y="30" width="120" height="40" class="box" /> <text x="100" y="55" class="title-text">Client (All Roles)</text>
+            <rect x="200" y="30" width="120" height="40" class="box" /> <text x="260" y="55" class="title-text">React Frontend</text>
+            <rect x="360" y="30" width="120" height="40" class="box" /> <text x="420" y="55" class="title-text">Express Server</text>
+            <rect x="520" y="30" width="120" height="40" class="box" /> <text x="580" y="55" class="title-text">SQLite Platform</text>
+            <rect x="680" y="30" width="120" height="40" class="box" /> <text x="740" y="55" class="title-text">CRON / Mailer</text>
+            <rect x="840" y="30" width="120" height="40" class="box" /> <text x="900" y="55" class="title-text">External APIs</text>
+
+            <!-- Activation Boxes -->
+            <rect x="92" y="100" width="16" height="580" class="active" /> <!-- Client Interaction Time -->
+            <rect x="252" y="110" width="16" height="550" class="active" /> <!-- React Active Time -->
+            
+            <rect x="412" y="150" width="16" height="150" class="active" /> <!-- API Auth -->
+            <rect x="572" y="190" width="16" height="60" class="active" /> <!-- SQL Auth -->
+            
+            <rect x="412" y="340" width="16" height="280" class="active" /> <!-- API ML Scan -->
+            <rect x="892" y="380" width="16" height="60" class="active" /> <!-- Gemini Active -->
+            <rect x="572" y="460" width="16" height="60" class="active" /> <!-- SQL Save -->
+            
+            <rect x="412" y="500" width="16" height="60" class="active" /> <!-- API Campaign -->
+            <rect x="572" y="520" width="16" height="40" class="active" /> <!-- SQL Campaign -->
+            
+            <rect x="732" y="670" width="16" height="260" class="active" /> <!-- Async Processor Active -->
+            <rect x="412" y="700" width="16" height="80" class="active" /> <!-- API Fetch -->
+            <rect x="572" y="720" width="16" height="40" class="active" /> <!-- SQL Fetch -->
+            <rect x="892" y="800" width="16" height="60" class="active" /> <!-- CRM Webhooks -->
+            <rect x="412" y="880" width="16" height="60" class="active" /> <!-- API Sync Update -->
+            <rect x="572" y="900" width="16" height="40" class="active" /> <!-- SQL Final -->
+
+            <!-- Phase 1: Authentication Handshake -->
+            <text x="500" y="100" font-weight="bold" font-style="italic">Initialization: Authentication &amp; RBAC Resolution</text>
+            <line x1="108" y1="130" x2="252" y2="130" class="solid" marker-end="url(#arrow)" /> <text x="180" y="122">Provide Login Credentials</text>
+            <line x1="268" y1="170" x2="412" y2="170" class="solid" marker-end="url(#arrow)" /> <text x="340" y="162">POST /api/auth/login</text>
+            <line x1="428" y1="210" x2="572" y2="210" class="solid" marker-end="url(#arrow)" /> <text x="500" y="202">Validate Account &amp; Fetch Workspace Role</text>
+            <line x1="572" y1="250" x2="428" y2="250" class="dashed" marker-end="url(#open-arrow)" /> <text x="500" y="242">return (User ID, Admin/Sales Role)</text>
+            <line x1="412" y1="290" x2="268" y2="290" class="dashed" marker-end="url(#open-arrow)" /> <text x="340" y="282">Mount JWT Token in Local Storage</text>
+
+            <!-- Phase 2: Core Platform Feature (Scan) -->
+            <text x="500" y="330" font-weight="bold" font-style="italic">Primary Action: AI Deep Scan Pipeline</text>
+            <line x1="108" y1="360" x2="252" y2="360" class="solid" marker-end="url(#arrow)" /> <text x="180" y="352">User Triggers Camera/Doc Upload</text>
+            <line x1="268" y1="400" x2="412" y2="400" class="solid" marker-end="url(#arrow)" /> <text x="340" y="392">POST /api/scan (Protected Route)</text>
+            
+            <line x1="428" y1="430" x2="892" y2="430" class="solid" marker-end="url(#arrow)" /> <text x="660" y="422">Relay multipart data to Google Vision AI Core (OCR)</text>
+            <line x1="892" y1="480" x2="428" y2="480" class="dashed" marker-end="url(#open-arrow)" /> <text x="660" y="472">Return sanitized JSON mapped object</text>
+            
+            <line x1="428" y1="520" x2="572" y2="520" class="solid" marker-end="url(#arrow)" /> <text x="500" y="512">Execute fuzzy duplicate check &amp; INSERT</text>
+            <line x1="572" y1="560" x2="428" y2="560" class="dashed" marker-end="url(#open-arrow)" /> <text x="500" y="552">return 201 Row Created</text>
+            <line x1="412" y1="600" x2="268" y2="600" class="dashed" marker-end="url(#open-arrow)" /> <text x="340" y="592">Sync React Context State with Server Sync</text>
+
+            <!-- Phase 3: Background Automation -->
+            <text x="500" y="650" font-weight="bold" font-style="italic">Asynchronous Background System: Automated CRM Sequence Executions</text>
+            
+            <polyline points="748,680 780,680 780,710 748,710" class="solid" marker-end="url(#arrow)" /> <text x="850" y="695">Lifecycle Daemon Trigger (CRON Tick)</text>
+            
+            <line x1="732" y1="720" x2="412" y2="720" class="solid" marker-end="url(#arrow)" /> <text x="570" y="712">Identify Scheduled Transactions (Due Campaigns)</text>
+            <line x1="428" y1="740" x2="572" y2="740" class="solid" marker-end="url(#arrow)" /> <text x="500" y="732">SELECT FROM queue WHERE date &lt;= NOW()</text>
+            <line x1="572" y1="770" x2="428" y2="770" class="dashed" marker-end="url(#open-arrow)" /> <text x="500" y="762">Result: Target Array Rows</text>
+            <line x1="412" y1="790" x2="732" y2="790" class="dashed" marker-end="url(#open-arrow)" /> <text x="570" y="782">Hand off jobs payload to Worker Process</text>
+
+            <line x1="748" y1="820" x2="892" y2="820" class="solid" marker-end="url(#arrow)" /> <text x="820" y="812">Transmit NodeMailer SMTP &amp; Hubspot API Sync</text>
+            <line x1="892" y1="870" x2="748" y2="870" class="dashed" marker-end="url(#open-arrow)" /> <text x="820" y="862">External Vendor Acknowledgment (200 OK)</text>
+
+            <line x1="732" y1="900" x2="412" y2="900" class="solid" marker-end="url(#arrow)" /> <text x="570" y="892">Background Job Reports Success</text>
+            <line x1="428" y1="920" x2="572" y2="920" class="solid" marker-end="url(#arrow)" /> <text x="500" y="912">UPDATE queue SET status = 'Completed'</text>
+            <line x1="572" y1="950" x2="428" y2="950" class="dashed" marker-end="url(#open-arrow)" /> <text x="500" y="942">Commit Final Transaction to Global Database</text>
+        </svg>
+    </div>
+
+</body>
+</html>

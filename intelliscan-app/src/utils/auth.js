@@ -126,3 +126,20 @@ export function clearStoredAuth() {
   removeCookie(TOKEN_COOKIE);
   removeCookie(USER_COOKIE);
 }
+
+export function tryDecodeJwtPayload(token) {
+  try {
+    const raw = String(token || '').trim();
+    if (!raw) return null;
+    const parts = raw.split('.');
+    if (parts.length !== 3) return null;
+
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+    const json = decodeURIComponent(escape(atob(padded)));
+    const parsed = JSON.parse(json);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}

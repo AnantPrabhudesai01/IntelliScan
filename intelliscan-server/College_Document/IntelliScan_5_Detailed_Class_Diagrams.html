@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IntelliScan Detailed Module Class Diagrams</title>
+<!-- 
+100% Native HTML and SVG Class Diagram.
+Zero colors used.
+Matches strict classic UML standards for Composition, Aggregation, and Associations.
+5 granular Class Diagrams mapping specific features of the application.
+-->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        color: #000000;
+        text-align: center;
+        padding: 40px;
+    }
+    h2 {
+        border-bottom: 2px solid #000;
+        display: inline-block;
+        padding-bottom: 5px;
+        margin-bottom: 30px;
+    }
+    .diagram-container {
+        border: 2px solid #000;
+        padding: 40px;
+        display: inline-block;
+        margin-bottom: 60px;
+        background-color: #fff;
+    }
+    svg {
+        display: block;
+        margin: 0 auto;
+    }
+    .box {
+        fill: #fff;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    .divider {
+        stroke: #000;
+        stroke-width: 1.5;
+        fill: none;
+    }
+    .relation {
+        stroke: #000;
+        stroke-width: 1.5;
+        fill: none;
+    }
+    .aggregate {
+        fill: #fff;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    .compose {
+        fill: #000;
+        stroke: #000;
+        stroke-width: 1.5;
+    }
+    text {
+        fill: #000;
+        font-size: 13px;
+        font-family: monospace;
+        pointer-events: none;
+        dominant-baseline: middle;
+    }
+    .class-title {
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+        text-anchor: middle;
+        font-size: 16px;
+    }
+    .multiplicity {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+    <h1>IntelliScan Sub-System Class Diagrams</h1>
+    <p style="margin-bottom: 50px;">Detailed 5 Micro-Architecture UML Class Diagrams explaining exact objects per feature.</p>
+
+    <!-- ========================================================
+         DIAGRAM 1: SECURITY & RBAC
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>1. Subsystem: Authentication &amp; RBAC Authorization</h2><br>
+        <svg width="900" height="700">
+            <!-- Relations -->
+            <!-- Role (B) -> User (A) (Aggregation) -->
+            <polygon points="560,150 553,145 546,150 553,155" class="aggregate" />
+            <line x1="546" y1="150" x2="340" y2="150" class="relation" />
+            <text x="540" y="135" class="multiplicity">1</text>
+            <text x="360" y="135" class="multiplicity">0..*</text>
+
+            <!-- User (A) -> Session (C) (Composition) -->
+            <polygon points="210,300 215,307 210,314 205,307" class="compose" />
+            <line x1="210" y1="314" x2="210" y2="400" class="relation" />
+            <text x="225" y="315" class="multiplicity">1</text>
+            <text x="225" y="385" class="multiplicity">0..*</text>
+
+            <!-- Session (C) -> JWTService (D) (Association) -->
+            <line x1="340" y1="500" x2="560" y2="500" class="relation" />
+
+            <!-- Box A: User -->
+            <rect x="80" y="50" width="260" height="250" class="box" />
+            <line x1="80" y1="80" x2="340" y2="80" class="divider" />
+            <line x1="80" y1="190" x2="340" y2="190" class="divider" />
+            <text x="210" y="65" class="class-title">UserEntity</text>
+            <text x="90" y="100">+ uuid : String</text>
+            <text x="90" y="120">+ auth_hash : String</text>
+            <text x="90" y="140">+ email_idx : String</text>
+            <text x="90" y="160">+ 2fa_enabled : Bool</text>
+            <text x="90" y="210">+ validatePassword(): Bool</text>
+            <text x="90" y="230">+ getEffectiveRole(): Role</text>
+
+            <!-- Box B: Role -->
+            <rect x="560" y="50" width="260" height="250" class="box" />
+            <line x1="560" y1="80" x2="820" y2="80" class="divider" />
+            <line x1="560" y1="190" x2="820" y2="190" class="divider" />
+            <text x="690" y="65" class="class-title">RolePolicy</text>
+            <text x="570" y="100">+ role_id : Int</text>
+            <text x="570" y="120">+ role_name : Enum</text>
+            <text x="570" y="140">+ permissions : JSON</text>
+            <text x="570" y="160">+ rank_tier : Int</text>
+            <text x="570" y="210">+ hasAccess(route): Bool</text>
+            <text x="570" y="230">+ assignDefaults(): void</text>
+
+            <!-- Box C: SessionToken -->
+            <rect x="80" y="400" width="260" height="250" class="box" />
+            <line x1="80" y1="430" x2="340" y2="430" class="divider" />
+            <line x1="80" y1="540" x2="340" y2="540" class="divider" />
+            <text x="210" y="415" class="class-title">SessionToken</text>
+            <text x="90" y="450">+ token_id : String</text>
+            <text x="90" y="470">+ issued_at : Date</text>
+            <text x="90" y="490">+ origin_ip : String</text>
+            <text x="90" y="510">+ is_revoked : Bool</text>
+            <text x="90" y="560">+ isValid(): Bool</text>
+            <text x="90" y="580">+ invalidate(): void</text>
+
+            <!-- Box D: JWTService -->
+            <rect x="560" y="400" width="260" height="250" class="box" />
+            <line x1="560" y1="430" x2="820" y2="430" class="divider" />
+            <line x1="560" y1="540" x2="820" y2="540" class="divider" />
+            <text x="690" y="415" class="class-title">JWTService</text>
+            <text x="570" y="450">+ secret_key : String</text>
+            <text x="570" y="470">+ issuer : String</text>
+            <text x="570" y="490">+ exp_time : Int</text>
+            <text x="570" y="510">+ algorithm : Enum</text>
+            <text x="570" y="560">+ generateSig(): JWT</text>
+            <text x="570" y="580">+ verifyClaims(): JSON</text>
+        </svg>
+    </div>
+
+    <!-- ========================================================
+         DIAGRAM 2: AI OCR COMPONENT
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>2. Subsystem: AI Vision OCR Extraction Engine</h2><br>
+        <svg width="900" height="700">
+            <!-- Relations -->
+            <!-- Scan (A) -> Image (B) (Composition) -->
+            <polygon points="340,150 347,145 354,150 347,155" class="compose" />
+            <line x1="354" y1="150" x2="560" y2="150" class="relation" />
+            <text x="360" y="135" class="multiplicity">1</text>
+            <text x="540" y="135" class="multiplicity">1</text>
+
+            <!-- Image (B) -> Gemini (D) (Association) -->
+            <line x1="690" y1="300" x2="690" y2="400" class="relation" />
+
+            <!-- Gemini (D) -> ParsedDTO (C) (Dependency) -->
+            <line x1="560" y1="500" x2="340" y2="500" class="relation" />
+
+            <!-- Box A: ScanController -->
+            <rect x="80" y="50" width="260" height="250" class="box" />
+            <line x1="80" y1="80" x2="340" y2="80" class="divider" />
+            <line x1="80" y1="190" x2="340" y2="190" class="divider" />
+            <text x="210" y="65" class="class-title">ScanController</text>
+            <text x="90" y="100">+ request_id : UUID</text>
+            <text x="90" y="120">+ client_ip : String</text>
+            <text x="90" y="140">+ timestamp : Date</text>
+            <text x="90" y="160">+ file_size : Int</text>
+            <text x="90" y="210">+ handleUpload(): Res</text>
+            <text x="90" y="230">+ validateFormat(): Bool</text>
+
+            <!-- Box B: ImageProcessor -->
+            <rect x="560" y="50" width="260" height="250" class="box" />
+            <line x1="560" y1="80" x2="820" y2="80" class="divider" />
+            <line x1="560" y1="190" x2="820" y2="190" class="divider" />
+            <text x="690" y="65" class="class-title">ImageProcessor</text>
+            <text x="570" y="100">+ image_blob : Binary</text>
+            <text x="570" y="120">+ mime_type : String</text>
+            <text x="570" y="140">+ dpi_resolution : Int</text>
+            <text x="570" y="160">+ is_blurred : Bool</text>
+            <text x="570" y="210">+ compress(): Binary</text>
+            <text x="570" y="230">+ runHeuristics(): Bool</text>
+
+            <!-- Box C: ParsedContactDTO -->
+            <rect x="80" y="400" width="260" height="250" class="box" />
+            <line x1="80" y1="430" x2="340" y2="430" class="divider" />
+            <line x1="80" y1="540" x2="340" y2="540" class="divider" />
+            <text x="210" y="415" class="class-title">ParsedContactDTO</text>
+            <text x="90" y="450">+ raw_text : String</text>
+            <text x="90" y="470">+ mapped_json : JSON</text>
+            <text x="90" y="490">+ confidence : Float</text>
+            <text x="90" y="510">+ needs_review : Bool</text>
+            <text x="90" y="560">+ bindToSchema(): Obj</text>
+            <text x="90" y="580">+ sanitizeFields(): JSON</text>
+
+            <!-- Box D: GeminiVisionClient -->
+            <rect x="560" y="400" width="260" height="250" class="box" />
+            <line x1="560" y1="430" x2="820" y2="430" class="divider" />
+            <line x1="560" y1="540" x2="820" y2="540" class="divider" />
+            <text x="690" y="415" class="class-title">GeminiVisionClient</text>
+            <text x="570" y="450">+ api_key : String</text>
+            <text x="570" y="470">+ model_ver : String</text>
+            <text x="570" y="490">+ timeout_ms : Int</text>
+            <text x="570" y="510">+ active_tcp : Bool</text>
+            <text x="570" y="560">+ postMultipart(): HTTP</text>
+            <text x="570" y="580">+ parseResponse(): JSON</text>
+        </svg>
+    </div>
+
+    <!-- ========================================================
+         DIAGRAM 3: EMAIL CRON DAEMON
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>3. Subsystem: Background Automations &amp; Email CRON</h2><br>
+        <svg width="900" height="700">
+            <!-- Relations -->
+            <!-- Campaign (A) -> EmailTemplate (C) (Composition) -->
+            <polygon points="210,300 215,307 210,314 205,307" class="compose" />
+            <line x1="210" y1="314" x2="210" y2="400" class="relation" />
+            <text x="225" y="315" class="multiplicity">1</text>
+            <text x="225" y="385" class="multiplicity">0..*</text>
+
+            <!-- Campaign (A) -> CronWorker (B) (Association) -->
+            <line x1="340" y1="150" x2="560" y2="150" class="relation" />
+
+            <!-- CronWorker (B) -> SMTPRelayNode (D) (Association) -->
+            <line x1="690" y1="300" x2="690" y2="400" class="relation" />
+
+            <!-- Box A: CampaignManager -->
+            <rect x="80" y="50" width="260" height="250" class="box" />
+            <line x1="80" y1="80" x2="340" y2="80" class="divider" />
+            <line x1="80" y1="190" x2="340" y2="190" class="divider" />
+            <text x="210" y="65" class="class-title">CampaignManager</text>
+            <text x="90" y="100">+ campaign_id : UUID</text>
+            <text x="90" y="120">+ creator_id : UUID</text>
+            <text x="90" y="140">+ run_status : Enum</text>
+            <text x="90" y="160">+ schedule_delay : Int</text>
+            <text x="90" y="210">+ enrollContact(): void</text>
+            <text x="90" y="230">+ pauseSequence(): void</text>
+
+            <!-- Box B: CronWorker -->
+            <rect x="560" y="50" width="260" height="250" class="box" />
+            <line x1="560" y1="80" x2="820" y2="80" class="divider" />
+            <line x1="560" y1="190" x2="820" y2="190" class="divider" />
+            <text x="690" y="65" class="class-title">CronWorker_Job</text>
+            <text x="570" y="100">+ thread_id : Int</text>
+            <text x="570" y="120">+ sleep_interval : Int</text>
+            <text x="570" y="140">+ memory_limit : Int</text>
+            <text x="570" y="160">+ is_active : Bool</text>
+            <text x="570" y="210">+ wakeupRoutine(): void</text>
+            <text x="570" y="230">+ processJobs(): Array</text>
+
+            <!-- Box C: EmailTemplate -->
+            <rect x="80" y="400" width="260" height="250" class="box" />
+            <line x1="80" y1="430" x2="340" y2="430" class="divider" />
+            <line x1="80" y1="540" x2="340" y2="540" class="divider" />
+            <text x="210" y="415" class="class-title">EmailTemplate</text>
+            <text x="90" y="450">+ raw_html : String</text>
+            <text x="90" y="470">+ variables : JSON</text>
+            <text x="90" y="490">+ attachments : Array</text>
+            <text x="90" y="510">+ unsubscribe : URL</text>
+            <text x="90" y="560">+ parseVars(): HTML</text>
+            <text x="90" y="580">+ sanitizeCSS(): HTML</text>
+
+            <!-- Box D: SMTPRelayNode -->
+            <rect x="560" y="400" width="260" height="250" class="box" />
+            <line x1="560" y1="430" x2="820" y2="430" class="divider" />
+            <line x1="560" y1="540" x2="820" y2="540" class="divider" />
+            <text x="690" y="415" class="class-title">SMTPRelayNode</text>
+            <text x="570" y="450">+ host_dom : String</text>
+            <text x="570" y="470">+ port_num : Int</text>
+            <text x="570" y="490">+ secure_tls : Bool</text>
+            <text x="570" y="510">+ auth_user : String</text>
+            <text x="570" y="560">+ dispatchBytes(): 250</text>
+            <text x="570" y="580">+ handleBounce(): Err</text>
+        </svg>
+    </div>
+
+    <!-- ========================================================
+         DIAGRAM 4: PUBLIC BOOKING
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>4. Subsystem: Calendar &amp; Public Profiles</h2><br>
+        <svg width="900" height="700">
+            <!-- Relations -->
+            <!-- Booking (A) -> TimeSlot (B) (Aggregation) -->
+            <polygon points="560,150 553,145 546,150 553,155" class="aggregate" />
+            <line x1="546" y1="150" x2="340" y2="150" class="relation" />
+
+            <!-- Booking (A) -> Guest (C) (Composition) -->
+            <polygon points="210,300 215,307 210,314 205,307" class="compose" />
+            <line x1="210" y1="314" x2="210" y2="400" class="relation" />
+
+            <!-- TimeSlot (B) -> GCal (D) (Association) -->
+            <line x1="690" y1="300" x2="690" y2="400" class="relation" />
+
+            <!-- Box A: BookingController -->
+            <rect x="80" y="50" width="260" height="250" class="box" />
+            <line x1="80" y1="80" x2="340" y2="80" class="divider" />
+            <line x1="80" y1="190" x2="340" y2="190" class="divider" />
+            <text x="210" y="65" class="class-title">BookingController</text>
+            <text x="90" y="100">+ portal_slug : String</text>
+            <text x="90" y="120">+ owner_user : UUID</text>
+            <text x="90" y="140">+ is_public : Bool</text>
+            <text x="90" y="160">+ views_count : Int</text>
+            <text x="90" y="210">+ serveLayout(): HTML</text>
+            <text x="90" y="230">+ validateGuest(): Bool</text>
+
+            <!-- Box B: TimeSlotManager -->
+            <rect x="560" y="50" width="260" height="250" class="box" />
+            <line x1="560" y1="80" x2="820" y2="80" class="divider" />
+            <line x1="560" y1="190" x2="820" y2="190" class="divider" />
+            <text x="690" y="65" class="class-title">TimeSlotManager</text>
+            <text x="570" y="100">+ master_tz : String</text>
+            <text x="570" y="120">+ buffer_mins : Int</text>
+            <text x="570" y="140">+ allowed_days : Array</text>
+            <text x="570" y="160">+ limit_per_day : Int</text>
+            <text x="570" y="210">+ generateBlocks(): JSON</text>
+            <text x="570" y="230">+ assertOpen(): Bool</text>
+
+            <!-- Box C: GuestInvite -->
+            <rect x="80" y="400" width="260" height="250" class="box" />
+            <line x1="80" y1="430" x2="340" y2="430" class="divider" />
+            <line x1="80" y1="540" x2="340" y2="540" class="divider" />
+            <text x="210" y="415" class="class-title">GuestInvitation</text>
+            <text x="90" y="450">+ invite_id : UUID</text>
+            <text x="90" y="470">+ guest_email : String</text>
+            <text x="90" y="490">+ answers_json : JSON</text>
+            <text x="90" y="510">+ agreed_tos : Bool</text>
+            <text x="90" y="560">+ dispatchICS(): void</text>
+            <text x="90" y="580">+ saveAudit(): void</text>
+
+            <!-- Box D: GCalendarSync -->
+            <rect x="560" y="400" width="260" height="250" class="box" />
+            <line x1="560" y1="430" x2="820" y2="430" class="divider" />
+            <line x1="560" y1="540" x2="820" y2="540" class="divider" />
+            <text x="690" y="415" class="class-title">GoogleCalendarSync</text>
+            <text x="570" y="450">+ oauth_token : String</text>
+            <text x="570" y="470">+ refresh_tok : String</text>
+            <text x="570" y="490">+ target_cal : String</text>
+            <text x="570" y="510">+ sync_token : String</text>
+            <text x="570" y="560">+ injectEvent(): 201</text>
+            <text x="570" y="580">+ runWebhook(): void</text>
+        </svg>
+    </div>
+
+    <!-- ========================================================
+         DIAGRAM 5: ENTERPRISE BILLING
+         ======================================================== -->
+    <div class="diagram-container">
+        <h2>5. Subsystem: Multi-Tenant Enterprise Quotas</h2><br>
+        <svg width="900" height="700">
+            <!-- Relations -->
+            <!-- Workspace (A) -> Subscription (B) (Aggregation) -->
+            <polygon points="560,150 553,145 546,150 553,155" class="aggregate" />
+            <line x1="546" y1="150" x2="340" y2="150" class="relation" />
+
+            <!-- Workspace (A) -> UsageTracker (C) (Composition) -->
+            <polygon points="210,300 215,307 210,314 205,307" class="compose" />
+            <line x1="210" y1="314" x2="210" y2="400" class="relation" />
+
+            <!-- Subscription (B) -> Payment (D) (Association) -->
+            <line x1="690" y1="300" x2="690" y2="400" class="relation" />
+
+            <!-- Box A: WorkspaceAccount -->
+            <rect x="80" y="50" width="260" height="250" class="box" />
+            <line x1="80" y1="80" x2="340" y2="80" class="divider" />
+            <line x1="80" y1="190" x2="340" y2="190" class="divider" />
+            <text x="210" y="65" class="class-title">WorkspaceAccount</text>
+            <text x="90" y="100">+ workspace_id : UUID</text>
+            <text x="90" y="120">+ creation_date : Date</text>
+            <text x="90" y="140">+ company_size : Int</text>
+            <text x="90" y="160">+ is_lockout : Bool</text>
+            <text x="90" y="210">+ applyCharge(): void</text>
+            <text x="90" y="230">+ deleteTenant(): void</text>
+
+            <!-- Box B: SubscriptionTier -->
+            <rect x="560" y="50" width="260" height="250" class="box" />
+            <line x1="560" y1="80" x2="820" y2="80" class="divider" />
+            <line x1="560" y1="190" x2="820" y2="190" class="divider" />
+            <text x="690" y="65" class="class-title">SubscriptionTier</text>
+            <text x="570" y="100">+ tier_name : Enum</text>
+            <text x="570" y="120">+ price_usd : Float</text>
+            <text x="570" y="140">+ max_users : Int</text>
+            <text x="570" y="160">+ max_scans : Int</text>
+            <text x="570" y="210">+ checkDeficit(): Float</text>
+            <text x="570" y="230">+ enforceLimits(): Bool</text>
+
+            <!-- Box C: UsageTracker -->
+            <rect x="80" y="400" width="260" height="250" class="box" />
+            <line x1="80" y1="430" x2="340" y2="430" class="divider" />
+            <line x1="80" y1="540" x2="340" y2="540" class="divider" />
+            <text x="210" y="415" class="class-title">UsageTracker</text>
+            <text x="90" y="450">+ current_cycle : Date</text>
+            <text x="90" y="470">+ api_hits : Int</text>
+            <text x="90" y="490">+ scans_used : Int</text>
+            <text x="90" y="510">+ emails_sent : Int</text>
+            <text x="90" y="560">+ incrementCount(): void</text>
+            <text x="90" y="580">+ warnThreshold(): void</text>
+
+            <!-- Box D: PaymentGateway -->
+            <rect x="560" y="400" width="260" height="250" class="box" />
+            <line x1="560" y1="430" x2="820" y2="430" class="divider" />
+            <line x1="560" y1="540" x2="820" y2="540" class="divider" />
+            <text x="690" y="415" class="class-title">StripeGateway</text>
+            <text x="570" y="450">+ cust_id : String</text>
+            <text x="570" y="470">+ active_card : String</text>
+            <text x="570" y="490">+ expiry_date : String</text>
+            <text x="570" y="510">+ auto_renew : Bool</text>
+            <text x="570" y="560">+ executeCharge(): 200</text>
+            <text x="570" y="580">+ emitReceipt(): void</text>
+        </svg>
+    </div>
+
+</body>
+</html>

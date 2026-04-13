@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "name": "intelliscan",
+  "builds": [
+    {
+      "src": "intelliscan-app/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "intelliscan-server/api/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "intelliscan-server/api/index.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "intelliscan-app/$1"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/process-sync",
+      "schedule": "* * * * *"
+    }
+  ]
+}

@@ -7,8 +7,18 @@ const { db, dbGetAsync, dbRunAsync, dbAllAsync } = require('../utils/db');
 const { logAuditEvent } = require('../utils/logger');
 const { authenticateToken, requireEnterpriseAdmin } = require('../middleware/auth');
 const { createSmtpTransporterFromEnv } = require('../utils/smtp');
+const contactsController = require('../controllers/contactsController');
 
 const AUDIT_SUCCESS = 'SUCCESS';
+
+// Workspace Analytics (Bridge)
+router.get('/analytics', authenticateToken, contactsController.getWorkspaceAnalytics);
+
+// Data Quality / Duplicates (Bridge) - Redirected from contacts/workspace/duplicates
+router.get('/contacts/duplicates', authenticateToken, contactsController.getDuplicates);
+
+// Org Chart (Bridge)
+router.get('/org-chart/:company', authenticateToken, contactsController.getOrgChart);
 
 // GET /api/workspace/members - List all members in the current user's workspace
 router.get('/members', authenticateToken, (req, res) => {

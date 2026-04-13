@@ -5,6 +5,7 @@ import {
   CheckCircle2, AlertCircle, Loader2, Link2, Unlink
 } from 'lucide-react';
 import { getStoredToken } from '../../utils/auth';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 
 // ── CONSTANTS ────────────────────────────────────────────────────────────────
 
@@ -62,6 +63,10 @@ export default function CrmMappingPage() {
 
   const [loading, setLoading] = useState({ page: true, save: false, sync: false, export: false, connect: false });
   const [toast, setToast] = useState(null);
+
+  // Disconnect Modal State
+  const [showDisconnectModal, setShowDisconnectModal] = useState(false);
+  const [pendingDisconnectProvider, setPendingDisconnectProvider] = useState(null);
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -143,7 +148,13 @@ export default function CrmMappingPage() {
   };
 
   const handleDisconnect = async (provider) => {
-    if (!window.confirm(`Disconnect from ${CRM_PROVIDERS.find(p => p.id === provider)?.name}? Your mapping config will be preserved.`)) return;
+    setPendingDisconnectProvider(provider);
+    setShowDisconnectModal(true);
+  };
+
+  const confirmDisconnect = async () => {
+    if (!pendingDisconnectProvider) return;
+    const provider = pendingDisconnectProvider;
     setLoading(l => ({ ...l, connect: true }));
     try {
       await api('POST', '/api/crm/disconnect', { provider });
@@ -154,6 +165,8 @@ export default function CrmMappingPage() {
       showToast('error', 'Disconnect failed: ' + e.message);
     } finally {
       setLoading(l => ({ ...l, connect: false }));
+      setShowDisconnectModal(false);
+      setPendingDisconnectProvider(null);
     }
   };
 
@@ -261,6 +274,15 @@ export default function CrmMappingPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-12">
+      <ConfirmationModal 
+        isOpen={showDisconnectModal}
+        title="Disconnect CRM"
+        message={`Are you sure you want to disconnect ${CRM_PROVIDERS.find(p => p.id === pendingDisconnectProvider)?.name}? Your mapping configuration will be preserved, but automatic syncing will stop immediately.`}
+        confirmText="Disconnect Now"
+        type="warning"
+        onConfirm={confirmDisconnect}
+        onCancel={() => setShowDisconnectModal(false)}
+      />
 
       {/* Toast */}
       {toast && (

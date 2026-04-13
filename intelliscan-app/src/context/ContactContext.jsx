@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../api/client';
 import { getStoredToken } from '../utils/auth';
 
 const ContactContext = createContext();
@@ -12,7 +12,7 @@ export function ContactProvider({ children }) {
       try {
         const token = getStoredToken();
         if (!token) return;
-        const res = await axios.get('/api/contacts', {
+        const res = await apiClient.get('/contacts', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setContacts(res.data);
@@ -26,7 +26,7 @@ export function ContactProvider({ children }) {
   const addContact = async (contact) => {
     try {
       const token = getStoredToken();
-      const res = await axios.post('/api/contacts', contact, {
+      const res = await apiClient.post('/contacts', contact, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setContacts(prev => [{ ...contact, id: res.data.id, scan_date: new Date().toISOString() }, ...prev]);
@@ -41,7 +41,7 @@ export function ContactProvider({ children }) {
   const deleteContact = async (id) => {
     try {
       const token = getStoredToken();
-      await axios.delete(`/api/contacts/${id}`, {
+      await apiClient.delete(`/contacts/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setContacts(prev => prev.filter(c => c.id !== id));
@@ -50,10 +50,80 @@ export function ContactProvider({ children }) {
     }
   };
 
+  const deleteContacts = async (ids) => {
+    try {
+      const token = getStoredToken();
+      await apiClient.delete('/contacts/bulk', {
+        headers: { Authorization: `Bearer ${token}` },
+        data: { ids }
+      });
+      setContacts(prev => prev.filter(c => !ids.includes(c.id)));
+    } catch (err) {
+      console.error('Failed to delete contacts', err);
+      throw err;
+    }
+  };
+
+  const getDeletedContacts = async () => {
+    try {
+      const token = getStoredToken();
+      const res = await apiClient.get('/contacts/trash', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return res.data;
+    } catch (err) {
+      console.error('Failed to fetch deleted contacts', err);
+      throw err;
+    }
+  };
+
+  const restoreContacts = async (ids) => {
+    try {
+      const token = getStoredToken();
+      await apiClient.post('/contacts/restore', { ids }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Fetch fresh contacts to show restored ones
+      const res = await apiClient.get('/contacts', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setContacts(res.data);
+    } catch (err) {
+      console.error('Failed to restore contacts', err);
+      throw err;
+    }
+  };
+
+  const permanentlyDeleteContacts = async (ids) => {
+    try {
+      const token = getStoredToken();
+      await apiClient.delete('/contacts/trash', {
+        headers: { Authorization: `Bearer ${token}` },
+        data: { ids }
+      });
+      // Trash state is handled locally in the component or via refresh
+    } catch (err) {
+      console.error('Permanent delete failed', err);
+      throw err;
+    }
+  };
+
+  const emptyTrash = async () => {
+    try {
+      const token = getStoredToken();
+      await apiClient.delete('/contacts/trash/empty', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (err) {
+      console.error('Empty trash failed', err);
+      throw err;
+    }
+  };
+
   const enrichContact = async (id) => {
     try {
       const token = getStoredToken();
-      const res = await axios.post(`/api/contacts/${id}/enrich`, {}, {
+      const res = await apiClient.post(`/contacts/${id}/enrich`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const updated = res.data.data;
@@ -75,7 +145,7 @@ export function ContactProvider({ children }) {
   const semanticSearch = async (query) => {
     try {
       const token = getStoredToken();
-      const res = await axios.get(`/api/contacts/semantic-search?q=${encodeURIComponent(query)}`, {
+      const res = await apiClient.get(`/contacts/semantic-search?q=${encodeURIComponent(query)}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return res.data.results;
@@ -91,7 +161,11 @@ export function ContactProvider({ children }) {
   };
 
   return (
-    <ContactContext.Provider value={{ contacts, addContact, deleteContact, updateContact, enrichContact, semanticSearch }}>
+    <ContactContext.Provider value={{ 
+      contacts, addContact, deleteContact, deleteContacts, 
+      getDeletedContacts, restoreContacts, emptyTrash,
+      updateContact, enrichContact, semanticSearch 
+    }}>
       {children}
     </ContactContext.Provider>
   );

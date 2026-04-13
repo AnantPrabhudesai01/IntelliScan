@@ -78,10 +78,8 @@ export default function CampaignBuilderPage() {
       if (data.success) {
         setCampaign(prev => ({
           ...prev,
-          subject: data.template.subject,
-          preview_text: data.template.preview_text,
-          html_body: data.template.html_body,
-          text_body: data.template.text_body
+          subject: data.subject || prev.subject,
+          html_body: data.html || prev.html_body
         }));
       }
     } catch (err) {
@@ -103,8 +101,9 @@ export default function CampaignBuilderPage() {
       });
       const data = await res.json();
       if (data.success) {
-        if (isSend) {
-          await fetch(`/api/email/campaigns/${data.campaign.id}/send`, {
+        const campaignId = data.campaign?.id || data.id;
+        if (isSend && campaignId) {
+          await fetch(`/api/email/campaigns/${campaignId}/send`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${getStoredToken()}` }
           });

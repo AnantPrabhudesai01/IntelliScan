@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Camera, Scan, X, CheckCircle, ChevronRight, DollarSign, Calendar, Zap, LayoutGrid, Info, UploadCloud } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getStoredToken } from '../../utils/auth';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 
 function toDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -21,6 +22,7 @@ export default function KioskMode() {
   const [selectedEventId, setSelectedEventId] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [qualification, setQualification] = useState({ budget: '', timeline: '', role: '' });
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const token = getStoredToken();
@@ -120,6 +122,10 @@ export default function KioskMode() {
 
       const payload = await res.json();
       if (!res.ok) {
+        if (res.status === 409) {
+          setShowDuplicateModal(true);
+          return;
+        }
         throw new Error(payload?.error || payload?.message || 'Failed to save lead from kiosk mode.');
       }
 
@@ -135,20 +141,12 @@ export default function KioskMode() {
   };
 
   return (
-    <div className="fixed inset-0 bg-[#0e131f] text-[#dde2f3] z-[9999] p-8 md:p-12 overflow-y-auto animate-in fade-in duration-500 font-body">
-      <div className="flex items-center justify-between mb-12 max-w-5xl mx-auto">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
-            <Scan size={32} />
-          </div>
-          <div>
-            <h1 className="text-4xl font-black italic tracking-tighter">EVENT KIOSK</h1>
-            <p className="text-indigo-400 font-bold tracking-widest text-[10px] uppercase">Automated Lead Capture System v3.0</p>
-          </div>
+    <div className="p-4 md:p-8 space-y-8 animate-in fade-in duration-500 font-body">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-5xl mx-auto mb-8">
+        <div>
+          <h1 className="text-3xl font-black italic tracking-tighter text-white">EVENT KIOSK</h1>
+          <p className="text-indigo-400 font-bold tracking-widest text-[10px] uppercase">Automated Lead Capture System v3.0</p>
         </div>
-        <button onClick={() => navigate('/dashboard/scan')} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all">
-          <X size={32} />
-        </button>
       </div>
 
       {errorMsg && (
@@ -230,6 +228,14 @@ export default function KioskMode() {
         {step === 'qualify' && contactData && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 animate-in slide-in-from-right-10 duration-500">
             <div className="space-y-8">
+              {/* Back / Re-scan button */}
+              <button
+                onClick={resetForNextLead}
+                className="flex items-center gap-2 text-gray-400 hover:text-white font-bold text-sm transition-colors group"
+              >
+                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                <span className="group-hover:underline">Re-scan / Back</span>
+              </button>
               <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-8 opacity-10">
                   <LayoutGrid size={160} />
@@ -253,6 +259,10 @@ export default function KioskMode() {
                     <div className="text-center">
                       <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Confidence</p>
                       <span className="text-emerald-500 font-black italic">{Number(contactData.confidence || 0)}%</span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Intelligence</p>
+                      <span className="text-indigo-400 font-black italic text-[11px] whitespace-nowrap">{contactData.engine_used || 'Gemini AI'}</span>
                     </div>
                   </div>
                 </div>
@@ -356,6 +366,16 @@ export default function KioskMode() {
       <div className="fixed bottom-12 left-0 right-0 text-center pointer-events-none opacity-20">
         <p className="text-4xl font-black tracking-tighter text-white">IntelliScan Pro</p>
       </div>
+
+      <ConfirmationModal
+        isOpen={showDuplicateModal}
+        type="warning"
+        title="Duplicate Lead Detected"
+        message="This guest already exists in your workspace leads. To prevent duplicate outreach sequences, this entry has been blocked. You can still view their original record in the dashboard."
+        confirmText="Acknowledged"
+        onConfirm={() => { setShowDuplicateModal(false); resetForNextLead(); }}
+        onCancel={() => { setShowDuplicateModal(false); resetForNextLead(); }}
+      />
     </div>
   );
 }

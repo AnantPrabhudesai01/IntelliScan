@@ -2,35 +2,43 @@ import { useState, useEffect, useRef } from 'react';
 import { TrendingUp, Server, Activity, ShieldCheck, Shield, Terminal, Rocket, FileDown, Check, X, Globe, RefreshCcw } from 'lucide-react';
 
 const LOG_TEMPLATES = [
-  { type: 'INFO', color: 'text-emerald-500', msgs: [
-    "Workspace 'Quantum_AI' successfully migrated to NODE_04",
-    "Global OCR confidence score reached 98.4% (avg).",
-    "Scheduled maintenance window cleared for Asia cluster.",
-    "API quota reset completed for 1,284 workspaces.",
-    "Backup sync complete across 3 datacenters.",
-  ]},
-  { type: 'WARN', color: 'text-amber-500', msgs: [
-    "Peak throughput detected in AP-West. Scaling secondary nodes.",
-    "EU-Central node latency spiked to 180ms.",
-    "Memory threshold at 78% on cluster-node-alpha-7.",
-    "Retry storm detected on /api/v2/scan endpoint.",
-  ]},
-  { type: 'SYS', color: 'text-indigo-400', msgs: [
-    "Automated security handshake completed for 402 endpoints.",
-    "Certificate rotation initiated for *.intelliscan.ai",
-    "TLS 1.3 upgrade applied to all ingress nodes.",
-  ]},
-  { type: 'ERR', color: 'text-red-500', msgs: [
-    "DB_REPL_TIMEOUT on AS-S-1 (shards 12–14).",
-    "Socket hang up at node-ingress-7.",
-  ]},
+  {
+    type: 'INFO', color: 'text-emerald-500', msgs: [
+      "Workspace 'Quantum_AI' successfully migrated to NODE_04",
+      "Global OCR confidence score reached 98.4% (avg).",
+      "Scheduled maintenance window cleared for Asia cluster.",
+      "API quota reset completed for 1,284 workspaces.",
+      "Backup sync complete across 3 datacenters.",
+    ]
+  },
+  {
+    type: 'WARN', color: 'text-amber-500', msgs: [
+      "Peak throughput detected in AP-West. Scaling secondary nodes.",
+      "EU-Central node latency spiked to 180ms.",
+      "Memory threshold at 78% on cluster-node-alpha-7.",
+      "Retry storm detected on /api/v2/scan endpoint.",
+    ]
+  },
+  {
+    type: 'SYS', color: 'text-indigo-400', msgs: [
+      "Automated security handshake completed for 402 endpoints.",
+      "Certificate rotation initiated for *.intelliscan.ai",
+      "TLS 1.3 upgrade applied to all ingress nodes.",
+    ]
+  },
+  {
+    type: 'ERR', color: 'text-red-500', msgs: [
+      "DB_REPL_TIMEOUT on AS-S-1 (shards 12–14).",
+      "Socket hang up at node-ingress-7.",
+    ]
+  },
 ];
 
 function getRandomLog() {
   const tpl = LOG_TEMPLATES[Math.floor(Math.random() * LOG_TEMPLATES.length)];
   const msg = tpl.msgs[Math.floor(Math.random() * tpl.msgs.length)];
   const now = new Date();
-  const time = [now.getHours(), now.getMinutes(), now.getSeconds()].map(n => String(n).padStart(2,'0')).join(':');
+  const time = [now.getHours(), now.getMinutes(), now.getSeconds()].map(n => String(n).padStart(2, '0')).join(':');
   return { time, type: tpl.type, msg, color: tpl.color };
 }
 
@@ -52,9 +60,9 @@ function GlobalMapModal({ onClose }) {
         <div className="relative bg-[#0d1117]">
           <img className="w-full object-cover opacity-60 h-80" alt="World Map" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClPEpc16u1-ZHJlZRaQfYD_nULRrgJzgJoTqINQ7U96AK6ddyWMhoWI6MFMrZT9uyLyg3Fe8Z07gecO1wDPLuf52VcLzJGt77p-dCRXCeVZu8WB5UPO7sXYEgEbN8jE54yRpcDLvoQCM9P4BIWvuKID7TcNS-c7apu_k1Fgg4XOkJASbDpyQuSb20UTMNG-tcyYsvm7xlTKPZCaKV4YNf7_Bm9DKHe4YCj4N3LuY5JxToK_TZ3NKo0YLBfEbIXKDFgDnCUi74txcmn" />
           {[
-            { label:'US-East (N. Virginia)', load:'24%', ping:'12ms', x:'22%', y:'35%', color:'bg-indigo-500' },
-            { label:'EU-Central (Frankfurt)', load:'68%', ping:'28ms', x:'50%', y:'28%', color:'bg-amber-500' },
-            { label:'AS-South (Singapore)', load:'41%', ping:'56ms', x:'75%', y:'62%', color:'bg-emerald-500' },
+            { label: 'US-East (N. Virginia)', load: '24%', ping: '12ms', x: '22%', y: '35%', color: 'bg-indigo-500' },
+            { label: 'EU-Central (Frankfurt)', load: '68%', ping: '28ms', x: '50%', y: '28%', color: 'bg-amber-500' },
+            { label: 'AS-South (Singapore)', load: '41%', ping: '56ms', x: '75%', y: '62%', color: 'bg-emerald-500' },
           ].map(n => (
             <div key={n.label} className="absolute group cursor-pointer" style={{ left: n.x, top: n.y }}>
               <div className={`w-4 h-4 ${n.color} rounded-full border-2 border-white animate-pulse shadow-lg`} />
@@ -212,7 +220,7 @@ export default function AdminDashboard() {
             <span className="text-xs text-gray-500 dark:text-gray-400">/mo</span>
           </div>
           <div className="mt-auto flex gap-1 items-end h-8">
-            {[40,60,80,100,70].map((h, i) => (
+            {[40, 60, 80, 100, 70].map((h, i) => (
               <div key={i} className="w-full bg-indigo-200 dark:bg-indigo-500/40 rounded-t-sm transition-all duration-1000" style={{ height: `${h}%` }} />
             ))}
           </div>
@@ -266,7 +274,7 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="h-64 flex items-end justify-between gap-4">
-              {[[65,20],[85,35],[45,15],[92,40],[70,25],[55,10]].map(([ocr, nlp], i) => (
+              {[[65, 20], [85, 35], [45, 15], [92, 40], [70, 25], [55, 10]].map(([ocr, nlp], i) => (
                 <div key={i} className="flex-1 bg-gray-50 dark:bg-gray-800/50 rounded-t-xl relative group cursor-pointer">
                   <div className="absolute bottom-0 w-full bg-indigo-500 rounded-t-xl group-hover:opacity-80 transition-opacity" style={{ height: `${ocr}%` }} />
                   <div className="absolute bottom-0 w-full bg-emerald-400 rounded-t-xl z-10" style={{ height: `${nlp}%` }} />
@@ -316,11 +324,10 @@ export default function AdminDashboard() {
             <button
               onClick={handleApproveAll}
               disabled={pendingWorkspaces === 0}
-              className={`relative z-10 px-4 py-2 rounded-lg text-sm font-bold shadow-xl transition-all w-full md:w-auto active:scale-95 ${
-                pendingWorkspaces > 0
+              className={`relative z-10 px-4 py-2 rounded-lg text-sm font-bold shadow-xl transition-all w-full md:w-auto active:scale-95 ${pendingWorkspaces > 0
                   ? 'bg-white text-indigo-700 hover:bg-indigo-50'
                   : 'bg-white/20 text-white/60 cursor-not-allowed'
-              }`}>
+                }`}>
               {approved ? '✓ All Approved' : 'Approve All'}
             </button>
             {/* Generate Scale Report button */}

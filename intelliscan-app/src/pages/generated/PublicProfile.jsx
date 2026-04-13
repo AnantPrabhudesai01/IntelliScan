@@ -6,23 +6,31 @@ export default function PublicProfile() {
   const { slug } = useParams();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // In a real app, you'd fetch this from the backend. 
-  // We'll mock it based on the slug for the demonstration.
   useEffect(() => {
-    setTimeout(() => {
-      setProfile({
-        name: slug.charAt(0).toUpperCase() + slug.slice(1).replace(/([A-Z])/g, ' $1').trim(),
-        title: 'Enterprise Professional',
-        company: 'IntelliScan Systems',
-        email: `${slug}@intelliscan.app`,
-        phone: '+1 (555) 019-2834',
-        website: 'www.intelliscan.app',
-        location: 'San Francisco, CA',
-        avatar_text: slug.charAt(0).toUpperCase()
-      });
-      setLoading(false);
-    }, 500);
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await fetch(`/api/public/profile/${encodeURIComponent(slug)}`);
+        const payload = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(payload?.error || `Failed with status ${res.status}`);
+        if (!cancelled) setProfile(payload);
+      } catch (err) {
+        if (!cancelled) {
+          setProfile(null);
+          setError(err.message || 'Profile not found');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => { cancelled = true; };
   }, [slug]);
 
   const handleDownloadVCard = () => {
@@ -42,6 +50,17 @@ export default function PublicProfile() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f18] flex items-center justify-center">
          <div className="w-8 h-8 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (error || !profile) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f18] flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-2xl p-8 text-center">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Profile not found</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{error || 'This public profile does not exist.'}</p>
+        </div>
       </div>
     );
   }

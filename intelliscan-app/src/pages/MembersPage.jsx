@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Filter, Plus, ShieldAlert, User, Eye, MoreVertical, X, Loader2, Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { getStoredToken } from '../utils/auth';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 
 export default function MembersPage() {
   const [members, setMembers] = useState([]);
@@ -9,6 +10,10 @@ export default function MembersPage() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteData, setInviteData] = useState({ name: '', email: '', role: 'user' });
   const [isInviting, setIsInviting] = useState(false);
+
+  // Remove Modal State
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [pendingRemoveId, setPendingRemoveId] = useState(null);
 
   const fetchMembers = useCallback(async () => {
     try {
@@ -60,9 +65,14 @@ export default function MembersPage() {
   };
 
   const removeMember = async (id) => {
-    if (!window.confirm('Are you sure you want to remove this member from the workspace?')) return;
+    setPendingRemoveId(id);
+    setShowRemoveModal(true);
+  };
+
+  const confirmRemoveMember = async () => {
+    if (!pendingRemoveId) return;
     try {
-      const response = await fetch(`/api/workspace/members/${id}`, {
+      const response = await fetch(`/api/workspace/members/${pendingRemoveId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${getStoredToken()}`
@@ -76,6 +86,9 @@ export default function MembersPage() {
       fetchMembers();
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setShowRemoveModal(false);
+      setPendingRemoveId(null);
     }
   };
 
@@ -95,6 +108,16 @@ export default function MembersPage() {
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto w-full">
+      <ConfirmationModal 
+        isOpen={showRemoveModal}
+        title="Remove Workspace Member"
+        message="Are you sure you want to remove this member? They will immediately lose access to all shared contacts, campaigns, and workspace data. This action is permanent."
+        confirmText="Remove from Workspace"
+        cancelText="Cancel"
+        type="danger"
+        onConfirm={confirmRemoveMember}
+        onCancel={() => setShowRemoveModal(false)}
+      />
       <header className="mb-10 flex flex-col md:flex-row justify-between md:items-end gap-6 border-b border-gray-200 dark:border-gray-800 pb-6">
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white font-headline tracking-tight">Team Members</h1>

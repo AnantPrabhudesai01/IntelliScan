@@ -1,7 +1,14 @@
 require('dotenv').config();
 
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
+  console.error('FATAL: JWT_SECRET environment variable is not set in production.');
+  process.exit(1);
+}
+const effectiveJwtSecret = JWT_SECRET || 'dev_only_insecure_secret_change_in_production';
+
 module.exports = {
-  JWT_SECRET: process.env.JWT_SECRET || 'supersecret_intelliscan_key_123',
+  JWT_SECRET: effectiveJwtSecret,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '30d',
   PORT: process.env.PORT || 5000,
   PERSONAL_EMAIL_DOMAINS: new Set([

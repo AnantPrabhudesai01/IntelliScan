@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Search, Plus, Filter, MoreVertical, Edit3, Trash2, Copy, Send, BarChart2 } from 'lucide-react';
+import { Mail, Search, Plus, Filter, MoreVertical, Edit3, Trash2, Copy, Send, BarChart2, Clock, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 import EmailStatusBadge from '../../components/email/EmailStatusBadge';
 import { format } from 'date-fns';
 import { getStoredToken } from '../../utils/auth.js';
@@ -11,6 +12,10 @@ export default function CampaignListPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const navigate = useNavigate();
+
+  // Modal State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   async function fetchCampaigns() {
     try {
@@ -40,20 +45,38 @@ export default function CampaignListPage() {
   });
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this campaign?')) return;
+    setPendingDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
     try {
-      const res = await fetch(`/api/email/campaigns/${id}`, {
+      const res = await fetch(`/api/email/campaigns/${pendingDeleteId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${getStoredToken()}` }
       });
       if (res.ok) fetchCampaigns();
     } catch (err) {
       console.error('Delete failed:', err);
+    } finally {
+      setShowDeleteModal(false);
+      setPendingDeleteId(null);
     }
   };
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-6">
+      <ConfirmationModal 
+        isOpen={showDeleteModal}
+        title="Delete Campaign"
+        message="Are you sure you want to permanently delete this campaign? This action cannot be undone and all associated analytics will be lost."
+        confirmText="Delete Permanently"
+        cancelText="Keep Campaign"
+        type="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteModal(false)}
+      />
       <div className="flex justify-between items-end">
         <div>
           <h1 className="text-3xl font-black text-white tracking-tight uppercase">Campaigns</h1>

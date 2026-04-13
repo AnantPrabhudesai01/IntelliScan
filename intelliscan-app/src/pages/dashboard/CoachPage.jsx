@@ -3,54 +3,30 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStoredToken } from '../../utils/auth';
 
-const fallbackInsights = {
-  health_score: 42,
-  momentum_status: 'Stable Growth',
-  actions: [
-    {
-      id: 'stale',
-      title: 'Re-activate Stale Contacts',
-      description: 'Several contacts have gone cold. Generate AI follow-ups to restart conversations and reduce pipeline decay.',
-      cta: 'Open AI Drafts',
-      color: 'red'
-    },
-    {
-      id: 'industry',
-      title: 'Strategic Industry Focus',
-      description: 'Your strongest cluster is visible. Launch a tailored outreach sequence to convert the highest-value segment faster.',
-      cta: 'Create Template',
-      color: 'indigo'
-    },
-    {
-      id: 'context',
-      title: 'Complete Missing Context',
-      description: 'A subset of contacts is missing role, company, or email fields. Filling this context improves routing and campaign quality.',
-      cta: 'Review Contacts',
-      color: 'blue'
-    }
-  ]
-};
-
 export default function CoachPage() {
   const navigate = useNavigate();
-  const [insights, setInsights] = useState(fallbackInsights);
+  const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setError('');
       try {
         const token = getStoredToken();
         const headers = { 'Authorization': `Bearer ${token}` };
         
         // Fetch AI coach insights
         const coachRes = await fetch('/api/coach/insights', { headers });
-        if (coachRes.ok) {
-          const payload = await coachRes.json();
-          setInsights(payload?.actions?.length ? payload : fallbackInsights);
+        const payload = await coachRes.json().catch(() => ({}));
+        if (!coachRes.ok) {
+          throw new Error(payload?.error || `Failed to load coach insights (HTTP ${coachRes.status})`);
         }
+        setInsights(payload);
       } catch (e) {
-        console.error("Coach fetch error:", e);
+        console.error('Coach fetch error:', e);
+        setError(e?.message || 'Failed to load coach insights.');
       } finally {
         setLoading(false);
       }
@@ -58,8 +34,8 @@ export default function CoachPage() {
     fetchData();
   }, []);
 
-  const healthScore = insights?.health_score || 42;
-  const momentumStatus = insights?.momentum_status || "Stable Growth";
+  const healthScore = insights?.health_score ?? 0;
+  const momentumStatus = insights?.momentum_status ?? '';
 
   const handleAction = (id) => {
     if (id === 'stale') {
@@ -67,7 +43,7 @@ export default function CoachPage() {
     } else if (id === 'context') {
       navigate('/dashboard/contacts');
     } else {
-      alert("AI Coach: I'm preparing your custom outreach template. Check your 'AI Drafts' soon!");
+      navigate('/dashboard/email/sequences');
     }
   };
 
@@ -116,6 +92,25 @@ export default function CoachPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        <div className="bg-red-500/10 border border-red-500/20 text-red-200 rounded-2xl p-6">
+          <p className="font-bold mb-1">Could not load AI Coach insights</p>
+          <p className="text-sm opacity-90">{error}</p>
+          <div className="mt-4 flex gap-3">
+            <button onClick={() => window.location.reload()} className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white font-bold text-sm hover:bg-white/10 transition-all">
+              Retry
+            </button>
+            <button onClick={() => navigate('/dashboard/scan')} className="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:brightness-110 transition-all">
+              Back to Scan
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -143,7 +138,7 @@ export default function CoachPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {insights?.actions?.map((action, idx) => {
+        {(insights?.actions || []).map((action, idx) => {
           const palette = colorClassMap[action.color] || colorClassMap.indigo;
           return (
             <div key={idx} className={`bg-white dark:bg-[#161c28] border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group border-b-4 ${palette.card}`}>

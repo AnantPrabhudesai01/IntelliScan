@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliScan Native UML Use Case Diagram</title>
+    <!-- 
+      NO MERMAID CODE USED.
+      This is a 100% native, handcrafted raw SVG element built to look exactly like a Draw.io export.
+      It requires no external libraries and renders instantly. 
+    -->
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f1f5f9; 
+            padding: 40px; 
+            text-align: center; 
+        }
+        .canvas-container {
+            background-color: white;
+            border: 2px solid #cbd5e1;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            margin: 0 auto;
+            display: inline-block;
+            padding: 20px;
+        }
+        h2 { color: #1e293b; margin-top: 0; }
+        p { color: #64748b; margin-bottom: 30px; font-weight: 500;}
+        text { font-size: 13px; fill: #000; pointer-events: none; text-anchor: middle; alignment-baseline: middle; }
+        .italic-text { font-style: italic; font-size: 11px; fill: #475569; }
+        ellipse { fill: #f8fafc; stroke: #334155; stroke-width: 1.5; }
+        ellipse:hover { fill: #e2e8f0; } /* Subtle hover effect */
+        line, path { stroke: #334155; stroke-width: 1.2; fill: none; }
+        .dashed { stroke-dasharray: 6,4; }
+    </style>
+</head>
+<body>
+
+    <h2>IntelliScan: Core UML Use Case Diagram</h2>
+    <p>Rendered natively exactly like Draw.io. Stickmen actors and direct workflows mapped to the IntelliScan project.</p>
+
+    <div class="canvas-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="850" viewBox="0 0 1000 850">
+            <!-- Arrowhead Definitions for Dashed Lines -->
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#334155" />
+                </marker>
+            </defs>
+
+            <!-- System Boundary Rectangle -->
+            <rect x="230" y="50" width="540" height="760" fill="none" stroke="#334155" stroke-width="2" />
+            <text x="500" y="75" font-weight="bold" font-size="16px" fill="#0f172a">IntelliScan Platform</text>
+
+            <!-- ==============================
+                 USE CASES (Ellipses)
+                 ============================== -->
+
+            <!-- Group 1: Scanning & Data Capture -->
+            <ellipse cx="500" cy="150" rx="140" ry="32" />
+            <text x="500" y="150">Scan Business Card &amp; Extract Data</text>
+
+            <ellipse cx="340" cy="250" rx="90" ry="30" />
+            <text x="340" y="250">Infer Industry via AI</text>
+
+            <ellipse cx="500" cy="270" rx="90" ry="30" />
+            <text x="500" y="270">Infer Seniority via AI</text>
+
+            <ellipse cx="660" cy="250" rx="80" ry="30" />
+            <text x="660" y="250">CRM Sync Export</text>
+
+            <!-- Arrows pointing up to main Scan Use Case -->
+            <line x1="370" y1="225" x2="445" y2="175" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="390" y="190" class="italic-text" transform="rotate(-30 390 190)">&lt;&lt;extend&gt;&gt;</text>
+
+            <line x1="500" y1="240" x2="500" y2="184" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="535" y="215" class="italic-text">&lt;&lt;extend&gt;&gt;</text>
+
+            <line x1="630" y1="225" x2="555" y2="175" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="610" y="190" class="italic-text" transform="rotate(30 610 190)">&lt;&lt;include&gt;&gt;</text>
+
+            <!-- Group 2: Pipeline & Communication -->
+            <ellipse cx="500" cy="420" rx="130" ry="32" />
+            <text x="500" y="420">Manage Kanban Sales Pipeline</text>
+
+            <ellipse cx="340" cy="530" rx="90" ry="30" />
+            <text x="340" y="530">Draft AI Email Pitch</text>
+
+            <ellipse cx="660" cy="530" rx="90" ry="30" />
+            <text x="660" y="530">Move Deal Stages</text>
+
+            <line x1="375" y1="505" x2="445" y2="445" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="390" y="470" class="italic-text" transform="rotate(-35 390 470)">&lt;&lt;extend&gt;&gt;</text>
+
+            <line x1="625" y1="505" x2="555" y2="445" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="610" y="470" class="italic-text" transform="rotate(35 610 470)">&lt;&lt;extend&gt;&gt;</text>
+
+            <!-- Group 3: Enterprise Workspace -->
+            <ellipse cx="500" cy="680" rx="140" ry="32" />
+            <text x="500" y="680">Manage Shared Workspace</text>
+
+            <ellipse cx="340" cy="770" rx="90" ry="30" />
+            <text x="340" y="770">Configure Lead Rules</text>
+
+            <ellipse cx="660" cy="770" rx="90" ry="30" />
+            <text x="660" y="770">Merge Duplicate Leads</text>
+
+            <line x1="375" y1="745" x2="445" y2="705" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="395" y="715" class="italic-text" transform="rotate(-25 395 715)">&lt;&lt;extend&gt;&gt;</text>
+
+            <line x1="625" y1="745" x2="555" y2="705" class="dashed" marker-end="url(#arrowhead)" />
+            <text x="605" y="715" class="italic-text" transform="rotate(25 605 715)">&lt;&lt;include&gt;&gt;</text>
+
+
+            <!-- ==============================
+                 ACTORS (Stick Figures)
+                 ============================== -->
+
+            <!-- Sales Representative (Left Actor) -->
+            <g id="actor-sales-rep">
+                <circle cx="110" cy="380" r="14" fill="none" stroke="#000" stroke-width="2" />
+                <line x1="110" y1="394" x2="110" y2="460" stroke="#000" stroke-width="2" />
+                <line x1="70" y1="410" x2="150" y2="410" stroke="#000" stroke-width="2" />
+                <line x1="110" y1="460" x2="80" y2="520" stroke="#000" stroke-width="2" />
+                <line x1="110" y1="460" x2="140" y2="520" stroke="#000" stroke-width="2" />
+                <text x="110" y="545" font-weight="bold" font-size="14px">Sales Rep</text>
+            </g>
+
+            <!-- Enterprise Admin (Right Actor) -->
+            <g id="actor-admin">
+                <circle cx="890" cy="380" r="14" fill="none" stroke="#000" stroke-width="2" />
+                <line x1="890" y1="394" x2="890" y2="460" stroke="#000" stroke-width="2" />
+                <line x1="850" y1="410" x2="930" y2="410" stroke="#000" stroke-width="2" />
+                <line x1="890" y1="460" x2="860" y2="520" stroke="#000" stroke-width="2" />
+                <line x1="890" y1="460" x2="920" y2="520" stroke="#000" stroke-width="2" />
+                <text x="890" y="545" font-weight="bold" font-size="14px">Enterprise Admin</text>
+            </g>
+
+            <!-- ==============================
+                 ACTOR CONNECTIONS (Solid Lines)
+                 ============================== -->
+
+            <!-- Sales Rep connections (Left) -->
+            <!-- Connect to Scan Group -->
+            <line x1="150" y1="380" x2="365" y2="162" /> 
+            <line x1="150" y1="380" x2="250" y2="250" /> 
+            <!-- Connect to Pipeline Group -->
+            <line x1="150" y1="380" x2="370" y2="420" /> 
+            <line x1="150" y1="380" x2="250" y2="530" /> 
+
+            <!-- Enterprise Admin connections (Right) -->
+            <!-- Connect to Scan Group (Read Access/Verification) -->
+            <line x1="850" y1="380" x2="635" y2="162" />
+            <line x1="850" y1="380" x2="740" y2="250" /> 
+            <!-- Connect to Pipeline Group (Management) -->
+            <line x1="850" y1="380" x2="630" y2="420" /> 
+            <!-- Connect to Workspace Group (Full Control) -->
+            <line x1="850" y1="380" x2="640" y2="680" /> 
+            <line x1="850" y1="380" x2="740" y2="770" /> 
+            <line x1="850" y1="380" x2="430" y2="770" /> 
+
+        </svg>
+    </div>
+
+</body>
+</html>

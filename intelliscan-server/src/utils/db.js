@@ -1,62 +1,143 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Pool } = require('pg');
+const dns = require('dns');
+require('dotenv').config();
 
-// Database path relative to this file's location in src/utils/
-const dbPath = path.resolve(__dirname, '../../intelliscan.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('[DB] Connection Error:', err.message);
-  } else {
-    console.log('[DB] Connected to SQLite database at:', dbPath);
-  }
+// Force IPv4 — many ISPs can't route to Supabase's IPv6 addresses
+dns.setDefaultResultOrder('ipv4first');
+
+// ═══════════════════════════════════════════════════════════════
+// IntelliScan Database Layer — PostgreSQL (Supabase) ONLY
+// ═══════════════════════════════════════════════════════════════
+
+const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+
+if (!DATABASE_URL) {
+  console.error('[DB] FATAL: No DATABASE_URL found in .env. Supabase PostgreSQL is required.');
+  process.exit(1);
+}
+
+console.log('[DB] Mode: PostgreSQL (Supabase)');
+
+const pgPool = new Pool({
+  connectionString: DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // Required for Supabase/Neon
 });
 
-// Configure busy timeout for concurrent access
-db.configure("busyTimeout", 10000);
+// ── Legacy compatibility shim ──────────────────────────────────
+// Some older code still uses db.get / db.run / db.all callback style.
+// This shim routes those calls through the async Postgres helpers.
+const db = {
+  get: (sql, params, cb) => {
+    const _p = typeof params === 'function' ? [] : params;
+    const _cb = typeof params === 'function' ? params : cb;
+    dbGetAsync(sql, _p).then(res => _cb && _cb(null, res)).catch(err => _cb && _cb(err));
+  },
+  all: (sql, params, cb) => {
+    const _p = typeof params === 'function' ? [] : params;
+    const _cb = typeof params === 'function' ? params : cb;
+    dbAllAsync(sql, _p).then(res => _cb && _cb(null, res)).catch(err => _cb && _cb(err));
+  },
+  run: (sql, params, cb) => {
+    const _p = typeof params === 'function' ? [] : params;
+    const _cb = typeof params === 'function' ? params : cb;
+    dbRunAsync(sql, _p).then(res => {
+      if (_cb) _cb.call(res, null);
+    }).catch(err => _cb && _cb(err));
+  },
+  serialize: (fn) => fn(),
+  exec: (sql, cb) => dbExecAsync(sql).then(() => cb && cb(null)).catch(err => cb && cb(err)),
+  configure: () => {},
+  close: () => {}
+};
 
-/**
- * Promisified db.get
- */
-function dbGetAsync(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
-  });
+// ── SQL translator ─────────────────────────────────────────────
+// Converts SQLite-specific syntax to PostgreSQL equivalents
+function translateSqliteToPostgres(sql) {
+  let out = sql.trim();
+  if (out.endsWith(';')) out = out.slice(0, -1);
+
+  // DDL translations
+  out = out.replace(/INTEGER\s+PRIMARY\s+KEY\s+AUTOINCREMENT/gi, 'SERIAL PRIMARY KEY');
+  out = out.replace(/\bAUTOINCREMENT\b/gi, '');
+  // Make ADD COLUMN idempotent (PG supports IF NOT EXISTS since v9.6)
+  out = out.replace(/ADD\s+COLUMN\s+(?!IF\s+NOT\s+EXISTS)/gi, 'ADD COLUMN IF NOT EXISTS ');
+  // Function translations
+  out = out.replace(/\bIFNULL\s*\(/gi, 'COALESCE(');
+  out = out.replace(/\bDATETIME\b/gi, 'TIMESTAMPTZ');
+
+  // Placeholder conversion: '?' → '$1, $2...'
+  let index = 1;
+  out = out.replace(/\?/g, () => `$${index++}`);
+  return out;
 }
 
-/**
- * Promisified db.all
- */
-function dbAllAsync(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows || [])));
-  });
+// (Backwards-compatible alias)
+const convertPlaceholders = translateSqliteToPostgres;
+
+// ── Async helpers ──────────────────────────────────────────────
+
+/** Single row query */
+async function dbGetAsync(sql, params = []) {
+  const res = await pgPool.query(convertPlaceholders(sql), params);
+  return res.rows[0];
 }
 
-/**
- * Promisified db.run
- */
-function dbRunAsync(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function (err) {
-      if (err) return reject(err);
-      resolve({ lastID: this.lastID, changes: this.changes });
-    });
-  });
+/** Multiple rows query */
+async function dbAllAsync(sql, params = []) {
+  const res = await pgPool.query(convertPlaceholders(sql), params);
+  return res.rows || [];
 }
 
-/**
- * Promisified db.exec
- */
-function dbExecAsync(sql) {
-  return new Promise((resolve, reject) => {
-    db.exec(sql, (err) => (err ? reject(err) : resolve()));
-  });
+/** Insert / Update / Delete */
+async function dbRunAsync(sql, params = []) {
+  let pgSql = convertPlaceholders(sql);
+  const trimmedSql = pgSql.trim().toUpperCase();
+  const isInsert = trimmedSql.startsWith('INSERT');
+  const hasReturning = trimmedSql.includes(' RETURNING ');
+
+  // Only append RETURNING id if it's an insert and doesn't already have one
+  if (isInsert && !hasReturning) {
+    pgSql += ' RETURNING id';
+  }
+
+  try {
+    const res = await pgPool.query(pgSql, params);
+    return {
+      lastID: res.rows[0]?.id || null,
+      changes: res.rowCount
+    };
+  } catch (err) {
+    // Fallback for tables without an 'id' column if RETURNING id was auto-appended
+    if (err.message.includes('column "id" does not exist')) {
+      const retryRes = await pgPool.query(convertPlaceholders(sql), params);
+      return { lastID: null, changes: retryRes.rowCount };
+    }
+    throw err;
+  }
+}
+
+/** Raw SQL execution */
+async function dbExecAsync(sql) {
+  return pgPool.query(sql);
 }
 
 module.exports = {
   db,
+  pgPool,
+  isPostgres: true, // Always true now
   dbGetAsync,
   dbAllAsync,
   dbRunAsync,
-  dbExecAsync
+  dbExecAsync,
+  // Dialect-aware SQL snippets (PostgreSQL only now)
+  sql: {
+    now: 'CURRENT_TIMESTAMP',
+    monthStart: "DATE_TRUNC('month', CURRENT_TIMESTAMP)",
+    insertIgnore: (table, columns, values) => {
+      return `INSERT INTO ${table} (${columns}) VALUES (${values}) ON CONFLICT DO NOTHING`;
+    },
+    nowPlusMinutes: (m) => `CURRENT_TIMESTAMP + interval '${m} minutes'`,
+    reminderCondition: (startCol, minCol) =>
+      `(${startCol} - (${minCol} * interval '1 minute')) <= CURRENT_TIMESTAMP`
+  }
 };

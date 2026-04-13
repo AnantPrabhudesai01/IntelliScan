@@ -87,7 +87,7 @@ function PlanCard({ plan, currentTier, onUpgrade, loading }) {
 
 export default function BillingPage() {
   const navigate = useNavigate();
-  const { setRole } = useRole();
+  const { refreshAuth } = useRole();
   const token = getStoredToken();
   const [plans, setPlans] = useState([]);
   const [currentTier, setCurrentTier] = useState('personal');
@@ -128,76 +128,8 @@ export default function BillingPage() {
     load();
   }, [token]);
 
-  const handleUpgrade = async (plan) => {
-    setUpgrading(plan);
-    setMessage({ text: '', type: '' });
-    try {
-      const liveToken = getStoredToken();
-      const headers = { Authorization: `Bearer ${liveToken}`, 'Content-Type': 'application/json' };
-      // Step 1: Create order
-      const orderRes = await fetch('/api/billing/create-order', { method: 'POST', headers, body: JSON.stringify({ plan }) });
-      if (!orderRes.ok) throw new Error((await orderRes.json()).error || 'Failed to create order');
-      const order = await orderRes.json();
-
-      const applyVerifyResult = (result) => {
-        if (result?.token && result?.user) {
-          setStoredAuth({ token: result.token, user: result.user });
-          setRole(result.user.role, result.user.tier);
-          setQuota((prev) => prev ? { ...prev, tier: result.user.tier } : prev);
-          // Pull in the invoice created by the server on successful upgrade.
-          refreshInvoices();
-        }
-      };
-
-      if (order.simulated) {
-        // SIMULATION MODE — skip Razorpay, go directly to verify
-        const verifyRes = await fetch('/api/billing/verify-payment', {
-          method: 'POST', headers,
-          body: JSON.stringify({ order_id: order.order_id, payment_id: 'sim_pay_' + Date.now(), signature: 'sim', plan, simulated: true })
-        });
-        if (!verifyRes.ok) throw new Error((await verifyRes.json()).error || 'Verification failed');
-        const result = await verifyRes.json();
-        applyVerifyResult(result);
-        setCurrentTier(plan);
-        setMessage({ text: `🎉 ${result.message} (Simulation Mode - Add Razorpay keys for real payments)`, type: 'success' });
-      } else {
-        // LIVE MODE — Open Razorpay checkout widget
-        const razorpayOptions = {
-          key: order.key_id,
-          amount: order.amount,
-          currency: order.currency,
-          name: 'IntelliScan',
-          description: order.plan_name,
-          order_id: order.order_id,
-          handler: async (response) => {
-            const verifyRes = await fetch('/api/billing/verify-payment', {
-              method: 'POST', headers,
-              body: JSON.stringify({ order_id: order.order_id, payment_id: response.razorpay_payment_id, signature: response.razorpay_signature, plan, simulated: false })
-            });
-            const result = await verifyRes.json();
-            if (verifyRes.ok) {
-              applyVerifyResult(result);
-              setCurrentTier(plan);
-              setMessage({ text: `🎉 ${result.message}`, type: 'success' });
-            }
-            else setMessage({ text: result.error || 'Payment verification failed', type: 'error' });
-          },
-          theme: { color: '#4f46e5' }
-        };
-        if (window.Razorpay) {
-          new window.Razorpay(razorpayOptions).open();
-        } else {
-          // Load Razorpay script dynamically
-          const script = document.createElement('script');
-          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-          script.onload = () => new window.Razorpay(razorpayOptions).open();
-          document.body.appendChild(script);
-        }
-      }
-    } catch (err) {
-      setMessage({ text: `Error: ${err.message}`, type: 'error' });
-    }
-    setUpgrading('');
+  const handleUpgrade = (plan) => {
+    navigate(`/dashboard/checkout/${plan}`);
   };
 
   const refreshPaymentMethods = async () => {
@@ -333,7 +265,7 @@ export default function BillingPage() {
               Plan: <span className="font-bold text-indigo-600 dark:text-indigo-400 uppercase">{currentTier}</span>
             </p>
           </div>
-          <button onClick={() => navigate('/scan')} className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+          <button onClick={() => navigate('/dashboard/scan')} className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
             Go Scan <ArrowUpRight size={16} />
           </button>
         </div>
@@ -350,7 +282,7 @@ export default function BillingPage() {
       {/* Plans */}
       <div>
         <h2 className="text-xl font-headline font-extrabold text-gray-900 dark:text-white mb-2">Choose Your Plan</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">All plans include AI-powered OCR extraction. 💡 <strong>Razorpay Test Mode</strong> is active — payments are simulated.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">All plans include AI-powered OCR extraction. Payments are processed via Razorpay.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map(plan => (
             <PlanCard key={plan.id} plan={plan} currentTier={currentTier} onUpgrade={handleUpgrade} loading={upgrading === plan.id} />

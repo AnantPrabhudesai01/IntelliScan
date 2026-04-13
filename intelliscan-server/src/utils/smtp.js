@@ -14,7 +14,6 @@ function createSmtpTransporterFromEnv() {
     pass.toLowerCase().includes('your-app-password');
 
   if (!host || !user || !pass || looksLikePlaceholder) {
-    console.warn('SMTP configuration missing (or still placeholder) in .env. Email features will run in simulated mode.');
     return null;
   }
 

@@ -6,10 +6,10 @@ const { db } = require('./db');
  * @param {object} event - { action, resource, status, details }
  */
 function logAuditEvent(req, event) {
-  const { action, resource, status, details } = event;
-  const actor_user_id = req.user?.id || null;
-  const actor_email = req.user?.email || 'anonymous';
-  const actor_role = req.user?.role || 'user';
+  const { action, resource, status, details, actorEmail, actorUserId, actorRole } = event;
+  const actor_user_id = actorUserId || req.user?.id || null;
+  const actor_email = actorEmail || req.user?.email || 'anonymous';
+  const actor_role = actorRole || req.user?.role || 'user';
   const ip_address = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
   const user_agent = req.headers['user-agent'] || 'unknown';
 
