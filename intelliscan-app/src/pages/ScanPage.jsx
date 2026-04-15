@@ -9,8 +9,15 @@ import ConfirmationModal from '../components/common/ConfirmationModal';
 export default function ScanPage() {
   const { addContact } = useContacts();
   const [isScanning, setIsScanning] = useState(false);
-  const [scannedData, setScannedData] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [scannedData, setScannedData] = useState(() => {
+    try {
+      const saved = localStorage.getItem('intelliscan_cached_scan');
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  });
+  const [selectedImage, setSelectedImage] = useState(() => {
+    return localStorage.getItem('intelliscan_cached_image') || null;
+  });
   const [errorMsg, setErrorMsg] = useState('');
   const [scanMode, setScanMode] = useState('single'); // 'single' | 'multi' | 'batch'
   const [multiResults, setMultiResults] = useState(null);
@@ -98,6 +105,9 @@ export default function ScanPage() {
     fetchQuota();
     fetchEvents();
     fetchAccess();
+    
+    // Auto-restore scroll position or any other mount-time logic
+    window.scrollTo(0, 0);
 
     const onQuotaUpdate = () => fetchQuota();
     window.addEventListener('quota-update', onQuotaUpdate);
@@ -117,7 +127,20 @@ export default function ScanPage() {
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
-    if (scanMode === 'batch') {
+  // Persist scan state to localStorage
+  useEffect(() => {
+    if (scannedData) {
+      localStorage.setItem('intelliscan_cached_scan', JSON.stringify(scannedData));
+    } else {
+      localStorage.removeItem('intelliscan_cached_scan');
+    }
+    
+    if (selectedImage) {
+      localStorage.setItem('intelliscan_cached_image', selectedImage);
+    } else {
+      localStorage.removeItem('intelliscan_cached_image');
+    }
+  }, [scannedData, selectedImage]);
       processBatchImages(files);
       return;
     }
@@ -375,6 +398,8 @@ export default function ScanPage() {
         });
         setScannedData(null);
         setSelectedImage(null);
+        localStorage.removeItem('intelliscan_cached_scan');
+        localStorage.removeItem('intelliscan_cached_image');
         window.dispatchEvent(new Event('quota-update'));
         toast.success('Contact saved successfully!', {
           style: { borderRadius: '10px', background: '#21132E', color: '#fff', fontSize: '13px', border: '1px solid #3D2650' }
@@ -908,7 +933,12 @@ export default function ScanPage() {
                     </button>
                   </div>
                   <button 
-                    onClick={() => { setScannedData(null); setSelectedImage(null); }}
+                    onClick={() => { 
+                      setScannedData(null); 
+                      setSelectedImage(null); 
+                      localStorage.removeItem('intelliscan_cached_scan');
+                      localStorage.removeItem('intelliscan_cached_image');
+                    }}
                     className="text-gray-500 dark:text-gray-400 flex items-center gap-1 hover:text-red-500 text-xs font-bold transition-colors"
                   >
                     <X size={14} /> Clear Result
