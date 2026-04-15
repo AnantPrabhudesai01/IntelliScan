@@ -5,7 +5,14 @@
     "intelliscan-app",
     "intelliscan-server"
   ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=intelliscan-app\" \"npm run dev --workspace=intelliscan-server\"",
+    "build": "npm run build --workspace=intelliscan-app",
+    "start": "npm start --workspace=intelliscan-server",
+    "install-all": "npm install && npm install --workspace=intelliscan-app && npm install --workspace=intelliscan-server"
+  },
   "dependencies": {
+    "concurrently": "^8.2.2",
     "@vercel/analytics": "^2.0.1"
   }
 }
