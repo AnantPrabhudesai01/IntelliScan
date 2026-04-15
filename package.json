@@ -1,4 +1,10 @@
 {
+  "name": "intelliscan-monorepo",
+  "private": true,
+  "workspaces": [
+    "intelliscan-app",
+    "intelliscan-server"
+  ],
   "dependencies": {
     "@vercel/analytics": "^2.0.1"
   }
