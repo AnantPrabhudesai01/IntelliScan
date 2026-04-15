@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useContacts } from '../context/ContactContext';
-import { Search, Filter, Cpu, Download, Mail, Phone, ChevronRight, AlertTriangle, UserPlus, Globe, LayoutGrid, List, Clock, Trash2, ChevronDown, RefreshCw, CheckCircle2, Calendar, Sparkles, Send, X, Wand2, Zap, ArrowRight, RotateCcw, Share2, Languages } from 'lucide-react';
+import { Search, Filter, Cpu, Download, Mail, Phone, ChevronRight, AlertTriangle, UserPlus, Globe, LayoutGrid, List, Clock, Trash2, ChevronDown, RefreshCw, CheckCircle2, Calendar, Sparkles, Send, X, Wand2, Zap, ArrowRight, RotateCcw, Share2, Languages, Plus } from 'lucide-react';
 import apiClient from '../api/client';
 import * as XLSX from 'xlsx';
 import { useNavigate } from 'react-router-dom';
@@ -504,31 +504,46 @@ export default function ContactsPage() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8 animate-fade-in relative">
-      {/* Dashboard Stats */}
+      {/* Vibrant Stats Dashboard */}
       {filteredContacts.length > 0 && (
-        <section className="p-1 bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 shadow-sm rounded-2xl flex flex-wrap divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-800/80">
-          <div className="flex-1 min-w-[150px] p-6 text-center">
-            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">
-              {activeTab === 'active' ? 'Active Leads' : 'In Recycle Bin'}
-            </p>
-            <p className="text-3xl font-headline font-extrabold text-gray-900 dark:text-white">{filteredContacts.length}</p>
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="relative group overflow-hidden bg-white/40 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 p-6 rounded-2xl shadow-xl transition-all hover:scale-[1.02]">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+              <UserPlus size={48} className="text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <p className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-[2px] mb-2">{activeTab === 'active' ? 'Active Leads' : 'In Recycle Bin'}</p>
+            <div className="flex items-baseline gap-2">
+              <p className="text-4xl font-headline font-black text-gray-900 dark:text-white">{filteredContacts.length}</p>
+              <span className="text-xs font-bold text-emerald-500">+12% this week</span>
+            </div>
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-50"></div>
           </div>
-          <div className="flex-1 min-w-[150px] p-6 text-center">
-            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">Avg Confidence</p>
-            <p className="text-3xl font-headline font-extrabold text-gray-900 dark:text-white">
+
+          <div className="relative group overflow-hidden bg-white/40 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 p-6 rounded-2xl shadow-xl transition-all hover:scale-[1.02]">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+              <Sparkles size={48} className="text-amber-500" />
+            </div>
+            <p className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-[2px] mb-2">Avg Confidence</p>
+            <p className="text-4xl font-headline font-black text-gray-900 dark:text-white">
               {filteredContacts.length > 0 
                 ? Math.round(filteredContacts.reduce((acc, curr) => acc + (curr.confidence || 0), 0) / filteredContacts.length)
                 : 0}%
             </p>
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-orange-500 opacity-50"></div>
           </div>
-          <div className="flex-1 min-w-[150px] p-6 text-center">
-            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">Sync Status</p>
-            <div className="flex items-center justify-center gap-2 mt-2">
-              <span className={`w-2.5 h-2.5 rounded-full animate-pulse shadow-sm ${activeTab === 'active' ? 'bg-emerald-500' : 'bg-red-400'}`}></span>
-              <span className="text-xs font-bold uppercase tracking-widest text-gray-900 dark:text-white">
-                {activeTab === 'active' ? 'Live' : 'Archived'}
+
+          <div className="relative group overflow-hidden bg-white/40 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 p-6 rounded-2xl shadow-xl transition-all hover:scale-[1.02]">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+              <Zap size={48} className="text-emerald-500" />
+            </div>
+            <p className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-[2px] mb-2">Sync Engine</p>
+            <div className="flex items-center gap-2 mt-1">
+              <div className={`w-3 h-3 rounded-full animate-ping ${activeTab === 'active' ? 'bg-emerald-500' : 'bg-red-400'}`}></div>
+              <span className="text-xl font-headline font-black text-gray-900 dark:text-white capitalize">
+                {activeTab === 'active' ? 'Real-time' : 'Archived'}
               </span>
             </div>
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500 opacity-50"></div>
           </div>
         </section>
       )}
@@ -611,13 +626,12 @@ export default function ContactsPage() {
         </div>
       )}
 
-      {/* Filters & Actions */}
-      <section className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex-1 max-w-lg flex items-center gap-2">
-          <div className="flex-1 relative group">
+      <section className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-2">
+        <div className="flex-1 max-w-2xl flex flex-wrap items-center gap-3">
+          <div className="flex-1 min-w-[300px] relative group">
             <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors" />
             <input
-              className={`w-full pl-12 pr-4 py-3 bg-white dark:bg-[#161c28] border rounded-xl focus:ring-2 focus:ring-indigo-500/40 text-gray-900 dark:text-white placeholder:text-gray-400 transition-all font-body text-sm outline-none shadow-sm ${isSmartSearch ? 'border-indigo-400 ring-2 ring-indigo-500/20' : 'border-gray-200 dark:border-gray-800'}`}
+              className={`w-full pl-12 pr-4 py-3.5 bg-white/50 dark:bg-white/5 backdrop-blur-md border rounded-2xl focus:ring-4 focus:ring-indigo-500/20 text-gray-900 dark:text-white placeholder:text-gray-400 transition-all font-body text-sm outline-none shadow-sm ${isSmartSearch ? 'border-indigo-400 ring-4 ring-indigo-500/20 shadow-indigo-500/10' : 'border-gray-200 dark:border-white/10'}`}
               placeholder={isSmartSearch ? "Describe who you're looking for..." : "Search by name, email, or company..."}
               type="text"
               value={search}
@@ -654,17 +668,17 @@ export default function ContactsPage() {
           </button>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex bg-gray-100 dark:bg-gray-800/40 p-1 rounded-2xl w-fit">
+        {/* Segmented Control Tab Switcher */}
+        <div className="relative p-1 bg-gray-100/80 dark:bg-white/5 backdrop-blur-md rounded-2xl flex border border-white/10">
           <button 
             onClick={() => setActiveTab('active')}
-            className={`px-6 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'active' ? 'bg-white dark:bg-gray-900 text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            className={`relative z-10 px-8 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'active' ? 'text-indigo-600 bg-white dark:bg-gray-900 shadow-xl' : 'text-gray-500 hover:text-gray-700'}`}
           >
             <UserPlus size={14} /> Active Leads
           </button>
           <button 
             onClick={() => setActiveTab('trash')}
-            className={`px-6 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'trash' ? 'bg-white dark:bg-gray-900 text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            className={`relative z-10 px-8 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'trash' ? 'text-red-500 bg-white dark:bg-gray-900 shadow-xl' : 'text-gray-500 hover:text-gray-700'}`}
           >
             <Trash2 size={14} /> Recycle Bin
           </button>
@@ -746,29 +760,44 @@ export default function ContactsPage() {
       {/* ── GRID VIEW ── */}
       {viewMode === 'grid' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {/* Always show Scan New Contact at the top (only for active leads) */}
+          {/* Vibrant "WOW" Empty State / Scan CTA */}
           {activeTab === 'active' && !search && !filterConfidence && !filterEngine && (
-            <div onClick={() => navigate('/dashboard/scan')} className="bg-gray-50 dark:bg-[#161c28]/50 p-6 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-500 transition-all flex flex-col items-center justify-center text-center group cursor-pointer shadow-sm hover:bg-white dark:hover:bg-[#161c28]">
-              <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm border border-gray-100 dark:border-gray-700">
-                <UserPlus size={24} className="text-indigo-600 dark:text-indigo-400" />
+            <div 
+              onClick={() => navigate('/dashboard/scan')} 
+              className="relative group cursor-pointer overflow-hidden rounded-2xl border border-white/20 dark:border-white/10 animate-fade-in aspect-square flex flex-col items-center justify-center"
+            >
+              {/* Animated Aura Background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/5 to-transparent group-hover:opacity-100 transition-opacity"></div>
+              <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-indigo-500/10 rounded-full blur-[100px] group-hover:translate-x-12 group-hover:translate-y-12 transition-transform duration-1000"></div>
+              
+              <div className="relative z-10 flex flex-col items-center p-8">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center mb-6 shadow-2xl shadow-indigo-500/40 group-hover:scale-110 transition-all duration-500 group-hover:rotate-6">
+                  <Plus size={40} className="text-white drop-shadow-md" />
+                </div>
+                <h3 className="text-xl font-headline font-black text-gray-900 dark:text-white mb-2 tracking-tight">Scan New Contact</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[200px] text-center leading-relaxed">
+                  Transform a business card into a <span className="text-indigo-500 font-bold">Smart Lead</span> in seconds.
+                </p>
+                
+                <div className="mt-6 flex items-center gap-2 text-indigo-600 dark:text-indigo-400 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                  Get Started <ArrowRight size={14} />
+                </div>
               </div>
-              <p className="font-headline font-bold text-gray-900 dark:text-white">Scan New Contact</p>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 max-w-[150px] leading-relaxed">Upload a business card or document to auto-extract info.</p>
             </div>
           )}
-
+          
           {filteredContacts.map((contact) => (
             <div
               key={contact.id}
               onClick={() => openContactDetail(contact)}
-              className={`p-5 rounded-xl border transition-all cursor-pointer group relative overflow-hidden shadow-[var(--shadow-vibrant)] hover:shadow-lg ${
+              className={`p-6 rounded-2xl border backdrop-blur-md transition-all cursor-pointer group relative overflow-hidden shadow-xl hover:shadow-2xl ${
                 activeTab === 'trash' 
-                  ? 'bg-gray-50/50 dark:bg-gray-900/40 border-gray-200 dark:border-gray-800 sepia-[0.2] grayscale-[0.3]' 
-                  : 'bg-white dark:bg-[#161c28] border-gray-200/80 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-500'
-              } ${selectedIds.includes(contact.id) ? 'border-indigo-400 ring-2 ring-indigo-500/10' : contact.confidence < 60 ? 'border-red-200 dark:border-red-900/50' : ''}`}
+                  ? 'bg-gray-100/50 dark:bg-white/5 border-gray-200 dark:border-gray-800 opacity-80' 
+                  : 'bg-white/70 dark:bg-white/5 border-white/20 dark:border-white/10 hover:border-indigo-500/50 hover:-translate-y-1'
+              } ${selectedIds.includes(contact.id) ? 'ring-2 ring-indigo-600 border-indigo-600' : ''}`}
             >
               {activeTab === 'trash' && (
-                <div className="absolute top-0 right-10 bg-red-500 text-white text-[8px] font-black px-2 py-0.5 rounded-b-md uppercase tracking-widest z-10 shadow-sm">
+                <div className="absolute top-0 right-10 bg-red-600 text-white text-[8px] font-black px-2 py-1 rounded-b-lg uppercase tracking-widest z-10 shadow-lg">
                   Deleted
                 </div>
               )}
