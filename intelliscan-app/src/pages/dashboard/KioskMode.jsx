@@ -17,6 +17,7 @@ export default function KioskMode() {
   const [isScanning, setIsScanning] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [step, setStep] = useState('capture'); // 'capture', 'qualify', 'success'
+  const [isCameraActive, setIsCameraActive] = useState(false);
   const [contactData, setContactData] = useState(null);
   const [events, setEvents] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState('');
@@ -25,7 +26,91 @@ export default function KioskMode() {
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
   const token = getStoredToken();
+
+  useEffect(() => {
+    return () => stopCamera();
+  }, []);
+
+  const startCamera = async () => {
+    try {
+      setErrorMsg('');
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } } 
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        setIsCameraActive(true);
+      }
+    } catch (err) {
+      console.error('Camera Error:', err);
+      setErrorMsg('Could not access camera. Please check permissions or upload a file instead.');
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setIsCameraActive(false);
+  };
+
+  const captureAndScan = async () => {
+    if (!videoRef.current || !canvasRef.current || isScanning) return;
+
+    setIsScanning(true);
+    setErrorMsg('');
+
+    try {
+      const canvas = canvasRef.current;
+      const video = videoRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      const base64 = canvas.toDataURL('image/jpeg', 0.8);
+      
+      // Stop camera to save resources while processing
+      stopCamera();
+
+      const res = await fetch('/api/scan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          imageBase64: base64,
+          mimeType: 'image/jpeg'
+        })
+      });
+
+      const payload = await res.json();
+      if (!res.ok) {
+        throw new Error(payload?.error || payload?.message || 'Failed to scan card.');
+      }
+
+      if (!payload?.name && !payload?.email && !payload?.company) {
+        throw new Error('Our AI couldn\'t find any contact details in that frame. Please try again with better lighting.');
+      }
+
+      setContactData(payload);
+      setStep('qualify');
+    } catch (error) {
+      setErrorMsg(error.message);
+      setIsScanning(false);
+      // Restart camera on error so user can try again
+      startCamera();
+    } finally {
+      setIsScanning(false);
+    }
+  };
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -49,6 +134,7 @@ export default function KioskMode() {
     setContactData(null);
     setErrorMsg('');
     setQualification({ budget: '', timeline: '', role: '' });
+    stopCamera();
   };
 
   const processImageFile = async (file) => {
@@ -161,31 +247,110 @@ export default function KioskMode() {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/png,image/jpeg,image/webp"
-              capture="environment"
+              accept="image/*"
               className="hidden"
               onChange={handleFileChange}
             />
+            <canvas ref={canvasRef} className="hidden" />
 
-            <div 
-              className="relative inline-block mx-auto group cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <div className="absolute inset-0 bg-indigo-600/20 blur-[100px] group-hover:bg-indigo-600/40 transition-all"></div>
-              <div className="relative w-80 h-80 border-4 border-dashed border-indigo-500/30 rounded-[3rem] flex items-center justify-center bg-[#161c28]/80 backdrop-blur-xl group-hover:border-indigo-500 transition-colors">
-                <Camera size={120} className="text-indigo-500 animate-pulse group-hover:scale-110 transition-transform duration-300" />
+            {isCameraActive ? (
+              <div className="relative w-full max-w-2xl mx-auto aspect-[4/3] rounded-[3rem] overflow-hidden border-4 border-indigo-500/50 shadow-2xl shadow-indigo-500/20 group">
+                <video 
+                  ref={videoRef} 
+                  autoPlay 
+                  playsInline 
+                  className="w-full h-full object-cover"
+                />
+                
+                {/* Scanner Overlay */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {/* Digital Grid */}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]"></div>
+                  <div className="absolute inset-0 border-[40px] border-black/20 backdrop-blur-[1px]"></div>
+                  
+                  {/* Animated Laser Line */}
+                  <div className="absolute left-0 right-0 h-1 bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.8)] animate-scanner-line top-0 z-20"></div>
+                  
+                  {/* Corner Brackets */}
+                  <div className="absolute top-10 left-10 w-12 h-12 border-t-4 border-l-4 border-indigo-400 rounded-tl-lg"></div>
+                  <div className="absolute top-10 right-10 w-12 h-12 border-t-4 border-r-4 border-indigo-400 rounded-tr-lg"></div>
+                  <div className="absolute bottom-10 left-10 w-12 h-12 border-b-4 border-l-4 border-indigo-400 rounded-bl-lg"></div>
+                  <div className="absolute bottom-10 right-10 w-12 h-12 border-b-4 border-r-4 border-indigo-400 rounded-br-lg"></div>
+                  
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-80 h-48 border-2 border-dashed border-white/40 rounded-2xl flex items-center justify-center">
+                      <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em]">Align Card Here</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Shutter Effect */}
+                {isScanning && (
+                  <div className="absolute inset-0 bg-white animate-flash z-50"></div>
+                )}
+
+                <button 
+                  onClick={stopCamera}
+                  className="absolute top-6 right-6 p-3 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md transition-all z-30"
+                >
+                  <X size={20} />
+                </button>
               </div>
-            </div>
+            ) : (
+              <div 
+                className="relative inline-block mx-auto group cursor-pointer"
+                onClick={startCamera}
+              >
+                <div className="absolute inset-0 bg-indigo-600/20 blur-[100px] group-hover:bg-indigo-600/40 transition-all"></div>
+                <div className="relative w-80 h-80 border-4 border-dashed border-indigo-500/30 rounded-[3rem] flex items-center justify-center bg-[#161c28]/80 backdrop-blur-xl group-hover:border-indigo-500 transition-colors overflow-hidden">
+                  <Camera size={120} className="text-indigo-500 animate-pulse group-hover:scale-110 transition-transform duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-indigo-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-4">
-              <h2 className="text-5xl font-black tracking-tight text-white uppercase italic">Scan Guest Card</h2>
+              <h2 className="text-5xl font-black tracking-tight text-white uppercase italic">
+                {isCameraActive ? 'Position Business Card' : 'Scan Guest Card'}
+              </h2>
               <p className="text-xl text-gray-400 font-medium max-w-2xl mx-auto">
-                Upload or capture a card photo to run real OCR and instantly create a qualified lead.
+                {isCameraActive 
+                  ? 'Hold the card steady within the frame for automatic data extraction.' 
+                  : 'Open the live scanner to instantly create a qualified lead from any card.'}
               </p>
             </div>
 
+            <div className="flex flex-col items-center gap-6">
+              <button
+                onClick={isCameraActive ? captureAndScan : startCamera}
+                disabled={isScanning}
+                className={`w-full max-w-md ${isCameraActive ? 'bg-indigo-600 text-white' : 'bg-transparent border-2 border-indigo-500 text-indigo-400'} py-6 rounded-3xl font-black text-2xl hover:bg-indigo-500 hover:text-white transition-all shadow-2xl shadow-indigo-600/40 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4`}
+              >
+                {isScanning ? (
+                  <>
+                    <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                    DIGITIZING...
+                  </>
+                ) : (
+                  <>
+                    {isCameraActive ? <Scan size={30} /> : <Camera size={30} />}
+                    {isCameraActive ? 'ANALYZE CARD' : 'OPEN LIVE SCANNER'}
+                  </>
+                )}
+              </button>
+
+              {!isCameraActive && (
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-gray-500 hover:text-white font-bold text-sm tracking-widest uppercase flex items-center gap-2 transition-colors"
+                >
+                  <UploadCloud size={16} /> or upload from device
+                </button>
+              )}
+            </div>
+
             {events.length > 0 && (
-              <div className="max-w-sm mx-auto text-left">
+              <div className="max-w-sm mx-auto text-left py-4">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Assign Event</label>
                 <select
                   value={selectedEventId}
@@ -200,27 +365,9 @@ export default function KioskMode() {
               </div>
             )}
 
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isScanning}
-              className="w-full max-w-md bg-indigo-600 text-white py-6 rounded-3xl font-black text-2xl hover:bg-indigo-500 transition-all shadow-2xl shadow-indigo-600/40 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4"
-            >
-              {isScanning ? (
-                <>
-                  <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-                  ANALYZING...
-                </>
-              ) : (
-                <>
-                  <UploadCloud size={30} />
-                  START SCAN
-                </>
-              )}
-            </button>
-
             <div className="flex justify-center gap-8 pt-8 grayscale opacity-40">
               <div className="flex items-center gap-2 font-black text-xs uppercase tracking-widest"><CheckCircle size={16} /> GDPR Compliant</div>
-              <div className="flex items-center gap-2 font-black text-xs uppercase tracking-widest"><Zap size={16} /> Real OCR</div>
+              <div className="flex items-center gap-2 font-black text-xs uppercase tracking-widest"><Zap size={16} /> Live OCR</div>
             </div>
           </div>
         )}

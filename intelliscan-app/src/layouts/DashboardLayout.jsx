@@ -101,12 +101,19 @@ export default function DashboardLayout({ children }) {
         console.error('Failed to fetch quota:', err);
       }
     };
+
     fetchQuota();
+    
+    // Refresh quota every 2 minutes or on specific events instead of every page click
+    const pollInterval = setInterval(fetchQuota, 120000);
 
     const handleQuotaUpdate = () => fetchQuota();
     window.addEventListener('quota-update', handleQuotaUpdate);
-    return () => window.removeEventListener('quota-update', handleQuotaUpdate);
-  }, [location.pathname]);
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener('quota-update', handleQuotaUpdate);
+    };
+  }, []); // Only on mount
 
   // Close profile dropdown on outside click
   useEffect(() => {

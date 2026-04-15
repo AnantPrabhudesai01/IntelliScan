@@ -135,6 +135,7 @@ export default function ScanPage() {
     const reader = new FileReader();
     reader.onloadend = () => {
       setSelectedImage(reader.result);
+      localStorage.setItem('intelliscan_cached_image', reader.result);
       if (scanMode === 'single') {
         processSingleImage(reader.result, file.type);
       } else {
@@ -246,6 +247,7 @@ export default function ScanPage() {
       }
 
       setScannedData(extracted);
+      localStorage.setItem('intelliscan_cached_scan', JSON.stringify(extracted));
       setIsScanning(false); 
 
       // Duplicate check (runs in background)

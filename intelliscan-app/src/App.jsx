@@ -151,7 +151,8 @@ export default function App() {
   const token = getStoredToken();
 
   // App-level loading to prevent flicker
-  if (isAuth0Loading || !isAuthReady || (isAuthenticated && !token)) {
+  // Only show full splash if we are truly unauthenticated or bootstrapping for the first time
+  if ((isAuth0Loading || !isAuthReady) && !token) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0e131f] text-[#dde2f3]">
         <div className="text-center">
