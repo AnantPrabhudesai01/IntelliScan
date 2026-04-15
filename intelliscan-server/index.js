@@ -273,18 +273,19 @@ httpServer.listen(PORT, async () => {
             CREATE TABLE IF NOT EXISTS billing_orders (
               id SERIAL PRIMARY KEY,
               user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-              workspace_id VARCHAR(255),
-              plan_id VARCHAR(50),
+              workspace_id TEXT,
+              plan_id TEXT,
               amount_paise INTEGER,
-              currency VARCHAR(10),
-              razorpay_order_id VARCHAR(100),
-              razorpay_payment_id VARCHAR(100),
+              currency TEXT DEFAULT 'INR',
+              razorpay_order_id TEXT,
+              razorpay_payment_id TEXT,
               razorpay_signature TEXT,
-              status VARCHAR(50),
+              status TEXT DEFAULT 'created',
               simulated INTEGER DEFAULT 0,
-              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+              created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
             );
+
           `);
           await dbRunAsync(`
             CREATE TABLE IF NOT EXISTS billing_invoices (
@@ -316,6 +317,23 @@ httpServer.listen(PORT, async () => {
           await dbRunAsync("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE");
           await dbRunAsync("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ");
           await dbRunAsync("UPDATE contacts SET is_deleted = FALSE WHERE is_deleted IS NULL");
+
+          // Ensure Email Outreach tracking tables
+          await dbRunAsync(`
+            CREATE TABLE IF NOT EXISTS email_sends (
+              id SERIAL PRIMARY KEY,
+              campaign_id INTEGER REFERENCES email_campaigns(id) ON DELETE CASCADE,
+              email TEXT NOT NULL,
+              first_name TEXT,
+              tracking_id TEXT UNIQUE,
+              status TEXT DEFAULT 'pending',
+              sent_at TIMESTAMPTZ,
+              opened_at TIMESTAMPTZ,
+              open_count INTEGER DEFAULT 0,
+              click_count INTEGER DEFAULT 0
+            );
+          `);
+
         }
         
         console.log('✅ Schema Synchronized: user_quotas, billing, and contacts restored.');

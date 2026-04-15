@@ -232,7 +232,7 @@ router.get('/google/callback',
         details: { sso_provider: 'google' }
       });
 
-      const frontendUrl = process.env.APP_PUBLIC_URL || 'http://localhost:5173';
+      const frontendUrl = process.env.APP_PUBLIC_URL || process.env.CLIENT_ORIGIN || 'https://intelliscan.vercel.app';
       const userJson = encodeURIComponent(JSON.stringify({
         id: user.id,
         name: user.name,

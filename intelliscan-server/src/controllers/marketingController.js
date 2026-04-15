@@ -203,7 +203,7 @@ exports.processCampaignSending = async (campaignId) => {
     const contacts = await dbAllAsync(`SELECT DISTINCT email, first_name, last_name, company FROM email_list_contacts WHERE list_id IN (${placeholders}) AND subscribed = 1`, listIds);
 
     const smtp = createSmtpTransporterFromEnv();
-    const serverUrl = process.env.SERVER_URL || "http://localhost:5000";
+    const serverUrl = process.env.SERVER_URL || "https://intelliscan.vercel.app";
 
     for (const contact of contacts) {
       const trackingId = crypto.randomBytes(16).toString("hex");

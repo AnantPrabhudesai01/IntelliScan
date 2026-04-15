@@ -19,7 +19,7 @@ export default function Auth0Synchronizer() {
           if (!active) return;
 
           // Provision/Sync user in the local SQLite database
-          const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/auth/sync`, {
+          const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/auth/sync`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user, token })

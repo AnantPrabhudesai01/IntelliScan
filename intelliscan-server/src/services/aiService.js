@@ -302,7 +302,7 @@ Return ONLY a valid JSON object:
           headers: {
             "Authorization": `Bearer ${orKey}`,
             "Content-Type": "application/json",
-            "HTTP-Referer": "http://localhost:5000", 
+            "HTTP-Referer": process.env.SERVER_URL || "https://intelliscan.vercel.app", 
             "X-Title": "IntelliScan"
           },
           body: JSON.stringify({

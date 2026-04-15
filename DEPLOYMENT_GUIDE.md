@@ -6,7 +6,14 @@ Follow these steps to take your project live on Vercel.
 - **GitHub Repository**: Your project must be pushed to a GitHub repository.
 - **Supabase**: Ensure your database is hosted on Supabase and you have the connection string.
 
-## 2. Vercel Project Setup
+## 2. Database Initialization
+1. Go to your **Supabase Dashboard** > **SQL Editor**.
+2. Create a **New Query**.
+3. Copy the entire contents of `intelliscan-server/migration-supabase.sql` and paste it into the editor.
+4. Click **Run**.
+   - *This sets up all tables, performance indexes, and full-text search triggers for the entire platform.*
+
+## 3. Vercel Project Setup
 1. Log in to [Vercel](https://vercel.com).
 2. Click **Add New** > **Project**.
 3. Import your GitHub repository.

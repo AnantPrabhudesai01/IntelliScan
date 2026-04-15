@@ -16,7 +16,7 @@ export default function SsoCallback() {
     if (token && userJson) {
       try {
         const user = JSON.parse(userJson);
-        // 1. Save to local storage for the correct origin (localhost:5173)
+        // 1. Save to local storage
         setStoredAuth({ token, user });
         
         // 2. Sync the global role state

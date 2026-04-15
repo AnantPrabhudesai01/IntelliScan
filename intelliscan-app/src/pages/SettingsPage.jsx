@@ -394,7 +394,8 @@ export default function SettingsPage() {
               <div className="relative group">
                 <div className="w-32 h-32 rounded-full overflow-hidden mb-6 ring-4 ring-indigo-100 dark:ring-indigo-900/30 group-hover:ring-indigo-200 dark:group-hover:ring-indigo-800/50 transition-all flex items-center justify-center bg-gray-100 dark:bg-gray-800">
                   {profile.avatar_url ? (
-                    <img src={profile.avatar_url.startsWith('http') ? profile.avatar_url : `http://localhost:5000${profile.avatar_url}`} alt="Avatar" className="w-full h-full object-cover" />
+                    <img src={profile.avatar_url.startsWith('http') ? profile.avatar_url : `${import.meta.env.VITE_API_BASE_URL || ''}${profile.avatar_url}`} alt="Avatar" className="w-full h-full object-cover" />
+
                   ) : (
                     <span className="text-4xl font-headline font-bold text-indigo-300 dark:text-indigo-700">{profile.name?.charAt(0).toUpperCase() || <User size={40}/>}</span>
                   )}

@@ -90,7 +90,7 @@ exports.shareCalendar = async (req, res) => {
 
     const smtp = createSmtpTransporterFromEnv();
     if (smtp) {
-      const serverUrl = process.env.SERVER_URL || 'http://localhost:5000';
+      const serverUrl = process.env.SERVER_URL || 'https://intelliscan.vercel.app';
       await smtp.transporter.sendMail({
         from: smtp.from,
         to: email,
@@ -211,7 +211,7 @@ exports.createEvent = async (req, res) => {
     // Attendees
     if (Array.isArray(attendees)) {
       const smtp = createSmtpTransporterFromEnv();
-      const serverUrl = process.env.SERVER_URL || 'http://localhost:5000';
+      const serverUrl = process.env.SERVER_URL || 'https://intelliscan.vercel.app';
       for (const att of attendees) {
         const token = crypto.randomBytes(16).toString('hex');
         await dbRunAsync(

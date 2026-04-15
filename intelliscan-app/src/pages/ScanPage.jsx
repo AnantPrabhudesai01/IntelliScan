@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useContacts } from '../context/ContactContext';
 import { Upload, Camera, RefreshCw, Lightbulb, Sparkles, Save, Edit3, X, ZoomIn, FileText, Layers, CheckCircle2, Users, Zap } from 'lucide-react';
 import { getStoredToken } from '../utils/auth';
+import { useNotifications } from '../context/NotificationContext';
+import toast from 'react-hot-toast';
 import ConfirmationModal from '../components/common/ConfirmationModal';
 
 export default function ScanPage() {
@@ -344,7 +346,9 @@ export default function ScanPage() {
       setHealthData(data);
       setShowHealthModal(true);
     } catch (err) {
-      alert('Diagnostic Error: ' + err.message);
+      toast.error('Diagnostic Error: ' + err.message, {
+        style: { borderRadius: '10px', background: '#21132E', color: '#fff', fontSize: '13px', border: '1px solid #3D2650' }
+      });
     } finally {
       setIsCheckingHealth(false);
     }
@@ -354,7 +358,6 @@ export default function ScanPage() {
     if (scannedData) {
       try {
         await addContact({
-          id: Date.now().toString(),
           image_url: selectedImage,
           event_id: selectedEventId || null,
           ...(locationData || {}),
@@ -363,7 +366,9 @@ export default function ScanPage() {
         setScannedData(null);
         setSelectedImage(null);
         window.dispatchEvent(new Event('quota-update'));
-        alert('Contact saved successfully! Credit point deducted.');
+        toast.success('Contact saved successfully!', {
+          style: { borderRadius: '10px', background: '#21132E', color: '#fff', fontSize: '13px', border: '1px solid #3D2650' }
+        });
       } catch (err) {
         const status = err?.response?.status;
         const apiMsg = err?.response?.data?.error || err?.response?.data?.message;

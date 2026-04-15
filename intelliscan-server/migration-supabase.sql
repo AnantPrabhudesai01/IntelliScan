@@ -385,3 +385,83 @@ CREATE TABLE IF NOT EXISTS booking_links (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- 25. Billing Orders (Razorpay tracking)
+CREATE TABLE IF NOT EXISTS billing_orders (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    workspace_id TEXT,
+    plan_id TEXT,
+    amount_paise INTEGER,
+    currency TEXT DEFAULT 'INR',
+    razorpay_order_id TEXT,
+    razorpay_payment_id TEXT,
+    razorpay_signature TEXT,
+    status TEXT DEFAULT 'created',
+    simulated INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 26. Email Marketing Expansion
+CREATE TABLE IF NOT EXISTS email_list_contacts (
+    id SERIAL PRIMARY KEY,
+    list_id INTEGER REFERENCES email_lists(id) ON DELETE CASCADE,
+    email TEXT NOT NULL,
+    first_name TEXT,
+    last_name TEXT,
+    company TEXT,
+    subscribed BOOLEAN DEFAULT TRUE,
+    unsubscribed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS email_sends (
+    id SERIAL PRIMARY KEY,
+    campaign_id INTEGER REFERENCES email_campaigns(id) ON DELETE CASCADE,
+    email TEXT NOT NULL,
+    first_name TEXT,
+    tracking_id TEXT UNIQUE,
+    status TEXT DEFAULT 'pending',
+    sent_at TIMESTAMPTZ,
+    opened_at TIMESTAMPTZ,
+    unsubscribed_at TIMESTAMPTZ,
+    open_count INTEGER DEFAULT 0,
+    click_count INTEGER DEFAULT 0,
+    bounce_reason TEXT
+);
+
+CREATE TABLE IF NOT EXISTS email_clicks (
+    id SERIAL PRIMARY KEY,
+    send_id INTEGER REFERENCES email_sends(id) ON DELETE CASCADE,
+    campaign_id INTEGER REFERENCES email_campaigns(id),
+    url TEXT,
+    clicked_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 27. Performance Indexes
+CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id);
+CREATE INDEX IF NOT EXISTS idx_contacts_workspace_id ON contacts(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_contacts_is_deleted ON contacts(is_deleted);
+CREATE INDEX IF NOT EXISTS idx_audit_created_at ON audit_trail(created_at);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
+
+-- 28. Search Vector Trigger (Optional but Recommended for PG)
+-- Requires 'tsvector' support. This updates the search string automatically.
+ALTER TABLE contacts ADD COLUMN IF NOT EXISTS search_vector tsvector;
+CREATE INDEX IF NOT EXISTS idx_contacts_search_vector ON contacts USING GIN(search_vector);
+
+CREATE OR REPLACE FUNCTION contacts_search_trigger() RETURNS trigger AS $$
+begin
+  new.search_vector :=
+    setweight(to_tsvector('english', COALESCE(new.name,'')), 'A') ||
+    setweight(to_tsvector('english', COALESCE(new.company,'')), 'B') ||
+    setweight(to_tsvector('english', COALESCE(new.job_title,'')), 'C');
+  return new;
+end
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_contacts_search ON contacts;
+CREATE TRIGGER trg_contacts_search BEFORE INSERT OR UPDATE
+ON contacts FOR EACH ROW EXECUTE FUNCTION contacts_search_trigger();
