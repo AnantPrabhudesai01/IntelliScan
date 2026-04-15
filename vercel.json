@@ -31,7 +31,7 @@
   "crons": [
     {
       "path": "/api/cron/process-all",
-      "schedule": "* * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
