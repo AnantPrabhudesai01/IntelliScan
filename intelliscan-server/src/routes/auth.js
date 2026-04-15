@@ -7,7 +7,7 @@ const passport = require('passport');
 const { z } = require('zod');
 const validate = require('../middleware/validate');
 const { JWT_SECRET, JWT_EXPIRES_IN, PERSONAL_EMAIL_DOMAINS } = require('../config/constants');
-const { dbRunAsync, dbGetAsync, sql } = require('../utils/db');
+const { dbRunAsync, dbGetAsync, dbAllAsync, sql } = require('../utils/db');
 const { ensureQuotaRow } = require('../utils/quota');
 const { logAuditEvent, AUDIT_SUCCESS, AUDIT_DENIED, AUDIT_ERROR } = require('../utils/logger');
 const { authenticateToken } = require('../middleware/auth');
@@ -57,12 +57,19 @@ router.post('/register', validate(registerSchema), async (req, res) => {
 
       await ensureQuotaRow(userId, 'personal');
       
-      await dbRunAsync(
-        sql.insertIgnore('calendars',
-          'user_id, name, color, is_primary, type',
-          '?, ?, ?, ?, ?'),
-        [userId, 'My Calendar', '#7b2fff', 1, 'personal']
-      );
+      // Ensure exactly one primary calendar exists
+      const existingCals = await dbAllAsync('SELECT id FROM calendars WHERE user_id = ? AND is_primary = 1 ORDER BY id ASC', [userId]);
+      if (existingCals.length === 0) {
+        await dbRunAsync(
+          'INSERT INTO calendars (user_id, name, color, is_primary, type) VALUES (?, ?, ?, ?, ?)',
+          [userId, 'My Calendar', '#7b2fff', 1, 'personal']
+        );
+      } else if (existingCals.length > 1) {
+        // Cleanup duplicates if they exist (keep only the first one)
+        const idsToDelete = existingCals.slice(1).map(c => c.id);
+        const placeholders = idsToDelete.map(() => '?').join(',');
+        await dbRunAsync(`DELETE FROM calendars WHERE id IN (${placeholders})`, idsToDelete);
+      }
 
       const token = jwt.sign(
         { id: userId, email, name, role: userRole, tier: 'personal' },
@@ -299,12 +306,19 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
 
     await ensureQuotaRow(userId, tier);
 
-    await dbRunAsync(
-      sql.insertIgnore('calendars', 
-        'user_id, name, color, is_primary, type', 
-        '?, ?, ?, ?, ?'),
-      [userId, 'My Calendar', '#7b2fff', 1, 'personal']
-    );
+    // Ensure exactly one primary calendar exists (Deduplication Logic)
+    const existingCals = await dbAllAsync('SELECT id FROM calendars WHERE user_id = ? AND is_primary = 1 ORDER BY id ASC', [userId]);
+    if (existingCals.length === 0) {
+      await dbRunAsync(
+        'INSERT INTO calendars (user_id, name, color, is_primary, type) VALUES (?, ?, ?, ?, ?)',
+        [userId, 'My Calendar', '#7b2fff', 1, 'personal']
+      );
+    } else if (existingCals.length > 1) {
+      // Cleanup existing duplicates (keep only the oldest one)
+      const idsToDelete = existingCals.slice(1).map(c => c.id);
+      const placeholders = idsToDelete.map(() => '?').join(',');
+      await dbRunAsync(`DELETE FROM calendars WHERE id IN (${placeholders})`, idsToDelete);
+    }
 
     const token = jwt.sign(
       { id: userId, email, role, tier, workspace_id: workspaceId },

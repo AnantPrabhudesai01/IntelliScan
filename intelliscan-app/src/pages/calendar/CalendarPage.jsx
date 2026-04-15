@@ -291,7 +291,12 @@ export default function CalendarPage() {
                     onChange={() => toggleCalendar(cal.id)}
                     className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                   />
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cal.color }}></div>
+                  <div 
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditingCal({ id: cal.id, name: cal.name, color: cal.color || '#7b2fff' }); setShowCalSettings(true); }}
+                    className="w-3 h-3 rounded-full cursor-pointer hover:scale-125 transition-all shadow-sm" 
+                    style={{ backgroundColor: cal.color }}
+                    title="Change calendar color"
+                  ></div>
                   <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 font-body">{cal.name}</span>
                 </label>
               ))}
@@ -446,7 +451,12 @@ export default function CalendarPage() {
                     </>
                   ) : (
                     <>
-                      <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: cal.color }}></div>
+                      <div 
+                        onClick={() => setEditingCal({ id: cal.id, name: cal.name, color: cal.color || '#7b2fff' })}
+                        className="w-4 h-4 rounded-full shrink-0 cursor-pointer hover:scale-125 transition-all" 
+                        style={{ backgroundColor: cal.color }}
+                        title="Edit calendar"
+                      ></div>
                       <span className="flex-1 text-sm font-bold text-gray-800 dark:text-gray-200">{cal.name}</span>
                       {cal.is_primary ? (
                         <span className="text-[9px] font-black uppercase tracking-widest text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-lg">Primary</span>

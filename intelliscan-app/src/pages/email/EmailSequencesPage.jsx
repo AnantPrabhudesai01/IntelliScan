@@ -12,7 +12,7 @@ export default function EmailSequencesPage() {
   async function fetchSequences() {
     try {
       const token = getStoredToken();
-      const res = await fetch('/api/email-sequences', {
+      const res = await fetch('/api/email-sequences/sequences', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) throw new Error(`API error ${res.status}`);
@@ -35,7 +35,7 @@ export default function EmailSequencesPage() {
     setIsCreating(true);
     try {
       const token = getStoredToken();
-      const res = await fetch('/api/email-sequences', {
+      const res = await fetch('/api/email-sequences/sequences', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

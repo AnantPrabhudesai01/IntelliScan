@@ -131,17 +131,24 @@ app.use('/api/notifications', notificationsRouter);
 app.use('/api/crm', crmRouter);
 app.use('/api/deals', dealsRouter);
 app.use('/api/ai', aiRouter);
+app.use('/api/email-sequences', marketingRouter);
 app.use('/api/webhooks', webhooksRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/marketing', marketingRouter);
 app.use('/api/calendar', calendarRouter);
+app.use('/api/coach', require('./src/routes/coach'));
 app.use('/api/workspaces', workspaceRouter);
 app.use('/api/workspace', workspaceRouter);
-app.use('/api', searchRouter);
-
-// SPA Redirect: Any non-API route serves the frontend index.html
-app.post('/api/analytics/log', (req, res) => res.json({ success: true }));
+const cardRouter = require('./src/routes/cardRouter');
+const cardController = require('./src/controllers/cardController');
+app.use('/api/cards', cardRouter);
+app.get('/api/my-card', authenticateToken, cardController.getMyCard);
+// Analytics Logging — Consolidated to prevent proxy timeouts
+const analyticsRouter = express.Router();
+analyticsRouter.post('/analytics/log', (req, res) => res.status(200).json({ success: true }));
+app.use('/api', analyticsRouter);
 app.post('/api/user/analytics/log', (req, res) => res.json({ success: true }));
+
 // Explicitly handle the frontend's preferred access path
 app.get('/api/access/me', authenticateToken, async (req, res) => {
   try {
@@ -266,6 +273,20 @@ httpServer.listen(PORT, async () => {
               currency VARCHAR(10),
               status VARCHAR(50),
               issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+          `);
+          await dbRunAsync(`
+            CREATE TABLE IF NOT EXISTS digital_cards (
+              id SERIAL PRIMARY KEY,
+              user_id INTEGER UNIQUE,
+              url_slug TEXT UNIQUE,
+              bio TEXT,
+              headline TEXT,
+              design_json JSONB,
+              views INTEGER DEFAULT 0,
+              saves INTEGER DEFAULT 0,
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
           `);
         }

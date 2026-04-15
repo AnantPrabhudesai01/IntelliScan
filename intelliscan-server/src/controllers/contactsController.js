@@ -1,7 +1,7 @@
 const { db, dbGetAsync, dbAllAsync, dbRunAsync } = require('../utils/db');
 const { logAuditEvent, AUDIT_SUCCESS, AUDIT_DENIED, AUDIT_ERROR } = require('../utils/logger');
 const { triggerWebhook } = require('../services/webhookService');
-const { generateWithFallback, generateEmbedding } = require('../services/aiService');
+const { generateWithFallback, generateEmbedding, unifiedTextAIPipeline } = require('../services/aiService');
 const { uploadToImgbb } = require('../services/imageService');
 const { getScopeForUser } = require('../utils/workspaceUtils');
 const { getPoliciesForScope, applyPiiPolicyToContactInput, runRetentionPurgeForScope } = require('../utils/policyUtils');
@@ -554,24 +554,43 @@ exports.enrichContact = async (req, res) => {
 Name: ${contact.name}
 Company: ${contact.company}
 Job Title: ${contact.job_title}
+Current Email: ${contact.email || 'None on file'}
+Current Phone: ${contact.phone || 'None on file'}
 
-Provide JSON: { "bio": "...", "latest_news": "...", "industry": "...", "seniority": "..." }`;
+If the email or phone is 'None on file', please attempt to find the official professional email/phone for this person.
+Provide JSON: { "bio": "...", "latest_news": "...", "industry": "...", "seniority": "...", "found_email": "...", "found_phone": "..." }`;
 
-    const enrichmentText = await generateWithFallback(prompt);
-    let enriched = {};
-    try {
-      const jsonMatch = enrichmentText.match(/\{[\s\S]*\}/);
-      enriched = JSON.parse(jsonMatch ? jsonMatch[0] : enrichmentText);
-    } catch (e) { console.warn('JSON parse failed'); }
+    const aiResult = await unifiedTextAIPipeline({ prompt, responseFormat: 'json' });
+    if (!aiResult.success) {
+      throw new Error(aiResult.error || 'AI enrichment failed');
+    }
+
+    const json = aiResult.data;
+
+    // Use current values as fallback if AI didn't find new ones
+    const newEmail = contact.email || json.found_email || '';
+    const newPhone = contact.phone || json.found_phone || '';
 
     await dbRunAsync(
-      'UPDATE contacts SET linkedin_bio = ?, ai_enrichment_news = ?, inferred_industry = ?, inferred_seniority = ? WHERE id = ?',
-      [enriched.bio || '', enriched.latest_news || '', enriched.industry || '', enriched.seniority || '', contactId]
+      `UPDATE contacts 
+       SET linkedin_bio = ?, ai_enrichment_news = ?, inferred_industry = ?, inferred_seniority = ?, 
+           email = ?, phone = ? 
+       WHERE id = ?`,
+      [
+        json.bio || '', 
+        json.latest_news || '', 
+        json.industry || '', 
+        json.seniority || '', 
+        newEmail, 
+        newPhone, 
+        contactId
+      ]
     );
 
-    res.json({ success: true, data: enriched });
+    res.json({ success: true, data: { ...json, email: newEmail, phone: newPhone } });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to enrich contact' });
+    console.error('[Enrichment Error]', err.message);
+    res.status(500).json({ error: 'Failed to enrich contact', details: err.message });
   }
 };
 

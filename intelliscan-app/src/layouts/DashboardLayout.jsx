@@ -17,14 +17,19 @@ export default function DashboardLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
-  const { signOut } = useRole();
+  const { role, tier: contextTier, refreshAuth, signOut } = useRole();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [quotaOpen, setQuotaOpen] = useState(false);
   const [quota, setQuota] = useState({ used: 0, limit: 100, tier: 'personal' });
 
-  const user = safeReadStoredUser() || { name: 'Guest', email: 'guest@intelliscan.pro', role: 'anonymous' };
+  const user = safeReadStoredUser() || { 
+    name: 'Guest', 
+    email: 'guest@intelliscan.pro', 
+    role: role || 'anonymous',
+    tier: contextTier || 'personal'
+  };
 
   const workspaceTag =
     user?.role === 'super_admin'
@@ -60,7 +65,7 @@ export default function DashboardLayout({ children }) {
   const isProOrHigher = isEnterpriseOrHigher || (quota?.tier || '').toLowerCase() === 'pro';
 
   // Plan gating (matches project docs: Free should not show Pro/Enterprise-only modules)
-  const enterpriseOnlyLabels = ['Leaderboard', 'Analytics', 'Org Chart'];
+  const enterpriseOnlyLabels = ['Leaderboard', 'Analytics', 'Org Chart', 'Pipeline', 'Members'];
   const proOrHigherLabels = ['Calendar', 'AI Coach', 'Email Marketing', 'AI Sequences', 'Meeting Presence', 'Event Kiosk', 'Digital Card', 'Card Creator', 'Apps'];
   
   const filteredNavItems = dynamicNavItems.filter(item => {
@@ -85,6 +90,12 @@ export default function DashboardLayout({ children }) {
         if (res.ok) {
           const data = await res.json();
           setQuota(data);
+          
+          // Trigger role refresh if backend has a higher tier
+          if (data.tierMatch === false) {
+             console.log('[Dashboard] Tier mismatch detected. Synchronizing profile...');
+             refreshAuth();
+          }
         }
       } catch (err) {
         console.error('Failed to fetch quota:', err);

@@ -12,12 +12,25 @@ const { getIo } = require('../services/notificationService');
 
 exports.getCalendars = async (req, res) => {
   try {
-    const own = await dbAllAsync('SELECT * FROM calendars WHERE user_id = ?', [req.user.id]);
+    const userId = req.user.id;
+    let own = await dbAllAsync('SELECT * FROM calendars WHERE user_id = ? ORDER BY id ASC', [userId]);
+    
+    // Deduplication logic: if multiple primary calendars exist, clean them up
+    const primaryCals = own.filter(c => c.is_primary);
+    if (primaryCals.length > 1) {
+      const keepId = primaryCals[0].id;
+      const deleteIds = primaryCals.slice(1).map(c => c.id);
+      const placeholders = deleteIds.map(() => '?').join(',');
+      await dbRunAsync(`DELETE FROM calendars WHERE id IN (${placeholders})`, deleteIds);
+      // Re-fetch clean list
+      own = await dbAllAsync('SELECT * FROM calendars WHERE user_id = ? ORDER BY id ASC', [userId]);
+    }
+
     const shared = await dbAllAsync(`
       SELECT c.* FROM calendars c
       JOIN calendar_shares s ON c.id = s.calendar_id
       WHERE s.shared_with_user_id = ? AND s.accepted = 1
-    `, [req.user.id]);
+    `, [userId]);
     res.json({ success: true, calendars: [...own, ...shared] });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

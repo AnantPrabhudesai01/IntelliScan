@@ -283,63 +283,110 @@ export default function CardCreatorPage() {
           </div>
 
           {/* Card Canvas */}
-          <div ref={cardRef} className="relative overflow-hidden rounded-[14px] mx-auto" style={{ aspectRatio: '1.75 / 1', maxWidth: 520, ...cardBg, boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
-            {/* Accent bar */}
-            {preset.accentPos === 'left' && (
-              <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: accentColor }} />
-            )}
-            {preset.accentPos === 'bottom' && (
-              <div className="absolute left-0 right-0 bottom-0 h-[3px]" style={{ backgroundColor: accentColor }} />
-            )}
-
-            {/* Grid pattern overlay */}
-            {preset.showGrid && (
-              <svg className="absolute inset-0 w-full h-full opacity-5" xmlns="http://www.w3.org/2000/svg">
-                <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke={accentColor} strokeWidth="0.5"/></pattern></defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
-              </svg>
-            )}
-
-            {/* Blurred circles */}
-            {preset.showCircles && (
+          <div 
+            ref={cardRef} 
+            className={`relative overflow-hidden rounded-[20px] mx-auto transition-all duration-500 ${variant === 'compact' ? 'w-[280px] h-[480px]' : 'w-full max-w-[480px] aspect-[1.75/1]'}`} 
+            style={{ 
+              ...cardBg, 
+              backgroundColor: variant === 'dark' ? '#08080c' : (variant === 'compact' ? '#111111' : cardBg.backgroundColor),
+              boxShadow: '0 25px 70px rgba(0,0,0,0.6)',
+              border: variant === 'dark' ? `1px solid ${accentColor}40` : 'none'
+            }}
+          >
+            {/* Accent Styling */}
+            {variant !== 'compact' && (
               <>
-                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-[0.06]" style={{ backgroundColor: accentColor, filter: 'blur(40px)' }} />
-                <div className="absolute -bottom-8 -left-8 w-28 h-28 rounded-full opacity-[0.06]" style={{ backgroundColor: accentColor, filter: 'blur(40px)' }} />
+                {preset.accentPos === 'left' && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{ backgroundColor: accentColor }} />
+                )}
+                {preset.accentPos === 'bottom' && (
+                  <div className="absolute left-0 right-0 bottom-0 h-1" style={{ backgroundColor: accentColor }} />
+                )}
               </>
             )}
 
-            {/* Card Content */}
-            <div className="absolute inset-0 p-6 flex flex-col justify-between z-10">
-              {/* Top Section */}
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className={`text-xl font-black ${preset.fontClass}`} style={{ color: preset.text }}>{fullName}</h2>
-                  <p className="text-sm font-semibold mt-0.5" style={{ color: accentColor }}>{form.title || 'Your Title'}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] mt-1" style={{ color: preset.text2 }}>{form.company || 'COMPANY'}</p>
-                </div>
-                <span className="text-5xl font-black opacity-[0.08] select-none" style={{ color: preset.text }}>{initials}</span>
-              </div>
+            {/* Pattern overlays */}
+            {(preset.showGrid || variant === 'dark') && (
+              <svg className="absolute inset-0 w-full h-full opacity-[0.07]" xmlns="http://www.w3.org/2000/svg">
+                <defs><pattern id="gridLarge" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M 30 0 L 0 0 0 30" fill="none" stroke={accentColor} strokeWidth="1"/></pattern></defs>
+                <rect width="100%" height="100%" fill="url(#gridLarge)" />
+              </svg>
+            )}
 
-              {/* Bottom Section */}
-              <div className="flex justify-between items-end">
-                <div className="space-y-1 font-mono text-[11px]" style={{ color: preset.text2 }}>
-                  {form.email && <p><span style={{ color: accentColor }}>@</span> {form.email}</p>}
-                  {form.phone && <p><span style={{ color: accentColor }}>✆</span> {form.phone}</p>}
-                  {form.website && <p><span style={{ color: accentColor }}>⌘</span> {form.website}</p>}
+            {/* Glowing accents for Dark/Compact */}
+            {(variant === 'dark' || variant === 'compact') && (
+              <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-[80px]" style={{ backgroundColor: `${accentColor}15` }} />
+            )}
+
+            {/* Content Rendering: FRONT / DARK */}
+            {variant !== 'compact' && (
+              <div className="absolute inset-0 p-8 flex flex-col justify-between z-10">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2 className={`text-2xl font-black tracking-tighter ${preset.fontClass}`} style={{ color: variant === 'dark' ? '#ffffff' : preset.text }}>{fullName}</h2>
+                    <p className="text-sm font-bold mt-1" style={{ color: accentColor }}>{form.title || 'Your Title'}</p>
+                    <p className="text-[11px] font-black uppercase tracking-[0.25em] mt-2 opacity-60" style={{ color: variant === 'dark' ? '#a0a0c0' : preset.text2 }}>{form.company || 'COMPANY NAME'}</p>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-6xl font-black opacity-[0.1] leading-none select-none" style={{ color: variant === 'dark' ? '#ffffff' : preset.text }}>{initials}</span>
+                    {aiDesign?.tagline && (
+                      <span className="mt-2 text-[9px] font-black uppercase px-2 py-0.5 rounded border" style={{ borderColor: `${accentColor}40`, color: accentColor }}>{aiDesign.tagline}</span>
+                    )}
+                  </div>
                 </div>
-                {/* QR-like decorative block */}
-                <div className="grid grid-cols-4 gap-[2px] opacity-20">
-                  {Array.from({ length: 16 }).map((_, i) => (
-                    <div key={i} className="w-2 h-2 rounded-[1px]" style={{ backgroundColor: (i % 3 === 0 || i % 5 === 0) ? accentColor : 'transparent' }} />
-                  ))}
+
+                <div className="flex justify-between items-end">
+                  <div className="space-y-1.5 font-mono text-[10px] tracking-tight" style={{ color: variant === 'dark' ? '#8080a0' : preset.text2 }}>
+                    {form.email && <p className="flex items-center gap-2"><span className="w-4 h-4 rounded-full bg-white/5 flex items-center justify-center" style={{ color: accentColor }}>@</span> {form.email}</p>}
+                    {form.phone && <p className="flex items-center gap-2"><span className="w-4 h-4 rounded-full bg-white/5 flex items-center justify-center" style={{ color: accentColor }}>✆</span> {form.phone}</p>}
+                    {form.website && <p className="flex items-center gap-2"><span className="w-4 h-4 rounded-full bg-white/5 flex items-center justify-center" style={{ color: accentColor }}>⌘</span> {form.website}</p>}
+                  </div>
+                  <div className="w-16 h-16 bg-white/5 backdrop-blur-md rounded-xl border border-white/10 flex items-center justify-center">
+                    <div className="grid grid-cols-3 gap-1 opactiy-40">
+                       {Array.from({ length: 9 }).map((_, i) => (
+                         <div key={i} className="w-2 h-2 rounded-[1px]" style={{ backgroundColor: i % 2 === 0 ? accentColor : 'transparent', opacity: 0.3 }} />
+                       ))}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* AI tagline badge */}
-            {aiDesign?.tagline && (
-              <div className="absolute top-3 right-3 z-20 text-[9px] font-bold uppercase px-2 py-0.5 rounded-full" style={{ backgroundColor: `${accentColor}20`, color: accentColor, border: `1px solid ${accentColor}30` }}>
-                {aiDesign.tagline}
+            {/* Content Rendering: COMPACT (Vertical) */}
+            {variant === 'compact' && (
+              <div className="absolute inset-0 p-8 flex flex-col items-center text-center z-10 h-full">
+                <div className="w-20 h-20 rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-3xl font-black text-white shadow-2xl mb-6">
+                  {initials}
+                </div>
+                
+                <h2 className="text-xl font-black text-white tracking-tighter mb-1">{fullName}</h2>
+                <p className="text-xs font-bold uppercase tracking-widest mb-6" style={{ color: accentColor }}>{form.title || 'Brand Strategy'}</p>
+                
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6" />
+                
+                <div className="space-y-4 w-full text-left">
+                  <div className="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400"><Zap size={14} /></div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-black text-gray-500 uppercase">Contact</p>
+                      <p className="text-xs font-bold text-gray-300 truncate">{form.email || 'hello@brand.com'}</p>
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400"><CreditCard size={14} /></div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-black text-gray-500 uppercase">Organization</p>
+                      <p className="text-xs font-bold text-gray-300 truncate">{form.company || 'IntelliScan Founder'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-auto pt-6 w-full flex flex-col items-center">
+                   <div className="bg-white p-2 rounded-xl mb-3">
+                      <div className="w-24 h-24 bg-gray-100 flex items-center justify-center text-gray-400 text-[10px] font-bold">QR DECOR</div>
+                   </div>
+                   <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">Scan to connect</p>
+                </div>
               </div>
             )}
           </div>

@@ -5,18 +5,18 @@ const { authenticateToken, requireEnterpriseOrAdmin } = require('../middleware/a
 
 // --- CALENDAR MANAGEMENT ---
 router.get('/calendars', authenticateToken, calendarController.getCalendars);
-router.post('/calendars', authenticateToken, requireEnterpriseOrAdmin, calendarController.createCalendar);
-router.put('/calendars/:id', authenticateToken, requireEnterpriseOrAdmin, calendarController.updateCalendar);
-router.delete('/calendars/:id', authenticateToken, requireEnterpriseOrAdmin, calendarController.deleteCalendar);
+router.post('/calendars', authenticateToken, calendarController.createCalendar);
+router.put('/calendars/:id', authenticateToken, calendarController.updateCalendar);
+router.delete('/calendars/:id', authenticateToken, calendarController.deleteCalendar);
 router.post('/calendars/:id/share', authenticateToken, requireEnterpriseOrAdmin, calendarController.shareCalendar);
 router.get('/accept-share/:token', calendarController.acceptCalendarShare);
 
 // --- EVENTS CRUD ---
-router.get('/events', authenticateToken, requireEnterpriseOrAdmin, calendarController.getEvents);
-router.get('/events/:id', authenticateToken, requireEnterpriseOrAdmin, calendarController.getEventById);
-router.post('/events', authenticateToken, requireEnterpriseOrAdmin, calendarController.createEvent);
-router.patch('/events/:id/reschedule', authenticateToken, requireEnterpriseOrAdmin, calendarController.rescheduleEvent);
-router.delete('/events/:id', authenticateToken, requireEnterpriseOrAdmin, calendarController.deleteEvent);
+router.get('/events', authenticateToken, calendarController.getEvents);
+router.get('/events/:id', authenticateToken, calendarController.getEventById);
+router.post('/events', authenticateToken, calendarController.createEvent);
+router.patch('/events/:id/reschedule', authenticateToken, calendarController.rescheduleEvent);
+router.delete('/events/:id', authenticateToken, calendarController.deleteEvent);
 router.get('/respond/:token', calendarController.updateRsvp);
 
 // --- AI CALENDAR TOOLS ---
@@ -25,9 +25,9 @@ router.post('/ai/generate-description', authenticateToken, requireEnterpriseOrAd
 
 // --- AVAILABILITY & BOOKING ---
 router.get('/availability/:userId', calendarController.getAvailability);
-router.put('/availability', authenticateToken, requireEnterpriseOrAdmin, calendarController.updateAvailability);
-router.post('/booking-links', authenticateToken, requireEnterpriseOrAdmin, calendarController.createBookingLink);
-router.get('/booking-links', authenticateToken, requireEnterpriseOrAdmin, calendarController.getBookingLinks);
+router.put('/availability', authenticateToken, calendarController.updateAvailability);
+router.post('/booking-links', authenticateToken, calendarController.createBookingLink);
+router.get('/booking-links', authenticateToken, calendarController.getBookingLinks);
 router.get('/booking/:slug', calendarController.getBookingDetails);
 
 module.exports = router;

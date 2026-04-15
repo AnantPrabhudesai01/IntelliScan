@@ -42,7 +42,8 @@ router.get('/quota', authenticateToken, async (req, res) => {
       used: Number(quota?.used_count || 0),
       limit: Number(quota?.limit_amount || limits.single),
       group_scans_used: Number(quota?.group_scans_used || 0),
-      group_scans_limit: Number(limits.group)
+      group_scans_limit: Number(limits.group),
+      tierMatch: (req.user.tier || '').toLowerCase() === displayTier.toLowerCase()
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -79,19 +80,31 @@ router.post('/simulate-upgrade', authenticateToken, async (req, res) => {
   const targetTier = plan === 'pro' ? 'pro' : 'enterprise';
 
   try {
+    // 1. Update user tier
     await dbRunAsync('UPDATE users SET tier = ? WHERE id = ?', [targetTier, req.user.id]);
-    const targetLimit = targetTier === 'enterprise' ? 99999 : (targetTier === 'pro' ? 100 : 10);
-    await dbRunAsync('INSERT INTO user_quotas (user_id, used_count, limit_amount, group_scans_used) VALUES (?, 0, ?, 0) ON CONFLICT (user_id) DO NOTHING', [req.user.id, targetLimit]);
-    await dbRunAsync('UPDATE user_quotas SET limit_amount = ? WHERE user_id = ?', [targetLimit, req.user.id]);
+    
+    // 2. Resolve limits
+    const limits = resolveTierLimits(targetTier);
+    
+    // 3. Update quota row (Preserve used_count)
+    const existing = await dbGetAsync('SELECT id FROM user_quotas WHERE user_id = ?', [req.user.id]);
+    if (existing) {
+      await dbRunAsync('UPDATE user_quotas SET limit_amount = ?, group_limit_amount = ? WHERE user_id = ?', [limits.single, limits.group, req.user.id]);
+    } else {
+      await dbRunAsync(
+        'INSERT INTO user_quotas (user_id, used_count, limit_amount, group_scans_used, group_limit_amount, last_reset_date) VALUES (?, 0, ?, 0, ?, CURRENT_TIMESTAMP)',
+        [req.user.id, limits.single, limits.group]
+      );
+    }
 
     console.log(`🚀 User ${req.user.id} upgraded to ${targetTier.toUpperCase()} via simulation.`);
     logAuditEvent(req, {
       action: 'ACCOUNT_TIER_UPDATE',
       resource: '/api/user/simulate-upgrade',
       status: AUDIT_SUCCESS,
-      details: { target_tier: targetTier, limit_amount: targetLimit }
+      details: { target_tier: targetTier, targetLimit: limits.single }
     });
-    res.json({ success: true, message: `Account upgraded to ${targetTier.toUpperCase()}!` });
+    res.json({ success: true, message: `Account upgraded to ${targetTier.toUpperCase()}! Please navigate to refresh your session.` });
   } catch (err) {
     logAuditEvent(req, {
       action: 'ACCOUNT_TIER_UPDATE',

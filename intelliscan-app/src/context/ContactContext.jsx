@@ -133,7 +133,9 @@ export function ContactProvider({ children }) {
         linkedin_bio: updated.bio, 
         ai_enrichment_news: updated.latest_news, 
         inferred_industry: updated.industry, 
-        inferred_seniority: updated.seniority 
+        inferred_seniority: updated.seniority,
+        email: updated.email || c.email,
+        phone: updated.phone || c.phone
       } : c));
       return res.data;
     } catch (err) {
@@ -164,7 +166,8 @@ export function ContactProvider({ children }) {
     <ContactContext.Provider value={{ 
       contacts, addContact, deleteContact, deleteContacts, 
       getDeletedContacts, restoreContacts, emptyTrash,
-      updateContact, enrichContact, semanticSearch 
+      updateContact, enrichContact, semanticSearch,
+      permanentlyDeleteContacts 
     }}>
       {children}
     </ContactContext.Provider>

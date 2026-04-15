@@ -86,7 +86,7 @@ export default function ContactsPage() {
   const fetchSequences = async () => {
     try {
       const token = getStoredToken();
-      const res = await fetch('/api/email-sequences', {
+      const res = await fetch('/api/email-sequences/sequences', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -456,6 +456,34 @@ export default function ContactsPage() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8 animate-fade-in relative">
+      {/* Dashboard Stats */}
+      {filteredContacts.length > 0 && (
+        <section className="p-1 bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 shadow-sm rounded-2xl flex flex-wrap divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-800/80">
+          <div className="flex-1 min-w-[150px] p-6 text-center">
+            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">
+              {activeTab === 'active' ? 'Active Leads' : 'In Recycle Bin'}
+            </p>
+            <p className="text-3xl font-headline font-extrabold text-gray-900 dark:text-white">{filteredContacts.length}</p>
+          </div>
+          <div className="flex-1 min-w-[150px] p-6 text-center">
+            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">Avg Confidence</p>
+            <p className="text-3xl font-headline font-extrabold text-gray-900 dark:text-white">
+              {filteredContacts.length > 0 
+                ? Math.round(filteredContacts.reduce((acc, curr) => acc + (curr.confidence || 0), 0) / filteredContacts.length)
+                : 0}%
+            </p>
+          </div>
+          <div className="flex-1 min-w-[150px] p-6 text-center">
+            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">Sync Status</p>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <span className={`w-2.5 h-2.5 rounded-full animate-pulse shadow-sm ${activeTab === 'active' ? 'bg-emerald-500' : 'bg-red-400'}`}></span>
+              <span className="text-xs font-bold uppercase tracking-widest text-gray-900 dark:text-white">
+                {activeTab === 'active' ? 'Live' : 'Archived'}
+              </span>
+            </div>
+          </div>
+        </section>
+      )}
       {/* Mass Action Bar */}
       {selectedIds.length > 0 && (
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[4000] min-w-[320px] animate-in slide-in-from-bottom-10 fade-in duration-300">
@@ -954,34 +982,7 @@ export default function ContactsPage() {
          </div>
        )}
 
-      {/* Dashboard Stats */}
-      {filteredContacts.length > 0 && (
-        <section className="mt-4 p-1 bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 shadow-sm rounded-2xl flex flex-wrap divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-800/80">
-          <div className="flex-1 min-w-[150px] p-6 text-center">
-            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">
-              {activeTab === 'active' ? 'Active Leads' : 'In Recycle Bin'}
-            </p>
-            <p className="text-3xl font-headline font-extrabold text-gray-900 dark:text-white">{filteredContacts.length}</p>
-          </div>
-          <div className="flex-1 min-w-[150px] p-6 text-center">
-            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">Avg Confidence</p>
-            <p className="text-3xl font-headline font-extrabold text-gray-900 dark:text-white">
-              {filteredContacts.length > 0 
-                ? Math.round(filteredContacts.reduce((acc, curr) => acc + (curr.confidence || 0), 0) / filteredContacts.length)
-                : 0}%
-            </p>
-          </div>
-          <div className="flex-1 min-w-[150px] p-6 text-center">
-            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">Sync Status</p>
-            <div className="flex items-center justify-center gap-2 mt-2">
-              <span className={`w-2.5 h-2.5 rounded-full animate-pulse shadow-sm ${activeTab === 'active' ? 'bg-emerald-500' : 'bg-red-400'}`}></span>
-              <span className="text-xs font-bold uppercase tracking-widest text-gray-900 dark:text-white">
-                {activeTab === 'active' ? 'Live' : 'Archived'}
-              </span>
-            </div>
-          </div>
-        </section>
-      )}
+
 
       {/* ══════════════════════════════════════════════════════════════
            CONTACT DETAIL MODAL (click a contact)
