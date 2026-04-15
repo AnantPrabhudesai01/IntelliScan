@@ -32,6 +32,7 @@ export default function ScanPage() {
   const [healthData, setHealthData] = useState(null);
   const [isCheckingHealth, setIsCheckingHealth] = useState(false);
   const [showHealthModal, setShowHealthModal] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -100,7 +101,16 @@ export default function ScanPage() {
 
     const onQuotaUpdate = () => fetchQuota();
     window.addEventListener('quota-update', onQuotaUpdate);
-    return () => window.removeEventListener('quota-update', onQuotaUpdate);
+
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') setShowLightbox(false);
+    };
+    window.addEventListener('keydown', handleEsc);
+
+    return () => {
+      window.removeEventListener('quota-update', onQuotaUpdate);
+      window.removeEventListener('keydown', handleEsc);
+    };
   }, []);
 
 
@@ -911,13 +921,23 @@ export default function ScanPage() {
 
           {/* Scanned Image Preview */}
           {(selectedImage || scannedData) && (
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-2 relative group overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in aspect-video">
+            <div 
+              onClick={() => setShowLightbox(true)}
+              className="bg-white dark:bg-gray-900 rounded-2xl p-2 relative group overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in aspect-video cursor-zoom-in"
+            >
               <div className="relative w-full h-full overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-950">
                 <img 
-                  className={`w-full h-full object-contain transition-all duration-700 ${scannedData || multiResults ? 'grayscale-0 opacity-100' : 'grayscale-[0.5] opacity-60'}`} 
+                  className={`w-full h-full object-contain transition-all duration-700 group-hover:scale-[1.02] ${scannedData || multiResults ? 'grayscale-0 opacity-100' : 'grayscale-[0.5] opacity-60'}`} 
                   src={selectedImage} 
                   alt="Scan preview" 
                 />
+                
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-indigo-600/0 group-hover:bg-indigo-600/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <div className="bg-white/90 dark:bg-gray-900/90 p-3 rounded-2xl shadow-2xl backdrop-blur-md transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                    <ZoomIn className="text-indigo-600 dark:text-indigo-400" size={24} />
+                  </div>
+                </div>
                 
                 {/* Visual Mapper Overlays */}
                 {multiResults && multiResults.cards && (
@@ -1048,6 +1068,36 @@ export default function ScanPage() {
             >
               CLOSE DIAGNOSTICS
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Image Lightbox Modal */}
+      {showLightbox && selectedImage && (
+        <div 
+          className="fixed inset-0 z-[10001] flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300"
+          onClick={() => setShowLightbox(false)}
+        >
+          <div className="absolute inset-0 bg-gray-950/90 backdrop-blur-md"></div>
+          
+          <div className="relative max-w-5xl w-full h-full flex flex-col items-center justify-center gap-6">
+            <button 
+              onClick={() => setShowLightbox(false)}
+              className="absolute -top-12 right-0 text-white/70 hover:text-white flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-colors"
+            >
+              <X size={20} /> Close Preview
+            </button>
+            
+            <div 
+              className="relative w-full h-full flex items-center justify-center bg-transparent rounded-3xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img 
+                src={selectedImage} 
+                alt="Large scan preview" 
+                className="max-w-full max-h-full object-contain rounded-lg animate-in zoom-in-95 duration-500"
+              />
+            </div>
           </div>
         </div>
       )}
