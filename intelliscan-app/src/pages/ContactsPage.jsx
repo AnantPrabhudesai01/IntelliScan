@@ -1034,8 +1034,9 @@ export default function ContactsPage() {
               <p className="text-xs text-gray-500 dark:text-gray-400 max-w-[250px] mx-auto">Your Recycle Bin is empty. Deleted contacts will appear here for recovery.</p>
             </div>
           )}
-
-        </div>
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
 
       {/* ── LIST VIEW ── */}
