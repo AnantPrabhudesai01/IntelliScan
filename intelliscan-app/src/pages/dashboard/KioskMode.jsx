@@ -38,19 +38,32 @@ export default function KioskMode() {
   const startCamera = async () => {
     try {
       setErrorMsg('');
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } } 
-      });
+      // Use hybrid constraints: prefer environment, but take anything available
+      const constraints = { 
+        video: { 
+          facingMode: { ideal: 'environment' }, 
+          width: { ideal: 1920 }, 
+          height: { ideal: 1080 } 
+        } 
+      };
+      
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setIsCameraActive(true);
-      }
+      setIsCameraActive(true);
+      
+      // Attachment happens in useEffect now to avoid null ref issues
     } catch (err) {
       console.error('Camera Error:', err);
       setErrorMsg('Could not access camera. Please check permissions or upload a file instead.');
     }
   };
+
+  // Helper to attach stream once video element is in DOM
+  useEffect(() => {
+    if (isCameraActive && streamRef.current && videoRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [isCameraActive]);
 
   const stopCamera = () => {
     if (streamRef.current) {
