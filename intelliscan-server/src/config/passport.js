@@ -17,7 +17,7 @@ function configurePassport() {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: (process.env.SERVER_URL || 'https://intelliscan.vercel.app') + '/api/auth/google/callback'
+    callbackURL: (process.env.APP_BASE_URL || 'https://intelli-scan-psi.vercel.app') + '/api/auth/google/callback'
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
