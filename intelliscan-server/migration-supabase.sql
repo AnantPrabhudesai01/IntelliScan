@@ -56,7 +56,9 @@ CREATE TABLE IF NOT EXISTS contacts (
     linkedin_photo TEXT,
     linkedin_bio TEXT,
     ai_enrichment_news TEXT,
-    search_vector TEXT
+    search_vector TEXT,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    deleted_at TIMESTAMPTZ
 );
 
 -- 4. Deals table

@@ -48,7 +48,8 @@ router.delete('/bulk', contactsController.bulkDeleteContacts);
  * DELETE /api/contacts/:id
  * @desc    Delete a contact (Soft Delete)
  */
-router.delete('/:id', contactsController.deleteContact);
+router.delete('/:id', authenticateToken, contactsController.deleteContact);
+router.post('/:id/send-followup', authenticateToken, contactsController.sendFollowup);
 
 /**
  * @route   PUT /api/contacts/:id/deal
@@ -95,4 +96,9 @@ router.get('/org-chart/:company', contactsController.getOrgChart);
 // Natural Language Search
 router.get('/semantic-search', authenticateToken, contactsController.semanticSearch);
 
+// Magic Export
+router.get('/export/magic', contactsController.exportContactsToExcel);
+
 module.exports = router;
+
+

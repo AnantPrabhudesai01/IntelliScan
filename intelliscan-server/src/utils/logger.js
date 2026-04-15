@@ -7,11 +7,15 @@ const { db } = require('./db');
  */
 function logAuditEvent(req, event) {
   const { action, resource, status, details, actorEmail, actorUserId, actorRole } = event;
-  const actor_user_id = actorUserId || req.user?.id || null;
-  const actor_email = actorEmail || req.user?.email || 'anonymous';
-  const actor_role = actorRole || req.user?.role || 'user';
-  const ip_address = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
-  const user_agent = req.headers['user-agent'] || 'unknown';
+  
+  // Safely extract actor info
+  const actor_user_id = actorUserId || req?.user?.id || null;
+  const actor_email = actorEmail || req?.user?.email || 'anonymous';
+  const actor_role = actorRole || req?.user?.role || 'user';
+  
+  // Guard against missing headers/socket to prevent 500 crash cascades
+  const ip_address = req?.headers?.['x-forwarded-for'] || req?.socket?.remoteAddress || 'unknown';
+  const user_agent = req?.headers?.['user-agent'] || 'unknown';
 
   db.run(
     'INSERT INTO audit_trail (actor_user_id, actor_email, actor_role, action, resource, status, ip_address, user_agent, details_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',

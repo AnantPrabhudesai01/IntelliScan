@@ -34,6 +34,7 @@
     "socket.io": "^4.8.3",
     "tesseract.js": "^7.0.0",
     "twilio": "^5.13.1",
+    "xlsx": "^0.18.5",
     "zod": "^4.3.6"
   },
   "devDependencies": {

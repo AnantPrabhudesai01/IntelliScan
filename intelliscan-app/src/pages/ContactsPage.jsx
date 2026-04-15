@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useContacts } from '../context/ContactContext';
-import { Search, Filter, Cpu, Download, Mail, Phone, ChevronRight, AlertTriangle, UserPlus, Globe, LayoutGrid, List, Clock, Trash2, ChevronDown, RefreshCw, CheckCircle2, Calendar, Sparkles, Send, X, Wand2, Zap, ArrowRight, RotateCcw } from 'lucide-react';
+import { Search, Filter, Cpu, Download, Mail, Phone, ChevronRight, AlertTriangle, UserPlus, Globe, LayoutGrid, List, Clock, Trash2, ChevronDown, RefreshCw, CheckCircle2, Calendar, Sparkles, Send, X, Wand2, Zap, ArrowRight, RotateCcw, Share2, Languages } from 'lucide-react';
 import apiClient from '../api/client';
 import * as XLSX from 'xlsx';
 import { useNavigate } from 'react-router-dom';
 import { getStoredToken } from '../utils/auth.js';
+import VCardQRModal from '../components/VCardQRModal';
 
 const formatDate = (dateStr) => {
   if (!dateStr) return 'Unknown';
@@ -56,6 +57,8 @@ export default function ContactsPage() {
   // Contact Detail Modal (click a contact to view full details)
   const [detailContact, setDetailContact] = useState(null);
   const [detailEnriching, setDetailEnriching] = useState(false);
+  const [qrContact, setQrContact] = useState(null);
+  const [isEnglishMode, setIsEnglishMode] = useState(false);
 
   const openContactDetail = (contact) => {
     if (!contact) return;
@@ -137,11 +140,13 @@ export default function ContactsPage() {
     try {
       await emptyTrash();
       setTrashContacts([]);
-      showComposerToast('Recycle Bin Emptied.');
+      setSelectedIds([]);
+      showComposerToast('✨ Recycle Bin Emptied Successfully!');
     } catch (err) {
       showComposerToast('Failed to empty trash', 'error');
     }
   };
+
 
   const dataToFilter = activeTab === 'active' ? contacts : trashContacts;
 
@@ -155,7 +160,7 @@ export default function ContactsPage() {
     return matchesEvent && matchesSearch && matchesConf && matchesEng;
   });
 
-  const handleExportCSV = () => {
+  const handleExportCSV = async () => {
     if (contacts.length === 0) return;
     
     // Check tier limits for export
@@ -163,25 +168,41 @@ export default function ContactsPage() {
     const user = userStr ? JSON.parse(userStr) : null;
     const tier = user?.tier || 'personal';
     
-    let contactsToExport = filteredContacts;
-    if (tier === 'personal' && contactsToExport.length > 10) {
+    if (tier === 'personal' && filteredContacts.length > 10) {
       alert("Free strictly limits exporting to 10 contacts. Please upgrade to the Enterprise Plan for unlimited exports.");
-      contactsToExport = contactsToExport.slice(0, 10);
     }
 
-    const exportData = contactsToExport.map(c => ({
-      FullName: c.name,
-      Company: c.company,
-      JobTitle: c.job_title || c.title,
-      Email: c.email,
-      Phone: c.phone,
-      Confidence: `${c.confidence}%`,
-      DateScanned: formatDate(c.scan_date)
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Contacts");
-    XLSX.writeFile(workbook, "IntelliScan_Contacts.xlsx");
+    try {
+      showComposerToast('Preparing your Magic Export...', 'loading');
+      const token = getStoredToken();
+      const res = await fetch('/api/contacts/export/magic', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (!res.ok) throw new Error('Export failed');
+      
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `IntelliScan_Magic_Export_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      
+      showComposerToast('🚀 Magic Excel Export Downloaded!');
+    } catch (err) {
+      showComposerToast('Export failed: ' + err.message, 'error');
+    }
+  };
+
+
+  const handleWhatsAppAction = (contact) => {
+    if (!contact.phone) return alert("No phone number found for this contact.");
+    const cleanPhone = contact.phone.replace(/[^0-9+]/g, '');
+    const message = encodeURIComponent(`Hi ${contact.name}, it was great meeting you at ${contact.location_context || 'the event'}! Let's stay in touch.`);
+    window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
   };
 
   const handleExportVCard = () => {
@@ -390,24 +411,51 @@ export default function ContactsPage() {
       showComposerToast(`Save failed: ${err.message}`, 'error');
     }
   };
+
+  const [isSendingFollowup, setIsSendingFollowup] = useState(null); // contactId
+  const handleManualFollowup = async (contact) => {
+    if (!contact.email) return showComposerToast('No email found for this contact.', 'error');
+    setIsSendingFollowup(contact.id);
+    try {
+      const token = getStoredToken();
+      const res = await fetch(`/api/contacts/${contact.id}/send-followup`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        showComposerToast('✦ ' + (isEnglishMode ? 'Follow-up sent!' : 'स्वागत संदेश भेजा गया!'));
+      } else {
+        throw new Error('Failed to send');
+      }
+    } catch (err) {
+      showComposerToast('Failed: ' + err.message, 'error');
+    } finally {
+      setIsSendingFollowup(null);
+    }
+  };
+
   const handleBulkDelete = async () => {
     if (selectedIds.length === 0) return;
     setIsBulkDeleting(true);
     try {
       if (activeTab === 'active') {
         await deleteContacts(selectedIds);
+        showComposerToast(`✅ ${selectedIds.length} leads moved to Recycle Bin.`);
       } else {
         await permanentlyDeleteContacts(selectedIds);
         setTrashContacts(prev => prev.filter(c => !selectedIds.includes(c.id)));
+        showComposerToast(`💥 ${selectedIds.length} contacts erased forever!`);
       }
       setSelectedIds([]);
       setShowBulkConfirm(false);
     } catch (err) {
       console.error(err);
+      showComposerToast('Operation failed', 'error');
     } finally {
       setIsBulkDeleting(false);
     }
   };
+
 
   const toggleSelect = (id) => {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -591,6 +639,19 @@ export default function ContactsPage() {
           >
             <Sparkles size={14} /> Smart Search
           </button>
+
+          <button 
+            onClick={() => setIsEnglishMode(!isEnglishMode)}
+            className={`flex items-center gap-1.5 px-4 py-3 rounded-xl font-bold text-xs transition-all border ${
+              isEnglishMode 
+                ? 'bg-amber-600 text-white border-amber-500 shadow-md shadow-amber-500/40' 
+                : 'bg-white dark:bg-[#161c28] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-800 hover:border-amber-300'
+            }`}
+            title="Translate native scripts to English"
+          >
+            <Languages size={14} />
+            {isEnglishMode ? 'English Mode' : 'Original Text'}
+          </button>
         </div>
 
         {/* Tab Switcher */}
@@ -726,11 +787,29 @@ export default function ContactsPage() {
                 </div>
               </div>
 
-              <div className="space-y-0.5 mb-4">
-                <h3 className="font-headline text-base font-bold text-gray-900 dark:text-white truncate">{contact.name || 'Unknown Reference'}</h3>
+              <div className="space-y-0.5 mb-2">
+                <h3 className="font-headline text-base font-bold text-gray-900 dark:text-white truncate">
+                  {isEnglishMode ? (contact.name || 'Unknown') : (contact.name_native || contact.name || 'Unknown')}
+                </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{contact.job_title || contact.title || 'No Title'}</p>
                 <p className="text-xs text-indigo-600 dark:text-indigo-400 font-bold truncate">{contact.company || 'Unknown Company'}</p>
               </div>
+
+              {/* AI Insights Badges */}
+              {(contact.inferred_industry || contact.inferred_seniority) && (
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {contact.inferred_industry && (
+                    <span className="px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[9px] font-black uppercase tracking-widest border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
+                      {contact.inferred_industry}
+                    </span>
+                  )}
+                  {contact.inferred_seniority && (
+                    <span className="px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-[9px] font-black uppercase tracking-widest border border-amber-100 dark:border-amber-900/40 shadow-sm">
+                      {contact.inferred_seniority}
+                    </span>
+                  )}
+                </div>
+              )}
 
               {/* Timestamp */}
               <div className="flex items-center gap-1.5 text-[10px] text-gray-400 dark:text-gray-500 mb-4">
@@ -739,62 +818,86 @@ export default function ContactsPage() {
               </div>
 
               {activeTab === 'active' ? (
-              <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-800/60">
-                <div className="flex -space-x-1.5">
-                  {contact.email && <a href={`mailto:${contact.email}`} onClick={e => e.stopPropagation()} title="Send Email" className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all"><Mail size={12} className="text-gray-500 dark:text-gray-400" /></a>}
-                  {contact.phone && <a href={`tel:${contact.phone}`} onClick={e => e.stopPropagation()} title="Call Contact" className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all"><Phone size={12} className="text-gray-500 dark:text-gray-400" /></a>}
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); navigate('/dashboard/calendar'); }} 
-                    title="Schedule Meeting"
-                    className="w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-indigo-600 dark:text-indigo-400"
-                  >
-                    <Calendar size={12} />
-                  </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); openComposer(contact); }} 
-                    title="✦ AI Follow-Up Email"
-                    className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/40 dark:to-orange-900/40 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-amber-600 dark:text-amber-400"
-                  >
-                    <Sparkles size={12} />
-                  </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); handleEnrich(contact.id); }} 
-                    disabled={enrichingId === contact.id}
-                    title="✦ AI Data Enrichment"
-                    className="w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-indigo-600 dark:text-indigo-400 disabled:opacity-50"
-                  >
-                    {enrichingId === contact.id ? <RefreshCw size={10} className="animate-spin" /> : <RefreshCw size={10} />}
-                  </button>
-                  {sequences.length > 0 && (
-                    <div className="relative group/seq">
+                <>
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-800/60">
+                    <div className="flex -space-x-1.5">
                       <button 
-                        onClick={(e) => e.stopPropagation()} 
-                        disabled={isEnrolling === contact.id}
-                        title="✦ Enroll in AI Sequence"
+                        onClick={(e) => { e.stopPropagation(); handleWhatsAppAction(contact); }} 
+                        title="Quick WhatsApp Message"
                         className="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-emerald-600 dark:text-emerald-400"
                       >
-                        {isEnrolling === contact.id ? <RefreshCw size={10} className="animate-spin" /> : <Zap size={10} />}
+                        <Phone size={12} />
                       </button>
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/seq:block bg-gray-900 border border-gray-800 rounded-xl shadow-xl p-2 min-w-[160px] z-[50]">
-                         <p className="text-[9px] font-black uppercase text-gray-500 mb-2 px-2">Select AI Sequence</p>
-                         {sequences.map(seq => (
-                           <button 
-                            key={seq.id} 
-                            onClick={(e) => { e.stopPropagation(); handleEnrollSequence(contact.id, seq.id); }}
-                            className="w-full text-left px-3 py-1.5 text-[11px] font-bold text-white hover:bg-indigo-600 rounded-lg transition-colors flex items-center justify-between"
-                           >
-                              {seq.name} <ArrowRight size={10} />
-                           </button>
-                         ))}
-                      </div>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setQrContact(contact); }} 
+                        title="Identity vCard / QR"
+                        className="w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-indigo-600 dark:text-indigo-400"
+                      >
+                        <Share2 size={12} />
+                      </button>
+                      {contact.email && (
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleManualFollowup(contact); }} 
+                          disabled={isSendingFollowup === contact.id}
+                          title="Instant Follow-up Email"
+                          className="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-blue-600 dark:text-blue-400 disabled:opacity-50"
+                        >
+                          {isSendingFollowup === contact.id ? <RefreshCw size={10} className="animate-spin" /> : <Mail size={12} />}
+                        </button>
+                      )}
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); navigate('/dashboard/calendar'); }} 
+                        title="Schedule Meeting"
+                        className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-gray-500 dark:text-gray-400"
+                      >
+                        <Calendar size={12} />
+                      </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); openComposer(contact); }} 
+                        title="✦ AI Follow-Up Composer"
+                        className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/40 dark:to-orange-900/40 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-amber-600 dark:text-amber-400"
+                      >
+                        <Sparkles size={12} />
+                      </button>
                     </div>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <button onClick={(e) => { e.stopPropagation(); deleteContact(contact.id); }} className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"><Trash2 size={14} /></button>
-                  <ChevronRight size={18} className="text-gray-300 dark:text-gray-600 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors group-hover:translate-x-1" />
-                </div>
-              </div>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handleEnrich(contact.id); }} 
+                      disabled={enrichingId === contact.id}
+                      title="✦ AI Data Enrichment"
+                      className="w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-indigo-600 dark:text-indigo-400 disabled:opacity-50"
+                    >
+                      {enrichingId === contact.id ? <RefreshCw size={10} className="animate-spin" /> : <RefreshCw size={10} />}
+                    </button>
+                    {sequences.length > 0 && (
+                      <div className="relative group/seq">
+                        <button 
+                          onClick={(e) => e.stopPropagation()} 
+                          disabled={isEnrolling === contact.id}
+                          title="✦ Enroll in AI Sequence"
+                          className="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-emerald-600 dark:text-emerald-400"
+                        >
+                          {isEnrolling === contact.id ? <RefreshCw size={10} className="animate-spin" /> : <Zap size={10} />}
+                        </button>
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/seq:block bg-gray-900 border border-gray-800 rounded-xl shadow-xl p-2 min-w-[160px] z-[50]">
+                          <p className="text-[9px] font-black uppercase text-gray-500 mb-2 px-2">Select AI Sequence</p>
+                          {sequences.map(seq => (
+                            <button 
+                              key={seq.id} 
+                              onClick={(e) => { e.stopPropagation(); handleEnrollSequence(contact.id, seq.id); }}
+                              className="w-full text-left px-3 py-1.5 text-[11px] font-bold text-white hover:bg-indigo-600 rounded-lg transition-colors flex items-center justify-between"
+                            >
+                                {seq.name} <ArrowRight size={10} />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={(e) => { e.stopPropagation(); deleteContact(contact.id); }} className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"><Trash2 size={14} /></button>
+                    <ChevronRight size={18} className="text-gray-300 dark:text-gray-600 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors group-hover:translate-x-1" />
+                  </div>
+                </>
               ) : (
               <div className="flex items-center justify-between pt-3 border-t border-red-100 dark:border-red-900/30">
                 <div className="flex items-center gap-2">
@@ -884,15 +987,24 @@ export default function ContactsPage() {
                 <div className="flex items-center gap-3 min-w-0">
                   <ContactAvatar contact={contact} />
                   <div className="min-w-0">
-                    <p className="font-bold text-sm text-gray-900 dark:text-white truncate">{contact.name || 'Unknown'}</p>
+                    <p className="font-bold text-sm text-gray-900 dark:text-white truncate">
+                      {isEnglishMode ? (contact.name || 'Unknown') : (contact.name_native || contact.name || 'Unknown')}
+                    </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{contact.email || '—'}</p>
                   </div>
                 </div>
 
-                {/* Company & Role */}
-                <div className="min-w-0">
+                {/* Company & Role + Badges */}
+                <div className="min-w-0 flex flex-col gap-1">
                   <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{contact.company || '—'}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{contact.job_title || contact.title || 'No Title'}</p>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 truncate max-w-[100px]">{contact.job_title || contact.title || 'No Title'}</span>
+                    {contact.inferred_industry && (
+                      <span className="px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[8px] font-black uppercase tracking-tighter border border-indigo-100 dark:border-indigo-900/40">
+                        {contact.inferred_industry}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Timestamp */}
@@ -910,7 +1022,17 @@ export default function ContactsPage() {
                 <div className="flex items-center gap-1">
                   {activeTab === 'active' ? (
                     <>
-                      <button onClick={(e) => { e.stopPropagation(); openComposer(contact); }} title="AI Follow-Up" className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all"><Sparkles size={14} /></button>
+                      <button onClick={(e) => { e.stopPropagation(); handleWhatsAppAction(contact); }} title="WhatsApp Message" className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all"><Phone size={14} /></button>
+                      <button onClick={(e) => { e.stopPropagation(); setQrContact(contact); }} title="Share QR/vCard" className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all"><Share2 size={14} /></button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleManualFollowup(contact); }} 
+                        disabled={isSendingFollowup === contact.id}
+                        title="Instant Follow-up Email" 
+                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all disabled:opacity-50"
+                      >
+                         {isSendingFollowup === contact.id ? <RefreshCw size={14} className="animate-spin" /> : <Mail size={14} />}
+                      </button>
+                      <button onClick={(e) => { e.stopPropagation(); openComposer(contact); }} title="AI Email Composer" className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all"><Sparkles size={14} /></button>
                       <button onClick={(e) => { e.stopPropagation(); deleteContact(contact.id); }} className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"><Trash2 size={14} /></button>
                     </>
                   ) : (
@@ -1334,6 +1456,14 @@ export default function ContactsPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── SHARED QR MODAL ── */}
+      {qrContact && (
+        <VCardQRModal 
+          contact={qrContact} 
+          onClose={() => setQrContact(null)} 
+        />
       )}
     </div>
   );

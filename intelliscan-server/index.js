@@ -41,7 +41,9 @@ const marketingRouter = require('./src/routes/marketing');
 const calendarRouter = require('./src/routes/calendar');
 const searchRouter = require('./src/routes/search');
 const workspaceRouter = require('./src/routes/workspaceRoutes');
+const cronRouter = require('./src/routes/cron');
 const { buildAccessProfile, authenticateToken } = require('./src/middleware/auth');
+
 
 // Controllers (for background jobs)
 const marketingController = require('./src/controllers/marketingController');
@@ -50,6 +52,9 @@ const marketingController = require('./src/controllers/marketingController');
 // EXPRESS APP + HTTP SERVER + SOCKET.IO
 // ══════════════════════════════════════════════════════════════════
 const app = express();
+// 🛡️ Security: Trust proxy (Required for NGROK / Load Balancers)
+app.set('trust proxy', 1);
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -139,9 +144,25 @@ app.use('/api/calendar', calendarRouter);
 app.use('/api/coach', require('./src/routes/coach'));
 app.use('/api/workspaces', workspaceRouter);
 app.use('/api/workspace', workspaceRouter);
+app.use('/api/cron', cronRouter);
 const cardRouter = require('./src/routes/cardRouter');
+
 const cardController = require('./src/controllers/cardController');
 app.use('/api/cards', cardRouter);
+
+// 📱 WhatsApp Bot Integration (Modular Toggle)
+if (process.env.ENABLE_WHATSAPP === 'true') {
+  console.log('📱 WhatsApp Bot Active: /api/webhooks/whatsapp/webhook');
+  const whatsappRouter = require('./src/routes/whatsapp');
+  app.use('/api/webhooks/whatsapp', (req, res, next) => {
+    try {
+      const logEntry = `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} | From: ${req.body?.From || 'N/A'} | Body: ${req.body?.Body || ''}\n`;
+      fs.appendFileSync(path.join(__dirname, 'webhook_debug.log'), logEntry);
+    } catch (e) { console.error('Logging Error:', e); }
+    next();
+  }, whatsappRouter);
+}
+
 app.get('/api/my-card', authenticateToken, cardController.getMyCard);
 // Analytics Logging — Consolidated to prevent proxy timeouts
 const analyticsRouter = express.Router();
@@ -170,9 +191,10 @@ app.get('*splat', (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════════════
-// BACKGROUND SCHEDULERS
+// BACKGROUND SCHEDULERS (Disabled for Vercel Serverless)
 // ══════════════════════════════════════════════════════════════════
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+
   // Sequence Scheduler (every 15 min)
   setInterval(() => marketingController.processPendingSequences(), 15 * 60 * 1000);
   
@@ -289,9 +311,14 @@ httpServer.listen(PORT, async () => {
               updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
           `);
+
+          // 🛠️ Self-Healing: Missing 'is_deleted' block (Fix for disappearing contacts)
+          await dbRunAsync("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE");
+          await dbRunAsync("ALTER TABLE contacts ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ");
+          await dbRunAsync("UPDATE contacts SET is_deleted = FALSE WHERE is_deleted IS NULL");
         }
         
-        console.log('✅ Schema Synchronized: user_quotas & billing updated.');
+        console.log('✅ Schema Synchronized: user_quotas, billing, and contacts restored.');
       } catch (schemaErr) {
         console.warn('⚠️  Schema sync warning:', schemaErr.message);
       }

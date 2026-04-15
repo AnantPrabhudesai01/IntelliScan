@@ -1,4 +1,6 @@
 const { db, dbGetAsync, dbAllAsync, dbRunAsync } = require('../utils/db');
+const XLSX = require('xlsx');
+
 const { logAuditEvent, AUDIT_SUCCESS, AUDIT_DENIED, AUDIT_ERROR } = require('../utils/logger');
 const { triggerWebhook } = require('../services/webhookService');
 const { generateWithFallback, generateEmbedding, unifiedTextAIPipeline } = require('../services/aiService');
@@ -218,9 +220,11 @@ exports.bulkDeleteContacts = async (req, res) => {
  */
 exports.getDeletedContacts = async (req, res) => {
   try {
-    const rows = await dbAllAsync('SELECT * FROM contacts WHERE user_id = ? AND is_deleted = TRUE ORDER BY deleted_at DESC', [req.user.id]);
+    const userId = Number(req.user.id);
+    const rows = await dbAllAsync('SELECT * FROM contacts WHERE user_id = ? AND is_deleted = TRUE ORDER BY deleted_at DESC', [userId]);
     res.json(rows);
   } catch (error) {
+    console.error('[Trash Error] Failed to fetch deleted contacts:', error.message);
     res.status(500).json({ error: error.message });
   }
 };
@@ -236,21 +240,25 @@ exports.restoreContacts = async (req, res) => {
   }
 
   try {
-    const placeholders = ids.map(() => '?').join(',');
+    const userId = Number(req.user.id);
+    const numericIds = ids.map(id => Number(id));
+    const placeholders = numericIds.map(() => '?').join(',');
+    
     const result = await dbRunAsync(
       `UPDATE contacts SET is_deleted = FALSE, deleted_at = NULL WHERE id IN (${placeholders}) AND user_id = ?`, 
-      [...ids, req.user.id]
+      [...numericIds, userId]
     );
     
     logAuditEvent(req, { 
       action: 'CONTACT_RESTORE', 
       resource: '/api/contacts/restore', 
       status: AUDIT_SUCCESS,
-      details: { ids_requested: ids.length, rows_affected: result.changes }
+      details: { ids_requested: numericIds.length, rows_affected: result.changes }
     });
 
     res.json({ success: true, message: `${result.changes} contacts restored`, rowsAffected: result.changes });
   } catch (err) {
+    console.error('[Trash Error] Failed to restore contacts:', err.message);
     logAuditEvent(req, { action: 'CONTACT_RESTORE', resource: '/api/contacts/restore', status: AUDIT_ERROR, details: { error: err.message } });
     res.status(500).json({ error: err.message });
   }
@@ -262,7 +270,8 @@ exports.restoreContacts = async (req, res) => {
  */
 exports.emptyTrash = async (req, res) => {
   try {
-    const result = await dbRunAsync('DELETE FROM contacts WHERE user_id = ? AND is_deleted = TRUE', [req.user.id]);
+    const userId = Number(req.user.id);
+    const result = await dbRunAsync('DELETE FROM contacts WHERE user_id = ? AND is_deleted = TRUE', [userId]);
     
     logAuditEvent(req, { 
       action: 'CONTACT_TRASH_EMPTY', 
@@ -273,6 +282,7 @@ exports.emptyTrash = async (req, res) => {
 
     res.json({ success: true, message: 'Recycle Bin emptied', rowsAffected: result.changes });
   } catch (err) {
+    console.error('[Trash Error] Failed to empty trash:', err.message);
     logAuditEvent(req, { action: 'CONTACT_TRASH_EMPTY', resource: '/api/contacts/trash/empty', status: AUDIT_ERROR, details: { error: err.message } });
     res.status(500).json({ error: err.message });
   }
@@ -289,21 +299,25 @@ exports.permanentlyDeleteContacts = async (req, res) => {
   }
 
   try {
-    const placeholders = ids.map(() => '?').join(',');
+    const userId = Number(req.user.id);
+    const numericIds = ids.map(id => Number(id));
+    const placeholders = numericIds.map(() => '?').join(',');
+    
     const result = await dbRunAsync(
       `DELETE FROM contacts WHERE id IN (${placeholders}) AND user_id = ? AND is_deleted = TRUE`, 
-      [...ids, req.user.id]
+      [...numericIds, userId]
     );
     
     logAuditEvent(req, { 
       action: 'CONTACT_PERMANENT_DELETE', 
       resource: '/api/contacts/trash', 
       status: AUDIT_SUCCESS,
-      details: { ids_requested: ids.length, rows_affected: result.changes }
+      details: { ids_requested: numericIds.length, rows_affected: result.changes }
     });
 
     res.json({ success: true, message: `${result.changes} contacts permanently deleted`, rowsAffected: result.changes });
   } catch (err) {
+    console.error('[Trash Error] Permanent delete failed:', err.message);
     logAuditEvent(req, { action: 'CONTACT_PERMANENT_DELETE', resource: '/api/contacts/trash', status: AUDIT_ERROR, details: { error: err.message } });
     res.status(500).json({ error: err.message });
   }
@@ -655,3 +669,90 @@ exports._getWorkspaceId = async (userId) => {
   const row = await dbGetAsync('SELECT workspace_id FROM users WHERE id = ?', [userId]);
   return row?.workspace_id || userId;
 };
+
+/**
+ * Manually trigger a follow-up email
+ */
+exports.sendFollowup = async (req, res) => {
+  try {
+    const { sendFollowupEmail } = require('../services/emailService');
+    const contactId = req.params.id;
+    const contact = await dbGetAsync('SELECT * FROM contacts WHERE id = ? AND user_id = ?', [contactId, req.user.id]);
+
+    if (!contact) return res.status(404).json({ error: 'Contact not found' });
+    if (!contact.email) return res.status(400).json({ error: 'No email address found for this contact' });
+
+    await sendFollowupEmail(contact);
+    res.json({ success: true, message: 'Follow-up email sent!' });
+  } catch (error) {
+    console.error('[SendFollowup Error]', error);
+    res.status(500).json({ error: 'Failed to send follow-up email' });
+  }
+};
+
+/**
+ * Generates a perfectly formatted Excel sheet of all contacts for the user.
+ * GET /api/contacts/export/magic
+ */
+exports.exportContactsToExcel = async (req, res) => {
+  try {
+    let userId = req.user?.id;
+
+    // Handle Token from WhatsApp link
+    if (!userId && req.query.token) {
+      try {
+        const jwt = require('jsonwebtoken');
+        const decoded = jwt.verify(req.query.token, process.env.JWT_SECRET);
+        if (decoded.purpose === 'magic_export') {
+          userId = decoded.id;
+        }
+      } catch (e) {
+        return res.status(401).json({ error: 'Export link expired or invalid' });
+      }
+    }
+
+    if (!userId) return res.status(401).json({ error: 'Identification required' });
+
+
+    const contacts = await dbAllAsync('SELECT * FROM contacts WHERE user_id = ? AND is_deleted = FALSE ORDER BY scan_date DESC', [userId]);
+
+    if (contacts.length === 0) {
+      return res.status(404).json({ error: 'No contacts found to export' });
+    }
+
+    // Format data for Excel
+    const data = contacts.map(c => ({
+      'Full Name': c.name || 'Unknown',
+      'Company': c.company || '—',
+      'Job Title': c.job_title || '—',
+      'Email': c.email || '—',
+      'Phone': c.phone || '—',
+      'Industry': c.inferred_industry || '—',
+      'Seniority': c.inferred_seniority || '—',
+      'Confidence': `${c.confidence || 0}%`,
+      'Location': c.location_context || '—',
+      'Date Scanned': c.scan_date ? new Date(c.scan_date).toLocaleString() : '—',
+      'Notes': c.notes || ''
+    }));
+
+    // Create Excel workbook
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "IntelliScan Contacts");
+
+    // Generate buffer
+    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+    // Send file
+    const filename = `IntelliScan_Export_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+    res.send(buffer);
+
+    logAuditEvent(req, 'EXPORT_EXCEL', AUDIT_SUCCESS, { count: contacts.length });
+  } catch (err) {
+    console.error('[Export Error]', err);
+    res.status(500).json({ error: 'Failed to generate Excel export' });
+  }
+};
+

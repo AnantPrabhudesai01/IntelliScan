@@ -107,6 +107,11 @@ async function dbRunAsync(sql, params = []) {
       changes: res.rowCount
     };
   } catch (err) {
+    console.error('[DB] Query Error:', {
+      message: err.message,
+      sql: pgSql,
+      paramCount: params.length
+    });
     // Fallback for tables without an 'id' column if RETURNING id was auto-appended
     if (err.message.includes('column "id" does not exist')) {
       const retryRes = await pgPool.query(convertPlaceholders(sql), params);

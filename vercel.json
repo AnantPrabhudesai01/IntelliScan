@@ -26,8 +26,9 @@
   ],
   "crons": [
     {
-      "path": "/api/cron/process-sync",
+      "path": "/api/cron/process-all",
       "schedule": "* * * * *"
     }
   ]
+
 }

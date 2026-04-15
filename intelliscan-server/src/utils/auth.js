@@ -7,4 +7,17 @@ function firstNameFromFullName(name) {
   return parsed || 'there';
 }
 
-module.exports = { normalizeEmail, firstNameFromFullName };
+/**
+ * Standardizes phone numbers to a clean digits-only format or E.164.
+ * Removes 'whatsapp:' prefix if present.
+ */
+function normalizePhone(phone) {
+  let cleaned = String(phone || '').replace(/whatsapp:/i, '').trim();
+  // Ensure it starts with + if it looks like an international number
+  if (cleaned.length >= 10 && !cleaned.startsWith('+')) {
+    cleaned = '+' + cleaned;
+  }
+  return cleaned;
+}
+
+module.exports = { normalizeEmail, firstNameFromFullName, normalizePhone };
