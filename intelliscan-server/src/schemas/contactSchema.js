@@ -11,13 +11,13 @@ const createContactSchema = z.object({
   title: z.string().optional().or(z.literal('')), // Legacy field support
   title_native: z.string().optional().nullable(),
   detected_language: z.string().optional().nullable(),
-  confidence: z.number().min(0).max(100).optional().default(95),
+  confidence: z.coerce.number().min(0).max(100).optional().default(95),
   image_url: z.string().optional().nullable(),
   card_image: z.string().optional().nullable(),
   notes: z.string().optional().default(''),
   tags: z.string().optional().default(''),
   engine_used: z.string().optional().default('Gemini 1.5 Flash'),
-  event_id: z.number().optional().nullable(),
+  event_id: z.coerce.number().optional().nullable(),
   inferred_industry: z.string().optional().nullable(),
   inferred_seniority: z.string().optional().nullable()
 });

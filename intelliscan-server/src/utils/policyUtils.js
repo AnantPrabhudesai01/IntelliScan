@@ -52,23 +52,14 @@ async function getPoliciesForScope(scopeWorkspaceId) {
 }
 
 /**
- * Applies PII redaction to contact input based on policies.
+ * Applies PII redaction to contact output based on policies.
  */
-function applyPiiPolicyToContactInput(contactInput = {}, policies = getDefaultPolicies()) {
-  if (!policies?.pii_redaction_enabled) return contactInput;
+function applyPiiPolicyToContactOutput(contactOutput = {}, policies = getDefaultPolicies()) {
+  if (!policies?.pii_redaction_enabled) return contactOutput;
 
-  const sanitized = { ...contactInput };
+  const sanitized = { ...contactOutput };
   if (sanitized.email) sanitized.email = maskEmail(sanitized.email);
   if (sanitized.phone) sanitized.phone = maskPhone(sanitized.phone);
-  
-  // Clear base64 data to prevent DB bloat if it somehow bypassed the interceptor
-  const base64Regex = /^data:image\//;
-  if (sanitized.image_url && base64Regex.test(String(sanitized.image_url))) {
-    sanitized.image_url = null;
-  }
-  if (sanitized.card_image && base64Regex.test(String(sanitized.card_image))) {
-    sanitized.card_image = null;
-  }
   return sanitized;
 }
 
@@ -95,7 +86,7 @@ async function runRetentionPurgeForScope(scopeWorkspaceId, retentionDays) {
 module.exports = {
   getDefaultPolicies,
   getPoliciesForScope,
-  applyPiiPolicyToContactInput,
+  applyPiiPolicyToContactOutput,
   runRetentionPurgeForScope,
   maskEmail,
   maskPhone

@@ -6,7 +6,7 @@ const { triggerWebhook } = require('../services/webhookService');
 const { generateWithFallback, generateEmbedding, unifiedTextAIPipeline } = require('../services/aiService');
 const { uploadToImgbb } = require('../services/imageService');
 const { getScopeForUser } = require('../utils/workspaceUtils');
-const { getPoliciesForScope, applyPiiPolicyToContactInput, runRetentionPurgeForScope } = require('../utils/policyUtils');
+const { getPoliciesForScope, applyPiiPolicyToContactOutput, runRetentionPurgeForScope } = require('../utils/policyUtils');
 const { ensureQuotaRow, resolveTierLimits } = require('../utils/quota');
 const { normalizeEmail, firstNameFromFullName } = require('../utils/auth');
 const { getContactCompletenessScore, selectPrimaryContact, buildFieldMergeSuggestions, buildDedupeSuggestions } = require('../utils/contactUtils');
@@ -23,8 +23,10 @@ exports.getContacts = async (req, res) => {
 
     db.all('SELECT * FROM contacts WHERE user_id = ? AND is_deleted = FALSE ORDER BY scan_date DESC', [req.user.id], (err, rows) => {
       if (err) return res.status(500).json({ error: err.message });
+      
+      const sanitizedRows = (rows || []).map(row => applyPiiPolicyToContactOutput(row, policies));
       res.setHeader('X-Retention-Purged', `${purge.purged}`);
-      res.json(rows);
+      res.json(sanitizedRows);
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -57,8 +59,10 @@ exports.getWorkspaceContacts = async (req, res) => {
 
     db.all(sql, params, (err, rows) => {
       if (err) return res.status(500).json({ error: err.message });
+      
+      const sanitizedRows = (rows || []).map(row => applyPiiPolicyToContactOutput(row, policies));
       res.setHeader('X-Retention-Purged', `${purge.purged}`);
-      res.json(rows);
+      res.json(sanitizedRows);
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -91,14 +95,15 @@ exports.createContact = async (req, res) => {
   try {
     const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
     const policies = await getPoliciesForScope(scopeWorkspaceId);
-    const input = applyPiiPolicyToContactInput(req.body || {}, policies);
+    const input = req.body || {}; // Do not redact on input (WRITE path)
 
     // Auto-upload base64 images to ImgBB
     try {
-      if (input.image_url?.startsWith('data:image/')) {
+      const base64Regex = /^data:image\//;
+      if (input.image_url && base64Regex.test(String(input.image_url))) {
         input.image_url = await uploadToImgbb(input.image_url);
       }
-      if (input.card_image?.startsWith('data:image/')) {
+      if (input.card_image && base64Regex.test(String(input.card_image))) {
         input.card_image = await uploadToImgbb(input.card_image);
       }
     } catch (err) {

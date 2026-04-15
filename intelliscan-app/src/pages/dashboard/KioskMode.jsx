@@ -214,7 +214,8 @@ export default function KioskMode() {
         },
         body: JSON.stringify({
           ...contactData,
-          event_id: selectedEventId || null,
+          job_title: contactData.job_title || contactData.title || '',
+          event_id: selectedEventId ? Number(selectedEventId) : null,
           notes
         })
       });
