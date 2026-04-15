@@ -21,6 +21,10 @@
     },
     {
       "source": "/((?!api/).*)",
+      "destination": "/intelliscan-app/$1"
+    },
+    {
+      "source": "/((?!api/).*)",
       "destination": "/intelliscan-app/index.html"
     }
   ],
