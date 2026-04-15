@@ -1,19 +1,6 @@
 {
   "version": 2,
   "name": "intelliscan",
-  "builds": [
-    {
-      "src": "intelliscan-app/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    },
-    {
-      "src": "intelliscan-server/api/index.js",
-      "use": "@vercel/node"
-    }
-  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
