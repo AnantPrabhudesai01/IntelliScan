@@ -196,105 +196,102 @@ export default function App() {
 
             <Route path="/scan/:token" element={<PageStub title="Public Scanner" />} />
 
-            {/* ── NORMAL USER ROUTES ── */}
-            <Route path="/dashboard" element={<Navigate to="/dashboard/scan" replace />} />
-            <Route path="/dashboard/scan" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><ScanPage /></DashboardLayout></RoleGuard>} />
-            <Route path="/dashboard/contacts" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><ContactsPage /></DashboardLayout></RoleGuard>} />
-            <Route path="/dashboard/calendar" element={<TierGuard minTier="pro" featureName="Calendar"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><CalendarPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/calendar/availability" element={<TierGuard minTier="pro" featureName="Calendar Availability"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><AvailabilityPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/calendar/booking-links" element={<TierGuard minTier="pro" featureName="Booking Links"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><BookingLinksPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/events" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><EventsPage /></DashboardLayout></RoleGuard>} />
-            <Route path="/dashboard/drafts" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><DraftsPage /></DashboardLayout></RoleGuard>} />
-            <Route path="/dashboard/coach" element={<TierGuard minTier="pro" featureName="AI Networking Coach"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><CoachPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/my-card" element={<TierGuard minTier="pro" featureName="Digital Business Card"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><MyCardPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/card-creator" element={<TierGuard minTier="pro" featureName="Card Creator"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><CardCreatorPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/kiosk" element={<TierGuard minTier="pro" featureName="Event Kiosk"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><KioskMode /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/presence" element={<TierGuard minTier="pro" featureName="Meeting Presence"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><MeetingToolsPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/signals" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><SignalsPage /></DashboardLayout></RoleGuard>} />
-            <Route path="/dashboard/feedback" element={<RoleGuard allowedRoles={['user', 'business_admin']}><DashboardLayout><FeedbackPage /></DashboardLayout></RoleGuard>} />
-            <Route path="/dashboard/settings" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><SettingsPage /></DashboardLayout></RoleGuard>} />
-            <Route path="/dashboard/billing" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><BillingPage /></DashboardLayout></RoleGuard>} />
-            <Route path="/dashboard/checkout/:planId" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><CheckoutPage /></DashboardLayout></RoleGuard>} />
-            <Route path="/dashboard/leaderboard" element={<TierGuard minTier="enterprise" featureName="Performance Leaderboard"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><Leaderboard /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/marketplace" element={<TierGuard minTier="pro" featureName="Marketplace Apps"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><MarketplacePage /></DashboardLayout></RoleGuard></TierGuard>} />
+            {/* ── USER DASHBOARD & MARKETPLACE (Persistent Layout) ── */}
+            <Route element={<RequireAuth><DashboardLayout /></RequireAuth>}>
+              <Route path="/dashboard" element={<Navigate to="/dashboard/scan" replace />} />
+              <Route path="/dashboard/scan" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><ScanPage /></RoleGuard>} />
+              <Route path="/dashboard/contacts" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><ContactsPage /></RoleGuard>} />
+              <Route path="/dashboard/calendar" element={<TierGuard minTier="pro" featureName="Calendar"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><CalendarPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/calendar/availability" element={<TierGuard minTier="pro" featureName="Calendar Availability"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><AvailabilityPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/calendar/booking-links" element={<TierGuard minTier="pro" featureName="Booking Links"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><BookingLinksPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/events" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><EventsPage /></RoleGuard>} />
+              <Route path="/dashboard/drafts" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DraftsPage /></RoleGuard>} />
+              <Route path="/dashboard/coach" element={<TierGuard minTier="pro" featureName="AI Networking Coach"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><CoachPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/my-card" element={<TierGuard minTier="pro" featureName="Digital Business Card"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><MyCardPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/card-creator" element={<TierGuard minTier="pro" featureName="Card Creator"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><CardCreatorPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/kiosk" element={<TierGuard minTier="pro" featureName="Event Kiosk"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><KioskMode /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/presence" element={<TierGuard minTier="pro" featureName="Meeting Presence"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><MeetingToolsPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/signals" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><SignalsPage /></RoleGuard>} />
+              <Route path="/dashboard/feedback" element={<RoleGuard allowedRoles={['user', 'business_admin']}><FeedbackPage /></RoleGuard>} />
+              <Route path="/dashboard/settings" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><SettingsPage /></RoleGuard>} />
+              <Route path="/dashboard/billing" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><BillingPage /></RoleGuard>} />
+              <Route path="/dashboard/checkout/:planId" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><CheckoutPage /></RoleGuard>} />
+              <Route path="/dashboard/leaderboard" element={<TierGuard minTier="enterprise" featureName="Performance Leaderboard"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><Leaderboard /></RoleGuard></TierGuard>} />
+              <Route path="/marketplace" element={<TierGuard minTier="pro" featureName="Marketplace Apps"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><MarketplacePage /></RoleGuard></TierGuard>} />
+              <Route path="/subscription-plan-comparison" element={<GenSubscriptionPlanComparison />} />
+              
+              {/* Email Marketing Persistence Group */}
+              <Route path="/dashboard/email-marketing" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><EmailMarketingPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/email-marketing/campaigns" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><CampaignListPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/email-marketing/campaigns/new" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><CampaignBuilderPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/email-marketing/campaigns/:id" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><CampaignDetailPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/email-marketing/templates" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><TemplateLibraryPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/email-marketing/templates/new" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><TemplateEditorPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/email-marketing/templates/:id" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><TemplateEditorPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/email-marketing/lists" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><ContactListsPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/email-marketing/lists/:id" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><ListDetailPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/email-marketing/automations" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><EmailSequencesPage /></RoleGuard></TierGuard>} />
+              
+              {/* Auto-routes that default to DashboardLayout */}
+              {generatedRoutes
+                .filter(route => {
+                   const adminKeywords = ['super-admin', 'workspaces-organizations', 'ai-model-versioning', 'audit-logs', 'privacy-gdpr', 'advanced-api', 'api-integrations', 'system-health', 'advanced-security', 'integration-health', 'training-tuning'];
+                   return !adminKeywords.some(kw => route.path.includes(kw)) && route.path !== 'subscription-plan-comparison';
+                })
+                .map(route => {
+                  const modulePath = `./pages/generated/${route.name}.jsx`;
+                  const Component = generatedModules[modulePath]?.default;
+                  if (!Component) return null;
+                  return <Route key={route.path} path={route.path} element={<Component />} />;
+                })
+              }
+            </Route>
 
-            {/* ── EMAIL MARKETING (PRO+) ── */}
-            <Route path="/dashboard/email-marketing" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><EmailMarketingPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/email-marketing/campaigns" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><CampaignListPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/email-marketing/campaigns/new" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><CampaignBuilderPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/email-marketing/campaigns/:id" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><CampaignDetailPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/email-marketing/templates" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><TemplateLibraryPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/email-marketing/templates/new" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><TemplateEditorPage /></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/email-marketing/templates/:id" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><TemplateEditorPage /></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/email-marketing/lists" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><ContactListsPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/email-marketing/lists/:id" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><ListDetailPage /></DashboardLayout></RoleGuard></TierGuard>} />
-            <Route path="/dashboard/email-marketing/automations" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><DashboardLayout><EmailSequencesPage /></DashboardLayout></RoleGuard></TierGuard>} />
             <Route path="/dashboard/email/sequences" element={<Navigate to="/dashboard/email-marketing/automations" replace />} />
 
-            {/* ── BUSINESS ADMIN ROUTES ── */}
-            <Route path="/workspace/dashboard" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><WorkspaceDashboard /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/contacts" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><WorkspaceContacts /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/members" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><MembersPage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/scanner-links" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><ScannerLinksPage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/crm-mapping" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><CrmMappingPage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/routing-rules" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><RoutingRulesPage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/data-policies" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><DataPoliciesPage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/data-quality" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><DataQualityCenterPage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/analytics" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><AnalyticsPage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/org-chart" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><OrgChartPage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/campaigns" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><EmailCampaignsPage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/billing" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><BillingPage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/shared" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><SharedRolodexPage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/pipeline" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><PipelinePage /></AdminLayout></RoleGuard>} />
-            <Route path="/workspace/webhooks" element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"><WebhookManagement /></AdminLayout></RoleGuard>} />
+            {/* ── WORKSPACE ADMIN (Persistent Layout) ── */}
+            <Route element={<RoleGuard allowedRoles={['business_admin', 'super_admin']}><AdminLayout role="business_admin"/></RoleGuard>}>
+              <Route path="/workspace/dashboard" element={<WorkspaceDashboard />} />
+              <Route path="/workspace/contacts" element={<WorkspaceContacts />} />
+              <Route path="/workspace/members" element={<MembersPage />} />
+              <Route path="/workspace/scanner-links" element={<ScannerLinksPage />} />
+              <Route path="/workspace/crm-mapping" element={<CrmMappingPage />} />
+              <Route path="/workspace/routing-rules" element={<RoutingRulesPage />} />
+              <Route path="/workspace/data-policies" element={<DataPoliciesPage />} />
+              <Route path="/workspace/data-quality" element={<DataQualityCenterPage />} />
+              <Route path="/workspace/analytics" element={<AnalyticsPage />} />
+              <Route path="/workspace/org-chart" element={<OrgChartPage />} />
+              <Route path="/workspace/campaigns" element={<EmailCampaignsPage />} />
+              <Route path="/workspace/billing" element={<BillingPage />} />
+              <Route path="/workspace/shared" element={<SharedRolodexPage />} />
+              <Route path="/workspace/pipeline" element={<PipelinePage />} />
+              <Route path="/workspace/webhooks" element={<WebhookManagement />} />
+            </Route>
 
-            {/* ── SUPER ADMIN ROUTES ── */}
-            <Route path="/admin/dashboard" element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><AdminDashboard /></AdminLayout></RoleGuard>} />
-            <Route path="/admin/engine-performance" element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><EnginePerformance /></AdminLayout></RoleGuard>} />
-            <Route path="/admin/feedback" element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><SuperAdminFeedbackPage /></AdminLayout></RoleGuard>} />
-            <Route path="/admin/incidents" element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><SystemIncidentCenter /></AdminLayout></RoleGuard>} />
-            <Route path="/admin/custom-models" element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><CustomModelsPage /></AdminLayout></RoleGuard>} />
-            <Route path="/admin/integration-health" element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><JobQueuesPage /></AdminLayout></RoleGuard>} />
-            <Route path="/admin/job-queues" element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><JobQueuesPage /></AdminLayout></RoleGuard>} />
-
-            {/* ── EXPLICITLY ROUTED GENERATED PAGES (correct layout) ── */}
-            <Route path="/subscription-plan-comparison" element={<RequireAuth><DashboardLayout><GenSubscriptionPlanComparison /></DashboardLayout></RequireAuth>} />
-
-            {/* ── MASS MIGRATED AUTO-ROUTES ── */}
-            {generatedRoutes
-              .filter(route => route.path !== 'subscription-plan-comparison') // Already handled above
-              .map(route => {
-                const modulePath = `./pages/generated/${route.name}.jsx`;
-                const Component = generatedModules[modulePath]?.default;
-                if (!Component) return null;
-                // Super-admin-only pages keep AdminLayout; all others default to DashboardLayout
-                const adminKeywords = [
-                  'super-admin',
-                  'workspaces-organizations',
-                  'ai-model-versioning',
-                  'audit-logs',
-                  'privacy-gdpr',
-                  'advanced-api',
-                  'api-integrations',
-                  'system-health',
-                  'advanced-security',
-                  'integration-health',
-                  'training-tuning'
-                ];
-                const isSuperAdminPage = adminKeywords.some(kw => route.path.includes(kw));
-                return (
-                  <Route
-                    key={route.path}
-                    path={route.path}
-                    element={
-                      isSuperAdminPage
-                        ? <RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"><Component /></AdminLayout></RoleGuard>
-                        : <RequireAuth><DashboardLayout><Component /></DashboardLayout></RequireAuth>
-                    }
-                  />
-                );
-              })
-            }
+            {/* ── SUPER ADMIN (Persistent Layout) ── */}
+            <Route element={<RoleGuard allowedRoles={['super_admin']}><AdminLayout role="super_admin"/></RoleGuard>}>
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/engine-performance" element={<EnginePerformance />} />
+              <Route path="/admin/feedback" element={<SuperAdminFeedbackPage />} />
+              <Route path="/admin/incidents" element={<SystemIncidentCenter />} />
+              <Route path="/admin/custom-models" element={<CustomModelsPage />} />
+              <Route path="/admin/integration-health" element={<JobQueuesPage />} />
+              <Route path="/admin/job-queues" element={<JobQueuesPage />} />
+              
+              {/* Auto-routes for Super Admin */}
+              {generatedRoutes
+                .filter(route => {
+                   const adminKeywords = ['super-admin', 'workspaces-organizations', 'ai-model-versioning', 'audit-logs', 'privacy-gdpr', 'advanced-api', 'api-integrations', 'system-health', 'advanced-security', 'integration-health', 'training-tuning'];
+                   return adminKeywords.some(kw => route.path.includes(kw));
+                })
+                .map(route => {
+                  const modulePath = `./pages/generated/${route.name}.jsx`;
+                  const Component = generatedModules[modulePath]?.default;
+                  if (!Component) return null;
+                  return <Route key={route.path} path={route.path} element={<Component />} />;
+                })
+              }
+            </Route>
           </Routes>
         </ErrorBoundary>
         {import.meta.env.DEV ? <DevTools /> : null}

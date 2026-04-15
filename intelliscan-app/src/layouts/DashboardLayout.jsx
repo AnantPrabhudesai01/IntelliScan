@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { ScanLine, Users, Settings, LogOut, Bell, Sun, Moon, Zap, Store, MessageSquare, UploadCloud, Calendar, Mail, Menu, User, ChevronDown, Target, Smartphone, X, BarChart2, ListTree, Monitor, Sparkles, Palette, Trophy, Layers, Webhook, Search, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
@@ -11,7 +11,7 @@ import LanguageToggle from '../components/LanguageToggle';
 import { useNotifications } from '../context/NotificationContext';
 import NotificationCenter from '../components/NotificationCenter';
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout() {
   const [notifOpen, setNotifOpen] = useState(false);
   const { unreadCount } = useNotifications();
   const location = useLocation();
@@ -358,7 +358,7 @@ export default function DashboardLayout({ children }) {
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth">
           <div className="max-w-7xl mx-auto h-full">
-            {children}
+            <Outlet />
           </div>
         </main>
       </div>

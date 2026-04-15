@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import ChatbotWidget from '../components/ChatbotWidget';
@@ -262,7 +262,7 @@ function AdminSettingsPanel({ user, role, onClose, onSave, toggleDark, isDarkMod
   );
 }
 
-export default function AdminLayout({ children, role = 'business_admin' }) {
+export default function AdminLayout({ role = 'business_admin' }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
@@ -487,7 +487,7 @@ export default function AdminLayout({ children, role = 'business_admin' }) {
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth">
           <div className="max-w-[1400px] mx-auto">
-            {children}
+            <Outlet />
           </div>
         </main>
       </div>
