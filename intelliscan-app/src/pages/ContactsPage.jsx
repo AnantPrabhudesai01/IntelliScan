@@ -413,6 +413,13 @@ export default function ContactsPage() {
   };
 
   const [isSendingFollowup, setIsSendingFollowup] = useState(null); // contactId
+  const handleTruecallerSearch = (phone) => {
+    if (!phone) return;
+    // Clean phone and ensure it has + if it looks like international
+    const cleanPhone = phone.trim().replace(/\s+/g, '');
+    window.open(`https://www.truecaller.com/search/in/${cleanPhone}`, '_blank');
+  };
+
   const handleManualFollowup = async (contact) => {
     if (!contact.email) return showComposerToast('No email found for this contact.', 'error');
     setIsSendingFollowup(contact.id);
@@ -858,6 +865,13 @@ export default function ContactsPage() {
                         <Phone size={12} />
                       </button>
                       <button 
+                        onClick={(e) => { e.stopPropagation(); handleTruecallerSearch(contact.phone); }} 
+                        title="Search on Truecaller"
+                        className="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-blue-600 dark:text-blue-400"
+                      >
+                        <span className="text-[8px] font-black">TC</span>
+                      </button>
+                      <button 
                         onClick={(e) => { e.stopPropagation(); setQrContact(contact); }} 
                         title="Identity vCard / QR"
                         className="w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-indigo-600 dark:text-indigo-400"
@@ -1052,6 +1066,9 @@ export default function ContactsPage() {
                   {activeTab === 'active' ? (
                     <>
                       <button onClick={(e) => { e.stopPropagation(); handleWhatsAppAction(contact); }} title="WhatsApp Message" className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all"><Phone size={14} /></button>
+                      <button onClick={(e) => { e.stopPropagation(); handleTruecallerSearch(contact.phone); }} title="Search Truecaller" className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all">
+                        <span className="text-[10px] font-black">TC</span>
+                      </button>
                       <button onClick={(e) => { e.stopPropagation(); setQrContact(contact); }} title="Share QR/vCard" className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all"><Share2 size={14} /></button>
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleManualFollowup(contact); }} 
@@ -1175,7 +1192,17 @@ export default function ContactsPage() {
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Phone</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white break-all">{detailContact.phone || '—'}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white break-all">{detailContact.phone || '—'}</p>
+                    {detailContact.phone && (
+                      <button 
+                        onClick={() => handleTruecallerSearch(detailContact.phone)}
+                        className="text-[10px] font-black text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        Truecaller ↗
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Scanned</p>
