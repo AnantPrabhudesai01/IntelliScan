@@ -140,6 +140,7 @@ if (process.env.ENABLE_WHATSAPP === 'true') {
 app.get('/api/my-card', authenticateToken, cardController.getMyCard);
 
 // User Analytics Placeholder
+app.post('/api/analytics/log', (req, res) => res.json({ success: true }));
 app.post('/api/user/analytics/log', (req, res) => res.json({ success: true }));
 
 // Centralized Error Handling
