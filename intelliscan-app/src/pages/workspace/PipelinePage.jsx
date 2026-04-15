@@ -191,7 +191,6 @@ export default function PipelinePage() {
                         });
                         setIsUpdateModalOpen(true);
                     }}
-                    }}
                     className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-all cursor-grab active:cursor-grabbing group"
                   >
                     <div className="flex justify-between items-start mb-3">
