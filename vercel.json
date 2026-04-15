@@ -24,7 +24,7 @@
       "destination": "/intelliscan-app/$1"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/(.*)",
       "destination": "/intelliscan-app/index.html"
     }
   ],
@@ -34,5 +34,4 @@
       "schedule": "* * * * *"
     }
   ]
-
 }
