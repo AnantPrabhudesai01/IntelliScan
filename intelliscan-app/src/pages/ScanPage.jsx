@@ -127,20 +127,7 @@ export default function ScanPage() {
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
-  // Persist scan state to localStorage
-  useEffect(() => {
-    if (scannedData) {
-      localStorage.setItem('intelliscan_cached_scan', JSON.stringify(scannedData));
-    } else {
-      localStorage.removeItem('intelliscan_cached_scan');
-    }
-    
-    if (selectedImage) {
-      localStorage.setItem('intelliscan_cached_image', selectedImage);
-    } else {
-      localStorage.removeItem('intelliscan_cached_image');
-    }
-  }, [scannedData, selectedImage]);
+    if (scanMode === 'batch') {
       processBatchImages(files);
       return;
     }
