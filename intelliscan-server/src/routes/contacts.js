@@ -23,6 +23,7 @@ router.get('/', contactsController.getContacts);
  * @desc    Get contact statistics
  */
 router.get('/stats', contactsController.getStats);
+router.put('/reorder', contactsController.reorderContacts);
 
 /**
  * @route   POST /api/contacts

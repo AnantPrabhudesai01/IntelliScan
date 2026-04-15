@@ -21,7 +21,12 @@ exports.getContacts = async (req, res) => {
     const policies = await getPoliciesForScope(scopeWorkspaceId);
     const purge = await runRetentionPurgeForScope(scopeWorkspaceId, policies.retention_days);
 
-    db.all('SELECT * FROM contacts WHERE user_id = ? AND is_deleted = FALSE ORDER BY scan_date DESC', [req.user.id], (err, rows) => {
+    const sql = `
+      SELECT * FROM contacts 
+      WHERE user_id = ? AND is_deleted = FALSE 
+      ORDER BY sort_order ASC, scan_date DESC
+    `;
+    db.all(sql, [req.user.id], (err, rows) => {
       if (err) return res.status(500).json({ error: err.message });
       
       const sanitizedRows = (rows || []).map(row => applyPiiPolicyToContactOutput(row, policies));
@@ -43,17 +48,17 @@ exports.getWorkspaceContacts = async (req, res) => {
     const policies = await getPoliciesForScope(scopeWorkspaceId);
     const purge = await runRetentionPurgeForScope(scopeWorkspaceId, policies.retention_days);
 
-    const sql = workspaceId
+     const sql = workspaceId
       ? `SELECT c.*, u.name as scanner_name
          FROM contacts c
          JOIN users u ON c.user_id = u.id
-         WHERE u.workspace_id = ?
-         ORDER BY c.scan_date DESC`
+         WHERE u.workspace_id = ? AND c.is_deleted = FALSE
+         ORDER BY c.sort_order ASC, c.scan_date DESC`
       : `SELECT c.*, u.name as scanner_name
          FROM contacts c
          JOIN users u ON c.user_id = u.id
-         WHERE c.user_id = ?
-         ORDER BY c.scan_date DESC`;
+         WHERE c.user_id = ? AND c.is_deleted = FALSE
+         ORDER BY c.sort_order ASC, c.scan_date DESC`;
     
     const params = [workspaceId || req.user.id];
 
@@ -154,6 +159,12 @@ exports.createContact = async (req, res) => {
     })();
 
     res.status(201).json({ success: true, contact_id: contactId });
+    
+    // Multi-Device Real-time Sync
+    if (getIo()) {
+      getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'create', id: contactId });
+    }
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -182,6 +193,12 @@ exports.deleteContact = async (req, res) => {
     }
 
     res.json({ success: true, message: 'Contact moved to Recycle Bin', rowsAffected: result.changes });
+
+    // Multi-Device Real-time Sync
+    if (getIo()) {
+      getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'delete', id: req.params.id });
+    }
+
   } catch (err) {
     logAuditEvent(req, { action: 'CONTACT_SOFT_DELETE', resource: `/api/contacts/${req.params.id}`, status: AUDIT_ERROR, details: { error: err.message } });
     res.status(500).json({ error: err.message });
@@ -213,6 +230,12 @@ exports.bulkDeleteContacts = async (req, res) => {
     });
 
     res.json({ success: true, message: `${result.changes} contacts moved to Recycle Bin`, rowsAffected: result.changes });
+
+    // Multi-Device Real-time Sync
+    if (getIo()) {
+      getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'bulk_delete' });
+    }
+
   } catch (err) {
     logAuditEvent(req, { action: 'CONTACT_BULK_SOFT_DELETE', resource: '/api/contacts/bulk', status: AUDIT_ERROR, details: { error: err.message } });
     res.status(500).json({ error: err.message });
@@ -262,6 +285,12 @@ exports.restoreContacts = async (req, res) => {
     });
 
     res.json({ success: true, message: `${result.changes} contacts restored`, rowsAffected: result.changes });
+
+    // Multi-Device Real-time Sync
+    if (getIo()) {
+      getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'restore' });
+    }
+
   } catch (err) {
     console.error('[Trash Error] Failed to restore contacts:', err.message);
     logAuditEvent(req, { action: 'CONTACT_RESTORE', resource: '/api/contacts/restore', status: AUDIT_ERROR, details: { error: err.message } });
@@ -679,6 +708,7 @@ exports._getWorkspaceId = async (userId) => {
  * Manually trigger a follow-up email
  */
 exports.sendFollowup = async (req, res) => {
+  const { getIo } = require('../services/notificationService');
   try {
     const { sendFollowupEmail } = require('../services/emailService');
     const contactId = req.params.id;
@@ -758,6 +788,27 @@ exports.exportContactsToExcel = async (req, res) => {
   } catch (err) {
     console.error('[Export Error]', err);
     res.status(500).json({ error: 'Failed to generate Excel export' });
+  }
+};
+
+/**
+ * PUT /api/contacts/reorder
+ * Bulk updates the sort_order of multiple contacts.
+ */
+exports.reorderContacts = async (req, res) => {
+  const { orders } = req.body; 
+  if (!Array.isArray(orders)) return res.status(400).json({ error: 'Invalid orders format' });
+
+  try {
+    const promises = orders.map(item => 
+      dbRunAsync('UPDATE contacts SET sort_order = ? WHERE id = ? AND user_id = ?', 
+        [item.sort_order, item.id, req.user.id])
+    );
+    await Promise.all(promises);
+
+    res.json({ success: true, message: 'Reordered successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 

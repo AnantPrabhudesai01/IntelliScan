@@ -1,27 +1,59 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import apiClient from '../api/client';
-import { getStoredToken } from '../utils/auth';
+import { getStoredToken, safeReadStoredUser } from '../utils/auth';
+import { socket, joinRoom, leaveRoom } from '../utils/socket';
 
 const ContactContext = createContext();
 
 export function ContactProvider({ children }) {
   const [contacts, setContacts] = useState([]);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState(new Date());
+
+  const fetchContacts = useCallback(async (silent = false) => {
+    try {
+      if (!silent) setIsSyncing(true);
+      const token = getStoredToken();
+      if (!token) return;
+      const res = await apiClient.get('/contacts', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setContacts(res.data);
+      setLastSyncTime(new Date());
+    } catch (err) {
+      console.error('Failed to fetch contacts', err);
+    } finally {
+      if (!silent) setIsSyncing(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchContacts = async () => {
-      try {
-        const token = getStoredToken();
-        if (!token) return;
-        const res = await apiClient.get('/contacts', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setContacts(res.data);
-      } catch (err) {
-        console.error('Failed to fetch contacts', err);
-      }
-    };
     fetchContacts();
-  }, []);
+    
+    // Multi-Device Real-time Sync (via Socket.io)
+    const user = safeReadStoredUser();
+    if (user && user.id) {
+       joinRoom(user.id);
+       
+       socket.on('contacts_updated', (data) => {
+         console.debug('[Socket] Contacts update event received:', data);
+         fetchContacts(true); // Silent background refresh
+       });
+    }
+
+    // Fallback Polling (Reduced to 15s to save battery/bandwidth)
+    const interval = setInterval(() => {
+      fetchContacts(true); 
+    }, 15000);
+
+    return () => {
+      clearInterval(interval);
+      if (user && user.id) {
+        leaveRoom(user.id);
+      }
+      socket.off('contacts_updated');
+    };
+  }, [fetchContacts]);
 
   const addContact = async (contact) => {
     try {
@@ -157,6 +189,17 @@ export function ContactProvider({ children }) {
     }
   };
 
+  const reorderContacts = async (orders) => {
+    try {
+      const token = getStoredToken();
+      await apiClient.put('/contacts/reorder', { orders }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (err) {
+      console.error('Failed to reorder contacts', err);
+    }
+  };
+
   const updateContact = (updatedContact) => {
     // Basic local update for now
     setContacts(prev => prev.map(c => c.id === updatedContact.id ? updatedContact : c));
@@ -167,7 +210,8 @@ export function ContactProvider({ children }) {
       contacts, addContact, deleteContact, deleteContacts, 
       getDeletedContacts, restoreContacts, emptyTrash,
       updateContact, enrichContact, semanticSearch,
-      permanentlyDeleteContacts 
+      permanentlyDeleteContacts, reorderContacts,
+      isSyncing, lastSyncTime
     }}>
       {children}
     </ContactContext.Provider>

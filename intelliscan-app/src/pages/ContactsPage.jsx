@@ -7,6 +7,25 @@ import { useNavigate } from 'react-router-dom';
 import { getStoredToken } from '../utils/auth.js';
 import VCardQRModal from '../components/VCardQRModal';
 
+// Draggable Imports
+import {
+  DndContext, 
+  closestCenter,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  rectSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
 const formatDate = (dateStr) => {
   if (!dateStr) return 'Unknown';
   return new Intl.DateTimeFormat('en-IN', {
@@ -15,9 +34,61 @@ const formatDate = (dateStr) => {
   }).format(new Date(dateStr));
 };
 
+// Sortable Wrapper Component
+const SortableItem = ({ id, children, disabled }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id, disabled });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 1000 : 'auto',
+    opacity: isDragging ? 0.3 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+};
+
 export default function ContactsPage() {
-  const { contacts, deleteContact, deleteContacts, getDeletedContacts, restoreContacts, emptyTrash, permanentlyDeleteContacts, enrichContact, semanticSearch } = useContacts();
+  const { 
+    contacts, deleteContact, deleteContacts, getDeletedContacts, 
+    restoreContacts, emptyTrash, permanentlyDeleteContacts, 
+    enrichContact, semanticSearch, reorderContacts, 
+    isSyncing: backendSyncing, lastSyncTime 
+  } = useContacts();
   const navigate = useNavigate();
+  
+  // DRAG & DROP SETUP
+  const [localContacts, setLocalContacts] = useState([]);
+
+  useEffect(() => {
+    // Sync local state with context contacts
+    // We allow empty array sync (e.g. after clear bin)
+    if (contacts) {
+      setLocalContacts(contacts);
+    }
+  }, [contacts]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, 
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   const location = new URLSearchParams(window.location.search);
   const filterEventId = location.get('eventId');
   
@@ -148,7 +219,25 @@ export default function ContactsPage() {
   };
 
 
-  const dataToFilter = activeTab === 'active' ? contacts : trashContacts;
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    if (search || filterConfidence || filterEngine || isSmartSearch) {
+       showComposerToast('Reordering is only available without active filters.', 'info');
+       return;
+    }
+
+    const oldIndex = localContacts.findIndex(c => c.id === active.id);
+    const newIndex = localContacts.findIndex(c => c.id === over.id);
+
+    const newArray = arrayMove(localContacts, oldIndex, newIndex);
+    setLocalContacts(newArray);
+
+    const orders = newArray.map((c, i) => ({ id: c.id, sort_order: i }));
+    reorderContacts(orders);
+  };
+
+  const dataToFilter = activeTab === 'active' ? localContacts : trashContacts;
 
   const filteredContacts = smartResults || dataToFilter.filter(c => {
     const matchesEvent = filterEventId ? String(c.event_id) === filterEventId : true;
@@ -554,86 +643,21 @@ export default function ContactsPage() {
           </div>
         </section>
       )}
-      {/* Mass Action Bar */}
-      {selectedIds.length > 0 && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[4000] min-w-[320px] animate-in slide-in-from-bottom-10 fade-in duration-300">
-          <div className="bg-indigo-600 dark:bg-indigo-500 text-white rounded-2xl shadow-2xl shadow-indigo-500/40 p-4 flex items-center justify-between gap-6 px-8 border border-indigo-400">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-black text-sm">
-                {selectedIds.length}
-              </div>
-              <p className="font-bold text-sm tracking-tight">Contacts Selected</p>
-            </div>
-            <div className="flex items-center gap-4">
-               <button onClick={toggleSelectAll} className="text-xs font-black uppercase tracking-widest hover:underline">
-                 {selectedIds.length === filteredContacts.length ? 'Deselect All' : 'Select All'}
-               </button>
-               <div className="w-px h-6 bg-white/20" />
-               <button 
-                onClick={() => setShowBulkConfirm(true)}
-                className="bg-white text-indigo-600 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 hover:bg-red-50 hover:text-red-600 transition-all shadow-lg active:scale-95"
-               >
-                 <Trash2 size={14} /> Delete 
-               </button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Confirmation Modal for Bulk Delete */}
-      {showBulkConfirm && (
-        <div className="fixed inset-0 z-[6000] flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowBulkConfirm(false)} />
-          <div className="bg-white dark:bg-gray-950 p-8 rounded-3xl shadow-2xl relative w-full max-w-md border border-gray-200 dark:border-gray-800 text-center space-y-6">
-            <div className="w-20 h-20 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto text-red-500 shadow-inner">
-               <Trash2 size={40} />
+      {/* Real-time Sync Status Indicator */}
+      <div className="flex items-center justify-between px-2">
+         <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Your Contacts</h1>
+            <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-full">
+               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+               <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">Live Sync Active</span>
             </div>
-            <div>
-              <h3 className="text-xl font-black text-white mb-2">Mass Delete Contacts?</h3>
-              <p className="text-sm text-gray-500 leading-relaxed font-medium">You are about to permanently delete <strong className="text-red-500">{selectedIds.length} contacts</strong>. This action cannot be undone.</p>
-            </div>
-            <div className="flex flex-col gap-3">
-               <button 
-                onClick={handleBulkDelete}
-                disabled={isBulkDeleting}
-                className="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-black shadow-xl shadow-red-500/20 transition-all active:scale-95 flex items-center justify-center gap-2"
-               >
-                 {isBulkDeleting ? <RefreshCw className="animate-spin" size={18} /> : <Trash2 size={18} />}
-                 Yes, Delete Everything
-               </button>
-               <button onClick={() => setShowBulkConfirm(false)} className="w-full py-3 rounded-2xl font-bold text-gray-500 hover:text-white transition-colors">
-                 Wait, Go Back
-               </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* CRM Sync Notification Overlay */}
-      {(isSyncing || syncMessage) && (
-        <div className="fixed top-4 right-4 z-[9999] animate-in slide-in-from-top-4 fade-in duration-300">
-          <div className="bg-white dark:bg-gray-900 border border-indigo-100 dark:border-indigo-900 shadow-xl rounded-2xl p-4 flex items-center gap-4 min-w-[300px]">
-            {isSyncing ? (
-              <>
-                <RefreshCw size={24} className="text-indigo-600 animate-spin flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">Authorizing CRM Link...</p>
-                  <p className="text-xs text-gray-500">Injecting {filteredContacts.length} contacts.</p>
-                </div>
-              </>
-            ) : (
-              <>
-                <CheckCircle2 size={24} className="text-emerald-500 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">Sync Complete</p>
-                  <p className="text-xs text-gray-500">{syncMessage}</p>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+         </div>
+         <p className="text-sm text-gray-500 font-medium">Last updated: {formatDate(lastSyncTime)}</p>
+      </div>
 
       <section className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-2">
+
         <div className="flex-1 max-w-2xl flex flex-wrap items-center gap-3">
           <div className="flex-1 min-w-[300px] relative group">
             <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors" />
@@ -673,6 +697,21 @@ export default function ContactsPage() {
             <Languages size={14} />
             {isEnglishMode ? 'English Mode' : 'Original Text'}
           </button>
+
+          {/* Real-time Sync Indicator */}
+          <div 
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-500 ${
+              backendSyncing 
+                ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400' 
+                : 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30 text-emerald-600 dark:text-emerald-400'
+            }`}
+          >
+            <div className={`w-1.5 h-1.5 rounded-full ${backendSyncing ? 'bg-indigo-500 animate-pulse' : 'bg-emerald-500'} shadow-[0_0_8px_rgba(var(--sync-color))]`} />
+            <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
+              <Zap size={10} className={backendSyncing ? 'animate-bounce' : ''} />
+              Live Sync
+            </span>
+          </div>
         </div>
 
         {/* Segmented Control Tab Switcher */}
@@ -766,43 +805,52 @@ export default function ContactsPage() {
 
       {/* ── GRID VIEW ── */}
       {viewMode === 'grid' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {/* Vibrant "WOW" Empty State / Scan CTA */}
-          {activeTab === 'active' && !search && !filterConfidence && !filterEngine && (
-            <div 
-              onClick={() => navigate('/dashboard/scan')} 
-              className="relative group cursor-pointer overflow-hidden rounded-2xl border border-white/20 dark:border-white/10 animate-fade-in aspect-square flex flex-col items-center justify-center"
-            >
-              {/* Animated Aura Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/5 to-transparent group-hover:opacity-100 transition-opacity"></div>
-              <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-indigo-500/10 rounded-full blur-[100px] group-hover:translate-x-12 group-hover:translate-y-12 transition-transform duration-1000"></div>
+        <DndContext 
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext 
+            items={filteredContacts.map(c => c.id)}
+            strategy={rectSortingStrategy}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {/* Vibrant "WOW" Empty State / Scan CTA */}
+              {activeTab === 'active' && !search && !filterConfidence && !filterEngine && (
+                <div 
+                  onClick={() => navigate('/dashboard/scan')} 
+                  className="relative group cursor-pointer overflow-hidden rounded-2xl border border-white/20 dark:border-white/10 animate-fade-in aspect-square flex flex-col items-center justify-center"
+                >
+                  {/* ... (Existing Scan CTA Code) ... */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/5 to-transparent group-hover:opacity-100 transition-opacity"></div>
+                  <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-indigo-500/10 rounded-full blur-[100px] group-hover:translate-x-12 group-hover:translate-y-12 transition-transform duration-1000"></div>
+                  
+                  <div className="relative z-10 flex flex-col items-center p-8">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center mb-6 shadow-2xl shadow-indigo-500/40 group-hover:scale-110 transition-all duration-500 group-hover:rotate-6">
+                      <Plus size={40} className="text-white drop-shadow-md" />
+                    </div>
+                    <h3 className="text-xl font-headline font-black text-gray-900 dark:text-white mb-2 tracking-tight">Scan New Contact</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[200px] text-center leading-relaxed">
+                      Transform a business card into a <span className="text-indigo-500 font-bold">Smart Lead</span> in seconds.
+                    </p>
+                    
+                    <div className="mt-6 flex items-center gap-2 text-indigo-600 dark:text-indigo-400 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                      Get Started <ArrowRight size={14} />
+                    </div>
+                  </div>
+                </div>
+              )}
               
-              <div className="relative z-10 flex flex-col items-center p-8">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center mb-6 shadow-2xl shadow-indigo-500/40 group-hover:scale-110 transition-all duration-500 group-hover:rotate-6">
-                  <Plus size={40} className="text-white drop-shadow-md" />
-                </div>
-                <h3 className="text-xl font-headline font-black text-gray-900 dark:text-white mb-2 tracking-tight">Scan New Contact</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[200px] text-center leading-relaxed">
-                  Transform a business card into a <span className="text-indigo-500 font-bold">Smart Lead</span> in seconds.
-                </p>
-                
-                <div className="mt-6 flex items-center gap-2 text-indigo-600 dark:text-indigo-400 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                  Get Started <ArrowRight size={14} />
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {filteredContacts.map((contact) => (
-            <div
-              key={contact.id}
-              onClick={() => openContactDetail(contact)}
-              className={`p-6 rounded-2xl border backdrop-blur-md transition-all cursor-pointer group relative overflow-hidden shadow-xl hover:shadow-2xl ${
-                activeTab === 'trash' 
-                  ? 'bg-gray-100/50 dark:bg-white/5 border-gray-200 dark:border-gray-800 opacity-80' 
-                  : 'bg-white/70 dark:bg-white/5 border-white/20 dark:border-white/10 hover:border-indigo-500/50 hover:-translate-y-1'
-              } ${selectedIds.includes(contact.id) ? 'ring-2 ring-indigo-600 border-indigo-600' : ''}`}
-            >
+              {filteredContacts.map((contact) => (
+                <SortableItem key={contact.id} id={contact.id} disabled={activeTab !== 'active' || search || filterConfidence || filterEngine || isSmartSearch}>
+                  <div
+                    onClick={() => openContactDetail(contact)}
+                    className={`p-6 rounded-2xl border backdrop-blur-md transition-all cursor-pointer group relative overflow-hidden shadow-xl hover:shadow-2xl h-full ${
+                      activeTab === 'trash' 
+                        ? 'bg-gray-100/50 dark:bg-white/5 border-gray-200 dark:border-gray-800 opacity-80' 
+                        : 'bg-white/70 dark:bg-white/5 border-white/20 dark:border-white/10 hover:border-indigo-500/50 hover:-translate-y-1'
+                    } ${selectedIds.includes(contact.id) ? 'ring-2 ring-indigo-600 border-indigo-600' : ''}`}
+                  >
               {activeTab === 'trash' && (
                 <div className="absolute top-0 right-10 bg-red-600 text-white text-[8px] font-black px-2 py-1 rounded-b-lg uppercase tracking-widest z-10 shadow-lg">
                   Deleted
@@ -966,6 +1014,7 @@ export default function ContactsPage() {
               </div>
               )}
             </div>
+            </SortableItem>
           ))}
 
           {filteredContacts.length === 0 && search && (
@@ -1010,12 +1059,21 @@ export default function ContactsPage() {
               <p className="text-gray-500 font-bold">No contacts match your filters.</p>
             </div>
           ) : (
-            filteredContacts.map((contact, idx) => (
-              <div
-                key={contact.id}
-                onClick={() => openContactDetail(contact)}
-                className={`grid grid-cols-[40px_2fr_2fr_1.5fr_1fr_auto] gap-4 px-5 py-4 items-center group transition-colors cursor-pointer ${selectedIds.includes(contact.id) ? 'bg-indigo-50 dark:bg-indigo-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-900/40'} ${idx !== filteredContacts.length - 1 ? 'border-b border-gray-100 dark:border-gray-800/60' : ''}`}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={filteredContacts.map(c => c.id)}
+                strategy={verticalListSortingStrategy}
               >
+                {filteredContacts.map((contact, idx) => (
+                  <SortableItem key={contact.id} id={contact.id} disabled={activeTab !== 'active' || search || filterConfidence || filterEngine || isSmartSearch}>
+                    <div
+                      onClick={() => openContactDetail(contact)}
+                      className={`grid grid-cols-[40px_2fr_2fr_1.5fr_1fr_auto] gap-4 px-5 py-4 items-center group transition-colors cursor-pointer ${selectedIds.includes(contact.id) ? 'bg-indigo-50 dark:bg-indigo-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-900/40'} ${idx !== filteredContacts.length - 1 ? 'border-b border-gray-100 dark:border-gray-800/60' : ''}`}
+                    >
                 <div className="flex items-center justify-center">
                   <input 
                     type="checkbox" 
@@ -1100,10 +1158,13 @@ export default function ContactsPage() {
                       </button>
                     </>
                   )}
-                  <ChevronRight size={16} className="text-gray-300 dark:text-gray-600 group-hover:text-indigo-500 transition-all group-hover:translate-x-0.5" />
-                </div>
-              </div>
-            ))
+                      <ChevronRight size={16} className="text-gray-300 dark:text-gray-600 group-hover:text-indigo-500 transition-all group-hover:translate-x-0.5" />
+                    </div>
+                  </div>
+                </SortableItem>
+                ))}
+              </SortableContext>
+            </DndContext>
           )}
         </div>
       )}
@@ -1514,6 +1575,7 @@ export default function ContactsPage() {
         </div>
       )}
 
+
       {/* ── SHARED QR MODAL ── */}
       {qrContact && (
         <VCardQRModal 
@@ -1521,6 +1583,32 @@ export default function ContactsPage() {
           onClose={() => setQrContact(null)} 
         />
       )}
+
+      {/* ── CRM SYNC NOTIFICATION ── */}
+      {(isSyncing || syncMessage) && (
+        <div className="fixed top-4 right-4 z-[9999] animate-in slide-in-from-top-4 fade-in duration-300">
+          <div className="bg-white dark:bg-gray-900 border border-indigo-100 dark:border-indigo-900 shadow-xl rounded-2xl p-4 flex items-center gap-4 min-w-[300px]">
+            {isSyncing ? (
+              <>
+                <RefreshCw size={24} className="text-indigo-600 animate-spin flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">Authorizing CRM Link...</p>
+                  <p className="text-xs text-gray-500">Injecting {filteredContacts.length} contacts.</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 size={24} className="text-emerald-500 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">Sync Complete</p>
+                  <p className="text-xs text-gray-500">{syncMessage}</p>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
+
   );
 }
