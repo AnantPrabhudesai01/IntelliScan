@@ -52,9 +52,11 @@ exports.handleIncomingMessage = async (req, res) => {
         { expiresIn: '15m' }
       );
       
-      const domain = process.env.APP_DOMAIN || 'intelliscan.pro';
-      const protocol = domain.includes('localhost') ? 'http' : 'https';
-      const exportUrl = `${protocol}://${domain}/api/contacts/export/magic?token=${exportToken}`;
+      const rawDomain = process.env.APP_BASE_URL || req.headers.host || 'intelli-scan-psi.vercel.app';
+      const cleanDomain = rawDomain.replace(/^https?:\/\//, '');
+      const protocol = rawDomain.startsWith('http://') ? 'http' : 'https';
+      
+      const exportUrl = `${protocol}://${cleanDomain}/api/contacts/export/magic?token=${exportToken}`;
       
       return sendWhatsAppReply(From, `✨ *Your Magic Excel Export is ready!*\n\nThis file contains all your active contacts formatted for marketing and CRM growth.\n\n📥 *Download link:* \n${exportUrl}\n\n_(Link expires in 15 minutes)_`);
     }
@@ -182,7 +184,9 @@ Return ONLY a valid JSON object:
       replyMsg += `\n\n_...and more in your dashboard._`;
     }
 
-    replyMsg += `\n\n🔗 *Full Data Here:* \nhttps://${process.env.APP_DOMAIN || 'intelliscan.pro'}/dashboard/contacts`;
+    const rawBaseUrl = process.env.APP_BASE_URL || `https://${req.headers.host}` || 'https://intelli-scan-psi.vercel.app';
+    const cleanBaseUrl = rawBaseUrl.endsWith('/') ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
+    replyMsg += `\n\n🔗 *Full Data Here:* \n${cleanBaseUrl}/dashboard/contacts`;
 
     await sendWhatsAppReply(From, replyMsg);
 
@@ -222,8 +226,13 @@ async function sendWhatsAppReply(to, message) {
 
     // ✂️ Chunking Logic
     if (message.length <= MAX_LENGTH) {
+      let twilioFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886';
+      if (!twilioFrom.startsWith('whatsapp:')) {
+        twilioFrom = `whatsapp:${twilioFrom}`;
+      }
+
       await client.messages.create({
-        from: process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886',
+        from: twilioFrom,
         to: to,
         body: message
       });
@@ -235,9 +244,14 @@ async function sendWhatsAppReply(to, message) {
         current = current.substring(MAX_LENGTH);
       }
 
+      let twilioFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886';
+      if (!twilioFrom.startsWith('whatsapp:')) {
+        twilioFrom = `whatsapp:${twilioFrom}`;
+      }
+
       for (let i = 0; i < parts.length; i++) {
         await client.messages.create({
-          from: process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886',
+          from: twilioFrom,
           to: to,
           body: `[Part ${i + 1}/${parts.length}]\n` + parts[i]
         });
