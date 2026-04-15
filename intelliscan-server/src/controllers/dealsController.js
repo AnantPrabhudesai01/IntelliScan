@@ -2,8 +2,7 @@
  * Deals Controller — Logic for pipeline board and contact deal updates
  */
 const { dbGetAsync, dbAllAsync, dbRunAsync } = require('../utils/db');
-const { logAuditEvent } = require('../utils/logger');
-const { AUDIT_SUCCESS, AUDIT_ERROR } = require('../config/constants');
+const { logAuditEvent, AUDIT_SUCCESS, AUDIT_ERROR } = require('../utils/logger');
 
 // GET /api/deals
 exports.getDeals = async (req, res) => {

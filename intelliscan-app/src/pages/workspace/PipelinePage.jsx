@@ -26,6 +26,7 @@ export default function PipelinePage() {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
   const [dealForm, setDealForm] = useState({ stage: 'Prospect', value: 0, notes: '', expected_close: '' });
+  const [draggedOverStage, setDraggedOverStage] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -68,11 +69,22 @@ export default function PipelinePage() {
 
   const handleDrop = (e, stage) => {
     e.preventDefault();
+    setDraggedOverStage(null);
     const contactId = e.dataTransfer.getData('contactId');
+    
+    // Optimistic Update
+    const updated = contacts.map(c => 
+      c.id === Number(contactId) ? { ...c, deal_status: stage } : c
+    );
+    setContacts(updated);
+    
     updateDeal(contactId, { stage });
   };
 
-  const allowDrop = (e) => e.preventDefault();
+  const allowDrop = (e, stage) => {
+    e.preventDefault();
+    if (draggedOverStage !== stage) setDraggedOverStage(stage);
+  };
 
   const filteredContacts = contacts.filter(c => 
     c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -146,7 +158,8 @@ export default function PipelinePage() {
             <div 
               key={stage} 
               className="flex flex-col gap-4 min-w-[280px]"
-              onDragOver={allowDrop}
+              onDragOver={(e) => allowDrop(e, stage)}
+              onDragLeave={() => setDraggedOverStage(null)}
               onDrop={(e) => handleDrop(e, stage)}
             >
               <div className="flex items-center justify-between px-2">
@@ -158,7 +171,11 @@ export default function PipelinePage() {
                 <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400">${stageValue.toLocaleString()}</p>
               </div>
 
-              <div className="flex-1 bg-gray-50/50 dark:bg-gray-900/30 rounded-3xl p-3 border border-gray-100 dark:border-gray-800 border-dashed space-y-4">
+              <div className={`flex-1 rounded-3xl p-3 border border-dashed transition-all duration-300 space-y-4 ${
+                draggedOverStage === stage 
+                  ? 'bg-indigo-50/50 dark:bg-indigo-900/20 border-indigo-400 dark:border-indigo-500 shadow-inner' 
+                  : 'bg-gray-50/50 dark:bg-gray-900/30 border-gray-100 dark:border-gray-800'
+              }`}>
                 {stageContacts.map(contact => (
                   <div 
                     key={contact.id}
@@ -174,7 +191,8 @@ export default function PipelinePage() {
                         });
                         setIsUpdateModalOpen(true);
                     }}
-                    className="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-all cursor-grab active:cursor-grabbing group"
+                    }}
+                    className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-all cursor-grab active:cursor-grabbing group"
                   >
                     <div className="flex justify-between items-start mb-3">
                        <div className="font-black text-sm text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate pr-2">{contact.name}</div>
