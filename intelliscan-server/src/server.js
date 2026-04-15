@@ -8,89 +8,66 @@ const marketingController = require('./controllers/marketingController');
 const { dbAllAsync, dbRunAsync, isPostgres, sql: sqlDialect } = require('./utils/db');
 
 /**
- * ══════════════════════════════════════════════════════════════════
- * SERVER INITIALIZATION (HTTP + Socket.IO)
- * ══════════════════════════════════════════════════════════════════
+ * Server Lifecycle Manager
+ * 
+ * This is the main entry point for the backend. It initializes the HTTP server,
+ * sets up the real-time Socket.IO communication, and triggers the startup
+ * boot sequence (DB checks, seeding, etc).
  */
-const httpServer = http.createServer(app);
-const io = new Server(httpServer, {
+
+const server = http.createServer(app);
+
+// Initialize Socket.IO with standard CORS
+const io = new Server(server, {
   cors: {
     origin: (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',').map(s => s.trim()),
-    credentials: true
+    methods: ['GET', 'POST']
   }
 });
 
-// Pass Socket.IO instance to notification service
+// Pass the IO instance to our notification service
 setIo(io);
 
-/**
- * ══════════════════════════════════════════════════════════════════
- * BACKGROUND SCHEDULERS (Disabled for Vercel/Serverless)
- * ══════════════════════════════════════════════════════════════════
- */
-function startSchedulers() {
-  if (process.env.NODE_ENV === 'test' || process.env.VERCEL) return;
-
-  console.log('⏰ Production Schedulers Active');
-
-  // Sequence Scheduler (every 15 min)
-  setInterval(() => marketingController.processPendingSequences(), 15 * 60 * 1000);
+io.on('connection', (socket) => {
+  console.debug('[Socket] New client connected:', socket.id);
   
-  // Scheduled Campaign Sender (every 60s)
-  setInterval(async () => {
-    try {
-      const now = new Date().toISOString();
-      const campaigns = await dbAllAsync(`SELECT id FROM email_campaigns WHERE status = 'scheduled' AND scheduled_at <= ?`, [now]);
-      for (const c of campaigns) {
-        await dbRunAsync("UPDATE email_campaigns SET status = 'sending' WHERE id = ?", [c.id]);
-        marketingController.processCampaignSending(c.id);
-      }
-    } catch (err) {
-      console.error("[Campaign Job Error]", err.message);
-    }
-  }, 60000);
+  socket.on('join-workspace', (workspaceId) => {
+    socket.join(`workspace:${workspaceId}`);
+    console.debug(`[Socket] Client ${socket.id} joined workspace ${workspaceId}`);
+  });
 
-  // Calendar Reminders (every 5 min)
-  setInterval(async () => {
-    try {
-      await dbAllAsync(isPostgres ? `
-        SELECT r.*, e.title, e.start_datetime, u.email as user_email
-        FROM event_reminders r
-        JOIN calendar_events e ON r.event_id = e.id
-        JOIN users u ON r.user_id = u.id
-        WHERE r.sent_at IS NULL
-        AND (e.start_datetime - (r.minutes_before || ' minutes')::interval) <= CURRENT_TIMESTAMP
-        AND e.start_datetime > CURRENT_TIMESTAMP
-      ` : `
-        SELECT r.*, e.title, e.start_datetime, u.email as user_email
-        FROM event_reminders r
-        JOIN calendar_events e ON r.event_id = e.id
-        JOIN users u ON r.user_id = u.id
-        WHERE r.sent_at IS NULL
-        AND ${sqlDialect.now} >= datetime(e.start_datetime, '-' || r.minutes_before || ' minutes')
-      `);
-    } catch (err) {
-      console.error("[Reminder Job Error]", err.message);
-    }
-  }, 5 * 60 * 1000);
-}
-
-/**
- * ══════════════════════════════════════════════════════════════════
- * PORT LISTENER & BOOTSTRAP
- * ══════════════════════════════════════════════════════════════════
- */
-httpServer.listen(PORT, async () => {
-  console.log(`\n🚀 IntelliScan Server running on port ${PORT}`);
-  console.log(`📡 WebSocket ready | Env: ${process.env.NODE_ENV || 'development'}`);
-  
-  // Trigger Boot Sequence
-  await bootstrap();
-  
-  // Initialize background tasks
-  startSchedulers();
-  
-  console.log('\n----------------------------------------\n');
+  socket.on('disconnect', () => {
+    console.debug('[Socket] Client disconnected:', socket.id);
+  });
 });
 
-module.exports = { httpServer, io };
+/**
+ * Start the application
+ */
+const startServer = async () => {
+  try {
+    // 1. Run the boot sequence (DB connectivity, auto-migrations, etc)
+    await bootstrap();
+
+    // 2. Start the HTTP server
+    server.listen(PORT, () => {
+      console.log('--------------------------------------------------');
+      console.log(`🚀 IntelliScan Server running on port ${PORT}`);
+      console.log(`🔗 Origin: ${process.env.CLIENT_ORIGIN || 'http://localhost:5173'}`);
+      console.log(`📡 Mode: ${process.env.NODE_ENV || 'development'}`);
+      console.log('--------------------------------------------------');
+    });
+
+    // 3. Initialize background tasks (if not in Vercel environment)
+    if (!process.env.VERCEL) {
+      console.log('[Scheduler] Initializing automated marketing workers...');
+      marketingController.initWorkers();
+    }
+
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();

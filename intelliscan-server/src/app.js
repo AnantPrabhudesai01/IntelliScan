@@ -9,9 +9,14 @@ const rateLimit = require('express-rate-limit');
 const passport = require('passport');
 require('dotenv').config();
 
-// ══════════════════════════════════════════════════════════════════
-// MODULE IMPORTS — Database, Utilities, Config
-// ══════════════════════════════════════════════════════════════════
+/**
+ * Express App Configuration
+ * 
+ * This file sets up the Express instance, global middleware, and mounts
+ * all our modular API routes. We keep this separate from server.js to
+ * allow for easier testing and use in serverless environments like Vercel.
+ */
+
 const { db, pgPool } = require('./utils/db');
 const { configurePassport } = require('./config/passport');
 const { authenticateToken } = require('./middleware/auth');
@@ -43,22 +48,18 @@ const coachRouter = require('./routes/coach');
 const scanController = require('./controllers/scanController');
 const cardController = require('./controllers/cardController');
 
-// ══════════════════════════════════════════════════════════════════
-// EXPRESS APP INITIALIZATION
-// ══════════════════════════════════════════════════════════════════
 const app = express();
 app.set('trust proxy', 1);
 
-// Configuration
+// Passport Auth Config
 configurePassport();
 
-// ══════════════════════════════════════════════════════════════════
-// GLOBAL MIDDLEWARE
-// ══════════════════════════════════════════════════════════════════
+// Security Middleware
 app.use(helmet({
   contentSecurityPolicy: false,
 }));
 
+// Cross-Origin Resource Sharing
 app.use(cors({
   origin: (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',').map(s => s.trim()),
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -66,11 +67,12 @@ app.use(cors({
   credentials: true
 }));
 
+// Request Parsing
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
 app.use(passport.initialize());
 
-// Rate Limiting
+// API Rate Limiting (Prevents abuse)
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 1000,
@@ -78,16 +80,14 @@ const globalLimiter = rateLimit({
 });
 app.use('/api', globalLimiter);
 
-// ══════════════════════════════════════════════════════════════════
-// STATIC ASSETS
-// ══════════════════════════════════════════════════════════════════
-// Note: __dirname in src/app.js is intelliscan-server/src
+// Static Asset Serving
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // ══════════════════════════════════════════════════════════════════
-// MODULAR ROUTE MOUNTING
+// API ROUTE MOUNTING
 // ══════════════════════════════════════════════════════════════════
-// Health Check
+
+// Health Check Endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
@@ -123,24 +123,26 @@ app.use('/api/workspace', workspaceRouter);
 app.use('/api/cron', cronRouter);
 app.use('/api/cards', cardRouter);
 
-// WhatsApp Bot Integration (Modular Toggle)
+// Optional WhatsApp Integration
 if (process.env.ENABLE_WHATSAPP === 'true') {
   const whatsappRouter = require('./routes/whatsapp');
   app.use('/api/webhooks/whatsapp', (req, res, next) => {
     try {
       const logEntry = `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} | From: ${req.body?.From || 'N/A'} | Body: ${req.body?.Body || ''}\n`;
       fs.appendFileSync(path.join(__dirname, '../webhook_debug.log'), logEntry);
-    } catch (e) { console.error('Logging Error:', e); }
+    } catch (e) {
+      console.error('Logging Error:', e);
+    }
     next();
   }, whatsappRouter);
 }
 
 app.get('/api/my-card', authenticateToken, cardController.getMyCard);
 
-// Analytics 
+// User Analytics Placeholder
 app.post('/api/user/analytics/log', (req, res) => res.json({ success: true }));
 
-// Error Handling
+// Centralized Error Handling
 app.use((err, req, res, next) => {
   console.error('[Unhandled Error]', err.stack);
   res.status(500).json({ error: 'Internal Server Error', message: err.message });
