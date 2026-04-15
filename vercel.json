@@ -20,8 +20,8 @@
       "destination": "intelliscan-server/api/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "intelliscan-app/$1"
+      "source": "/((?!api/).*)",
+      "destination": "/$1"
     }
   ],
   "crons": [
