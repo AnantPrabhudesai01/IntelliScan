@@ -13,24 +13,29 @@ export default function Auth0Synchronizer() {
     const syncToken = async () => {
       if (isLoading) return;
 
+      // Prevent redundant syncs if we already have a token and user matches
+      const existingAuth = safeReadStoredUser();
+      if (isAuthenticated && user && existingAuth?.email === user.email) {
+         console.log("[AuthSync] Session already synchronized.");
+         return;
+      }
+
       if (isAuthenticated && user) {
         try {
           const token = await getAccessTokenSilently();
           if (!active) return;
 
-          // Provision/Sync user in the local SQLite database
+          // Provision/Sync user in the local database
           const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/auth/sync`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user, token })
           });
 
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || 'Backend sync failed');
-          }
-          
           const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'Identity synchronization failed.');
+          }
           
           // Use the LOCAL JWT returned by our backend for all future API calls
           if (active) {
@@ -40,18 +45,18 @@ export default function Auth0Synchronizer() {
             });
             console.log("✅ Auth0 synced with local DB");
             
-            // Explicitly trigger a refresh of the role context to break the loading loop
+            // Explicitly trigger a refresh of the role context
             await refreshAuth();
           }
         } catch (error) {
           console.error("Auth0 token sync failed:", error);
           if (active) {
             clearStoredAuth();
-            
-            // To break the loading loop in App.jsx (isAuthenticated && !token),
-            // call refreshAuth to ensure state updates, and trigger logout.
             await refreshAuth();
-            window.location.href = '/sign-in?error=sync_failed&error_description=Could not sync session with the server.';
+            
+            // Redirect with descriptive error to help debugging
+            const desc = encodeURIComponent(error.message || 'Unknown identity error');
+            window.location.href = `/sign-in?error=sync_failed&error_description=${desc}`;
           }
         }
       } else {

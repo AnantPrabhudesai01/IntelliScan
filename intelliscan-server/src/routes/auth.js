@@ -260,8 +260,12 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
   const { user: authUser } = req.body;
 
   try {
-    const email = authUser.email.toLowerCase();
-    const name = authUser.name || authUser.nickname || email.split('@')[0];
+    if (!authUser || !authUser.email) {
+      return res.status(400).json({ error: 'Auth0 profile missing target email for synchronization.' });
+    }
+
+    const email = authUser.email.toLowerCase().trim();
+    const name = authUser.name || authUser.nickname || email.split('@')[0] || 'IntelliScan User';
     
     let existingUser = await dbGetAsync('SELECT * FROM users WHERE LOWER(email) = LOWER(?)', [email]);
     let userId;
@@ -269,10 +273,12 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
     let tier = 'personal';
     let workspaceId = null;
 
-    const domain = String(email || '').split('@')[1]?.toLowerCase();
-    const isPersonal = PERSONAL_EMAIL_DOMAINS?.has?.(domain) ?? true;
+    // Robust Domain Intelligence
+    const domain = String(email).split('@')[1]?.toLowerCase();
+    const personalDomains = PERSONAL_EMAIL_DOMAINS instanceof Set ? PERSONAL_EMAIL_DOMAINS : new Set();
+    const isPersonal = personalDomains.has(domain);
     
-    if (!isPersonal) {
+    if (!isPersonal && domain) {
       tier = 'enterprise';
       role = 'business_admin';
     }
@@ -282,18 +288,24 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       role = existingUser.role;
       tier = existingUser.tier;
       workspaceId = existingUser.workspace_id;
-      await dbRunAsync('UPDATE users SET name = ? WHERE id = ?', [name, userId]);
+      
+      // Keep name synchronized if it changed in Auth0
+      if (name !== existingUser.name) {
+        await dbRunAsync('UPDATE users SET name = ? WHERE id = ?', [name, userId]);
+      }
     } else {
-      const placeholderPass = crypto.randomBytes(24).toString('hex');
+      // 1. Provision User
+      const placeholderPass = crypto.randomBytes(32).toString('hex');
       const hashedPlaceholder = await bcrypt.hash(placeholderPass, 12);
       
-      const result = await dbRunAsync(`
+      const userRes = await dbRunAsync(`
         INSERT INTO users (name, email, password, role, tier)
         VALUES (?, ?, ?, ?, ?)
       `, [name, email, hashedPlaceholder, role, tier]);
       
-      userId = result.lastID;
+      userId = userRes.lastID;
 
+      // 2. Provision Enterprise Workspace
       if (tier === 'enterprise') {
         const wsName = `${name.split(' ')[0]}'s Organization`;
         const wsRes = await dbRunAsync(`
@@ -306,35 +318,37 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       }
     }
 
+    // 3. Infrastructure Bootstrap (Self-Healing)
     await ensureQuotaRow(userId, tier);
 
-    // Ensure exactly one primary calendar exists (Deduplication Logic)
-    const existingCals = await dbAllAsync('SELECT id FROM calendars WHERE user_id = ? AND is_primary = 1 ORDER BY id ASC', [userId]);
+    // Bootstrap Primary Calendar
+    const existingCals = await dbAllAsync('SELECT id FROM calendars WHERE user_id = ? AND is_primary = ${isPostgres ? "true" : "1"}', [userId]);
     if (existingCals.length === 0) {
       await dbRunAsync(
-        'INSERT INTO calendars (user_id, name, color, is_primary, type) VALUES (?, ?, ?, ?, ?)',
-        [userId, 'My Calendar', '#7b2fff', 1, 'personal']
+        'INSERT INTO calendars (user_id, name, color, is_primary) VALUES (?, ?, ?, ?)',
+        [userId, 'My Calendar', '#7b2fff', isPostgres ? true : 1]
       );
-    } else if (existingCals.length > 1) {
-      // Cleanup existing duplicates (keep only the oldest one)
-      const idsToDelete = existingCals.slice(1).map(c => c.id);
-      const placeholders = idsToDelete.map(() => '?').join(',');
-      await dbRunAsync(`DELETE FROM calendars WHERE id IN (${placeholders})`, idsToDelete);
     }
 
+    // 4. Identity Generation
     const token = jwt.sign(
       { id: userId, email, role, tier, workspace_id: workspaceId },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
 
+    console.log(`[AuthSync] Successfully synchronized ${email} (${tier})`);
+
     res.json({
       token,
       user: { id: userId, email, name, role, tier, workspace_id: workspaceId }
     });
   } catch (err) {
-    console.error('Auth Sync Error:', err);
-    res.status(500).json({ error: 'Manual sync failed: ' + err.message });
+    console.error('[AuthSync Error] Critical Identity Failure:', err.message);
+    res.status(500).json({ 
+      error: 'Identity synchronization failed.', 
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined 
+    });
   }
 });
 
