@@ -12,7 +12,7 @@
     "install-all": "npm install && npm install --prefix intelliscan-app && npm install --prefix intelliscan-server"
   },
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "dependencies": {
     "concurrently": "^8.2.2",
