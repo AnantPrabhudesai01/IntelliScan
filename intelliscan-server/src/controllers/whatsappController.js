@@ -92,17 +92,24 @@ The image may contain one or MANY separate business cards (up to 25). You MUST i
 ### RULES:
 1. **Name Fallback**: If a person's name is NOT on the card, use the 'Company Name' as the 'name' field.
 2. **Exhaustive Capture**: For EVERY CARD found, you MUST extract: name, company, title, email, phone, website, address.
-3. **No Skipping**: Scan systematically from top-left to bottom-right.
-4. **Validation**: Ensure phone numbers are cleaned (+123...).
+3. **Multilingual Support**: If the card contains text in a non-Latin script (Gujarati, Hindi, Arabic, etc.), you MUST provide:
+   - "name_native": The name in the original script.
+   - "company_native": The company in the original script.
+   - "title_native": The title in the original script.
+4. **No Skipping**: Scan systematically from top-left to bottom-right.
+5. **Validation**: Ensure phone numbers are cleaned (+123...).
 
 Return ONLY a valid JSON object:
 {
   "engine_used": "Gemini 3 Flash (Exhaustive)",
   "cards": [
     {
-      "name": "Full Name or Company",
-      "company": "Company Name",
-      "title": "Job title",
+      "name": "Full Name or Company (English)",
+      "name_native": "Full Name (Original Script)",
+      "company": "Company Name (English)",
+      "company_native": "Company Name (Original Script)",
+      "title": "Job title (English)",
+      "title_native": "Job title (Original Script)",
       "email": "email",
       "phone": "+123456789",
       "website": "url",
@@ -282,14 +289,16 @@ async function saveContact(userId, card, customNotes = '', locationContext = '')
   const result = await dbRunAsync(`
     INSERT INTO contacts (
       user_id, name, email, phone, company, job_title, confidence, 
-      notes, engine_used, inferred_industry, inferred_seniority, location_context
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      notes, engine_used, inferred_industry, inferred_seniority, location_context,
+      name_native, company_native, title_native
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `, [
     userId, card.name, card.email || '', card.phone || '', card.company || '', 
     card.title || '', card.confidence || 95, 
     customNotes || 'Scanned via WhatsApp', card.engine_used || 'WhatsApp AI Bot',
     card.inferred_industry || null, card.inferred_seniority || null,
-    locationContext
+    locationContext,
+    card.name_native || null, card.company_native || null, card.title_native || null
   ]);
   return result.lastID;
 }

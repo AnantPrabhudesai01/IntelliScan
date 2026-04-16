@@ -93,7 +93,10 @@ function normalizeExtractedCard(card = {}, options = {}) {
     address: cleanCardValue(card.address, 280),
     inferred_industry: cleanCardValue(card.inferred_industry, 80),
     inferred_seniority: cleanCardValue(card.inferred_seniority, 80),
-    detected_language: cleanCardValue(card.detected_language || card.language, 64)
+    detected_language: cleanCardValue(card.detected_language || card.language, 64),
+    name_native: cleanCardValue(card.name_native, 160),
+    company_native: cleanCardValue(card.company_native, 160),
+    title_native: cleanCardValue(card.title_native, 160)
   };
 
   if (!normalized.name && normalized.email) {

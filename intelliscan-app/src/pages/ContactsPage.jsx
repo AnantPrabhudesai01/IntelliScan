@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useContacts } from '../context/ContactContext';
-import { Search, Filter, Cpu, Download, Mail, Phone, ChevronRight, AlertTriangle, UserPlus, Globe, LayoutGrid, List, Clock, Trash2, ChevronDown, RefreshCw, CheckCircle2, Calendar, Sparkles, Send, X, Wand2, Zap, ArrowRight, RotateCcw, Share2, Languages, Plus } from 'lucide-react';
+import { Search, Filter, Cpu, Download, Mail, Phone, ChevronRight, AlertTriangle, UserPlus, Globe, LayoutGrid, List, Clock, Trash2, ChevronDown, RefreshCw, CheckCircle2, Calendar, Sparkles, Send, X, Wand2, Zap, ArrowRight, RotateCcw, Share2, Languages, Plus, MapPin } from 'lucide-react';
 import apiClient from '../api/client';
 import * as XLSX from 'xlsx';
 import { useNavigate } from 'react-router-dom';
@@ -1310,6 +1310,7 @@ export default function ContactsPage() {
                   { label: 'Company Name', key: 'company', icon: Globe },
                   { label: 'Email Address', key: 'email', icon: Mail },
                   { label: 'Phone Number', key: 'phone', icon: Phone },
+                  { label: 'Source Location', key: 'location_context', icon: MapPin },
                 ].map((field) => (
                   <div key={field.key} className="space-y-1.5 px-1">
                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-1.5">

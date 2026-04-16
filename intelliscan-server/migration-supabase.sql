@@ -61,7 +61,8 @@ CREATE TABLE IF NOT EXISTS contacts (
     ai_enrichment_news TEXT,
     search_vector TEXT,
     is_deleted BOOLEAN DEFAULT FALSE,
-    deleted_at TIMESTAMPTZ
+    deleted_at TIMESTAMPTZ,
+    location_context TEXT
 );
 
 -- 4. Deals table
