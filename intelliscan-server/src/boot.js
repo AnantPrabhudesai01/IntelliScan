@@ -257,6 +257,30 @@ async function bootstrap() {
       console.log('🤖 System: AI Models seeded successfully.');
     }
 
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS webhooks (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER REFERENCES users(id),
+        workspace_id INTEGER REFERENCES workspaces(id),
+        url TEXT NOT NULL,
+        event_type TEXT DEFAULT 'on_scan',
+        secret_key TEXT,
+        is_active INTEGER DEFAULT 1,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS webhook_logs (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        webhook_id INTEGER REFERENCES webhooks(id),
+        status_code INTEGER,
+        response_body TEXT,
+        latency_ms INTEGER,
+        timestamp ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
     // 2.2 Performance Indexes
     await dbRunAsync('CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id)');
     await dbRunAsync('CREATE INDEX IF NOT EXISTS idx_contacts_is_deleted ON contacts(is_deleted)');

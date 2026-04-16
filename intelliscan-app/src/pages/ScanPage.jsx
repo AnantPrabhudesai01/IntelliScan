@@ -411,6 +411,8 @@ export default function ScanPage() {
         }
       }
     }
+  };
+
   const handleMagicSync = async () => {
     if (!scannedData?.enrichment_payload) return;
     setIsSyncingProfile(true);

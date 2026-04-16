@@ -9,6 +9,7 @@ const { authenticateToken } = require('../middleware/auth');
  * @access Private
  */
 router.get('/dashboard', authenticateToken, analyticsController.getDashboardAnalytics);
+router.get('/stats', analyticsController.getPublicStats); // Public Transparency Gateway
 
 /**
  * @route GET /api/analytics

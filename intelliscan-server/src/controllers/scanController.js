@@ -1,5 +1,5 @@
 const { dbGetAsync, dbRunAsync } = require('../utils/db');
-const { ensureQuotaRow, resolveTierLimits } = require('../utils/quota');
+const { ensureQuotaRow, resolveTierLimits, incrementUsage } = require('../utils/quota');
 const { unifiedExtractionPipeline } = require('../services/aiService');
 const { hasMeaningfulContactData } = require('../utils/aiUtils');
 const { notifyUser } = require('../services/notificationService');
@@ -148,8 +148,8 @@ Accuracy is paramount. If you see a business card, extract every detail with hig
       industry: normalizedCard.inferred_industry
     } : null;
 
-    // 3. Successful scan: Increment Quota
-    await dbRunAsync('UPDATE user_quotas SET used_count = used_count + 1 WHERE user_id = ?', [req.user.id]);
+    // 3. Successful scan: Increment Quota (Unified Governance)
+    await incrementUsage(req.user.id, 'single');
 
     res.json({
       rejected: false,
@@ -239,13 +239,13 @@ Return ONLY a valid JSON object:
 If you cannot detect any cards, return:
 { "cards": [] }`
     });
-
+    
     if (extractionResult.error) {
-      if (shouldUseMockAiFallback()) {
-        await dbRunAsync('UPDATE user_quotas SET group_scans_used = group_scans_used + 1 WHERE user_id = ?', [req.user.id]);
-        return res.json(buildFallbackMultiCardResponse());
-      }
-      return res.status(extractionResult.status || 500).json({ error: extractionResult.error });
+       if (shouldUseMockAiFallback()) {
+         await incrementUsage(req.user.id, 'group');
+         return res.json(buildFallbackMultiCardResponse());
+       }
+       return res.status(extractionResult.status || 500).json({ error: extractionResult.error });
     }
 
     const parsed = extractionResult.data;
