@@ -1,6 +1,7 @@
 {
   "version": 2,
   "name": "intelliscan",
+  "outputDirectory": "intelliscan-app/dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
