@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { setStoredAuth, clearStoredAuth } from '../utils/auth';
+import { setStoredAuth, clearStoredAuth, safeReadStoredUser } from '../utils/auth';
 import { useRole } from '../context/RoleContext';
 
 export default function Auth0Synchronizer() {
