@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "intelliscan-app/dist",
   "functions": {
     "api/index.js": {
       "includeFiles": "intelliscan-server/**",

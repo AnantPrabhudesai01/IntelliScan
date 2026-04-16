@@ -7,7 +7,7 @@
   ],
   "scripts": {
 
-    "build": "npm run build --prefix intelliscan-app && cp -r intelliscan-app/dist/* .",
+    "build": "npm run build --prefix intelliscan-app",
     "install-all": "npm install"
   },
   "engines": {
