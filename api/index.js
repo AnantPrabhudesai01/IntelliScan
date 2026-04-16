@@ -1,11 +1,9 @@
 import app from '../intelliscan-server/src/app.js';
-/**
- * Vercel Modern Monolith API Gateway
- * 
- * Seated at the project root.
- * It imports the main Express server from ../intelliscan-server/src/app.
- */
-const app = require('../intelliscan-server/src/app');
 
-// Export the app as a serverless function
-module.exports = app;
+export default async function handler(req, res) {
+  // Log the method for debugging in Vercel Logs
+  console.log(`Incoming request: ${req.method} ${req.url}`);
+  
+  // Forward everything to Express
+  return app(req, res);
+}
