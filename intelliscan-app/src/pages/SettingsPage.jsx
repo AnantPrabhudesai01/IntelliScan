@@ -157,8 +157,8 @@ export default function SettingsPage() {
         newEmail: newEmail 
       });
       setOtpSent(true);
-      setDebugOtp(res.data.debugCode);
-      showToast('OTP sent to your registered phone');
+      setDebugOtp(res.data.debug_code || res.data.debugCode);
+      showToast('OTP sent to your registered WhatsApp');
     } catch (err) {
       showToast('Failed to send OTP', 'error');
     } finally {
@@ -364,7 +364,17 @@ export default function SettingsPage() {
                    {otpLoading ? <RefreshCw className="animate-spin" size={18} /> : <Check size={18} />}
                   Verify & Update
                 </button>
-                <button onClick={() => setOtpSent(false)} className="w-full text-xs text-indigo-600 font-bold hover:underline">Change Email Address</button>
+                <div className="flex flex-col gap-2">
+                  <button onClick={() => setOtpSent(false)} className="w-full text-xs text-indigo-600 font-bold hover:underline">Change Email Address</button>
+                  <a 
+                    href={`https://wa.me/${profile.phone_number?.replace(/\D/g, '')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-full text-[10px] text-gray-500 font-bold hover:text-indigo-600 transition-colors flex items-center justify-center gap-1"
+                  >
+                    Didn't get the code? <ExternalLink size={10}/> Open WhatsApp
+                  </a>
+                </div>
               </div>
             )}
           </div>

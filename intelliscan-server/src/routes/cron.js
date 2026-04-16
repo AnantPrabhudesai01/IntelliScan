@@ -14,9 +14,9 @@ const { dbAllAsync, isPostgres } = require('../utils/db');
 router.all('/process-all', async (req, res) => {
   // 🔐 Security: Check for a shared secret to prevent unauthorized trigger
   const authHeader = req.headers.authorization;
-  const cronSecret = process.env.CRON_SECRET;
+  const cronSecret = process.env.CRON_SECRET || 'intelliscan_internal_cron_v1'; // Fallback for dev
   
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (authHeader !== `Bearer ${cronSecret}`) {
     console.warn('[Cron] Unauthorized trigger attempt blocked.');
     return res.status(401).json({ error: 'Unauthorized' });
   }

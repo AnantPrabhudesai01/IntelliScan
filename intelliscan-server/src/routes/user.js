@@ -9,6 +9,7 @@ const { ensureQuotaRow, resolveTierLimits } = require('../utils/quota');
 const { logAuditEvent } = require('../utils/logger');
 const { uploadToImgbb, upload } = require('../utils/imageUpload');
 const { AUDIT_SUCCESS, AUDIT_ERROR } = require('../config/constants');
+const { normalizePhone } = require('../utils/auth');
 
 // GET /api/user/quota
 router.get('/quota', authenticateToken, async (req, res) => {
@@ -131,8 +132,9 @@ router.get('/profile', authenticateToken, async (req, res) => {
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
     const { name, phone_number, bio } = req.body;
-    await dbRunAsync('UPDATE users SET name = ?, phone_number = ?, bio = ? WHERE id = ?', [name, phone_number, bio, req.user.id]);
-    res.json({ success: true, message: 'Profile updated' });
+    const cleanPhone = normalizePhone(phone_number);
+    await dbRunAsync('UPDATE users SET name = ?, phone_number = ?, bio = ? WHERE id = ?', [name, cleanPhone, bio, req.user.id]);
+    res.json({ success: true, message: 'Profile updated', phone_number: cleanPhone });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

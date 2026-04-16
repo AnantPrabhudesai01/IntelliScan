@@ -43,6 +43,8 @@ const workspaceRouter = require('./routes/workspaceRoutes');
 const cronRouter = require('./routes/cron');
 const cardRouter = require('./routes/cardRouter');
 const coachRouter = require('./routes/coach');
+const analyticsRouter = require('./routes/analytics');
+const systemRouter = require('./routes/system');
 
 // Controllers
 const scanController = require('./controllers/scanController');
@@ -87,15 +89,9 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // API ROUTE MOUNTING
 // ══════════════════════════════════════════════════════════════════
 
-// Health Check Endpoint
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    db_connected: !!(db || pgPool)
-  });
-});
+// Health Check & System Diagnostics
+app.use('/api/system', systemRouter);
+app.get('/api/health', (req, res) => res.redirect('/api/system/health')); // Compatibility redirect
 
 app.use('/api/auth', authRouter);
 app.use('/api/billing', billingRouter);
@@ -112,6 +108,7 @@ app.use('/api/notifications', notificationsRouter);
 app.use('/api/crm', crmRouter);
 app.use('/api/deals', dealsRouter);
 app.use('/api/ai', aiRouter);
+app.use('/api/email', marketingRouter);
 app.use('/api/email-sequences', marketingRouter);
 app.use('/api/webhooks', webhooksRouter);
 app.use('/api/admin', adminRouter);
@@ -139,9 +136,8 @@ if (process.env.ENABLE_WHATSAPP === 'true') {
 
 app.get('/api/my-card', authenticateToken, cardController.getMyCard);
 
-// User Analytics Placeholder
-app.post('/api/analytics/log', (req, res) => res.json({ success: true }));
-app.post('/api/user/analytics/log', (req, res) => res.json({ success: true }));
+app.use('/api/analytics', analyticsRouter);
+app.use('/api/signals', analyticsRouter);
 
 // Centralized Error Handling
 app.use((err, req, res, next) => {

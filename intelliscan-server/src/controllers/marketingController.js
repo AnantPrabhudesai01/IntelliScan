@@ -44,19 +44,26 @@ exports.enrollContact = async (req, res) => {
   const targetId = sequenceId || sequence_id;
   const contactId = req.params.id;
 
+  if (!targetId) return res.status(400).json({ error: 'sequence_id is required' });
+
   try {
     const firstStep = await dbGetAsync('SELECT delay_days FROM email_sequence_steps WHERE sequence_id = ? ORDER BY order_index ASC LIMIT 1', [targetId]);
     if (!firstStep) return res.status(400).json({ error: 'Sequence has no steps' });
 
+    // Check if contact is already enrolled in this sequence
+    const existing = await dbGetAsync('SELECT id FROM contact_sequences WHERE contact_id = ? AND sequence_id = ? AND status = ?', [contactId, targetId, 'active']);
+    if (existing) return res.status(409).json({ error: 'Contact is already actively enrolled in this sequence.' });
+
     const nextSend = new Date();
-    nextSend.setDate(nextSend.getDate() + firstStep.delay_days);
+    // For the first step, we typically send immediately, but we honor the delay_days of the first step
+    nextSend.setDate(nextSend.getDate() + (firstStep.delay_days || 0));
 
     await dbRunAsync(
-      'INSERT INTO contact_sequences (contact_id, sequence_id, current_step_index, next_send_at) VALUES (?, ?, ?, ?)',
-      [contactId, targetId, 0, nextSend.toISOString()]
+      'INSERT INTO contact_sequences (contact_id, sequence_id, current_step_index, next_send_at, status) VALUES (?, ?, ?, ?, ?)',
+      [contactId, targetId, 0, nextSend.toISOString(), 'active']
     );
 
-    res.json({ success: true, message: 'Contact enrolled in sequence' });
+    res.json({ success: true, message: 'Contact successfully enrolled in AI Sequence.', nextSendAt: nextSend.toISOString() });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -69,12 +76,17 @@ exports.processPendingSequences = async () => {
   const now = new Date().toISOString();
   try {
     const pending = await dbAllAsync(`
-      SELECT cs.*, c.email as contact_email, c.name as contact_name, s.user_id 
+      SELECT cs.*, c.email as contact_email, c.name as contact_name, c.company as contact_company, 
+             c.job_title as contact_job_title, s.user_id 
       FROM contact_sequences cs
       JOIN contacts c ON cs.contact_id = c.id
       JOIN email_sequences s ON cs.sequence_id = s.id
       WHERE cs.status = 'active' AND cs.next_send_at <= ?
     `, [now]);
+
+    if (pending.length > 0) {
+      console.log(`[Marketing] Sequence Worker: Found ${pending.length} pending steps to process.`);
+    }
 
     for (const p of pending) {
       const step = await dbGetAsync(
@@ -83,39 +95,73 @@ exports.processPendingSequences = async () => {
       );
 
       if (step) {
+        console.log(`[Marketing] Sending Step ${p.current_step_index + 1} to ${p.contact_email}`);
+        
         const smtp = createSmtpTransporterFromEnv();
-        if (smtp) {
-          const html = applyTemplateVariables(step.html_body, { name: p.contact_name, email: p.contact_email });
-          const subject = applyTemplateVariables(step.subject, { name: p.contact_name });
+        const vars = { 
+          name: p.contact_name, 
+          email: p.contact_email, 
+          company: p.contact_company,
+          job_title: p.contact_job_title
+        };
 
-          await smtp.transporter.sendMail({
-            from: process.env.SMTP_FROM || 'no-reply@intelliscan.ai',
-            to: p.contact_email,
-            subject: subject,
-            html: html
-          });
+        if (smtp) {
+          const html = applyTemplateVariables(step.html_body, vars);
+          const subject = applyTemplateVariables(step.subject, vars);
+
+          try {
+            await smtp.transporter.sendMail({
+              from: process.env.SMTP_FROM || `"IntelliScan AI" <${process.env.SMTP_USER}>`,
+              to: p.contact_email,
+              subject: subject,
+              html: html
+            });
+            console.log(`[Marketing] Step sent successfully to ${p.contact_email}`);
+          } catch (mailErr) {
+            console.error(`[Marketing] Mail delivery failed for ${p.contact_email}:`, mailErr.message);
+            // Skip updating to next step if delivery failed? 
+            // For now we continue to next step to avoid infinite retries on bad emails
+          }
+        } else {
+          console.warn(`[Marketing][MOCK] SMTP not configured. Mocking send to ${p.contact_email}`);
         }
 
+        // Determine next step
         const nextStep = await dbGetAsync(
-          'SELECT order_index, delay_days FROM email_sequence_steps WHERE sequence_id = ? AND order_index > ? ORDER BY order_index ASC LIMIT 1',
+          'SELECT order_index, delay_days FROM email_sequence_steps 
+           WHERE sequence_id = ? AND order_index > ? 
+           ORDER BY order_index ASC LIMIT 1',
           [p.sequence_id, p.current_step_index]
         );
 
         if (nextStep) {
           const nextDate = new Date();
-          nextDate.setDate(nextDate.getDate() + nextStep.delay_days);
+          nextDate.setDate(nextDate.getDate() + (nextStep.delay_days || 0));
           await dbRunAsync(
             'UPDATE contact_sequences SET current_step_index = ?, next_send_at = ? WHERE id = ?',
             [nextStep.order_index, nextDate.toISOString(), p.id]
           );
+          console.log(`[Marketing] Sequence scheduled for Step ${nextStep.order_index + 1} at ${nextDate.toISOString()}`);
         } else {
           await dbRunAsync("UPDATE contact_sequences SET status = 'completed' WHERE id = ?", [p.id]);
+          console.log(`[Marketing] Sequence completed for ${p.contact_email}`);
         }
       }
     }
   } catch (err) {
-    console.error('Sequence Processing Error:', err.message);
+    console.error('[Marketing] Critical Sequence Processing Error:', err.message);
   }
+};
+
+/**
+ * Initialize background workers for marketing tasks.
+ */
+exports.initWorkers = () => {
+  console.log('[Marketing] Worker initialized: Automation polling active.');
+  // Process pending sequences every 2 minutes for production efficiency
+  setInterval(() => {
+    exports.processPendingSequences();
+  }, 120000);
 };
 
 // --- CAMPAIGN MANAGEMENT ---
@@ -292,13 +338,16 @@ exports.unsubscribe = async (req, res) => {
 
 exports.getAnalyticsOverview = async (req, res) => {
   try {
+    const userId = req.user.id;
+    // Improved overview: accounts for total volume across all outreach types
     const overview = await dbGetAsync(`
       SELECT 
-        COUNT(id) as total_campaigns,
+        (SELECT COUNT(*) FROM email_campaigns WHERE user_id = ?) as total_campaigns,
         (SELECT COUNT(*) FROM email_sends s JOIN email_campaigns c ON s.campaign_id = c.id WHERE c.user_id = ?) as total_sent,
         (SELECT COUNT(*) FROM email_sends s JOIN email_campaigns c ON s.campaign_id = c.id WHERE c.user_id = ? AND s.open_count > 0) as total_opens
-      FROM email_campaigns WHERE user_id = ?`, [req.user.id, req.user.id, req.user.id]);
-    res.json({ success: true, stats: overview });
+    `, [userId, userId, userId]);
+    
+    res.json({ success: true, stats: overview || { total_campaigns: 0, total_sent: 0, total_opens: 0 } });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

@@ -11,6 +11,8 @@ const { dbRunAsync, dbGetAsync, dbAllAsync, sql } = require('../utils/db');
 const { ensureQuotaRow } = require('../utils/quota');
 const { logAuditEvent, AUDIT_SUCCESS, AUDIT_DENIED, AUDIT_ERROR } = require('../utils/logger');
 const { authenticateToken } = require('../middleware/auth');
+const whatsappService = require('../services/whatsappService');
+const { normalizePhone } = require('../utils/auth');
 
 // In-memory OTP store: key = `${userId}_${type}`, value = { code, email, expiresAt }
 const otpStore = new Map();
@@ -357,15 +359,45 @@ router.get('/me', authenticateToken, async (req, res) => {
  */
 router.post('/request-otp', authenticateToken, async (req, res) => {
   try {
-    const { email, type } = req.body;
-    if (!email) return res.status(400).json({ error: 'Email is required' });
+    const { email, type, phone: requestedPhone } = req.body;
+    
+    // 1. Resolve target phone number
+    // We prioritize looking up the user's registered phone, or use the one provided in the request
+    const user = await dbGetAsync('SELECT phone_number FROM users WHERE id = ?', [req.user.id]);
+    const targetPhone = normalizePhone(requestedPhone || user?.phone_number);
 
+    if (!targetPhone) {
+      return res.status(400).json({ 
+        error: 'No WhatsApp number found. Please register your WhatsApp number in Settings first.' 
+      });
+    }
+
+    // 2. Generate OTP
     const code = String(Math.floor(100000 + Math.random() * 900000));
     const key = `${req.user.id}_${type || 'email_change'}`;
     otpStore.set(key, { code, email, expiresAt: Date.now() + 10 * 60 * 1000 });
 
-    console.log(`[OTP] Code ${code} generated for user ${req.user.id} (${type || 'email_change'})`);
-    res.json({ success: true, message: 'OTP sent to new email address', debug_code: code });
+    // 3. Send via WhatsApp
+    console.log(`[OTP] Sending WhatsApp code to ${targetPhone} for user ${req.user.id}`);
+    
+    try {
+      await whatsappService.sendOTP(targetPhone, code);
+    } catch (sendErr) {
+      console.error('[OTP] WhatsApp delivery failed:', sendErr.message);
+      return res.status(500).json({ error: 'Failed to send WhatsApp message. Please check your number.' });
+    }
+
+    const response = { 
+      success: true, 
+      message: 'OTP sent to your WhatsApp number' 
+    };
+
+    // Only include debug_code in development
+    if (process.env.NODE_ENV !== 'production') {
+      response.debug_code = code;
+    }
+
+    res.json(response);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -1,7 +1,21 @@
-import SignalsCard from '../../components/SignalsCard';
 import { Zap, Shield, Sparkles } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { getStoredToken } from '../../utils/auth.js';
 
 export default function SignalsPage() {
+  const [stats, setStats] = useState({ accuracy: '--%', alerts: 0, conversations: 0 });
+
+  useEffect(() => {
+    fetch('/api/analytics/signals', {
+      headers: { 'Authorization': `Bearer ${getStoredToken()}` }
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.accuracy) setStats(data);
+    })
+    .catch(err => console.error('Failed to fetch signals stats:', err));
+  }, []);
+
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 duration-700 pb-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -45,18 +59,18 @@ export default function SignalsPage() {
 
       {/* Analytics Preview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         <div className="bg-white dark:bg-[#111827] p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Signal Accuracy</p>
-            <p className="text-2xl font-black text-gray-900 dark:text-white">98.4%</p>
-         </div>
-         <div className="bg-white dark:bg-[#111827] p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Alerts This Week</p>
-            <p className="text-2xl font-black text-gray-900 dark:text-white">14</p>
-         </div>
-         <div className="bg-white dark:bg-[#111827] p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Conversations Started</p>
-            <p className="text-2xl font-black text-gray-900 dark:text-white">6</p>
-         </div>
+          <div className="bg-white dark:bg-[#111827] p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm">
+             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Signal Accuracy</p>
+             <p className="text-2xl font-black text-gray-900 dark:text-white">{stats.accuracy}</p>
+          </div>
+          <div className="bg-white dark:bg-[#111827] p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm">
+             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Alerts This Week</p>
+             <p className="text-2xl font-black text-gray-900 dark:text-white">{stats.alerts}</p>
+          </div>
+          <div className="bg-white dark:bg-[#111827] p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm">
+             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Conversations Started</p>
+             <p className="text-2xl font-black text-gray-900 dark:text-white">{stats.conversations}</p>
+          </div>
       </div>
     </div>
   );
