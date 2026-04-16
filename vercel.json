@@ -7,16 +7,14 @@
   "outputDirectory": "intelliscan-app/dist",
   "functions": {
     "api/index.js": {
-      "runtime": "nodejs20.x",
       "memory": 1024,
-      "maxDuration": 10,
-      "includeFiles": "intelliscan-server/**"
+      "maxDuration": 10
     }
   },
   "rewrites": [
     {
-    "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
     },
     {
       "source": "/(.*)",
