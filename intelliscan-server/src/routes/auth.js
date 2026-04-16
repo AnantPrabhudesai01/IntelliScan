@@ -344,10 +344,10 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       user: { id: userId, email, name, role, tier, workspace_id: workspaceId }
     });
   } catch (err) {
-    console.error('[AuthSync Error] Critical Identity Failure:', err.message);
+    console.error('[AuthSync Error] Critical Identity Failure:', err.message, err.stack);
     res.status(500).json({ 
       error: 'Identity synchronization failed.', 
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined 
+      details: err.message 
     });
   }
 });
