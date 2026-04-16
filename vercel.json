@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "name": "intelliscan",
-  "cleanUrls": true,
-  "outputDirectory": "intelliscan-app/dist",
   "functions": {
     "api/index.js": {
+      "includeFiles": "intelliscan-server/**",
       "maxDuration": 20
     }
   },
@@ -16,12 +14,6 @@
     {
       "source": "/(.*)",
       "destination": "/index.html"
-    }
-  ],
-  "crons": [
-    {
-      "path": "/api/cron/process-all",
-      "schedule": "0 0 * * *"
     }
   ]
 }
