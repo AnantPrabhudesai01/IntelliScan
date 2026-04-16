@@ -1,10 +1,10 @@
 /**
- * Vercel Flattened API Gateway (Root)
+ * Vercel Monolithic API Gateway
  * 
- * This file is the primary entry point for Vercel functions.
- * It imports the main Express server from within the monorepo logic.
+ * This file is nested inside dist/api during the build phase.
+ * It imports the main Express server from ../../intelliscan-server/src/app.
  */
-const app = require('../intelliscan-server/src/app');
+const app = require('../../intelliscan-server/src/app');
 
 // Export the app as a serverless function
 module.exports = app;
