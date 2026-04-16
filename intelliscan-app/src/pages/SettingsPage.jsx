@@ -251,7 +251,7 @@ export default function SettingsPage() {
     const isUnlocking = phoneStatus === 'UNLOCKING';
     
     try {
-      await apiClient.post('/verify-otp', { 
+      await apiClient.post('/auth/verify-otp', { 
         code: otpCode, 
         type: isUnlocking ? 'unlock_phone' : 'phone_change' 
       });
@@ -271,7 +271,7 @@ export default function SettingsPage() {
       setOtpSent(false);
       setOtpCode('');
     } catch (err) {
-      showToast('Invalid or expired code', 'error');
+      showToast(err.response?.data?.error || 'Invalid or expired code', 'error');
     } finally {
       setOtpLoading(false);
     }
