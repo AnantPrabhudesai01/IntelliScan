@@ -1,10 +1,10 @@
 /**
- * Vercel Root API Gateway (Relocation Ready)
+ * Vercel Root API Gateway (Paradox-Breaker)
  * 
- * This file sits at the root but is designed to be copied into dist/api during build.
- * It imports the main Express server using a path relative to its final destination.
+ * This file is seated at the project root for deployment.
+ * It imports the main Express server from ../intelliscan-server/src/app.
  */
-const app = require('../../intelliscan-server/src/app');
+const app = require('../intelliscan-server/src/app');
 
 // Export the app as a serverless function
 module.exports = app;

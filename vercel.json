@@ -1,7 +1,6 @@
 {
   "version": 2,
   "name": "intelliscan",
-  "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
