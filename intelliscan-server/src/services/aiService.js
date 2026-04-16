@@ -12,7 +12,7 @@ const { extractJsonObjectFromText } = require('../utils/aiUtils');
 async function generateWithFallback(prompt) {
   // 1. Try Gemini
   let geminiKey = process.env.GEMINI_API_KEY;
-  let geminiModelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+  let geminiModelName = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite-preview";
   try {
     const customConfig = await dbGetAsync('SELECT value FROM engine_config WHERE key = "gemini_api_key" OR key = "GEMINI_API_KEY" LIMIT 1');
     if (customConfig && customConfig.value) geminiKey = customConfig.value;
@@ -214,7 +214,7 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
       const apiKey = process.env.GEMINI_API_KEY;
       if (apiKey) {
         // Use REST API for maximum control over version/naming
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`;
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -366,7 +366,7 @@ async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'j
   try {
     const apiKey = process.env.GEMINI_API_KEY;
     if (apiKey) {
-      const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`;
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -130,15 +130,48 @@ export default function ContactsPage() {
   const [detailEnriching, setDetailEnriching] = useState(false);
   const [qrContact, setQrContact] = useState(null);
   const [isEnglishMode, setIsEnglishMode] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
 
   const openContactDetail = (contact) => {
     if (!contact) return;
     setDetailContact(contact);
+    setEditForm({
+      name: contact.name || '',
+      email: contact.email || '',
+      phone: contact.phone || '',
+      company: contact.company || '',
+      job_title: contact.job_title || contact.title || '',
+      notes: contact.notes || '',
+      tags: contact.tags || '',
+      inferred_industry: contact.inferred_industry || '',
+      inferred_seniority: contact.inferred_seniority || ''
+    });
   };
 
   const closeContactDetail = () => {
     setDetailEnriching(false);
     setDetailContact(null);
+    setIsEditing(false);
+  };
+
+  const handleManualSave = async () => {
+    if (!detailContact?.id) return;
+    setIsSaving(true);
+    try {
+      const { updateContact: contextUpdate } = useContacts; // Note: using from destructuring at top of component
+      // Actually use it from the outer scope hook: 
+      // const { updateContact } = useContacts();  (already there)
+      await updateContact(detailContact.id, editForm);
+      setDetailContact({ ...detailContact, ...editForm });
+      setIsEditing(false);
+      showComposerToast('✅ Contact updated successfully!');
+    } catch (err) {
+      showComposerToast('Failed to save changes: ' + err.message, 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   useEffect(() => {
@@ -1220,147 +1253,209 @@ export default function ContactsPage() {
       {detailContact && (
         <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={closeContactDetail} />
-          <div className="relative bg-white dark:bg-gray-950 w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] border border-gray-200 dark:border-gray-800">
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50 dark:bg-gray-900/40">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black">
-                  {(detailContact.name || '?').charAt(0).toUpperCase()}
+          <div className="relative bg-white dark:bg-gray-950 w-full max-w-3xl rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] border border-gray-200 dark:border-gray-800">
+            
+            {/* Modal Header */}
+            <div className="px-8 py-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50 dark:bg-gray-900/40">
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black text-2xl shadow-xl shadow-indigo-500/20">
+                  {(editForm.name || detailContact.name || '?').charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-bold text-gray-900 dark:text-white truncate">{detailContact.name || 'Unknown Contact'}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    {detailContact.job_title || detailContact.title || 'No title'}
-                    {detailContact.company ? ` · ${detailContact.company}` : ''}
+                  {isEditing ? (
+                    <input 
+                      className="text-xl font-black text-gray-900 dark:text-white bg-white dark:bg-gray-900 border border-indigo-400 rounded-lg px-2 py-0.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none"
+                      value={editForm.name}
+                      onChange={e => setEditForm({...editForm, name: e.target.value})}
+                    />
+                  ) : (
+                    <h2 className="text-xl font-black text-gray-900 dark:text-white truncate">{detailContact.name || 'Unknown Contact'}</h2>
+                  )}
+                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate flex items-center gap-2">
+                    {isEditing ? 'Editing Contact Details' : (detailContact.job_title || detailContact.title || 'No title')}
+                    {!isEditing && detailContact.company && <><span className="w-1 h-1 rounded-full bg-gray-300" /> {detailContact.company}</>}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <ConfidenceBadge value={detailContact.confidence} />
                 <button
                   onClick={closeContactDetail}
-                  className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                  title="Close"
+                  className="p-2 text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-white dark:hover:bg-white/5 rounded-xl transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
                 >
-                  <X size={18} />
+                  <X size={20} />
                 </button>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Email</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white break-all">{detailContact.email || '—'}</p>
-                </div>
-                <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Phone</p>
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white break-all">{detailContact.phone || '—'}</p>
-                    {detailContact.phone && (
-                      <button 
-                        onClick={() => handleTruecallerSearch(detailContact.phone)}
-                        className="text-[10px] font-black text-blue-600 dark:text-blue-400 hover:underline"
-                      >
-                        Truecaller ↗
-                      </button>
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-8 space-y-8">
+              
+              {/* Primary Info Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { label: 'Job Title', key: 'job_title', icon: List },
+                  { label: 'Company Name', key: 'company', icon: Globe },
+                  { label: 'Email Address', key: 'email', icon: Mail },
+                  { label: 'Phone Number', key: 'phone', icon: Phone },
+                ].map((field) => (
+                  <div key={field.key} className="space-y-1.5 px-1">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
+                      <field.icon size={12} /> {field.label}
+                    </label>
+                    {isEditing ? (
+                      <input 
+                        className="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                        value={editForm[field.key]}
+                        onChange={e => setEditForm({...editForm, [field.key]: e.target.value})}
+                      />
+                    ) : (
+                      <p className="text-sm font-bold text-gray-900 dark:text-white py-1">{detailContact[field.key] || '—'}</p>
                     )}
                   </div>
+                ))}
+              </div>
+
+              {/* AI & Intelligence Section */}
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 border border-indigo-100 dark:border-indigo-900/40 rounded-3xl p-6 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                  <Sparkles size={48} className="text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Scanned</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{formatDate(detailContact.scan_date)}</p>
+                
+                <div className="flex items-center justify-between gap-3 flex-wrap mb-6">
+                  <div>
+                    <h4 className="text-sm font-black text-indigo-900 dark:text-indigo-300 uppercase tracking-widest flex items-center gap-2">
+                       <Cpu size={14} /> AI Context Engine
+                    </h4>
+                    <p className="text-xs text-indigo-600/60 dark:text-indigo-400/60 font-medium">Automatic enrichment from public profile data.</p>
+                  </div>
+                  {!isEditing && (
+                    <button
+                      onClick={async () => {
+                        if (!detailContact?.id) return;
+                        setDetailEnriching(true);
+                        try {
+                          const result = await enrichContact(detailContact.id);
+                          const enrichedData = result?.data || {};
+                          setDetailContact(prev => ({
+                            ...prev,
+                            linkedin_bio: enrichedData.bio || prev?.linkedin_bio || '',
+                            ai_enrichment_news: enrichedData.latest_news || prev?.ai_enrichment_news || '',
+                            inferred_industry: enrichedData.industry || prev?.inferred_industry || '',
+                            inferred_seniority: enrichedData.seniority || prev?.inferred_seniority || ''
+                          }));
+                        } catch (err) {
+                          showComposerToast('Enrichment failed', 'error');
+                        } finally {
+                          setDetailEnriching(false);
+                        }
+                      }}
+                      className="px-5 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-60 flex items-center gap-2 active:scale-95"
+                      disabled={detailEnriching}
+                    >
+                      {detailEnriching ? <RefreshCw size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                      {detailEnriching ? 'Synthesizing...' : 'Enrich Lead'}
+                    </button>
+                  )}
                 </div>
-                <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Detected Language</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{detailContact.detected_language || '—'}</p>
+
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400/80">Inferred Industry</p>
+                      {isEditing ? (
+                        <input className="w-full bg-white/50 dark:bg-white/5 border border-indigo-200 dark:border-indigo-800 rounded-lg px-3 py-2 text-xs font-bold" value={editForm.inferred_industry} onChange={e => setEditForm({...editForm, inferred_industry: e.target.value})} />
+                      ) : (
+                        <p className="text-sm font-bold text-indigo-900 dark:text-indigo-200">{detailContact.inferred_industry || 'Pending Enrichment'}</p>
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400/80">Seniority Tier</p>
+                      {isEditing ? (
+                        <input className="w-full bg-white/50 dark:bg-white/5 border border-indigo-200 dark:border-indigo-800 rounded-lg px-3 py-2 text-xs font-bold" value={editForm.inferred_seniority} onChange={e => setEditForm({...editForm, inferred_seniority: e.target.value})} />
+                      ) : (
+                        <p className="text-sm font-bold text-indigo-900 dark:text-indigo-200">{detailContact.inferred_seniority || 'Pending Enrichment'}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400/80 mb-1.5 flex items-center gap-1.5">
+                      <Wand2 size={12} /> Personality Analysis & Bio
+                    </p>
+                    <p className={`text-sm leading-relaxed ${detailContact.linkedin_bio ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 italic'}`}>
+                      {detailContact.linkedin_bio || 'No enrichment data available. Run "Enrich Lead" to identify professional background and personality traits.'}
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-                <div className="flex items-center justify-between gap-3 flex-wrap">
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">AI Enrichment</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">Bio and Company Context</p>
+              {/* Notes Area */}
+              <div className="space-y-2 px-1">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
+                  <Sparkles size={12} /> Conversation Notes & Tags
+                </label>
+                {isEditing ? (
+                  <textarea 
+                    className="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 text-sm text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none min-h-[120px] resize-none"
+                    value={editForm.notes}
+                    onChange={e => setEditForm({...editForm, notes: e.target.value})}
+                    placeholder="Enter specific meeting context, follow-up goals, or tags..."
+                  />
+                ) : (
+                  <div className={`p-5 rounded-2xl border ${detailContact.notes ? 'bg-gray-50 dark:bg-gray-900/30 border-gray-100 dark:border-gray-800' : 'bg-gray-50/50 dark:bg-white/5 border-dashed border-gray-200 dark:border-gray-800 italic text-gray-400'} text-sm leading-relaxed whitespace-pre-wrap`}>
+                    {detailContact.notes || 'No manual notes added yet. Use "Edit" to add context from your meeting.'}
                   </div>
-                  <button
-                    onClick={async () => {
-                      if (!detailContact?.id) return;
-                      setDetailEnriching(true);
-                      try {
-                        const result = await enrichContact(detailContact.id);
-                        const enrichedData = result?.data || {};
-                        setDetailContact(prev => ({
-                          ...prev,
-                          linkedin_bio: enrichedData.bio || prev?.linkedin_bio || '',
-                          ai_enrichment_news: enrichedData.latest_news || prev?.ai_enrichment_news || '',
-                          inferred_industry: enrichedData.industry || prev?.inferred_industry || '',
-                          inferred_seniority: enrichedData.seniority || prev?.inferred_seniority || ''
-                        }));
-                      } catch (err) {
-                        console.error(err);
-                      } finally {
-                        setDetailEnriching(false);
-                      }
-                    }}
-                    className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition-colors disabled:opacity-60 flex items-center gap-2"
-                    disabled={detailEnriching}
-                  >
-                    {detailEnriching ? <RefreshCw size={14} className="animate-spin" /> : <Wand2 size={14} />}
-                    {detailEnriching ? 'Enriching...' : 'Enrich with AI'}
-                  </button>
-                </div>
-
-                <div className="mt-4 space-y-3">
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Bio</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{detailContact.linkedin_bio || 'No enrichment yet. Click "Enrich with AI" to generate a summary.'}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Latest News</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{detailContact.ai_enrichment_news || '—'}</p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Industry</p>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{detailContact.inferred_industry || '—'}</p>
-                    </div>
-                    <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Seniority</p>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{detailContact.inferred_seniority || '—'}</p>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
-
-              {detailContact.notes ? (
-                <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Notes</p>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{detailContact.notes}</p>
-                </div>
-              ) : null}
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 gap-3">
-              <button
-                onClick={() => { closeContactDetail(); openComposer(detailContact); }}
-                className="px-5 py-2.5 rounded-xl text-sm font-bold bg-amber-500 text-white hover:bg-amber-600 transition-colors flex items-center gap-2"
-              >
-                <Sparkles size={14} /> AI Follow-Up
-              </button>
+            {/* Modal Footer */}
+            <div className="px-8 py-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-gray-950/80 backdrop-blur-md">
               <div className="flex items-center gap-2">
-                <button
-                  onClick={(e) => { e.stopPropagation(); deleteContact(detailContact.id); closeContactDetail(); }}
-                  className="px-4 py-2.5 rounded-xl text-sm font-bold bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={closeContactDetail}
-                  className="px-4 py-2.5 rounded-xl text-sm font-bold bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
-                >
-                  Close
-                </button>
+                {isEditing ? (
+                  <>
+                    <button 
+                      onClick={handleManualSave}
+                      disabled={isSaving}
+                      className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-sm font-black hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {isSaving ? <RefreshCw size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
+                      {isSaving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                    <button 
+                      onClick={() => setIsEditing(false)}
+                      className="px-6 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-sm font-black hover:bg-gray-200 transition-all active:scale-95"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                   <button
+                    onClick={() => setIsEditing(true)}
+                    className="px-6 py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-black hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm flex items-center gap-2 active:scale-95"
+                  >
+                    Edit Contact
+                  </button>
+                )}
               </div>
+              
+              {!isEditing && (
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => { closeContactDetail(); openComposer(detailContact); }}
+                    className="px-6 py-3 rounded-xl bg-amber-500 text-white text-sm font-black hover:bg-amber-600 transition-all shadow-lg shadow-amber-600/20 flex items-center gap-2 active:scale-95"
+                  >
+                    <Sparkles size={16} /> AI Follow-Up
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteContact(detailContact.id); closeContactDetail(); }}
+                    className="px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    title="Move to Recycle Bin"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

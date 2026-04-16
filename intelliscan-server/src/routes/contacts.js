@@ -49,6 +49,7 @@ router.delete('/bulk', contactsController.bulkDeleteContacts);
  * DELETE /api/contacts/:id
  * @desc    Delete a contact (Soft Delete)
  */
+router.put('/:id', contactsController.updateContact);
 router.delete('/:id', authenticateToken, contactsController.deleteContact);
 router.post('/:id/send-followup', authenticateToken, contactsController.sendFollowup);
 

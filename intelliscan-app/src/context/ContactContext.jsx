@@ -200,9 +200,17 @@ export function ContactProvider({ children }) {
     }
   };
 
-  const updateContact = (updatedContact) => {
-    // Basic local update for now
-    setContacts(prev => prev.map(c => c.id === updatedContact.id ? updatedContact : c));
+  const updateContact = async (id, updatedData) => {
+    try {
+      const token = getStoredToken();
+      await apiClient.put(`/contacts/${id}`, updatedData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setContacts(prev => prev.map(c => c.id === id ? { ...c, ...updatedData } : c));
+    } catch (err) {
+      console.error('Failed to update contact', err);
+      throw err;
+    }
   };
 
   return (

@@ -30,6 +30,17 @@ export default function PipelinePage() {
 
   useEffect(() => {
     fetchData();
+    
+    // Real-time Sync Listener
+    const { socket } = require('../../utils/socket');
+    socket.on('contacts_updated', (data) => {
+      console.debug('[Socket] Pipeline update received:', data);
+      fetchData();
+    });
+
+    return () => {
+      socket.off('contacts_updated');
+    };
   }, []);
 
   const fetchData = async () => {

@@ -233,7 +233,7 @@ exports.bulkDeleteContacts = async (req, res) => {
 
     // Multi-Device Real-time Sync
     if (getIo()) {
-      getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'bulk_delete' });
+      getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'bulk_delete', ids });
     }
 
   } catch (err) {
@@ -288,7 +288,7 @@ exports.restoreContacts = async (req, res) => {
 
     // Multi-Device Real-time Sync
     if (getIo()) {
-      getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'restore' });
+      getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'restore', ids });
     }
 
   } catch (err) {
@@ -358,6 +358,38 @@ exports.permanentlyDeleteContacts = async (req, res) => {
 };
 
 /**
+ * PUT /api/contacts/:id
+ * Manually updates a contact's fields.
+ */
+exports.updateContact = async (req, res) => {
+  const contactId = req.params.id;
+  const { name, email, phone, company, job_title, notes, tags, inferred_industry, inferred_seniority } = req.body;
+
+  try {
+    const result = await dbRunAsync(`
+      UPDATE contacts SET 
+        name = ?, email = ?, phone = ?, company = ?, job_title = ?, 
+        notes = ?, tags = ?, inferred_industry = ?, inferred_seniority = ?,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ? AND user_id = ?
+    `, [name, email || '', phone || '', company || '', job_title || '', notes || '', tags || '', inferred_industry || null, inferred_seniority || null, contactId, req.user.id]);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'Contact not found or not owned by user' });
+    }
+
+    res.json({ success: true, message: 'Contact updated successfully' });
+
+    // Multi-Device Real-time Sync
+    if (getIo()) {
+      getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'update', id: contactId });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+/**
  * PUT /api/contacts/:id/deal
  */
 exports.updateDeal = async (req, res) => {
@@ -378,6 +410,11 @@ exports.updateDeal = async (req, res) => {
     triggerWebhook(workspaceId, 'on_deal_update', { contactId, stage, value });
 
     res.json({ success: true, message: 'Deal updated' });
+
+    // Multi-Device Real-time Sync
+    if (getIo()) {
+      getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'deal_update', id: contactId, stage });
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -807,6 +844,11 @@ exports.reorderContacts = async (req, res) => {
     await Promise.all(promises);
 
     res.json({ success: true, message: 'Reordered successfully' });
+
+    // Multi-Device Real-time Sync
+    if (getIo()) {
+      getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'reorder' });
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
