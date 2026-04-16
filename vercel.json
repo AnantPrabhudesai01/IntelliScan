@@ -2,6 +2,8 @@
   "version": 2,
   "name": "intelliscan",
   "outputDirectory": "intelliscan-app/dist",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -9,11 +11,7 @@
     },
     {
       "source": "/((?!api/).*)",
-      "destination": "/intelliscan-app/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/intelliscan-app/index.html"
+      "destination": "/index.html"
     }
   ],
   "crons": [
