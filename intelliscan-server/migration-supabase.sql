@@ -149,6 +149,14 @@ CREATE TABLE IF NOT EXISTS digital_cards (
     headline TEXT
 );
 
+-- 11. WhatsApp Discoveries (Temporary buffer for auto-detecting numbers)
+CREATE TABLE IF NOT EXISTS whatsapp_discoveries (
+    id SERIAL PRIMARY KEY,
+    discovery_code TEXT UNIQUE NOT NULL,
+    phone_number TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- 11. User Quotas
 CREATE TABLE IF NOT EXISTS user_quotas (
     id SERIAL PRIMARY KEY,

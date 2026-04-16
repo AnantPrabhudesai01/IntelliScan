@@ -39,6 +39,19 @@ exports.handleIncomingMessage = async (req, res) => {
 
     if (!user) {
       console.warn(`[WhatsApp] Unauthorized access attempt from ${fromPhone}`);
+      
+      // 🕵️ Check for Discovery Code (e.g., join baseball-eventually IS-1234)
+      const discoMatch = (Body || '').match(/IS-(\d{4})/i);
+      if (discoMatch) {
+        const discoCode = discoMatch[0].toUpperCase();
+        console.log(`[WhatsApp] Discovery detected! Code: ${discoCode} for Phone: ${fromPhone}`);
+        await dbRunAsync(
+          'INSERT INTO whatsapp_discoveries (discovery_code, phone_number) VALUES (?, ?) ON CONFLICT (discovery_code) DO UPDATE SET phone_number = EXCLUDED.phone_number, created_at = NOW()',
+          [discoCode, fromPhone]
+        );
+        return sendWhatsAppReply(From, `✨ *Discovery Code Detected!* I've linked your session. Now, go back to the IntelliScan dashboard to complete your registration! 🚀`);
+      }
+
       return sendWhatsAppReply(From, `Hi! It looks like your number (${fromPhone}) isn't linked to an IntelliScan account yet.\n\nPlease add your WhatsApp number in the Settings page of the IntelliScan dashboard to start scanning! 🚀`);
     }
 

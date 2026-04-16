@@ -376,9 +376,13 @@ router.post('/request-otp', authenticateToken, async (req, res) => {
     const { email, type, phone: requestedPhone } = req.body;
     
     // 1. Resolve target phone number
-    // We prioritize looking up the user's registered phone, or use the one provided in the request
+    // Mode 'unlock' strictly sends to the CURRENT number in DB for identity check
     const user = await dbGetAsync('SELECT phone_number FROM users WHERE id = ?', [req.user.id]);
-    const targetPhone = normalizePhone(requestedPhone || user?.phone_number);
+    const targetPhone = normalizePhone(type === 'unlock_phone' ? user?.phone_number : (requestedPhone || user?.phone_number));
+
+    if (type === 'unlock_phone' && !user?.phone_number) {
+       return res.status(400).json({ error: 'No verified phone number found to unlock.' });
+    }
 
     if (!targetPhone) {
       return res.status(400).json({ 
@@ -442,6 +446,30 @@ router.post('/verify-otp', authenticateToken, async (req, res) => {
     otpStore.delete(key);
 
     res.json({ success: true, message: 'OTP verified successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @route POST /api/auth/whatsapp/discovery
+ * Checks if a Discovery Code has been claimed by a phone number in the last 10 minutes
+ */
+router.post('/whatsapp/discovery', authenticateToken, async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ error: 'Discovery code is required' });
+
+    const discovery = await dbGetAsync(
+      'SELECT phone_number FROM whatsapp_discoveries WHERE discovery_code = ? AND created_at > NOW() - INTERVAL \'10 minutes\'',
+      [code.toUpperCase()]
+    );
+
+    if (!discovery) {
+      return res.status(404).json({ error: 'No discovery found yet. Please send the WhatsApp message.' });
+    }
+
+    res.json({ success: true, phone_number: discovery.phone_number });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

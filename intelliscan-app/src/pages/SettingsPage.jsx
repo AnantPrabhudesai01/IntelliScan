@@ -52,9 +52,11 @@ export default function SettingsPage() {
   const [otpLoading, setOtpLoading] = useState(false);
   const [debugOtp, setDebugOtp] = useState('');
 
-  // Phone OTP States
-  const [showPhoneModal, setShowPhoneModal] = useState(false);
-
+  // Phone State Machine & Discovery
+  const [phoneStatus, setPhoneStatus] = useState('LOCKED'); // LOCKED, UNLOCKING, EDIT, VERIFYING_NEW
+  const [discoveryCode, setDiscoveryCode] = useState('');
+  const [isPollingDiscovery, setIsPollingDiscovery] = useState(false);
+  const pollIntervalRef = useRef(null);
 
   // Policy Modal
   const [showPolicyModal, setShowPolicyModal] = useState(false);
@@ -78,9 +80,22 @@ export default function SettingsPage() {
       const parsed = parsePhone(phone);
       setCountryCode(parsed.code);
       setLocalPhone(parsed.local);
+      
+      // Initialize state machine
+      if (phone) {
+        setPhoneStatus('LOCKED');
+      } else {
+        setPhoneStatus('EDIT');
+        generateDiscoveryCode();
+      }
     } catch (err) {
       console.error('Failed to fetch profile:', err);
     }
+  };
+
+  const generateDiscoveryCode = () => {
+    const code = `IS-${Math.floor(1000 + Math.random() * 9000)}`;
+    setDiscoveryCode(code);
   };
 
   const handleSaveChanges = async () => {
@@ -232,14 +247,28 @@ export default function SettingsPage() {
   const verifyPhoneOTP = async () => {
     setOtpLoading(true);
     const newPhoneNumber = countryCode + localPhone;
+    const isUnlocking = phoneStatus === 'UNLOCKING';
+    
     try {
-      await apiClient.post('/auth/verify-otp', { code: otpCode, type: 'phone_change' });
-      setOriginalPhone(newPhoneNumber);
-      setProfile(prev => ({ ...prev, phone_number: newPhoneNumber }));
+      await apiClient.post('/verify-otp', { 
+        code: otpCode, 
+        type: isUnlocking ? 'unlock_phone' : 'phone_change' 
+      });
+      
+      if (isUnlocking) {
+        setPhoneStatus('EDIT');
+        generateDiscoveryCode();
+        showToast('Identity verified. You can now change your number.');
+      } else {
+        setOriginalPhone(newPhoneNumber);
+        setProfile(prev => ({ ...prev, phone_number: newPhoneNumber }));
+        setPhoneStatus('LOCKED');
+        showToast('Phone updated successfully!');
+      }
+      
       setShowPhoneModal(false);
       setOtpSent(false);
       setOtpCode('');
-      showToast('Phone verified & saved successfully!');
     } catch (err) {
       showToast('Invalid or expired code', 'error');
     } finally {
@@ -247,7 +276,56 @@ export default function SettingsPage() {
     }
   };
 
+  const startPhoneDiscovery = () => {
+    setIsPollingDiscovery(true);
+    showToast('Waiting for WhatsApp message...', 'info');
+    
+    pollIntervalRef.current = setInterval(async () => {
+      try {
+        const res = await apiClient.post('/auth/whatsapp/discovery', { code: discoveryCode });
+        if (res.data.success && res.data.phone_number) {
+           const parsed = parsePhone(res.data.phone_number);
+           setCountryCode(parsed.code);
+           setLocalPhone(parsed.local);
+           setIsPollingDiscovery(false);
+           clearInterval(pollIntervalRef.current);
+           showToast('Phone number detected automatically! 🚀');
+        }
+      } catch (e) {
+        // Continue polling until timeout or success
+      }
+    }, 3000);
+
+    // Stop polling after 2 minutes
+    setTimeout(() => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+        setIsPollingDiscovery(false);
+      }
+    }, 120000);
+  };
+
+  const requestUnlockOTP = async () => {
+    setOtpLoading(true);
+    try {
+      const res = await apiClient.post('/auth/request-otp', { type: 'unlock_phone' });
+      setOtpSent(true);
+      setDebugOtp(res.data.debug_code || res.data.debugCode);
+      setShowPhoneModal(true);
+      setPhoneStatus('UNLOCKING');
+      showToast('OTP sent to your verified WhatsApp');
+    } catch (err) {
+      showToast('Failed to send OTP', 'error');
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
   useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    };
+  }, []);
     if (activeTab === 'Security') {
       fetchSessions();
     }
@@ -585,37 +663,80 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                   <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Registered Phone (for OTP)</label>
-                     {localPhone && (countryCode + localPhone) !== originalPhone && (
-                       <button onClick={requestPhoneOTP} disabled={otpLoading} className="text-[10px] font-black uppercase text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors">
-                         <Shield size={12}/> Verify via WhatsApp
-                       </button>
-                     )}
-                     {(!localPhone || (countryCode + localPhone) === '') && (
-                       <span className="text-[10px] text-amber-600 font-bold uppercase">Required for verification</span>
-                     )}
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">
+                       Registered Phone (for OTP)
+                     </label>
+                     <div className="flex items-center gap-2">
+                        {phoneStatus === 'LOCKED' && (
+                          <button 
+                            onClick={requestUnlockOTP} 
+                            disabled={otpLoading}
+                            className="text-[10px] font-black uppercase text-indigo-600 hover:text-indigo-700 bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm border border-indigo-100 dark:border-indigo-800"
+                          >
+                            <Shield size={12}/> Change factor via OTP
+                          </button>
+                        )}
+                        {phoneStatus === 'EDIT' && localPhone && (countryCode + localPhone) !== originalPhone && (
+                          <button onClick={requestPhoneOTP} disabled={otpLoading} className="text-[10px] font-black uppercase text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors shadow-md">
+                            <Shield size={12}/> Verify New Number
+                          </button>
+                        )}
+                     </div>
                    </div>
 
-                   {(countryCode + localPhone) !== originalPhone && (
-                     <div className="mt-2 mb-3 p-3 bg-[#25D366]/10 border border-[#25D366]/20 rounded-lg animate-fade-in">
-                      <p className="text-[10px] text-gray-700 dark:text-gray-300 mb-2 font-medium">
-                        <strong>Twilio Sandbox Notice:</strong> Because this platform is running on a free trial, you must temporarily connect your WhatsApp device before you can receive the 6-digit OTP code or send business cards.
-                      </p>
-                      <a 
-                        href="https://wa.me/14155238886?text=join%20baseball-eventually" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 bg-[#25D366] hover:bg-[#128C7E] text-white px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider transition-colors"
-                      >
-                        <Smartphone size={12} /> Step 1: Click to Connect Target Number
-                      </a>
+                   {phoneStatus === 'EDIT' && (
+                     <div className="mt-2 mb-4 p-4 bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100/50 dark:border-indigo-900/20 rounded-2xl animate-fade-in">
+                       <div className="flex items-start gap-3">
+                         <div className="p-2 bg-indigo-600 rounded-lg text-white mt-0.5">
+                           <Smartphone size={16} />
+                         </div>
+                         <div className="flex-1">
+                           <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-100 flex items-center gap-2">
+                             WhatsApp Connect (Discovery Mode)
+                           </h4>
+                           <p className="text-[11px] text-indigo-700/80 dark:text-indigo-300/60 mb-3 font-medium leading-relaxed">
+                             Automatically link your device without typing. Click "Join" and send the generated session code.
+                           </p>
+                           <div className="flex flex-wrap items-center gap-2">
+                              <a 
+                                href={`https://wa.me/14155238886?text=join%20baseball-eventually%20${discoveryCode}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                onClick={startPhoneDiscovery}
+                                className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
+                              >
+                                {isPollingDiscovery ? <RefreshCw className="animate-spin" size={12} /> : <MessageSquare size={12} />}
+                                {isPollingDiscovery ? 'Polling WhatsApp...' : 'Step 1: Click to Connect'}
+                              </a>
+                              {discoveryCode && (
+                                <div className="px-3 py-2 bg-white dark:bg-gray-800 border border-indigo-100 dark:border-indigo-900 rounded-xl">
+                                   <span className="text-[10px] text-gray-400 uppercase font-black tracking-widest mr-2">Session Code:</span>
+                                   <span className="text-sm font-mono font-bold text-indigo-600 dark:text-indigo-400">{discoveryCode}</span>
+                                </div>
+                              )}
+                           </div>
+                         </div>
+                       </div>
                      </div>
+                   )}
+
+                   {phoneStatus === 'UNLOCKING' && (
+                      <div className="mt-2 mb-4 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-2xl animate-pulse">
+                         <div className="flex items-center gap-3">
+                            <RefreshCw className="animate-spin text-amber-600" size={16} />
+                            <div>
+                               <p className="text-sm font-bold text-amber-900 dark:text-amber-100">Waiting for Unlock Code...</p>
+                               <p className="text-[11px] text-amber-700/80 dark:text-amber-300/60">An OTP has been sent to your registered WhatsApp.</p>
+                            </div>
+                         </div>
+                      </div>
                    )}
 
                    <div className="flex gap-2 relative">
                       <select 
-                        className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all min-w-[100px] cursor-pointer"
+                        disabled={phoneStatus === 'LOCKED' || phoneStatus === 'UNLOCKING'}
+                        className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all min-w-[100px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         value={countryCode}
                         onChange={(e) => setCountryCode(e.target.value)}
                       >
@@ -630,18 +751,19 @@ export default function SettingsPage() {
                           <Smartphone size={18} />
                         </div>
                         <input 
-                          className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pl-12 pr-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all" 
+                          disabled={phoneStatus === 'LOCKED' || phoneStatus === 'UNLOCKING'}
+                          className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pl-12 pr-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all disabled:text-gray-400 disabled:bg-gray-100 dark:disabled:bg-gray-900/50" 
                           type="tel" 
                           value={localPhone} 
                           placeholder="e.g. 8160551448" 
                           onChange={(e) => {
-                            const local = e.target.value.replace(/\D/g, ''); // Digits only
+                            const local = e.target.value.replace(/\D/g, ''); 
                             setLocalPhone(local);
                           }}
                         />
                       </div>
                    </div>
-                   <p className="text-[10px] text-gray-400 mt-1 font-medium">Used for secure login and email verification.</p>
+                   <p className="text-[10px] text-gray-400 mt-1 font-medium">Verified WhatsApp device is strictly locked for identity protection.</p>
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
