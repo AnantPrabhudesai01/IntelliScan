@@ -32,9 +32,18 @@ export default function Auth0Synchronizer() {
             body: JSON.stringify({ user, token })
           });
 
-          const data = await response.json();
+          // Indestructible JSON parsing
+          let data = {};
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            data = await response.json();
+          } else {
+            const text = await response.text();
+            throw new Error(`Server returned non-JSON response (${response.status}): ${text.substring(0, 50)}...`);
+          }
+
           if (!response.ok) {
-            throw new Error(data.error || 'Identity synchronization failed.');
+            throw new Error(data.error || `Identity synchronization failed with status ${response.status}`);
           }
           
           // Use the LOCAL JWT returned by our backend for all future API calls
