@@ -322,13 +322,12 @@ export default function SettingsPage() {
   };
 
   useEffect(() => {
-    return () => {
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-    };
-  }, []);
     if (activeTab === 'Security') {
       fetchSessions();
     }
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    };
   }, [activeTab]);
 
   const fetchSessions = async () => {
