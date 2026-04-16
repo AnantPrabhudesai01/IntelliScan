@@ -7,7 +7,7 @@ const passport = require('passport');
 const { z } = require('zod');
 const validate = require('../middleware/validate');
 const { JWT_SECRET, JWT_EXPIRES_IN, PERSONAL_EMAIL_DOMAINS } = require('../config/constants');
-const { dbRunAsync, dbGetAsync, dbAllAsync, sql } = require('../utils/db');
+const { dbRunAsync, dbGetAsync, dbAllAsync, sql, isPostgres } = require('../utils/db');
 const { ensureQuotaRow } = require('../utils/quota');
 const { logAuditEvent, AUDIT_SUCCESS, AUDIT_DENIED, AUDIT_ERROR } = require('../utils/logger');
 const { authenticateToken } = require('../middleware/auth');
@@ -322,7 +322,7 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
     await ensureQuotaRow(userId, tier);
 
     // Bootstrap Primary Calendar
-const existingCals = await dbAllAsync(`SELECT id FROM calendars WHERE user_id = ? AND is_primary = ${isPostgres ? "true" : "1"}`, [userId]);
+    const existingCals = await dbAllAsync(`SELECT id FROM calendars WHERE user_id = ? AND is_primary = ${isPostgres ? "true" : "1"}`, [userId]);
     if (existingCals.length === 0) {
       await dbRunAsync(
         'INSERT INTO calendars (user_id, name, color, is_primary) VALUES (?, ?, ?, ?)',

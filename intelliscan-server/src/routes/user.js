@@ -3,7 +3,7 @@
  */
 const express = require('express');
 const router = express.Router();
-const { db, dbGetAsync, dbRunAsync, dbAllAsync } = require('../utils/db');
+const { db, dbGetAsync, dbRunAsync, dbAllAsync, isPostgres } = require('../utils/db');
 const { authenticateToken, buildAccessProfile } = require('../middleware/auth');
 const { ensureQuotaRow, resolveTierLimits } = require('../utils/quota');
 const { logAuditEvent } = require('../utils/logger');
