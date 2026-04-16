@@ -25,6 +25,17 @@ export default function SettingsPage() {
     bio: ''
   });
   const [originalPhone, setOriginalPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
+  const [localPhone, setLocalPhone] = useState('');
+
+  const parsePhone = (phone) => {
+    if (!phone) return { code: '+91', local: '' };
+    const codes = ['+91', '+1', '+44', '+61', '+971'];
+    for (const code of codes) {
+      if (phone.startsWith(code)) return { code, local: phone.slice(code.length) };
+    }
+    return { code: '+91', local: phone.replace(/^\+/, '') };
+  };
   const [isUploading, setIsUploading] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
   const [showLibraryModal, setShowLibraryModal] = useState(false);
@@ -62,7 +73,11 @@ export default function SettingsPage() {
     try {
       const res = await apiClient.get('/auth/me');
       setProfile(res.data);
-      setOriginalPhone(res.data.phone_number || '');
+      const phone = res.data.phone_number || '';
+      setOriginalPhone(phone);
+      const parsed = parsePhone(phone);
+      setCountryCode(parsed.code);
+      setLocalPhone(parsed.local);
     } catch (err) {
       console.error('Failed to fetch profile:', err);
     }
@@ -572,11 +587,38 @@ export default function SettingsPage() {
                        <span className="text-[10px] text-amber-600 font-bold uppercase">Required for verification</span>
                      )}
                    </div>
-                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                      <Smartphone size={18} />
+                   <div className="flex gap-2 relative">
+                    <select 
+                      className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all min-w-[100px] cursor-pointer"
+                      value={countryCode}
+                      onChange={(e) => {
+                        const code = e.target.value;
+                        setCountryCode(code);
+                        if (localPhone) setProfile(prev => ({ ...prev, phone_number: code + localPhone }));
+                      }}
+                    >
+                      <option value="+91">🇮🇳 +91</option>
+                      <option value="+1">🇺🇸 +1</option>
+                      <option value="+44">🇬🇧 +44</option>
+                      <option value="+61">🇦🇺 +61</option>
+                      <option value="+971">🇦🇪 +971</option>
+                    </select>
+                    <div className="relative flex-1">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                        <Smartphone size={18} />
+                      </div>
+                      <input 
+                        className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pl-12 pr-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all" 
+                        type="tel" 
+                        value={localPhone} 
+                        placeholder="e.g. 8160551448" 
+                        onChange={(e) => {
+                          const local = e.target.value.replace(/\D/g, ''); // Digits only
+                          setLocalPhone(local);
+                          setProfile(prev => ({ ...prev, phone_number: local ? countryCode + local : '' }));
+                        }}
+                      />
                     </div>
-                    <input className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pl-12 pr-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all" type="text" value={profile.phone_number || ''} placeholder="e.g. 9876543210" onChange={(e) => setProfile(prev => ({ ...prev, phone_number: e.target.value }))}/>
                    </div>
                    <p className="text-[10px] text-gray-400 mt-1 font-medium">Used for secure login and email verification.</p>
                 </div>
