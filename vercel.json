@@ -16,18 +16,6 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/assets/(.*)",
-      "destination": "/assets/$1"
-    },
-    {
-      "source": "/favicon.svg",
-      "destination": "/favicon.svg"
-    },
-    {
-      "source": "/icons.svg",
-      "destination": "/icons.svg"
-    },
-    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

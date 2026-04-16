@@ -1,8 +1,8 @@
 /**
  * Vercel Flattened API Gateway (Root)
  * 
- * This is the high-fidelity entry point for Vercel functions.
- * It imports the main Express app from the intelliscan-server workspace.
+ * This file is the primary entry point for Vercel functions.
+ * It imports the main Express server from within the monorepo logic.
  */
 const app = require('../intelliscan-server/src/app');
 
