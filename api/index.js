@@ -1,10 +1,10 @@
 /**
- * Vercel Zero-Config API Bridge (Root Scope)
+ * Vercel Flattened API Gateway (Root)
  * 
- * This file acts as the primary entry point for Vercel functions.
+ * This is the high-fidelity entry point for Vercel functions.
  * It imports the main Express app from the intelliscan-server workspace.
  */
 const app = require('../intelliscan-server/src/app');
 
-// Export the app to be handled as a serverless function by @vercel/node
+// Export the app as a serverless function
 module.exports = app;
