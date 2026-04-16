@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace=intelliscan-app\" \"npm run dev --workspace=intelliscan-server\"",
-    "build": "npm run build --workspace=intelliscan-app && cp -r intelliscan-app/dist/* . && mkdir -p dist",
+    "build": "npm run build --workspace=intelliscan-app && mkdir -p dist/api && cp api/index.js dist/api/ && cp -r intelliscan-app/dist/* dist/",
     "start": "npm start --workspace=intelliscan-server",
     "install-all": "npm install && npm install --workspace=intelliscan-app && npm install --workspace=intelliscan-server"
   },
