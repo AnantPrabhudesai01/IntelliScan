@@ -3,7 +3,6 @@
   "name": "intelliscan",
   "cleanUrls": true,
   "trailingSlash": false,
-  "outputDirectory": "dist",
   "functions": {
     "api/index.js": {
       "runtime": "nodejs20.x",
