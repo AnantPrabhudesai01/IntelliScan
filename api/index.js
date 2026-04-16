@@ -1,3 +1,4 @@
+import app from '../intelliscan-server/src/app';
 // api/index.js (Production Gateway)
 const app = require('../intelliscan-server/src/app');
 

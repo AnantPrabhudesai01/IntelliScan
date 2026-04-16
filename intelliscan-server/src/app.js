@@ -128,9 +128,8 @@ if (process.env.ENABLE_WHATSAPP === 'true') {
   app.use('/api/webhooks/whatsapp', (req, res, next) => {
     try {
       const logEntry = `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} | From: ${req.body?.From || 'N/A'} | Body: ${req.body?.Body || ''}\n`;
-      fs.appendFileSync(path.join(__dirname, '../webhook_debug.log'), logEntry);
     } catch (e) {
-      console.error('Logging Error:', e);
+      // console.error('Logging Error:', e);
     }
     next();
   }, whatsappRouter);
