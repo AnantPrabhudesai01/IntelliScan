@@ -476,4 +476,15 @@ $$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS trg_contacts_search ON contacts;
 CREATE TRIGGER trg_contacts_search BEFORE INSERT OR UPDATE
-ON contacts FOR EACH ROW EXECUTE FUNCTION contacts_search_trigger();
+-- 29. Persistent OTP storage (Serverless stability)
+CREATE TABLE IF NOT EXISTS otp_codes (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    type TEXT NOT NULL,
+    code TEXT NOT NULL,
+    meta_data JSONB, -- Stores email/phone for verification
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(user_id, type)
+);
+CREATE INDEX IF NOT EXISTS idx_otp_expires ON otp_codes(expires_at);

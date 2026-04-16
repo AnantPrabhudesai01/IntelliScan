@@ -14,8 +14,7 @@ const { authenticateToken } = require('../middleware/auth');
 const whatsappService = require('../services/whatsappService');
 const { normalizePhone } = require('../utils/auth');
 
-// In-memory OTP store: key = `${userId}_${type}`, value = { code, email, expiresAt }
-const otpStore = new Map();
+// OTP storage is now database-backed via otp_codes table for serverless stability.
 
 // --- SCHEMAS ---
 
@@ -392,8 +391,20 @@ router.post('/request-otp', authenticateToken, async (req, res) => {
 
     // 2. Generate OTP
     const code = String(Math.floor(100000 + Math.random() * 900000));
-    const key = `${req.user.id}_${type || 'email_change'}`;
-    otpStore.set(key, { code, email, phone: targetPhone, expiresAt: Date.now() + 10 * 60 * 1000 });
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const metaData = JSON.stringify({ email, phone: targetPhone });
+
+    // Store in DB (Persistent for serverless)
+    const otpType = type || 'email_change';
+    await dbRunAsync(`
+      INSERT INTO otp_codes (user_id, type, code, meta_data, expires_at)
+      VALUES (?, ?, ?, ?, ?)
+      ON CONFLICT (user_id, type) DO UPDATE SET
+        code = EXCLUDED.code,
+        meta_data = EXCLUDED.meta_data,
+        expires_at = EXCLUDED.expires_at,
+        created_at = NOW()
+    `, [req.user.id, otpType, code, metaData, expiresAt]);
 
     // 3. Send via WhatsApp
     console.log(`[OTP] Sending WhatsApp code to ${targetPhone} for user ${req.user.id}`);
@@ -428,23 +439,37 @@ router.post('/request-otp', authenticateToken, async (req, res) => {
 router.post('/verify-otp', authenticateToken, async (req, res) => {
   try {
     const { code, type } = req.body;
-    const key = `${req.user.id}_${type || 'email_change'}`;
-    const entry = otpStore.get(key);
+    const otpType = type || 'email_change';
+
+    // Fetch from DB
+    const entry = await dbGetAsync(
+      'SELECT * FROM otp_codes WHERE user_id = ? AND type = ?', 
+      [req.user.id, otpType]
+    );
 
     if (!entry) return res.status(400).json({ error: 'No OTP request found. Please request a new code.' });
-    if (Date.now() > entry.expiresAt) {
-      otpStore.delete(key);
+    
+    // Check Expiration (Postgres returns TIMESTAMPTZ as Date object or ISO string depending on driver)
+    const expiry = new Date(entry.expires_at).getTime();
+    if (Date.now() > expiry) {
+      await dbRunAsync('DELETE FROM otp_codes WHERE id = ?', [entry.id]);
       return res.status(400).json({ error: 'OTP has expired. Please request a new code.' });
     }
+    
     if (entry.code !== String(code)) return res.status(400).json({ error: 'Invalid OTP code' });
 
-    if (type === 'email_change' && entry.email) {
-      await dbRunAsync('UPDATE users SET email = ? WHERE id = ?', [entry.email, req.user.id]);
+    // Meta data parsing
+    const meta = typeof entry.meta_data === 'string' ? JSON.parse(entry.meta_data) : entry.meta_data;
+
+    if (otpType === 'email_change' && meta?.email) {
+      await dbRunAsync('UPDATE users SET email = ? WHERE id = ?', [meta.email, req.user.id]);
     }
-    if (type === 'phone_change' && entry.phone) {
-      await dbRunAsync('UPDATE users SET phone_number = ? WHERE id = ?', [entry.phone, req.user.id]);
+    if (otpType === 'phone_change' && meta?.phone) {
+      await dbRunAsync('UPDATE users SET phone_number = ? WHERE id = ?', [meta.phone, req.user.id]);
     }
-    otpStore.delete(key);
+    
+    // Cleanup
+    await dbRunAsync('DELETE FROM otp_codes WHERE id = ?', [entry.id]);
 
     res.json({ success: true, message: 'OTP verified successfully' });
   } catch (err) {
