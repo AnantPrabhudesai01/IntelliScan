@@ -130,8 +130,31 @@ Accuracy is paramount. If you see a business card, extract every detail with hig
       });
     }
 
+    // 1. Detection: Is this the user's own card?
+    const userEmail = (req.user.email || '').toLowerCase();
+    const userName = (req.user.name || '').toLowerCase();
+    const cardEmail = (normalizedCard.email || '').toLowerCase();
+    const cardName = (normalizedCard.name || '').toLowerCase();
+
+    const isSelfScan = (cardEmail && cardEmail === userEmail) || 
+                       (cardName && userName && cardName.includes(userName));
+
+    // 2. Prepare Enrichment Payload (Magic Sync)
+    const enrichmentPayload = isSelfScan ? {
+      title: normalizedCard.title,
+      company: normalizedCard.company,
+      phone: normalizedCard.phone,
+      bio: normalizedCard.linkedin_bio || `Professional ${normalizedCard.title} in ${normalizedCard.inferred_industry}`,
+      industry: normalizedCard.inferred_industry
+    } : null;
+
+    // 3. Successful scan: Increment Quota
+    await dbRunAsync('UPDATE user_quotas SET used_count = used_count + 1 WHERE user_id = ?', [req.user.id]);
+
     res.json({
       rejected: false,
+      is_self_scan: isSelfScan,
+      enrichment_payload: enrichmentPayload,
       ...normalizedCard,
       engine_used: scannedData.engine_used || 'Gemini 2.5 Flash Enterprise'
     });

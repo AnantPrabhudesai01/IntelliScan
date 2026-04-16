@@ -197,6 +197,66 @@ async function bootstrap() {
       )
     `);
 
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS user_cards (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER UNIQUE REFERENCES users(id),
+        url_slug TEXT UNIQUE,
+        headline TEXT,
+        bio TEXT,
+        views INTEGER DEFAULT 0,
+        saves INTEGER DEFAULT 0,
+        design_json ${isPostgres ? 'JSONB' : 'TEXT'} DEFAULT '{}',
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS user_quotas (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER UNIQUE REFERENCES users(id),
+        used_count INTEGER DEFAULT 0,
+        limit_amount INTEGER DEFAULT 10,
+        group_scans_used INTEGER DEFAULT 0,
+        group_limit_amount INTEGER DEFAULT 1,
+        last_reset_date ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS ai_models (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        name TEXT,
+        type TEXT,
+        status TEXT DEFAULT 'training',
+        accuracy REAL DEFAULT 0,
+        latency_ms INTEGER DEFAULT 0,
+        vram_gb REAL DEFAULT 0,
+        calls_30d INTEGER DEFAULT 0,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
+    // Seed default models if none exist
+    const modelCount = await dbGetAsync('SELECT COUNT(*) as cnt FROM ai_models');
+    if (modelCount.cnt === 0) {
+      const defaultModels = [
+        ['Gemini 2.5 Pro (Enterprise)', 'OCR / Vision', 'deployed', 98.4, 450, 0, 12450],
+        ['OpenAI GPT-4o Mini', 'Extract / Logic', 'deployed', 96.2, 320, 0, 8900],
+        ['Llama 3 70B (Local)', 'Signal Aggregator', 'training', 92.1, 1200, 48.2, 450],
+        ['Claude 3.5 Sonnet', 'Outreach AI', 'paused', 97.8, 650, 0, 0]
+      ];
+      for (const m of defaultModels) {
+        await dbRunAsync(
+          'INSERT INTO ai_models (name, type, status, accuracy, latency_ms, vram_gb, calls_30d) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          m
+        );
+      }
+      console.log('🤖 System: AI Models seeded successfully.');
+    }
+
     // 2.2 Performance Indexes
     await dbRunAsync('CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id)');
     await dbRunAsync('CREATE INDEX IF NOT EXISTS idx_contacts_is_deleted ON contacts(is_deleted)');

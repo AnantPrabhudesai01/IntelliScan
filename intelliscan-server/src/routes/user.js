@@ -140,6 +140,37 @@ router.put('/profile', authenticateToken, async (req, res) => {
   }
 });
 
+// POST /api/user/enrich-profile
+// One-tap sync from a self-scan result
+router.post('/enrich-profile', authenticateToken, async (req, res) => {
+  try {
+    const { title, company, phone, bio } = req.body;
+    const userId = req.user.id;
+    const cleanPhone = normalizePhone(phone);
+
+    // 1. Update core profile
+    await dbRunAsync(
+      'UPDATE users SET phone_number = ?, bio = ? WHERE id = ?',
+      [cleanPhone, bio, userId]
+    );
+
+    // 2. Update digital card (Identity Pillar)
+    await dbRunAsync(`
+      INSERT INTO user_cards (user_id, headline, bio)
+      VALUES (?, ?, ?)
+      ON CONFLICT (user_id) DO UPDATE SET
+        headline = EXCLUDED.headline,
+        bio = EXCLUDED.bio,
+        updated_at = ${isPostgres ? 'NOW()' : 'CURRENT_TIMESTAMP'}
+    `, [userId, `${title} at ${company}`, bio]);
+
+    res.json({ success: true, message: 'Identity synchronized with scanned card!' });
+  } catch (err) {
+    console.error('[Enrichment Error]', err);
+    res.status(500).json({ error: 'Failed to synchronize identity' });
+  }
+});
+
 // GET /api/profile/avatar-library
 router.get('/profile/avatar-library', authenticateToken, (req, res) => {
   res.json([

@@ -54,21 +54,18 @@ async function ensureQuotaRow(userId, currentTier = 'personal') {
       END,
       
       used_count = CASE 
-        WHEN EXTRACT(MONTH FROM user_quotas.last_reset_date) != EXTRACT(MONTH FROM CURRENT_TIMESTAMP) 
-             OR EXTRACT(YEAR FROM user_quotas.last_reset_date) != EXTRACT(YEAR FROM CURRENT_TIMESTAMP)
+        WHEN DATE_TRUNC('month', user_quotas.last_reset_date) != DATE_TRUNC('month', CURRENT_TIMESTAMP)
         THEN 0 
         ELSE user_quotas.used_count 
       END,
       group_scans_used = CASE 
-        WHEN EXTRACT(MONTH FROM user_quotas.last_reset_date) != EXTRACT(MONTH FROM CURRENT_TIMESTAMP) 
-             OR EXTRACT(YEAR FROM user_quotas.last_reset_date) != EXTRACT(YEAR FROM CURRENT_TIMESTAMP)
+        WHEN DATE_TRUNC('month', user_quotas.last_reset_date) != DATE_TRUNC('month', CURRENT_TIMESTAMP)
         THEN 0 
         ELSE user_quotas.group_scans_used 
       END,
       last_reset_date = CASE 
-        WHEN EXTRACT(MONTH FROM user_quotas.last_reset_date) != EXTRACT(MONTH FROM CURRENT_TIMESTAMP) 
-             OR EXTRACT(YEAR FROM user_quotas.last_reset_date) != EXTRACT(YEAR FROM CURRENT_TIMESTAMP)
-        THEN ${sql.monthStart} 
+        WHEN DATE_TRUNC('month', user_quotas.last_reset_date) != DATE_TRUNC('month', CURRENT_TIMESTAMP)
+        THEN CURRENT_TIMESTAMP 
         ELSE user_quotas.last_reset_date 
       END;
   `;

@@ -45,6 +45,7 @@ const cardRouter = require('./routes/cardRouter');
 const coachRouter = require('./routes/coach');
 const analyticsRouter = require('./routes/analytics');
 const systemRouter = require('./routes/system');
+const publicRouter = require('./routes/public');
 
 // Controllers
 const scanController = require('./controllers/scanController');
@@ -91,6 +92,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Health Check & System Diagnostics
 app.use('/api/system', systemRouter);
+app.use('/api/public', publicRouter); // Standardized Public Gateway
 app.get('/api/health', (req, res) => res.redirect('/api/system/health')); // Compatibility redirect
 
 app.use('/api/auth', authRouter);

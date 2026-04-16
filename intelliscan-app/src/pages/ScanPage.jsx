@@ -40,6 +40,8 @@ export default function ScanPage() {
   const [isCheckingHealth, setIsCheckingHealth] = useState(false);
   const [showHealthModal, setShowHealthModal] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
+  const [showEnrichmentBanner, setShowEnrichmentBanner] = useState(false);
+  const [isSyncingProfile, setIsSyncingProfile] = useState(false);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -250,6 +252,10 @@ export default function ScanPage() {
       localStorage.setItem('intelliscan_cached_scan', JSON.stringify(extracted));
       setIsScanning(false); 
 
+      if (extracted.is_self_scan) {
+        setShowEnrichmentBanner(true);
+      }
+
       // Duplicate check (runs in background)
       try {
         const contactsRes = await fetch('/api/contacts', { headers: { Authorization: `Bearer ${token}` } });
@@ -404,6 +410,28 @@ export default function ScanPage() {
           setErrorMsg(apiMsg || err?.message || 'Failed to save contact. Please try again.');
         }
       }
+    }
+  const handleMagicSync = async () => {
+    if (!scannedData?.enrichment_payload) return;
+    setIsSyncingProfile(true);
+    try {
+      const token = getStoredToken();
+      const res = await fetch('/api/user/enrich-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(scannedData.enrichment_payload)
+      });
+      if (!res.ok) throw new Error('Enrichment failed');
+      
+      toast.success('Magic Sync Complete! Profile updated.', {
+        icon: '✨',
+        style: { borderRadius: '10px', background: '#21132E', color: '#fff' }
+      });
+      setShowEnrichmentBanner(false);
+    } catch (err) {
+      toast.error('Sync failed: ' + err.message);
+    } finally {
+      setIsSyncingProfile(false);
     }
   };
 
@@ -717,6 +745,44 @@ export default function ScanPage() {
         {/* Right: Extracted Data / Multi Results */}
         <div className="lg:col-span-7 space-y-6">
           
+          {/* ────── MAGIC SYNC BANNER ────── */}
+          {showEnrichmentBanner && scannedData && (
+            <div className="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl p-6 text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden animate-in slide-in-from-right-4 duration-500">
+               <div className="absolute top-0 right-0 p-4 opacity-20 rotate-12">
+                  <Sparkles size={120} />
+               </div>
+               <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
+                  <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center text-3xl font-black shrink-0 border border-white/30">
+                     {scannedData.name?.charAt(0)}
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                     <h3 className="text-xl font-black uppercase tracking-tighter italic flex items-center justify-center md:justify-start gap-2">
+                        <Sparkles size={20} /> Card Identity Detected
+                     </h3>
+                     <p className="text-sm font-medium opacity-90 mt-1">
+                        We've identified this as your card. Would you like to **Magic Sync** this info with your professional profile?
+                     </p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                     <button 
+                        onClick={() => setShowEnrichmentBanner(false)}
+                        className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold transition-all"
+                     >
+                        Ignore
+                     </button>
+                     <button 
+                        onClick={handleMagicSync}
+                        disabled={isSyncingProfile}
+                        className="px-6 py-2 bg-white text-indigo-600 rounded-xl text-xs font-black shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+                     >
+                        {isSyncingProfile ? <RefreshCw className="animate-spin" size={14} /> : <Wand2 size={14} />}
+                        Sync with Profile
+                     </button>
+                  </div>
+               </div>
+            </div>
+          )}
+
           {/* ────── MULTI RESULTS VIEW ────── */}
           {scanMode === 'multi' && multiResults && (
             <div className="space-y-6 animate-in fade-in duration-500">

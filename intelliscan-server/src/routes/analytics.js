@@ -23,4 +23,18 @@ router.get('/', authenticateToken, analyticsController.getSignalsList);
  */
 router.get('/signals', authenticateToken, analyticsController.getSignalsStats);
 
+/**
+ * @route POST /api/analytics/log
+ * @desc Log user activity (clicks, session duration, etc.) for performance monitoring.
+ * @access Public (Safe for anonymous tracking)
+ */
+router.post('/log', analyticsController.logActivity);
+
+/**
+ * @route GET /api/engine/stats
+ * @desc Get real-time engine health, throughput, and active crawler nodes.
+ * @access Private
+ */
+router.get('/engine/stats', authenticateToken, analyticsController.getEngineStats);
+
 module.exports = router;

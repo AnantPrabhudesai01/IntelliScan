@@ -1,9 +1,10 @@
 const { dbGetAsync, dbRunAsync, isPostgres } = require('../utils/db');
-const { unifiedTextAIPipeline } = require('../services/aiService');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY);
 
 /**
  * Controller for managing digital business cards and AI designs.
- * Standardized to use 'user_cards' table.
  */
 
 exports.getMyCard = async (req, res) => {
@@ -12,21 +13,7 @@ exports.getMyCard = async (req, res) => {
     const card = await dbGetAsync('SELECT * FROM user_cards WHERE user_id = ?', [userId]);
     
     if (!card) {
-      // Return beautiful defaults if no card exists yet
-      return res.json({
-        url_slug: '',
-        bio: 'Digital business card for networking.',
-        headline: 'Founder & Professional',
-        design_json: { 
-          primary: '#4F46E5', 
-          secondary: '#7C3AED', 
-          layout: 'glassmorphism', 
-          font: 'Inter',
-          gradient_angle: '135deg'
-        },
-        views: 0,
-        saves: 0
-      });
+      return res.json({ url_slug: null, views: 0, saves: 0, design_json: {} });
     }
 
     res.json({
@@ -65,41 +52,50 @@ exports.saveCard = async (req, res) => {
   }
 };
 
-exports.generateDesign = async (req, res) => {
+exports.generateAiDesign = async (req, res) => {
   try {
-    const { firstName, lastName, name: providedName, title, company, industry, vibe } = req.body;
-    const name = providedName || `${firstName || ''} ${lastName || ''}`.trim() || 'Professional';
+    const { name, title, company, industry, vibe } = req.body;
 
+    if (!process.env.GEMINI_API_KEY && !process.env.GOOGLE_API_KEY) {
+      // Fallback for mock environments
+      return res.json({
+        headline: `${title} at ${company}`,
+        bio: `Connect with ${name}, a professional in ${industry}. Designed with ${vibe} vibes.`,
+        design: {
+          primary: '#4F46E5',
+          secondary: '#7C3AED',
+          layout: 'glassmorphism',
+          font: 'Inter',
+          gradient_angle: '135deg'
+        }
+      });
+    }
+
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const prompt = `
-      You are a world-class brand designer for IntelliScan. 
-      Generate a premium digital business card design configuration.
+      You are a professional brand designer for IntelliScan. 
+      Generate a premium digital business card design configuration in JSON format.
       
       User Profile:
       - Name: ${name}
-      - Title: ${title || 'Leader'}
-      - Company: ${company || 'Stealth Startup'}
-      - Industry: ${industry || 'Technology'}
-      - Theme Vibe: ${vibe || 'Premium and futuristic'}
+      - Title: ${title}
+      - Company: ${company}
+      - Industry: ${industry}
+      - Theme Vibe: ${vibe}
 
-      Requirements:
-      1. Return JSON ONLY.
-      2. Provide a "headline" (Professional networking headline).
-      3. Provide a "bio" (Compelling 2-sentence bio).
-      4. Provide a "design" object:
-         - "primary" (HEX code)
-         - "secondary" (HEX code)
-         - "layout" (glassmorphism, minimalist, bold_dark, or corporate_pro)
-         - "font" (Inter, Roboto, Montserrat, or Outfit)
-         - "gradient_angle" (e.g., '135deg')
+      Rules:
+      1. Return JSON ONLY. No markdown blocks.
+      2. Include: "headline", "bio" (compelling short bio), and a "design" object.
+      3. Design object must have: "primary" (hex), "secondary" (hex), "layout" (one of: glassmorphism, minimal, bold_dark, corporate_pro), "font" (Inter, Roboto, Playfair Display), and "gradient_angle".
     `;
 
-    const aiResponse = await unifiedTextAIPipeline({ prompt, responseFormat: 'json' });
-    
-    if (aiResponse.success) {
-      res.json(aiResponse.data);
-    } else {
-      throw new Error(aiResponse.error || 'AI designer took a break.');
-    }
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text().trim();
+    // Clean potential markdown blocks
+    const cleanJson = responseText.replace(/```json|```/g, "").trim();
+    const aiDesign = JSON.parse(cleanJson);
+
+    res.json(aiDesign);
   } catch (err) {
     console.error('[AI Design Error]', err);
     res.status(500).json({ error: 'AI Designer is currently calibrating. Please try again.' });

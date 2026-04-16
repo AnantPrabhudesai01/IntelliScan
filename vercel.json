@@ -1,15 +1,10 @@
 {
   "version": 2,
   "name": "intelliscan",
-  "functions": {
-    "intelliscan-server/api/index.js": {
-      "runtime": "nodejs24.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/intelliscan-server/api/index.js"
+      "destination": "/api/index.js"
     },
     {
       "source": "/((?!api/).*)",
