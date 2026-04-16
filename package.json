@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix intelliscan-app\" \"npm run dev --prefix intelliscan-server\"",
-    "build": "npm run build --prefix intelliscan-app && cp -r intelliscan-app/dist/* . && rm -rf dist",
+    // "build": "npm run build --prefix intelliscan-app && cp -r intelliscan-app/dist/* . && rm -rf dist",
+    "build": "npm run build --prefix intelliscan-app",
     "start": "node intelliscan-server/src/server.js",
     "install-all": "npm install && npm install --prefix intelliscan-app && npm install --prefix intelliscan-server"
   },
