@@ -127,12 +127,12 @@ exports.processPendingSequences = async () => {
         }
 
         // Determine next step
-        const nextStep = await dbGetAsync(
-          'SELECT order_index, delay_days FROM email_sequence_steps 
-           WHERE sequence_id = ? AND order_index > ? 
-           ORDER BY order_index ASC LIMIT 1',
-          [p.sequence_id, p.current_step_index]
-        );
+  // ✅ FIXED CODE (Backticks allow multiline strings)
+const steps = await dbAllAsync(`
+  SELECT order_index, delay_days 
+  FROM email_sequence_steps 
+  WHERE sequence_id = ?
+`, [sequenceId]);
 
         if (nextStep) {
           const nextDate = new Date();
