@@ -1,13 +1,13 @@
 {
   "version": 2,
   "name": "intelliscan",
-  "outputDirectory": "intelliscan-app/dist",
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
     "api/index.js": {
       "memory": 1024,
-      "maxDuration": 10
+      "maxDuration": 10,
+      "includeFiles": "intelliscan-server/**"
     }
   },
   "rewrites": [
@@ -16,8 +16,20 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/assets/(.*)",
+      "destination": "/intelliscan-app/dist/assets/$1"
+    },
+    {
+      "source": "/favicon.svg",
+      "destination": "/intelliscan-app/dist/favicon.svg"
+    },
+    {
+      "source": "/icons.svg",
+      "destination": "/intelliscan-app/dist/icons.svg"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/intelliscan-app/dist/index.html"
     }
   ],
   "crons": [
