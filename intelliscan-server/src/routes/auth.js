@@ -347,7 +347,7 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
     console.error('[AuthSync Error] Critical Identity Failure:', err.message, err.stack);
     res.status(500).json({ 
       error: 'Identity synchronization failed.', 
-      details: err.message 
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined 
     });
   }
 });
