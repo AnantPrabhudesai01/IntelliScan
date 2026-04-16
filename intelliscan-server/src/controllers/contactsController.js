@@ -128,21 +128,24 @@ exports.createContact = async (req, res) => {
     const {
       name, email, phone, company, job_title, title, confidence,
       image_url, card_image, notes, tags, engine_used, event_id,
-      inferred_industry, inferred_seniority
+      inferred_industry, inferred_seniority,
+      name_native, company_native, title_native
     } = input;
 
     const inserted = await dbRunAsync(
       `INSERT INTO contacts (
         user_id, name, email, phone, company, job_title, confidence,
         image_url, notes, tags, engine_used, event_id,
-        inferred_industry, inferred_seniority, workspace_scope, crm_synced
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+        inferred_industry, inferred_seniority, workspace_scope, crm_synced,
+        name_native, company_native, title_native
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)`,
       [
         req.user.id, name, email || '', phone || '', company || '',
         job_title || title || '', Number(confidence) || 95,
         image_url || card_image || null, notes || '', tags || '',
         engine_used || 'Gemini 1.5 Flash', event_id || null,
-        inferred_industry || null, inferred_seniority || null, scopeWorkspaceId
+        inferred_industry || null, inferred_seniority || null, scopeWorkspaceId,
+        name_native || null, company_native || null, title_native || null
       ]
     );
 

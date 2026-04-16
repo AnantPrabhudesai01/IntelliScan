@@ -1118,7 +1118,6 @@ export default function ContactsPage() {
                   />
                 </div>
 
-                {/* Name & Email */}
                 <div className="flex items-center gap-3 min-w-0">
                   <ContactAvatar contact={contact} />
                   <div className="min-w-0">
@@ -1131,9 +1130,13 @@ export default function ContactsPage() {
 
                 {/* Company & Role + Badges */}
                 <div className="min-w-0 flex flex-col gap-1">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{contact.company || '—'}</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                    {isEnglishMode ? (contact.company || '—') : (contact.company_native || contact.company || '—')}
+                  </p>
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 truncate max-w-[100px]">{contact.job_title || contact.title || 'No Title'}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 truncate max-w-[100px]">
+                      {isEnglishMode ? (contact.job_title || contact.title || 'No Title') : (contact.title_native || contact.job_title || contact.title || 'No Title')}
+                    </span>
                     {contact.inferred_industry && (
                       <span className="px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[8px] font-black uppercase tracking-tighter border border-indigo-100 dark:border-indigo-900/40">
                         {contact.inferred_industry}
@@ -1269,11 +1272,20 @@ export default function ContactsPage() {
                       onChange={e => setEditForm({...editForm, name: e.target.value})}
                     />
                   ) : (
-                    <h2 className="text-xl font-black text-gray-900 dark:text-white truncate">{detailContact.name || 'Unknown Contact'}</h2>
+                    <h2 className="text-xl font-black text-gray-900 dark:text-white truncate">
+                      {isEnglishMode ? (detailContact.name || 'Unknown Contact') : (detailContact.name_native || detailContact.name || 'Unknown Contact')}
+                    </h2>
                   )}
                   <p className="text-sm text-gray-500 dark:text-gray-400 truncate flex items-center gap-2">
-                    {isEditing ? 'Editing Contact Details' : (detailContact.job_title || detailContact.title || 'No title')}
-                    {!isEditing && detailContact.company && <><span className="w-1 h-1 rounded-full bg-gray-300" /> {detailContact.company}</>}
+                    {isEditing ? 'Editing Contact Details' : 
+                      (isEnglishMode ? (detailContact.job_title || detailContact.title || 'No title') : (detailContact.title_native || detailContact.job_title || detailContact.title || 'No title'))
+                    }
+                    {!isEditing && detailContact.company && (
+                      <>
+                        <span className="w-1 h-1 rounded-full bg-gray-300" /> 
+                        {isEnglishMode ? detailContact.company : (detailContact.company_native || detailContact.company)}
+                      </>
+                    )}
                   </p>
                 </div>
               </div>
