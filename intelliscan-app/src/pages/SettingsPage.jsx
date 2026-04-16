@@ -526,12 +526,19 @@ export default function SettingsPage() {
             </div>
             
             <div className="space-y-4">
-              <p className="text-sm text-gray-500 mb-2 font-body">Enter the 6-digit code sent to your WhatsApp number ({profile.phone_number}).</p>
+              <p className="text-sm text-gray-500 mb-2 font-body">
+                Enter the 6-digit code sent to: <br/>
+                <strong className="text-gray-900 dark:text-gray-200">
+                  {phoneStatus === 'UNLOCKING' ? originalPhone : newPhoneNumber}
+                </strong>
+              </p>
+              
               {debugOtp && (
                 <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 p-2 rounded-lg text-xs font-bold text-center border border-amber-200">
                   DEBUG: Received Code: {debugOtp}
                 </div>
               )}
+
               <input 
                 className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-center text-2xl font-black tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white"
                 type="text"
@@ -540,14 +547,26 @@ export default function SettingsPage() {
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value)}
               />
-              <button 
-                disabled={otpLoading || otpCode.length < 6}
-                onClick={verifyPhoneOTP}
-                className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                 {otpLoading ? <RefreshCw className="animate-spin" size={18} /> : <Check size={18} />}
-                Verify & Save Phone
-              </button>
+
+              <div className="flex flex-col gap-3">
+                <button 
+                  disabled={otpLoading || otpCode.length < 6}
+                  onClick={verifyPhoneOTP}
+                  className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                   {otpLoading ? <RefreshCw className="animate-spin" size={18} /> : <Check size={18} />}
+                  Verify & Save Phone
+                </button>
+
+                <button
+                  type="button"
+                  disabled={otpLoading}
+                  onClick={phoneStatus === 'UNLOCKING' ? requestUnlockOTP : requestPhoneOTP}
+                  className="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline py-1"
+                >
+                  Didn't get the code? Resend
+                </button>
+              </div>
             </div>
           </div>
         </div>
