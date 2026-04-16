@@ -51,6 +51,7 @@ export default function SettingsPage() {
   const [otpCode, setOtpCode] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
   const [debugOtp, setDebugOtp] = useState('');
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
 
   // Phone State Machine & Discovery
   const [phoneStatus, setPhoneStatus] = useState('LOCKED'); // LOCKED, UNLOCKING, EDIT, VERIFYING_NEW
