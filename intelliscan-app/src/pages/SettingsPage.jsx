@@ -62,6 +62,7 @@ export default function SettingsPage() {
   // Policy Modal
   const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [pendingUploadFile, setPendingUploadFile] = useState(null);
+  const [policyViolationError, setPolicyViolationError] = useState(null);
 
   const showToast = (msg, type = 'success') => { 
     setToast({ msg, type }); 
@@ -147,7 +148,12 @@ export default function SettingsPage() {
       setProfile(prev => ({ ...prev, avatar_url: res.data.avatarUrl }));
       showToast('Profile photo updated!');
     } catch (err) {
-      showToast('Upload failed: ' + (err.response?.data?.error || err.message), 'error');
+      const errMsg = err.response?.data?.error || err.message;
+      if (errMsg.includes('Identity Policy Violation')) {
+        setPolicyViolationError(errMsg);
+      } else {
+        showToast('Upload failed: ' + errMsg, 'error');
+      }
     } finally {
       setIsUploading(false);
       setShowPolicyModal(false);
@@ -386,6 +392,16 @@ export default function SettingsPage() {
         type="info"
         onConfirm={() => startUpload(pendingUploadFile)}
         onCancel={() => setShowPolicyModal(false)}
+      />
+
+      <ConfirmationModal 
+        isOpen={!!policyViolationError}
+        title="Identity Policy Violation"
+        message={policyViolationError}
+        confirmText="I Understand"
+        type="danger"
+        onConfirm={() => setPolicyViolationError(null)}
+        onCancel={() => setPolicyViolationError(null)}
       />
 
       {/* Toast Notification */}
