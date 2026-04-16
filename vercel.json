@@ -1,20 +1,33 @@
 {
   "version": 2,
   "name": "intelliscan",
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "functions": {
-    "functions/api-gateway.js": {
-      "runtime": "nodejs24.x",
-      "memory": 1024,
-      "maxDuration": 10,
-      "includeFiles": "intelliscan-server/**"
+  "builds": [
+    {
+      "src": "functions/api-gateway.js",
+      "use": "@vercel/node",
+      "config": { "includeFiles": "intelliscan-server/**" }
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "assets/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "favicon.svg",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "icons.svg",
+      "use": "@vercel/static"
     }
-  },
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/functions/api-gateway.js"
+      "destination": "functions/api-gateway.js"
     },
     {
       "source": "/((?!api/).*)",
