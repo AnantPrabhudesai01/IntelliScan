@@ -1,3 +1,4 @@
+import app from '../intelliscan-server/src/app.js';
 /**
  * Vercel Modern Monolith API Gateway
  * 
