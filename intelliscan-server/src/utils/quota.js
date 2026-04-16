@@ -32,8 +32,8 @@ async function ensureQuotaRow(userId, currentTier = 'personal') {
 
   // 2. Dialect-specific month reset logic
   const monthCheck = isPostgres 
-    ? "DATE_TRUNC('month', last_reset_date) != DATE_TRUNC('month', CURRENT_TIMESTAMP)"
-    : "strftime('%Y-%m', last_reset_date) != strftime('%Y-%m', 'now')";
+    ? "DATE_TRUNC('month', user_quotas.last_reset_date) != DATE_TRUNC('month', CURRENT_TIMESTAMP)"
+    : "strftime('%Y-%m', user_quotas.last_reset_date) != strftime('%Y-%m', 'now')";
 
   const nowVal = isPostgres ? "CURRENT_TIMESTAMP" : "CURRENT_TIMESTAMP";
 
@@ -69,7 +69,7 @@ async function ensureQuotaRow(userId, currentTier = 'personal') {
       last_reset_date = CASE 
         WHEN ${monthCheck} THEN ${nowVal} 
         ELSE user_quotas.last_reset_date 
-      END;
+      END
   `;
 
   await dbRunAsync(query, [userId, targetLimit, targetGroupLimit]);
