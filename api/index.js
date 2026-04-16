@@ -1,9 +1,6 @@
+// api/index.js (At the VERY root of your project)
 import app from '../intelliscan-server/src/app.js';
 
-export default async function handler(req, res) {
-  // Log the method for debugging in Vercel Logs
-  console.log(`Incoming request: ${req.method} ${req.url}`);
-  
-  // Forward everything to Express
-  return app(req, res);
-}
+export default async (req, res) => {
+  return app(req, res); // This allows Express to handle the POST method
+};

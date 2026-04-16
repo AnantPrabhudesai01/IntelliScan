@@ -256,12 +256,112 @@ router.get('/google/callback',
  * @route POST /api/auth/sync
  * @desc Sync an external Auth0 session with the local database
  */
+// router.post('/sync', validate(syncSchema), async (req, res) => {
+//   const { user: authUser } = req.body;
+
+//   try {
+//     if (!authUser || !authUser.email) {
+//       return res.status(400).json({ error: 'Auth0 profile missing target email for synchronization.' });
+//     }
+
+//     const email = authUser.email.toLowerCase().trim();
+//     const name = authUser.name || authUser.nickname || email.split('@')[0] || 'IntelliScan User';
+    
+//     let existingUser = await dbGetAsync('SELECT * FROM users WHERE LOWER(email) = LOWER(?)', [email]);
+//     let userId;
+//     let role = 'user';
+//     let tier = 'personal';
+//     let workspaceId = null;
+
+//     // Robust Domain Intelligence
+//     const domain = String(email).split('@')[1]?.toLowerCase();
+//     const personalDomains = PERSONAL_EMAIL_DOMAINS instanceof Set ? PERSONAL_EMAIL_DOMAINS : new Set();
+//     const isPersonal = personalDomains.has(domain);
+    
+//     if (!isPersonal && domain) {
+//       tier = 'enterprise';
+//       role = 'business_admin';
+//     }
+
+//     if (existingUser) {
+//       userId = existingUser.id;
+//       role = existingUser.role;
+//       tier = existingUser.tier;
+//       workspaceId = existingUser.workspace_id;
+      
+//       // Keep name synchronized if it changed in Auth0
+//       if (name !== existingUser.name) {
+//         await dbRunAsync('UPDATE users SET name = ? WHERE id = ?', [name, userId]);
+//       }
+//     } else {
+//       // 1. Provision User
+//       const placeholderPass = crypto.randomBytes(32).toString('hex');
+//       const hashedPlaceholder = await bcrypt.hash(placeholderPass, 12);
+      
+//       const userRes = await dbRunAsync(`
+//         INSERT INTO users (name, email, password, role, tier)
+//         VALUES (?, ?, ?, ?, ?)
+//       `, [name, email, hashedPlaceholder, role, tier]);
+      
+//       userId = userRes.lastID;
+
+//       // 2. Provision Enterprise Workspace
+//       if (tier === 'enterprise') {
+//         const wsName = `${name.split(' ')[0]}'s Organization`;
+//         const wsRes = await dbRunAsync(`
+//           INSERT INTO workspaces (name, owner_id, created_at) 
+//           VALUES (?, ?, CURRENT_TIMESTAMP)
+//         `, [wsName, userId]);
+        
+//         workspaceId = wsRes.lastID;
+//         await dbRunAsync('UPDATE users SET workspace_id = ? WHERE id = ?', [workspaceId, userId]);
+//       }
+//     }
+
+//     // 3. Infrastructure Bootstrap (Self-Healing)
+//     await ensureQuotaRow(userId, tier);
+
+//     // Bootstrap Primary Calendar
+// const existingCals = await dbAllAsync(`SELECT id FROM calendars WHERE user_id = ? AND is_primary = ${isPostgres ? "true" : "1"}`, [userId]);
+//     if (existingCals.length === 0) {
+//       await dbRunAsync(
+//         'INSERT INTO calendars (user_id, name, color, is_primary) VALUES (?, ?, ?, ?)',
+//         [userId, 'My Calendar', '#7b2fff', isPostgres ? true : 1]
+//       );
+//     }
+
+//     // 4. Identity Generation
+//     const token = jwt.sign(
+//       { id: userId, email, role, tier, workspace_id: workspaceId },
+//       JWT_SECRET,
+//       { expiresIn: JWT_EXPIRES_IN }
+//     );
+
+//     console.log(`[AuthSync] Successfully synchronized ${email} (${tier})`);
+
+//     res.json({
+//       token,
+//       user: { id: userId, email, name, role, tier, workspace_id: workspaceId }
+//     });
+//   } catch (err) {
+//     console.error('[AuthSync Error] Critical Identity Failure:', err.message);
+//     res.status(500).json({ 
+//       error: 'Identity synchronization failed.', 
+//       details: process.env.NODE_ENV === 'development' ? err.message : undefined 
+//     });
+//   }
+// });
+
+
 router.post('/sync', validate(syncSchema), async (req, res) => {
   const { user: authUser } = req.body;
+  
+  // LOGGING FOR DIAGNOSTICS DURING PRESENTATION
+  console.log(`[AuthSync] Sync attempt for: ${authUser?.email} via ${req.method}`);
 
   try {
     if (!authUser || !authUser.email) {
-      return res.status(400).json({ error: 'Auth0 profile missing target email for synchronization.' });
+      return res.status(400).json({ error: 'Auth0 profile missing target email.' });
     }
 
     const email = authUser.email.toLowerCase().trim();
@@ -273,8 +373,7 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
     let tier = 'personal';
     let workspaceId = null;
 
-    // Robust Domain Intelligence
-    const domain = String(email).split('@')[1]?.toLowerCase();
+    const domain = email.split('@')[1]?.toLowerCase();
     const personalDomains = PERSONAL_EMAIL_DOMAINS instanceof Set ? PERSONAL_EMAIL_DOMAINS : new Set();
     const isPersonal = personalDomains.has(domain);
     
@@ -289,12 +388,10 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       tier = existingUser.tier;
       workspaceId = existingUser.workspace_id;
       
-      // Keep name synchronized if it changed in Auth0
       if (name !== existingUser.name) {
         await dbRunAsync('UPDATE users SET name = ? WHERE id = ?', [name, userId]);
       }
     } else {
-      // 1. Provision User
       const placeholderPass = crypto.randomBytes(32).toString('hex');
       const hashedPlaceholder = await bcrypt.hash(placeholderPass, 12);
       
@@ -303,9 +400,8 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
         VALUES (?, ?, ?, ?, ?)
       `, [name, email, hashedPlaceholder, role, tier]);
       
-      userId = userRes.lastID;
+      userId = userRes.lastID || userRes.id; // Support both SQLite and Postgres return patterns
 
-      // 2. Provision Enterprise Workspace
       if (tier === 'enterprise') {
         const wsName = `${name.split(' ')[0]}'s Organization`;
         const wsRes = await dbRunAsync(`
@@ -313,16 +409,16 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
           VALUES (?, ?, CURRENT_TIMESTAMP)
         `, [wsName, userId]);
         
-        workspaceId = wsRes.lastID;
+        workspaceId = wsRes.lastID || wsRes.id;
         await dbRunAsync('UPDATE users SET workspace_id = ? WHERE id = ?', [workspaceId, userId]);
       }
     }
 
-    // 3. Infrastructure Bootstrap (Self-Healing)
     await ensureQuotaRow(userId, tier);
 
-    // Bootstrap Primary Calendar
-    const existingCals = await dbAllAsync('SELECT id FROM calendars WHERE user_id = ? AND is_primary = ${isPostgres ? "true" : "1"}', [userId]);
+    // FIXED SQL TEMPLATE LITERAL (BACKTICKS USED)
+    const existingCals = await dbAllAsync(`SELECT id FROM calendars WHERE user_id = ? AND is_primary = ${isPostgres ? "true" : "1"}`, [userId]);
+    
     if (existingCals.length === 0) {
       await dbRunAsync(
         'INSERT INTO calendars (user_id, name, color, is_primary) VALUES (?, ?, ?, ?)',
@@ -330,28 +426,21 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       );
     }
 
-    // 4. Identity Generation
     const token = jwt.sign(
       { id: userId, email, role, tier, workspace_id: workspaceId },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
 
-    console.log(`[AuthSync] Successfully synchronized ${email} (${tier})`);
-
     res.json({
       token,
       user: { id: userId, email, name, role, tier, workspace_id: workspaceId }
     });
   } catch (err) {
-    console.error('[AuthSync Error] Critical Identity Failure:', err.message);
-    res.status(500).json({ 
-      error: 'Identity synchronization failed.', 
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined 
-    });
+    console.error('[AuthSync Error]:', err.message);
+    res.status(500).json({ error: 'Identity synchronization failed.' });
   }
 });
-
 /**
  * @route GET /api/auth/me
  */
