@@ -43,7 +43,7 @@ export default function Auth0Synchronizer() {
           }
 
           if (!response.ok) {
-            throw new Error(data.error || `Identity synchronization failed with status ${response.status}`);
+            throw new Error(data.details || data.error || `Identity synchronization failed with status ${response.status}`);
           }
           
           // Use the LOCAL JWT returned by our backend for all future API calls
