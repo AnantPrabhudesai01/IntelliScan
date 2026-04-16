@@ -24,6 +24,7 @@ export default function SettingsPage() {
     phone_number: '',
     bio: ''
   });
+  const [originalPhone, setOriginalPhone] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
   const [showLibraryModal, setShowLibraryModal] = useState(false);
@@ -39,6 +40,10 @@ export default function SettingsPage() {
   const [otpCode, setOtpCode] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
   const [debugOtp, setDebugOtp] = useState('');
+
+  // Phone OTP States
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+
 
   // Policy Modal
   const [showPolicyModal, setShowPolicyModal] = useState(false);
@@ -57,6 +62,7 @@ export default function SettingsPage() {
     try {
       const res = await apiClient.get('/auth/me');
       setProfile(res.data);
+      setOriginalPhone(res.data.phone_number || '');
     } catch (err) {
       console.error('Failed to fetch profile:', err);
     }
@@ -64,7 +70,7 @@ export default function SettingsPage() {
 
   const handleSaveChanges = async () => {
     try {
-      await apiClient.put('/profile', {
+      await apiClient.put('/user/profile', {
         name: profile.name,
         phone_number: profile.phone_number,
         bio: profile.bio
@@ -97,7 +103,7 @@ export default function SettingsPage() {
 
     setIsUploading(true);
     try {
-      const res = await apiClient.post('/profile/upload', formData, {
+      const res = await apiClient.post('/user/profile/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setProfile(prev => ({ ...prev, avatar_url: res.data.avatarUrl }));
@@ -115,7 +121,7 @@ export default function SettingsPage() {
     if (!aiPrompt) return;
     setIsGenerating(true);
     try {
-      const res = await apiClient.post('/profile/generate-ai', { prompt: aiPrompt, type: aiType });
+      const res = await apiClient.post('/user/profile/generate-ai', { prompt: aiPrompt, type: aiType });
       setProfile(prev => ({ ...prev, avatar_url: res.data.imageUrl }));
       setShowAIModal(false);
       showToast(`AI ${aiType} generated!`);
@@ -128,7 +134,7 @@ export default function SettingsPage() {
 
   const fetchLibrary = async () => {
     try {
-      const res = await apiClient.get('/profile/avatar-library');
+      const res = await apiClient.get('/user/profile/avatar-library');
       setAvatarLibrary(res.data);
       setShowLibraryModal(true);
     } catch (err) {
@@ -138,7 +144,7 @@ export default function SettingsPage() {
 
   const selectFromLibrary = async (url) => {
     try {
-      await apiClient.post('/profile/set-avatar', { avatarUrl: url });
+      await apiClient.post('/user/profile/set-avatar', { avatarUrl: url });
       setProfile(prev => ({ ...prev, avatar_url: url }));
       setShowLibraryModal(false);
       showToast('Avatar updated!');
@@ -175,6 +181,41 @@ export default function SettingsPage() {
       setOtpSent(false);
       setOtpCode('');
       showToast('Email updated successfully!');
+    } catch (err) {
+      showToast('Invalid or expired code', 'error');
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const requestPhoneOTP = async () => {
+    if (!profile.phone_number) return;
+    setOtpLoading(true);
+    try {
+      const res = await apiClient.post('/auth/request-otp', { 
+        type: 'phone_change',
+        phone: profile.phone_number 
+      });
+      setOtpSent(true);
+      setDebugOtp(res.data.debug_code || res.data.debugCode);
+      setShowPhoneModal(true);
+      showToast('OTP sent to your WhatsApp number');
+    } catch (err) {
+      showToast('Failed to send OTP: ' + (err.response?.data?.error || err.message), 'error');
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const verifyPhoneOTP = async () => {
+    setOtpLoading(true);
+    try {
+      await apiClient.post('/auth/verify-otp', { code: otpCode, type: 'phone_change' });
+      setOriginalPhone(profile.phone_number);
+      setShowPhoneModal(false);
+      setOtpSent(false);
+      setOtpCode('');
+      showToast('Phone verified & saved successfully!');
     } catch (err) {
       showToast('Invalid or expired code', 'error');
     } finally {
@@ -366,17 +407,46 @@ export default function SettingsPage() {
                 </button>
                 <div className="flex flex-col gap-2">
                   <button onClick={() => setOtpSent(false)} className="w-full text-xs text-indigo-600 font-bold hover:underline">Change Email Address</button>
-                  <a 
-                    href={`https://wa.me/${profile.phone_number?.replace(/\D/g, '')}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-full text-[10px] text-gray-500 font-bold hover:text-indigo-600 transition-colors flex items-center justify-center gap-1"
-                  >
-                    Didn't get the code? <ExternalLink size={10}/> Open WhatsApp
-                  </a>
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Phone OTP Modal */}
+      {showPhoneModal && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-[#161c28] w-full max-w-md rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-2xl animate-scale-up">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold font-headline dark:text-white">Verify Phone Number</h3>
+              <button onClick={() => { setShowPhoneModal(false); setOtpSent(false); setOtpCode(''); }} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+            </div>
+            
+            <div className="space-y-4">
+              <p className="text-sm text-gray-500 mb-2 font-body">Enter the 6-digit code sent to your WhatsApp number ({profile.phone_number}).</p>
+              {debugOtp && (
+                <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 p-2 rounded-lg text-xs font-bold text-center border border-amber-200">
+                  DEBUG: Received Code: {debugOtp}
+                </div>
+              )}
+              <input 
+                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-center text-2xl font-black tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white"
+                type="text"
+                maxLength={6}
+                placeholder="000000"
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value)}
+              />
+              <button 
+                disabled={otpLoading || otpCode.length < 6}
+                onClick={verifyPhoneOTP}
+                className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                 {otpLoading ? <RefreshCw className="animate-spin" size={18} /> : <Check size={18} />}
+                Verify & Save Phone
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -491,7 +561,17 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                   <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Registered Phone (for OTP)</label>
+                   <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Registered Phone (for OTP)</label>
+                     {profile.phone_number && profile.phone_number !== originalPhone && (
+                       <button onClick={requestPhoneOTP} disabled={otpLoading} className="text-[10px] font-black uppercase text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors">
+                         <Shield size={12}/> Verify via WhatsApp
+                       </button>
+                     )}
+                     {!profile.phone_number && (
+                       <span className="text-[10px] text-amber-600 font-bold uppercase">Required for verification</span>
+                     )}
+                   </div>
                    <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                       <Smartphone size={18} />

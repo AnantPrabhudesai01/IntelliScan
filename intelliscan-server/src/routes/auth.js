@@ -389,7 +389,7 @@ router.post('/request-otp', authenticateToken, async (req, res) => {
     // 2. Generate OTP
     const code = String(Math.floor(100000 + Math.random() * 900000));
     const key = `${req.user.id}_${type || 'email_change'}`;
-    otpStore.set(key, { code, email, expiresAt: Date.now() + 10 * 60 * 1000 });
+    otpStore.set(key, { code, email, phone: targetPhone, expiresAt: Date.now() + 10 * 60 * 1000 });
 
     // 3. Send via WhatsApp
     console.log(`[OTP] Sending WhatsApp code to ${targetPhone} for user ${req.user.id}`);
@@ -435,6 +435,9 @@ router.post('/verify-otp', authenticateToken, async (req, res) => {
 
     if (type === 'email_change' && entry.email) {
       await dbRunAsync('UPDATE users SET email = ? WHERE id = ?', [entry.email, req.user.id]);
+    }
+    if (type === 'phone_change' && entry.phone) {
+      await dbRunAsync('UPDATE users SET phone_number = ? WHERE id = ?', [entry.phone, req.user.id]);
     }
     otpStore.delete(key);
 
