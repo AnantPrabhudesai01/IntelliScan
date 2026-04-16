@@ -683,8 +683,13 @@ export default function SettingsPage() {
 
                 <div className="space-y-2 md:col-span-2">
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">
+                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label flex items-center gap-2">
                        Registered Phone (for OTP)
+                       {profile.phone_number && phoneStatus === 'LOCKED' && (
+                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest animate-fade-in shadow-inner">
+                           <Check size={10} className="stroke-[4px]" /> Verified
+                         </span>
+                       )}
                      </label>
                      <div className="flex items-center gap-2">
                         {phoneStatus === 'LOCKED' && (
