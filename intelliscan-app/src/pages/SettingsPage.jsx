@@ -722,12 +722,38 @@ export default function SettingsPage() {
                    )}
 
                    {phoneStatus === 'UNLOCKING' && (
-                      <div className="mt-2 mb-4 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-2xl animate-pulse">
-                         <div className="flex items-center gap-3">
-                            <RefreshCw className="animate-spin text-amber-600" size={16} />
-                            <div>
-                               <p className="text-sm font-bold text-amber-900 dark:text-amber-100">Waiting for Unlock Code...</p>
-                               <p className="text-[11px] text-amber-700/80 dark:text-amber-300/60">An OTP has been sent to your registered WhatsApp.</p>
+                      <div className="mt-2 mb-4 p-5 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-2xl animate-fade-in shadow-inner">
+                         <div className="flex items-start gap-4">
+                            <div className="p-2 bg-amber-100 dark:bg-amber-900/40 rounded-xl text-amber-600 mt-1">
+                               <RefreshCw className="animate-spin" size={20} />
+                            </div>
+                            <div className="flex-1">
+                               <h4 className="text-sm font-bold text-amber-900 dark:text-amber-100 mb-1">Waiting for Unlock Code...</h4>
+                               <p className="text-[11px] text-amber-700/80 dark:text-amber-300/60 leading-relaxed mb-4">
+                                 Your security OTP was sent to <strong>{profile.phone_number}</strong> via WhatsApp.
+                               </p>
+                               <div className="flex flex-wrap items-center gap-3">
+                                  <a 
+                                    href={`https://wa.me/14155238886?text=join%20baseball-eventually`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all shadow-md active:scale-95"
+                                  >
+                                    1. Re-connect WhatsApp
+                                  </a>
+                                  <button 
+                                    onClick={() => setShowPhoneModal(true)}
+                                    className="bg-white dark:bg-gray-800 text-amber-900 dark:text-amber-100 border border-amber-200 dark:border-amber-800 px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-amber-50 dark:hover:bg-amber-900/30 transition-all active:scale-95"
+                                  >
+                                    2. Enter Code Manually
+                                  </button>
+                                  <button 
+                                    onClick={() => setPhoneStatus('LOCKED')}
+                                    className="text-[10px] text-amber-600 hover:underline px-2"
+                                  >
+                                    Cancel
+                                  </button>
+                               </div>
                             </div>
                          </div>
                       </div>

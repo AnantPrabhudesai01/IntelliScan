@@ -399,9 +399,10 @@ router.post('/request-otp', authenticateToken, async (req, res) => {
     console.log(`[OTP] Sending WhatsApp code to ${targetPhone} for user ${req.user.id}`);
     
     try {
-      await whatsappService.sendOTP(targetPhone, code);
+      const msg = await whatsappService.sendOTP(targetPhone, code);
+      console.log(`[AUTH] OTP sent successfully to ${targetPhone} via SID ${msg.sid}. Code: ${code} (${type})`);
     } catch (sendErr) {
-      console.error('[OTP] WhatsApp delivery failed:', sendErr.message);
+      console.error('[OTP] WhatsApp delivery failed to', targetPhone, ':', sendErr.message);
       return res.status(500).json({ error: 'Failed to send WhatsApp message. Please check your number.' });
     }
 
