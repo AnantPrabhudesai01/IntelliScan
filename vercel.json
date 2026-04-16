@@ -3,18 +3,10 @@
   "name": "intelliscan",
   "cleanUrls": true,
   "trailingSlash": false,
-  "functions": {
-    "bridge.js": {
-      "runtime": "nodejs20.x",
-      "memory": 1024,
-      "maxDuration": 10,
-      "includeFiles": "intelliscan-server/**"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/bridge.js"
+      "destination": "/api/index.js"
     },
     {
       "source": "/((?!api/).*)",
