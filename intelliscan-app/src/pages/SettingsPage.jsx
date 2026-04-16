@@ -587,6 +587,23 @@ export default function SettingsPage() {
                        <span className="text-[10px] text-amber-600 font-bold uppercase">Required for verification</span>
                      )}
                    </div>
+
+                   {profile.phone_number !== originalPhone && (
+                     <div className="mt-2 mb-3 p-3 bg-[#25D366]/10 border border-[#25D366]/20 rounded-lg animate-fade-in">
+                      <p className="text-[10px] text-gray-700 dark:text-gray-300 mb-2 font-medium">
+                        <strong>Twilio Sandbox Notice:</strong> Because this platform is running on a free trial, you must temporarily connect your WhatsApp device before you can receive the 6-digit OTP code or send business cards.
+                      </p>
+                      <a 
+                        href="https://wa.me/14155238886?text=join%20baseball-eventually" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 bg-[#25D366] hover:bg-[#128C7E] text-white px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider transition-colors"
+                      >
+                        <Smartphone size={12} /> Step 1: Click to Connect Target Number
+                      </a>
+                     </div>
+                   )}
+
                    <div className="flex gap-2 relative">
                     <select 
                       className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all min-w-[100px] cursor-pointer"
