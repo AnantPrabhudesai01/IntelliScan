@@ -488,11 +488,69 @@ async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'j
   return { success: false, error: 'All cloud AI text engines (Gemini, OpenAI, HuggingFace) failed.' };
 }
 
+/**
+ * Validates a profile photo for human presence and professional appropriateness.
+ * Blocks non-human subjects and NSFW/Inappropriate content.
+ */
+async function validateProfilePhoto(imageBase64, mimeType = 'image/jpeg') {
+  const base64Data = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
+  
+  const prompt = `You are an Enterprise Identity Moderation AI. Your task is to validate profile photos for a professional business platform.
+
+Strictly evaluate the image for the following:
+1. Human Presence: The image MUST contain a clear human face/portrait.
+2. Professionalism: Reject animals, landscapes, cartoons, or random objects.
+3. Safety: Reject any nudity, sexually suggestive content, violence, or offensive gestures (NSFW).
+
+Return ONLY a valid JSON object:
+{
+  "valid": true/false,
+  "reason": "Detailed explanation if valid is false (e.g. 'Photo must contain a human face' or 'Inappropriate content detected')"
+}`;
+
+  try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.warn('[AI Service] No Gemini API Key. Skipping photo validation.');
+      return { valid: true }; // Fallback to allow if AI is unconfigured
+    }
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        contents: [{ 
+          parts: [{ text: prompt }, { inlineData: { data: base64Data, mimeType } }] 
+        }],
+        generationConfig: {
+          maxOutputTokens: 1000,
+          responseMimeType: "application/json"
+        }
+      })
+    });
+
+    const result = await response.json();
+    if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+      const rawText = result.candidates[0].content.parts[0].text;
+      const data = JSON.parse(extractJsonObjectFromText(rawText) || rawText);
+      return data;
+    }
+    
+    throw new Error(result.error?.message || 'AI Validation Service Error');
+  } catch (err) {
+    console.error('[AI Photo Validation Failed]', err.message);
+    // Be lenient on AI failure to prevent blocking user uploads on API down-time
+    return { valid: true }; 
+  }
+}
+
 module.exports = {
   generateWithFallback,
   generateEmbedding,
   callGeminiWithRetry,
   runTesseractOcrInWorker,
   unifiedExtractionPipeline,
-  unifiedTextAIPipeline
+  unifiedTextAIPipeline,
+  validateProfilePhoto
 };

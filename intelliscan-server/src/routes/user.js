@@ -205,13 +205,42 @@ router.post('/profile/generate-ai', authenticateToken, (req, res) => {
 router.post('/profile/upload', authenticateToken, upload.single('photo'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No image file provided' });
+    
+    // 1. Convert to Base64 for AI check
     const base64Data = req.file.buffer.toString('base64');
+    const mimeType = req.file.mimetype || 'image/jpeg';
+
+    // 2. AI Identity & Safety Check (Mandatory for Enterprise, recommended for all)
+    console.log(`[Photo Security] Validating upload for user ${req.user.id}...`);
+    const { validateProfilePhoto } = require('../services/aiService');
+    const validation = await validateProfilePhoto(base64Data, mimeType);
+
+    if (!validation.valid) {
+      console.warn(`[Photo Security] REJECTED for user ${req.user.id}: ${validation.reason}`);
+      logAuditEvent(req, {
+        action: 'PHOTO_UPLOAD_DENIED',
+        resource: '/api/profile/upload',
+        status: AUDIT_ERROR,
+        details: { reason: validation.reason }
+      });
+      return res.status(400).json({ error: `Identity Policy Violation: ${validation.reason}` });
+    }
+
+    // 3. Upload to Permanent Storage
     const permanentUrl = await uploadToImgbb(base64Data);
     await dbRunAsync('UPDATE users SET avatar_url = ? WHERE id = ?', [permanentUrl, req.user.id]);
+    
+    logAuditEvent(req, {
+      action: 'PHOTO_UPLOAD_SUCCESS',
+      resource: '/api/profile/upload',
+      status: AUDIT_SUCCESS,
+      details: { url: permanentUrl }
+    });
+
     res.json({ success: true, avatarUrl: permanentUrl });
   } catch (error) {
-    console.error('[ImgBB Error]', error.message);
-    res.status(500).json({ error: 'Failed to securely host image: ' + error.message });
+    console.error('[Upload Error]', error.message);
+    res.status(500).json({ error: 'Photo update failed: ' + error.message });
   }
 });
 
