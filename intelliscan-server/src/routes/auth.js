@@ -322,11 +322,11 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
     await ensureQuotaRow(userId, tier);
 
     // Bootstrap Primary Calendar
-    const existingCals = await dbAllAsync(`SELECT id FROM calendars WHERE user_id = ? AND is_primary = ${isPostgres ? "true" : "1"}`, [userId]);
+    const existingCals = await dbAllAsync('SELECT id FROM calendars WHERE user_id = ? AND is_primary = 1', [userId]);
     if (existingCals.length === 0) {
       await dbRunAsync(
         'INSERT INTO calendars (user_id, name, color, is_primary) VALUES (?, ?, ?, ?)',
-        [userId, 'My Calendar', '#7b2fff', isPostgres ? true : 1]
+        [userId, 'My Calendar', '#7b2fff', 1]
       );
     }
 
