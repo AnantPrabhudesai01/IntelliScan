@@ -84,20 +84,17 @@ export default function SettingsPage() {
   };
 
   const handleSaveChanges = async () => {
-    if (profile.phone_number !== originalPhone) {
+    const currentNumber = countryCode + localPhone;
+    if (currentNumber !== originalPhone) {
       showToast('Action required: Please verify your new WhatsApp number via OTP before saving your profile.', 'error');
-      // Scroll to the phone input box for better UX
       const phoneLabel = document.querySelector('.font-label');
-      if (phoneLabel) {
-        phoneLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      if (phoneLabel) phoneLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
     try {
       await apiClient.put('/user/profile', {
         name: profile.name,
-        phone_number: profile.phone_number,
         bio: profile.bio
       });
       setSavedProfile(true);
@@ -234,9 +231,11 @@ export default function SettingsPage() {
 
   const verifyPhoneOTP = async () => {
     setOtpLoading(true);
+    const newPhoneNumber = countryCode + localPhone;
     try {
       await apiClient.post('/auth/verify-otp', { code: otpCode, type: 'phone_change' });
-      setOriginalPhone(profile.phone_number);
+      setOriginalPhone(newPhoneNumber);
+      setProfile(prev => ({ ...prev, phone_number: newPhoneNumber }));
       setShowPhoneModal(false);
       setOtpSent(false);
       setOtpCode('');
@@ -588,17 +587,17 @@ export default function SettingsPage() {
                 <div className="space-y-2 md:col-span-2">
                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
                      <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Registered Phone (for OTP)</label>
-                     {profile.phone_number && profile.phone_number !== originalPhone && (
+                     {localPhone && (countryCode + localPhone) !== originalPhone && (
                        <button onClick={requestPhoneOTP} disabled={otpLoading} className="text-[10px] font-black uppercase text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors">
                          <Shield size={12}/> Verify via WhatsApp
                        </button>
                      )}
-                     {!profile.phone_number && (
+                     {(!localPhone || (countryCode + localPhone) === '') && (
                        <span className="text-[10px] text-amber-600 font-bold uppercase">Required for verification</span>
                      )}
                    </div>
 
-                   {profile.phone_number !== originalPhone && (
+                   {(countryCode + localPhone) !== originalPhone && (
                      <div className="mt-2 mb-3 p-3 bg-[#25D366]/10 border border-[#25D366]/20 rounded-lg animate-fade-in">
                       <p className="text-[10px] text-gray-700 dark:text-gray-300 mb-2 font-medium">
                         <strong>Twilio Sandbox Notice:</strong> Because this platform is running on a free trial, you must temporarily connect your WhatsApp device before you can receive the 6-digit OTP code or send business cards.
@@ -615,37 +614,32 @@ export default function SettingsPage() {
                    )}
 
                    <div className="flex gap-2 relative">
-                    <select 
-                      className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all min-w-[100px] cursor-pointer"
-                      value={countryCode}
-                      onChange={(e) => {
-                        const code = e.target.value;
-                        setCountryCode(code);
-                        if (localPhone) setProfile(prev => ({ ...prev, phone_number: code + localPhone }));
-                      }}
-                    >
-                      <option value="+91">🇮🇳 +91</option>
-                      <option value="+1">🇺🇸 +1</option>
-                      <option value="+44">🇬🇧 +44</option>
-                      <option value="+61">🇦🇺 +61</option>
-                      <option value="+971">🇦🇪 +971</option>
-                    </select>
-                    <div className="relative flex-1">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                        <Smartphone size={18} />
+                      <select 
+                        className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all min-w-[100px] cursor-pointer"
+                        value={countryCode}
+                        onChange={(e) => setCountryCode(e.target.value)}
+                      >
+                        <option value="+91">🇮🇳 +91</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                        <option value="+61">🇦🇺 +61</option>
+                        <option value="+971">🇦🇪 +971</option>
+                      </select>
+                      <div className="relative flex-1">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                          <Smartphone size={18} />
+                        </div>
+                        <input 
+                          className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pl-12 pr-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all" 
+                          type="tel" 
+                          value={localPhone} 
+                          placeholder="e.g. 8160551448" 
+                          onChange={(e) => {
+                            const local = e.target.value.replace(/\D/g, ''); // Digits only
+                            setLocalPhone(local);
+                          }}
+                        />
                       </div>
-                      <input 
-                        className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pl-12 pr-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all" 
-                        type="tel" 
-                        value={localPhone} 
-                        placeholder="e.g. 8160551448" 
-                        onChange={(e) => {
-                          const local = e.target.value.replace(/\D/g, ''); // Digits only
-                          setLocalPhone(local);
-                          setProfile(prev => ({ ...prev, phone_number: local ? countryCode + local : '' }));
-                        }}
-                      />
-                    </div>
                    </div>
                    <p className="text-[10px] text-gray-400 mt-1 font-medium">Used for secure login and email verification.</p>
                 </div>
@@ -662,16 +656,16 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="mt-8 flex flex-col items-end gap-3">
-                {profile.phone_number !== originalPhone && (
+                {(countryCode + localPhone) !== originalPhone && (
                   <p className="text-[10px] text-red-500 font-black uppercase tracking-widest animate-pulse flex items-center gap-1">
                     <Shield size={10} /> Verification Required: Please verify your new number above
                   </p>
                 )}
                 <button 
                   onClick={handleSaveChanges}
-                  disabled={profile.phone_number !== originalPhone}
+                  disabled={(countryCode + localPhone) !== originalPhone}
                   className={`px-8 py-3 font-bold rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-2 
-                    ${profile.phone_number !== originalPhone ? 'bg-gray-400 cursor-not-allowed text-white/50' : 
+                    ${(countryCode + localPhone) !== originalPhone ? 'bg-gray-400 cursor-not-allowed text-white/50' : 
                       savedProfile ? 'bg-green-600 text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
                 >
                   {savedProfile ? <><Check size={16} /> Saved!</> : 'Update Profile'}
