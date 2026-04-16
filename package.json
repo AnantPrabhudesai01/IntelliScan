@@ -1,15 +1,11 @@
 {
   "name": "intelliscan-monorepo",
   "private": true,
-  "workspaces": [
-    "intelliscan-app",
-    "intelliscan-server"
-  ],
   "scripts": {
-    "dev": "concurrently \"npm run dev --workspace=intelliscan-app\" \"npm run dev --workspace=intelliscan-server\"",
-    "build": "npm run build --workspace=intelliscan-app && cp -r intelliscan-app/dist/* . && rm -rf dist",
-    "start": "npm start --workspace=intelliscan-server",
-    "install-all": "npm install && npm install --workspace=intelliscan-app && npm install --workspace=intelliscan-server"
+    "dev": "concurrently \"npm run dev --prefix intelliscan-app\" \"npm run dev --prefix intelliscan-server\"",
+    "build": "npm run build --prefix intelliscan-app && cp -r intelliscan-app/dist/* . && rm -rf dist",
+    "start": "node intelliscan-server/src/server.js",
+    "install-all": "npm install && npm install --prefix intelliscan-app && npm install --prefix intelliscan-server"
   },
   "engines": {
     "node": "24.x"
