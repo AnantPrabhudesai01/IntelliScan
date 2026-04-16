@@ -84,6 +84,16 @@ export default function SettingsPage() {
   };
 
   const handleSaveChanges = async () => {
+    if (profile.phone_number !== originalPhone) {
+      showToast('Action required: Please verify your new WhatsApp number via OTP before saving your profile.', 'error');
+      // Scroll to the phone input box for better UX
+      const phoneLabel = document.querySelector('.font-label');
+      if (phoneLabel) {
+        phoneLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+
     try {
       await apiClient.put('/user/profile', {
         name: profile.name,
@@ -651,9 +661,19 @@ export default function SettingsPage() {
                   />
                 </div>
               </div>
-              <div className="mt-8 flex justify-end">
-                <button onClick={handleSaveChanges}
-                  className={`px-8 py-3 font-bold rounded-xl shadow-md cursor-pointer transition-all active:scale-95 flex items-center gap-2 ${savedProfile ? 'bg-green-600 text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}>
+              <div className="mt-8 flex flex-col items-end gap-3">
+                {profile.phone_number !== originalPhone && (
+                  <p className="text-[10px] text-red-500 font-black uppercase tracking-widest animate-pulse flex items-center gap-1">
+                    <Shield size={10} /> Verification Required: Please verify your new number above
+                  </p>
+                )}
+                <button 
+                  onClick={handleSaveChanges}
+                  disabled={profile.phone_number !== originalPhone}
+                  className={`px-8 py-3 font-bold rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-2 
+                    ${profile.phone_number !== originalPhone ? 'bg-gray-400 cursor-not-allowed text-white/50' : 
+                      savedProfile ? 'bg-green-600 text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                >
                   {savedProfile ? <><Check size={16} /> Saved!</> : 'Update Profile'}
                 </button>
               </div>

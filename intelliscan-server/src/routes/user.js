@@ -131,10 +131,9 @@ router.get('/profile', authenticateToken, async (req, res) => {
 // PUT /api/profile
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
-    const { name, phone_number, bio } = req.body;
-    const cleanPhone = normalizePhone(phone_number);
-    await dbRunAsync('UPDATE users SET name = ?, phone_number = ?, bio = ? WHERE id = ?', [name, cleanPhone, bio, req.user.id]);
-    res.json({ success: true, message: 'Profile updated', phone_number: cleanPhone });
+    const { name, bio } = req.body;
+    await dbRunAsync('UPDATE users SET name = ?, bio = ? WHERE id = ?', [name, bio, req.user.id]);
+    res.json({ success: true, message: 'Profile updated' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -148,10 +147,10 @@ router.post('/enrich-profile', authenticateToken, async (req, res) => {
     const userId = req.user.id;
     const cleanPhone = normalizePhone(phone);
 
-    // 1. Update core profile
+    // 1. Update core profile (Bio only, Phone requires OTP)
     await dbRunAsync(
-      'UPDATE users SET phone_number = ?, bio = ? WHERE id = ?',
-      [cleanPhone, bio, userId]
+      'UPDATE users SET bio = ? WHERE id = ?',
+      [bio, userId]
     );
 
     // 2. Update digital card (Identity Pillar)
