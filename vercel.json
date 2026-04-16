@@ -3,7 +3,7 @@
   "name": "intelliscan",
   "functions": {
     "intelliscan-server/api/index.js": {
-      "runtime": "vercel-node@latest"
+      "runtime": "@vercel/node"
     }
   },
   "rewrites": [
