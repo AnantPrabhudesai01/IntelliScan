@@ -1,8 +1,5 @@
-import app from '../intelliscan-server/src/app';
-// api/index.js (Production Gateway)
+// api/index.js
 const app = require('../intelliscan-server/src/app');
 
-// Standard Vercel Serverless Export
-module.exports = (req, res) => {
-  return app(req, res);
-};
+// Vercel handles the request by passing it to the exported Express app
+module.exports = app;

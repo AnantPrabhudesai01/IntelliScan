@@ -2,21 +2,20 @@
   "version": 2,
   "name": "intelliscan",
   "cleanUrls": true,
-  "trailingSlash": false,
+  "outputDirectory": "intelliscan-app/dist",
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 20
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "bridge.js"
+      "destination": "/api/index.js"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
-    }
-  ],
-  "crons": [
-    {
-      "path": "/api/cron/process-all",
-      "schedule": "0 0 * * *"
     }
   ]
 }
