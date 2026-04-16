@@ -3,21 +3,21 @@
   "name": "intelliscan",
   "cleanUrls": true,
   "trailingSlash": false,
-  "buildCommand": "npm run build",
-  "outputDirectory": "intelliscan-app/dist",
   "functions": {
-    "api/index.js": {
+    "bridge.js": {
+      "runtime": "nodejs20.x",
       "memory": 1024,
-      "maxDuration": 10
+      "maxDuration": 10,
+      "includeFiles": "intelliscan-server/**"
     }
   },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.js"
+      "destination": "/bridge.js"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ],
