@@ -12,8 +12,7 @@ dns.setDefaultResultOrder('ipv4first');
 const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
 if (!DATABASE_URL) {
-  console.error('[DB] FATAL: No DATABASE_URL found in .env. Supabase PostgreSQL is required.');
-  process.exit(1);
+  console.warn('[DB] WARNING: No DATABASE_URL found. Database-dependent routes will fail with JSON errors.');
 }
 
 console.log('[DB] Mode: PostgreSQL (Supabase)');
