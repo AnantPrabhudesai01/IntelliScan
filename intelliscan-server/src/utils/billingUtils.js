@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const BILLING_PLANS = [
   {
     id: 'personal',
-    name: 'Starter',
+    name: 'Free',
     price: 0,
     currency: 'INR',
     period: 'free',
@@ -20,7 +20,7 @@ const BILLING_PLANS = [
   },
   {
     id: 'pro',
-    name: 'Advanced',
+    name: 'Pro',
     price: 49,
     currency: 'INR',
     period: 'month',
@@ -36,7 +36,7 @@ const BILLING_PLANS = [
   },
   {
     id: 'enterprise',
-    name: 'Scale',
+    name: 'Enterprise',
     price: 1999,
     currency: 'INR',
     period: 'month',

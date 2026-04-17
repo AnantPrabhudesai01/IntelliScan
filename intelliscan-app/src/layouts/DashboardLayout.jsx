@@ -210,7 +210,7 @@ export default function DashboardLayout() {
           <div className="bg-sidebar-hover rounded-lg p-3">
             <div className="flex justify-between items-center mb-2">
               <span className="text-[10px] font-bold uppercase text-sidebar-text tracking-wider">
-                {user?.role === 'super_admin' ? 'Super Admin' : user?.role === 'business_admin' ? 'Business Admin' : (quota.tier === 'enterprise' ? 'Enterprise' : quota.tier === 'pro' ? 'Pro' : 'Free Plan')}
+                {user?.role === 'super_admin' ? 'Super Admin' : user?.role === 'business_admin' ? 'Business Admin' : (quota.tier === 'enterprise' ? 'Enterprise Plan' : quota.tier === 'pro' ? 'Pro Plan' : 'Free Plan')}
               </span>
               <span className="text-[10px] font-bold text-brand-light">{quota.used}/{quota.limit}</span>
             </div>

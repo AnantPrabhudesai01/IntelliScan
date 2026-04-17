@@ -6,15 +6,15 @@ import { useRole } from '../../context/RoleContext';
 import checkoutService from '../../utils/checkoutService';
 
 const COMPARISON_DATA = [
-  { feature: 'Monthly AI Credit Points', starter: '100', advanced: '5,000', scale: 'Unlimited' },
-  { feature: 'Core Scanning Engine', starter: 'Gemini Flash', advanced: 'Gemini Pro Vision', scale: 'Custom Training' },
-  { feature: 'OCR Confidence Scoring', starter: 'Basic', advanced: 'High Precision', scale: 'Deep Metadata' },
-  { feature: 'CRM Integration', starter: 'Not Included', advanced: 'Live Sync', scale: 'Custom Bridge' },
-  { feature: 'Google Sheets Export', starter: 'Manual CSV', advanced: 'Real-time Push', scale: 'Unlimited Sync' },
-  { feature: 'AI Follow-up Drafts', starter: 'Basic Templates', advanced: 'Ultra Personalized', scale: 'Persona Mimicry' },
-  { feature: 'API Access', starter: 'No', advanced: 'Standard REST', scale: 'Whitelabel + Webhooks' },
-  { feature: 'Workspace Members', starter: '1 Seat', advanced: 'up to 10 Seats', scale: 'Unlimited' },
-  { feature: 'Support Tier', starter: 'Community', advanced: 'Priority Email', scale: 'Dedicated Manager' },
+  { feature: 'Monthly AI Credit Points', free: '100', pro: '5,000', enterprise: 'Unlimited' },
+  { feature: 'Core Scanning Engine', free: 'Gemini Flash', pro: 'Gemini Pro Vision', enterprise: 'Custom Training' },
+  { feature: 'OCR Confidence Scoring', free: 'Basic', pro: 'High Precision', enterprise: 'Deep Metadata' },
+  { feature: 'CRM Integration', free: 'Not Included', pro: 'Live Sync', enterprise: 'Custom Bridge' },
+  { feature: 'Google Sheets Export', free: 'Manual CSV', pro: 'Real-time Push', enterprise: 'Unlimited Sync' },
+  { feature: 'AI Follow-up Drafts', free: 'Basic Templates', pro: 'Ultra Personalized', enterprise: 'Persona Mimicry' },
+  { feature: 'API Access', free: 'No', pro: 'Standard REST', enterprise: 'Whitelabel + Webhooks' },
+  { feature: 'Workspace Members', free: '1 Seat', pro: 'up to 10 Seats', enterprise: 'Unlimited' },
+  { feature: 'Support Tier', free: 'Community', pro: 'Priority Email', enterprise: 'Dedicated Manager' },
 ];
 
 function ContactSalesModal({ onClose }) {
@@ -175,7 +175,7 @@ export default function GenSubscriptionPlanComparison() {
               <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">PERSONAL</span>
               <Layers size={20} className="text-gray-500" />
             </div>
-            <h3 className="text-4xl font-extrabold italic tracking-tighter mb-2">Starter</h3>
+            <h3 className="text-4xl font-extrabold italic tracking-tighter mb-2">Free</h3>
             <div className="flex items-baseline gap-1 mb-6">
               <span className="text-3xl font-black">₹0</span>
               <span className="text-gray-500 text-xs font-bold uppercase">/ Forever</span>
@@ -209,7 +209,7 @@ export default function GenSubscriptionPlanComparison() {
               <span className="text-[10px] font-black uppercase tracking-widest text-white/50 bg-black/10 px-3 py-1 rounded-full">PROFESSIONAL</span>
               <Cpu size={20} className="text-indigo-200" />
             </div>
-            <h3 className="text-4xl font-extrabold italic tracking-tighter text-white mb-2">Advanced</h3>
+            <h3 className="text-4xl font-extrabold italic tracking-tighter text-white mb-2">Pro</h3>
             <div className="flex items-baseline gap-1 mb-6">
               <span className="text-5xl font-black text-white">₹49</span>
               <span className="text-indigo-200 text-sm font-bold uppercase">/ mo</span>
@@ -241,7 +241,7 @@ export default function GenSubscriptionPlanComparison() {
               <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">ENTERPRISE</span>
               <Globe size={20} className="text-gray-500" />
             </div>
-            <h3 className="text-4xl font-extrabold italic tracking-tighter mb-2">Scale</h3>
+            <h3 className="text-4xl font-extrabold italic tracking-tighter mb-2">Enterprise</h3>
             <div className="flex items-baseline gap-1 mb-6">
               <span className="text-3xl font-black font-headline tracking-tighter uppercase italic">CUSTOM</span>
             </div>
@@ -279,18 +279,18 @@ export default function GenSubscriptionPlanComparison() {
             <thead>
               <tr className="bg-white/5 border-b border-white/5">
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-500">Infrastructure Layers</th>
-                <th className="px-8 py-6 text-sm font-black italic tracking-tight">Starter</th>
-                <th className="px-8 py-6 text-sm font-black italic tracking-tight text-indigo-400 underline decoration-indigo-400/30 decoration-4 underline-offset-8">Advanced</th>
-                <th className="px-8 py-6 text-sm font-black italic tracking-tight">Scale</th>
+                <th className="px-8 py-6 text-sm font-black italic tracking-tight">Free</th>
+                <th className="px-8 py-6 text-sm font-black italic tracking-tight text-indigo-400 underline decoration-indigo-400/30 decoration-4 underline-offset-8">Pro</th>
+                <th className="px-8 py-6 text-sm font-black italic tracking-tight">Enterprise</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {COMPARISON_DATA.map((row, i) => (
                 <tr key={i} className="hover:bg-white/5 transition-all">
                   <td className="px-8 py-5 text-xs font-bold text-gray-400">{row.feature}</td>
-                  <td className="px-8 py-5 text-xs font-medium text-gray-500">{row.starter}</td>
-                  <td className="px-8 py-5 text-xs font-black text-white italic">{row.advanced}</td>
-                  <td className="px-8 py-5 text-xs font-medium text-white/50">{row.scale}</td>
+                  <td className="px-8 py-5 text-xs font-medium text-gray-500">{row.free}</td>
+                  <td className="px-8 py-5 text-xs font-black text-white italic">{row.pro}</td>
+                  <td className="px-8 py-5 text-xs font-medium text-white/50">{row.enterprise}</td>
                 </tr>
               ))}
             </tbody>

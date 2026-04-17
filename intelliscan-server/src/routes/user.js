@@ -22,7 +22,21 @@ router.get('/quota', authenticateToken, async (req, res) => {
       [req.user.id]
     );
 
-    const currentTier = row?.tier || 'personal';
+    let currentTier = row?.tier || 'personal';
+
+    // ── SELF-HEALING: If user has a PAID order for 'pro' but is still 'personal', promote them
+    if (currentTier === 'personal') {
+      const paidOrder = await dbGetAsync(
+        "SELECT plan_id FROM billing_orders WHERE user_id = ? AND status = 'paid' AND plan_id = 'pro' LIMIT 1",
+        [req.user.id]
+      );
+      if (paidOrder) {
+        console.log(`[Self-Healing] Promoting user ${req.user.id} to pro based on paid order.`);
+        await dbRunAsync("UPDATE users SET tier = 'pro' WHERE id = ?", [req.user.id]);
+        currentTier = 'pro';
+      }
+    }
+
     await ensureQuotaRow(req.user.id, currentTier);
     
     // Fetch fresh data after potential promotion in ensureQuotaRow

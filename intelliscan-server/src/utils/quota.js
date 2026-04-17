@@ -75,8 +75,8 @@ async function ensureQuotaRow(userId, currentTier = 'personal') {
 
   await dbRunAsync(query, [userId, targetLimit, targetGroupLimit]);
 
-  // 4. Proactive Sync: If user has 100+ limit but tier is still 'personal', promote them
-  if (targetLimit >= 100 && currentTier.toLowerCase() === 'personal') {
+  // 4. Proactive Sync: If user has 5000+ limit but tier is still 'personal', promote them
+  if (targetLimit >= 5000 && currentTier.toLowerCase() === 'personal') {
     await dbRunAsync("UPDATE users SET tier = 'pro' WHERE id = ? AND tier = 'personal'", [userId]);
   }
 }

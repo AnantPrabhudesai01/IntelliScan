@@ -1,5 +1,5 @@
 const twilio = require('twilio');
-const { dbGetAsync, dbRunAsync } = require('../utils/db');
+const { dbGetAsync, dbRunAsync, isPostgres } = require('../utils/db');
 const { ensureQuotaRow, resolveTierLimits } = require('../utils/quota');
 const { unifiedExtractionPipeline } = require('../services/aiService');
 const { notifyUser } = require('../services/notificationService');
@@ -25,6 +25,16 @@ function getTwilioClient() {
 /**
  * Main Webhook for Twilio WhatsApp
  */
+exports.webhook = async (req, res) => {
+  const { 
+    From, 
+    Body, 
+    MediaUrl0, 
+    MediaContentType0,
+    FromCity, FromState, FromCountry
+  } = req.body;
+  const fromPhone = normalizePhone(From || '');
+
   // 👮 Check if service is enabled
   if (process.env.ENABLE_WHATSAPP !== 'true') {
      console.warn(`[WhatsApp] Webhook received but ENABLE_WHATSAPP is not 'true'. Ignoring.`);
