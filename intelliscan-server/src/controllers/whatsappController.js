@@ -268,7 +268,14 @@ exports.checkHealth = async (req, res) => {
     const dbCheck = await dbGetAsync('SELECT COUNT(*) as count FROM whatsapp_discoveries');
     const twilioSid = process.env.TWILIO_ACCOUNT_SID;
     const twilioFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886';
-    const baseUrl = process.env.APP_BASE_URL || `https://${req.headers.host}`;
+    
+    // Auto-detect public URL
+    let baseUrl = process.env.APP_BASE_URL;
+    if (!baseUrl || baseUrl.includes('localhost')) {
+      baseUrl = `https://${req.headers.host}`;
+    }
+    
+    const isLocal = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
 
     res.json({
       status: 'IntelliScan WhatsApp Engine Active',
@@ -277,13 +284,14 @@ exports.checkHealth = async (req, res) => {
         twilio_auth_token: process.env.TWILIO_AUTH_TOKEN ? 'Configured' : 'MISSING',
         twilio_whatsapp_number: twilioFrom,
         app_base_url: baseUrl,
-        webhook_target: `${baseUrl}/api/whatsapp/webhook`
+        webhook_target: `${baseUrl}/api/whatsapp/webhook`,
+        environment_warning: isLocal ? "⚠️ LOCALHOST DETECTED: Twilio cannot reach localhost. You must use a tool like ngrok to create a public URL or deploy to Vercel." : "✅ Public Environment Detected."
       },
       database: {
         discovery_table: 'Connected',
         discoveries_count: dbCheck?.count || 0
       },
-      instructions: "Ensure the 'webhook_target' above matches exactly what is in your Twilio Sandbox console."
+      instructions: "Copy the 'webhook_target' URL above and paste it into the 'When a message comes in' field in the Twilio Sandbox Console."
     });
   } catch (err) {
     res.status(500).json({ status: 'error', error: err.message });

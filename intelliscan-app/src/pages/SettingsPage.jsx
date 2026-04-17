@@ -720,7 +720,7 @@ export default function SettingsPage() {
           { id: 'Personal Info', icon: User, allowed: ['free', 'pro', 'enterprise'] },
           { id: 'Security', icon: Lock, allowed: ['free', 'pro', 'enterprise'] },
           { id: 'Integrations', icon: Blocks, allowed: ['pro', 'enterprise'] },
-          { id: 'Communications', icon: MessageSquare, allowed: ['enterprise'] }
+          { id: 'Communications', icon: MessageSquare, allowed: ['free', 'pro', 'enterprise'] }
         ].filter(tab => tab.allowed.includes(profile.tier?.toLowerCase() || 'free')).map(tab => {
           const Icon = tab.icon;
           return (
