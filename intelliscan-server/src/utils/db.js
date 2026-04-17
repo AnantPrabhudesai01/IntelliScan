@@ -20,10 +20,11 @@ console.log('[DB] Mode: PostgreSQL (Supabase)');
 
 const pgPool = new Pool({
   connectionString: DATABASE_URL,
-  ssl: { rejectUnauthorized: false }, // Required for Supabase/Neon
-  max: 3, // Best practice for Vercel/Serverless
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  ssl: { rejectUnauthorized: false }, 
+  max: 3, 
+  idleTimeoutMillis: 60000, // Increase idle persistence
+  connectionTimeoutMillis: 5000, // Wait longer for initial link
+  query_timeout: 15000, // Ensure no single query hangs for >15s
 });
 
 // ── Legacy compatibility shim ──────────────────────────────────

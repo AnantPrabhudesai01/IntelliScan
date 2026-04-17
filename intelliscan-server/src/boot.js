@@ -14,19 +14,23 @@ async function bootstrap() {
 
   try {
     // ══════════════════════════════════════════════════════════════════
-    // 1. Connectivity Check
+    // 2. Fast-Path Optimization (Turbo Boot)
     // ══════════════════════════════════════════════════════════════════
-    if (isPostgres) {
-      await pgPool.query('SELECT 1');
-      console.log('[Boot] PostgreSQL connection verified.');
-    } else {
-      await dbGetAsync('SELECT 1');
-      console.log('[Boot] SQLite connection verified.');
+    // If the 'users' table already exists, we skip the heavy schema sync
+    // to prevent Vercel 20s execution timeouts on cold starts.
+    const tableCheckQuery = isPostgres 
+      ? "SELECT 1 FROM information_schema.tables WHERE table_name = 'users' LIMIT 1"
+      : "SELECT 1 FROM sqlite_master WHERE type='table' AND name='users' LIMIT 1";
+    
+    const coreTableExists = isPostgres 
+      ? (await pgPool.query(tableCheckQuery)).rowCount > 0
+      : (await dbGetAsync(tableCheckQuery));
+
+    if (coreTableExists) {
+      console.log('✅ [Boot] Fast-Path: Core schema detected. Skipping extensive sync.');
+      return; 
     }
 
-    // ══════════════════════════════════════════════════════════════════
-    // 2. Automated Schema Sync (Self-Healing)
-    // ══════════════════════════════════════════════════════════════════
     console.log('[Boot] Checking database integrity...');
 
     // 2.1 Essential Platform Tables
