@@ -39,15 +39,20 @@ exports.handleIncomingMessage = async (req, res) => {
       console.warn(`[WhatsApp] Unauthorized: Number ${fromPhone} not linked to any user.`);
       
       // 🕵️ Check for Discovery Code (e.g., join baseball-eventually IS-1234)
-      const isCmd = (Body || '').match(/IS-(\d{4})/i);
+      const isCmd = (Body || '').match(/(IS|CODE)[-\s]?(\d{4})/i);
       if (isCmd) {
-        const discoCode = isCmd[0].toUpperCase();
+        const discoCode = `IS-${isCmd[2]}`.toUpperCase();
         console.log(`[WhatsApp] Discovery detected! Code: ${discoCode} for Phone: ${fromPhone}`);
         await dbRunAsync(
           'INSERT INTO whatsapp_discoveries (discovery_code, phone_number) VALUES (?, ?) ON CONFLICT (discovery_code) DO UPDATE SET phone_number = EXCLUDED.phone_number, created_at = CURRENT_TIMESTAMP',
           [discoCode, fromPhone]
         );
         return sendWhatsAppReply(From, `✨ *Discovery Code Detected!* I've linked your session. Now, go back to the IntelliScan dashboard to complete your registration! 🚀`);
+      }
+
+      const bodyLower = (Body || '').toLowerCase().trim();
+      if (bodyLower === 'help' || bodyLower === 'guide') {
+        return sendWhatsAppReply(From, `📖 *IntelliScan WhatsApp Guide*\n\n1️⃣ *Link Account*: Send your Session Code (e.g., IS-1234).\n2️⃣ *Scan*: Send a photo of a business card.\n3️⃣ *Export*: Type "export" to get your contacts in Excel.\n\nNeed more help? Visit: https://intelli-scan-psi.vercel.app/setup-guide`);
       }
 
       return sendWhatsAppReply(From, `Hi! It looks like your number (${fromPhone}) isn't linked to an IntelliScan account yet.\n\nPlease log in to IntelliScan on your computer, navigate to Settings > Communications, and send the Session Code (e.g., IS-1234) here to connect! 🚀`);
@@ -70,6 +75,19 @@ exports.handleIncomingMessage = async (req, res) => {
       const exportUrl = `${protocol}://${cleanDomain}/api/contacts/export/magic?token=${exportToken}`;
       
       return sendWhatsAppReply(From, `✨ *Your Magic Excel Export is ready!*\n\nThis file contains all your active contacts formatted for marketing and CRM growth.\n\n📥 *Download link:* \n${exportUrl}\n\n_(Link expires in 15 minutes)_`);
+    }
+
+    if (body === 'help' || body === 'guide') {
+      return sendWhatsAppReply(From, `📖 *IntelliScan WhatsApp Help*\n\n📸 *Scan*: Just send me a photo!\n📊 *Excel*: Type "export"\n💰 *Status*: Type "status"\n\nHappy scanning! 🚀`);
+    }
+
+    if (body === 'status' || body === 'quota') {
+      const limits = resolveTierLimits(user.tier);
+      const quota = await dbGetAsync('SELECT used_count FROM user_quotas WHERE user_id = ?', [user.id]);
+      const used = quota?.used_count || 0;
+      const remaining = Math.max(0, limits.single - used);
+      
+      return sendWhatsAppReply(From, `📊 *IntelliScan Status*\n\n👤 *User*: ${user.name}\n🏆 *Plan*: ${user.tier.toUpperCase()}\n📈 *Usage*: ${used} / ${limits.single} Scans\n🔋 *Remaining*: ${remaining}\n\nNeed more? Visit your dashboard to upgrade!`);
     }
 
     // 2. Check for Image
