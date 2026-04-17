@@ -12,10 +12,14 @@ require('dotenv').config();
 /**
  * Express App Configuration
  * 
- * This file sets up the Express instance, global middleware, and mounts
- * all our modular API routes. We keep this separate from server.js to
- * allow for easier testing and use in serverless environments like Vercel.
+ * Global Crash Recovery — ensures every "Shadow Crash" is logged
  */
+process.on('uncaughtException', (err) => {
+  console.error('🔥 FATAL UNCAUGHT EXCEPTION:', err.stack);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('🔥 FATAL UNHANDLED REJECTION:', reason);
+});
 
 const { db, pgPool } = require('./utils/db');
 const { configurePassport } = require('./config/passport');
