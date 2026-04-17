@@ -2,7 +2,7 @@
   "version": 2,
   "cleanUrls": true,
   "buildCommand": "npm run build",
-  "outputDirectory": "intelliscan-app/app",
+  "outputDirectory": "intelliscan-app/dist",
   "functions": {
     "api/index.js": {
       "maxDuration": 20

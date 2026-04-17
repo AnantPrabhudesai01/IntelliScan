@@ -266,8 +266,20 @@ router.get('/google/callback',
 router.post('/sync', validate(syncSchema), async (req, res) => {
   const { user: authUser } = req.body;
 
+  // 🛡️ JSON Enforcement & Soft Timeout (prevents non-JSON 500s on Vercel)
+  const syncTimeout = setTimeout(() => {
+    if (!res.headersSent) {
+      console.warn(`[Sync] Timeout reached for ${authUser?.email}. Sending fail-safe JSON.`);
+      res.status(504).json({ 
+        error: 'Sync Timeout', 
+        message: 'The identity synchronization is taking longer than expected. Please refresh and try again.' 
+      });
+    }
+  }, 18000); // 18s (Vercel limit is 20s)
+
   try {
     if (!authUser || !authUser.email) {
+      clearTimeout(syncTimeout);
       return res.status(400).json({ error: 'Auth0 profile missing target email for synchronization.' });
     }
 
@@ -344,26 +356,38 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       { expiresIn: JWT_EXPIRES_IN }
     );
 
-    // Session tracking
-    const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
-    const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
-    await dbRunAsync(
-      'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
-      [userId, token, deviceInfo, ipAddress, 'Unknown Location']
-    );
+    // 5. Session tracking (Non-blocking safety)
+    try {
+      const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
+      const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
+      await dbRunAsync(
+        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+        [userId, token, deviceInfo, ipAddress, 'Unknown Location']
+      );
+    } catch (sessionErr) {
+      console.warn('[Sync] Session tracking failed (non-critical):', sessionErr.message);
+    }
 
-    console.log(`[AuthSync] Successfully synchronized ${email} (${tier}) and created session`);
+    console.log(`[AuthSync] Successfully synchronized ${email} (${tier})`);
 
-    res.json({
-      token,
-      user: { id: userId, email, name, role, tier, workspace_id: workspaceId }
-    });
+    clearTimeout(syncTimeout);
+    if (!res.headersSent) {
+      res.json({
+        token,
+        user: { id: userId, email, name, role, tier, workspace_id: workspaceId }
+      });
+    }
+
   } catch (err) {
+    clearTimeout(syncTimeout);
     console.error('[AuthSync Error] Critical Identity Failure:', err.message, err.stack);
-    res.status(500).json({ 
-      error: 'Identity synchronization failed.', 
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined 
-    });
+    if (!res.headersSent) {
+      res.status(500).json({ 
+        error: 'Identity synchronization failed.', 
+        message: err.message,
+        details: process.env.NODE_ENV === 'development' ? err.stack : undefined 
+      });
+    }
   }
 });
 

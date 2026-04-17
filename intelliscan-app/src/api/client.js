@@ -1,4 +1,4 @@
-// intelliscan-app/src/api/client.js
+  // intelliscan-app/src/api/client.js
 import axios from 'axios';
 import { clearStoredAuth, getStoredToken } from '../utils/auth';
 

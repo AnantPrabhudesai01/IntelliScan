@@ -446,6 +446,32 @@ async function bootstrap() {
         updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
       )
     `);
+    
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS sessions (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        token TEXT UNIQUE NOT NULL,
+        device_info TEXT,
+        ip_address TEXT,
+        location TEXT,
+        is_active INTEGER DEFAULT 1,
+        last_active ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS otp_codes (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        type TEXT NOT NULL,
+        code TEXT NOT NULL,
+        meta_data ${isPostgres ? 'JSONB' : 'TEXT'},
+        expires_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'} NOT NULL,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        UNIQUE(user_id, type)
+      )
+    `);
 
     // ══════════════════════════════════════════════════════════════════
     // 3. System Seeding
