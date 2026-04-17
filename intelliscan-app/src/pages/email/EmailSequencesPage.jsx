@@ -1,4 +1,7 @@
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Zap, Plus, Edit3, Trash2, CheckCircle2, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
+import { getStoredToken } from '../../utils/auth.js';
 
 export default function EmailSequencesPage() {
   const navigate = useNavigate();
