@@ -5,7 +5,7 @@
   "functions": {
     "api/index.js": {
       "includeFiles": "intelliscan-server/**",
-      "maxDuration": 20
+      "maxDuration": 30
     }
   },
   "rewrites": [
