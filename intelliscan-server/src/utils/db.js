@@ -11,20 +11,29 @@ dns.setDefaultResultOrder('ipv4first');
 
 const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
-if (!DATABASE_URL) {
-  console.warn('[DB] WARNING: No DATABASE_URL found. Database-dependent routes will fail with JSON errors.');
+let pgPool;
+try {
+  pgPool = new Pool({
+    connectionString: DATABASE_URL,
+    ssl: { rejectUnauthorized: false }, 
+    max: 3, 
+    idleTimeoutMillis: 60000, 
+    connectionTimeoutMillis: 4000, 
+    query_timeout: 7000, 
+  });
+  
+  // Early check to prevent silent constructor failures from hanging later
+  pgPool.on('error', (err) => {
+    console.error('🔥 [DB] Unexpected Pool Error:', err.message);
+  });
+} catch (err) {
+  console.error('🔥 [DB] Fatal Initialization Error:', err.message);
+  // We create a mock pool that throws descriptive errors on query to keep the app alive for diagnostics
+  pgPool = { 
+    query: () => { throw new Error('Database pool failed to initialize. Check your DATABASE_URL.'); },
+    on: () => {}
+  };
 }
-
-console.log('[DB] Mode: PostgreSQL (Supabase)');
-
-const pgPool = new Pool({
-  connectionString: DATABASE_URL,
-  ssl: { rejectUnauthorized: false }, 
-  max: 3, 
-  idleTimeoutMillis: 60000, // Increase idle persistence
-  connectionTimeoutMillis: 4000, // Faster failure on Vercel
-  query_timeout: 7000, // Must be lower than Vercel's 10s kill-switch
-});
 
 // ── Legacy compatibility shim ──────────────────────────────────
 // Some older code still uses db.get / db.run / db.all callback style.
