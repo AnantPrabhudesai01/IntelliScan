@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
 import NotificationCenter from '../components/NotificationCenter';
+import SidebarSwitcher from '../components/layout/SidebarSwitcher';
 
 const businessAdminNav = [
   { section: 'Overview', items: [
@@ -314,6 +315,9 @@ export default function AdminLayout({ role = 'business_admin' }) {
           </button>
         )}
       </div>
+
+      {/* Mode Switcher */}
+      <SidebarSwitcher activeMode="business" collapsed={false} isMobile={isMobile} />
 
       {/* Role Badge */}
       <div className="px-3 pt-3 pb-1.5 shrink-0">

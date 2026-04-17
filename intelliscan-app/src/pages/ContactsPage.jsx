@@ -335,7 +335,10 @@ export default function ContactsPage() {
     const user = userStr ? JSON.parse(userStr) : null;
     const tier = user?.tier || 'personal';
     
-    let contactsToExport = filteredContacts;
+    let contactsToExport = selectedIds.length > 0 
+      ? filteredContacts.filter(c => selectedIds.includes(c.id))
+      : filteredContacts;
+
     if (tier === 'personal' && contactsToExport.length > 10) {
       alert("Free strictly limits exporting to 10 contacts. Please upgrade to the Enterprise Plan for unlimited exports.");
       contactsToExport = contactsToExport.slice(0, 10);
@@ -906,10 +909,14 @@ export default function ContactsPage() {
 
               <div className="space-y-0.5 mb-2">
                 <h3 className="font-headline text-base font-bold text-gray-900 dark:text-white truncate">
-                  {isEnglishMode ? (contact.name || 'Unknown') : (contact.name_native || contact.name || 'Unknown')}
+                  {isEnglishMode ? (contact.name || contact.name_native || 'Unknown') : (contact.name_native || contact.name || 'Unknown')}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{contact.job_title || contact.title || 'No Title'}</p>
-                <p className="text-xs text-indigo-600 dark:text-indigo-400 font-bold truncate">{contact.company || 'Unknown Company'}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                  {isEnglishMode ? (contact.job_title || contact.title || contact.title_native || 'No Title') : (contact.title_native || contact.job_title || contact.title || 'No Title')}
+                </p>
+                <p className="text-xs text-indigo-600 dark:text-indigo-400 font-bold truncate">
+                  {isEnglishMode ? (contact.company || contact.company_native || 'Unknown Company') : (contact.company_native || contact.company || 'Unknown Company')}
+                </p>
               </div>
 
               {/* AI Insights Badges */}
@@ -1122,7 +1129,7 @@ export default function ContactsPage() {
                   <ContactAvatar contact={contact} />
                   <div className="min-w-0">
                     <p className="font-bold text-sm text-gray-900 dark:text-white truncate">
-                      {isEnglishMode ? (contact.name || 'Unknown') : (contact.name_native || contact.name || 'Unknown')}
+                      {isEnglishMode ? (contact.name || contact.name_native || 'Unknown') : (contact.name_native || contact.name || 'Unknown')}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{contact.email || '—'}</p>
                   </div>
@@ -1131,11 +1138,11 @@ export default function ContactsPage() {
                 {/* Company & Role + Badges */}
                 <div className="min-w-0 flex flex-col gap-1">
                   <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                    {isEnglishMode ? (contact.company || '—') : (contact.company_native || contact.company || '—')}
+                    {isEnglishMode ? (contact.company || contact.company_native || '—') : (contact.company_native || contact.company || '—')}
                   </p>
                   <div className="flex items-center gap-1.5 min-w-0">
                     <span className="text-[10px] text-gray-500 dark:text-gray-400 truncate max-w-[100px]">
-                      {isEnglishMode ? (contact.job_title || contact.title || 'No Title') : (contact.title_native || contact.job_title || contact.title || 'No Title')}
+                      {isEnglishMode ? (contact.job_title || contact.title || contact.title_native || 'No Title') : (contact.title_native || contact.job_title || contact.title || 'No Title')}
                     </span>
                     {contact.inferred_industry && (
                       <span className="px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[8px] font-black uppercase tracking-tighter border border-indigo-100 dark:border-indigo-900/40">

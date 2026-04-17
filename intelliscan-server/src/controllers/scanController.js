@@ -64,9 +64,13 @@ exports.scanSingleCard = async (req, res) => {
 Accuracy is paramount. If you see a business card, extract every detail with high precision.
 
 ### EXTRACTION RULES:
-1. **Name Scripting**: 
-   - 'name': Standard English/Latin name.
-   - 'name_native': Original script (Hindi, Arabic, Japanese, etc.) IF AND ONLY IF the card is multilingual. Else empty string.
+1. **Name & Entity Scripting (CRITICAL)**: 
+   - 'name': ALWAYS English/Latin script. If the card is only in a native script (Hindi, Gujarati, etc.), YOU MUST TRANSLITERATE it into Latin/English (e.g., "वसुधा" -> "Vasudha").
+   - 'name_native': The original verbatim script name (e.g., "वसुधा"). 
+   - 'company': ALWAYS English/Latin script. Transliterate if necessary.
+   - 'company_native': Original verbatim script company.
+   - 'title': ALWAYS English/Latin script. Transliterate if necessary.
+   - 'title_native': Original verbatim script title.
 2. **Contact Info**:
    - Clean all phone numbers to international format (e.g., +123456789).
    - Normalize emails to lowercase.
@@ -215,12 +219,12 @@ Return ONLY a valid JSON object:
   "cards": [
     {
       "box_2d": [ymin, xmin, ymax, xmax],
-      "name": "Person Name",
-      "name_native": "Original script name if non-Latin, else empty",
-      "company": "Company Name",
-      "company_native": "Original script company if non-Latin, else empty",
-      "title": "Job title",
-      "title_native": "Original script title if non-Latin, else empty",
+      "name": "Person Name (ALWAYS English/Latin script, transliterate if needed)",
+      "name_native": "Original verbatim script (Hindi, etc.)",
+      "company": "Company Name (ALWAYS English/Latin script, transliterate if needed)",
+      "company_native": "Original verbatim script (Hindi, etc.)",
+      "title": "Job title (ALWAYS English/Latin script, transliterate if needed)",
+      "title_native": "Original verbatim script (Hindi, etc.)",
       "email": "Email Address",
       "phone": "Phone Number",
       "website": "Website URL",

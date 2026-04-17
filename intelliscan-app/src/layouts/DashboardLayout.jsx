@@ -7,6 +7,7 @@ import SignalsCard from '../components/SignalsCard';
 import { useRole } from '../context/RoleContext';
 import { getStoredToken, safeReadStoredUser } from '../utils/auth';
 import LanguageToggle from '../components/LanguageToggle';
+import SidebarSwitcher from '../components/layout/SidebarSwitcher';
 
 import { useNotifications } from '../context/NotificationContext';
 import NotificationCenter from '../components/NotificationCenter';
@@ -147,6 +148,8 @@ export default function DashboardLayout() {
           </button>
         )}
       </div>
+
+      <SidebarSwitcher activeMode="personal" collapsed={sidebarCollapsed} isMobile={isMobile} />
 
       {/* Nav Items */}
       <nav className={`flex-1 ${sidebarCollapsed && !isMobile ? 'px-1.5' : 'px-2.5'} py-3 overflow-y-auto sidebar-scroll space-y-0.5`}>
