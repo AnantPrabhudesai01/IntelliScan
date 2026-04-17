@@ -53,6 +53,7 @@ import MeetingToolsPage from './pages/dashboard/MeetingToolsPage';
 import SignalsPage from './pages/dashboard/SignalsPage';
 import CardCreatorPage from './pages/CardCreatorPage';
 import Leaderboard from './pages/dashboard/Leaderboard';
+import SetupGuidePage from './pages/SetupGuidePage';
 
 // Email Marketing Pages
 import EmailMarketingPage from './pages/email/EmailMarketingPage';
@@ -218,6 +219,7 @@ export default function App() {
               <Route path="/dashboard/billing" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><BillingPage /></RoleGuard>} />
               <Route path="/dashboard/checkout/:planId" element={<RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><CheckoutPage /></RoleGuard>} />
               <Route path="/dashboard/leaderboard" element={<TierGuard minTier="enterprise" featureName="Performance Leaderboard"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><Leaderboard /></RoleGuard></TierGuard>} />
+              <Route path="/setup/whatsapp" element={<SetupGuidePage />} />
               <Route path="/marketplace" element={<TierGuard minTier="pro" featureName="Marketplace Apps"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><MarketplacePage /></RoleGuard></TierGuard>} />
               <Route path="/subscription-plan-comparison" element={<GenSubscriptionPlanComparison />} />
               

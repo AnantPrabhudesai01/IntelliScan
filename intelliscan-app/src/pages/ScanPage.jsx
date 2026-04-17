@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useContacts } from '../context/ContactContext';
 import { Upload, Camera, RefreshCw, Lightbulb, Sparkles, Save, Edit3, X, ZoomIn, FileText, Layers, CheckCircle2, Users, Zap, MessageCircle } from 'lucide-react';
 import { getStoredToken } from '../utils/auth';
@@ -18,6 +19,13 @@ export default function ScanPage() {
   const [selectedImage, setSelectedImage] = useState(() => {
     return localStorage.getItem('intelliscan_cached_image') || null;
   });
+  const [discoveryCode, setDiscoveryCode] = useState('');
+
+  useEffect(() => {
+    // Generate a fresh discovery code for one-click setup
+    const code = `IS-${Math.floor(1000 + Math.random() * 9000)}`;
+    setDiscoveryCode(code);
+  }, []);
   const [errorMsg, setErrorMsg] = useState('');
   const [scanMode, setScanMode] = useState('single'); // 'single' | 'multi' | 'batch'
   const [multiResults, setMultiResults] = useState(null);
@@ -501,19 +509,24 @@ export default function ScanPage() {
 
           <div className="flex flex-col gap-2">
             <a 
-              href="https://wa.me/14155238886?text=join%20baseball-eventually"
+              href={`https://wa.me/14155238886?text=join%20baseball-eventually%20${discoveryCode}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 bg-[#25D366] text-white hover:bg-[#128C7E] shadow-xl shadow-green-500/20 active:scale-95 group"
             >
               <MessageCircle size={16} className="group-hover:rotate-12 transition-transform" /> Scan via WhatsApp
             </a>
-            <button 
-              onClick={() => window.open('/WHATSAPP_SETUP_GUIDE.md', '_blank')}
-              className="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:underline text-center"
-            >
-              Setup Guide & Instructions
-            </button>
+            <div className="text-center space-y-1">
+              <Link 
+                to="/setup/whatsapp"
+                className="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:underline"
+              >
+                Setup Guide & Instructions
+              </Link>
+              <p className="text-[7px] text-gray-500 font-bold uppercase tracking-tighter">
+                First time? Send the pre-filled code to enable AI scanning.
+              </p>
+            </div>
           </div>
         </div>
       </header>
