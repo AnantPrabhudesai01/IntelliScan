@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const integrationsController = require('../controllers/integrationsController');
-const { authenticateToken } = require('../utils/auth');
+const { authenticateToken } = require('../middleware/auth');
 
 /**
  * @route   GET /api/integrations
