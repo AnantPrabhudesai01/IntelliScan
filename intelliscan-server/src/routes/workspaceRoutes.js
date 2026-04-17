@@ -11,6 +11,8 @@ const contactsController = require('../controllers/contactsController');
 
 const AUDIT_SUCCESS = 'SUCCESS';
 
+const policyUtils = require('../utils/policyUtils');
+
 // Workspace Analytics (Bridge)
 router.get('/analytics', authenticateToken, contactsController.getWorkspaceAnalytics);
 
@@ -23,20 +25,44 @@ router.get('/contacts/duplicates', authenticateToken, contactsController.getDupl
 // Org Chart (Bridge)
 router.get('/org-chart/:company', authenticateToken, contactsController.getOrgChart);
 
+// Data Compliance Policies
+router.get('/data-policies', authenticateToken, async (req, res) => {
+  try {
+    const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
+    const policies = await policyUtils.getPoliciesForScope(scopeWorkspaceId);
+    res.json(policies);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/data-policies', authenticateToken, async (req, res) => {
+  try {
+    const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
+    const { retention_days, pii_redaction_enabled, strict_audit_storage_enabled } = req.body;
+    
+    await dbRunAsync(
+      `INSERT INTO workspace_policies (workspace_id, retention_days, pii_redaction_enabled, strict_audit_storage_enabled)
+       VALUES (?, ?, ?, ?)
+       ON CONFLICT(workspace_id) DO UPDATE SET
+         retention_days = excluded.retention_days,
+         pii_redaction_enabled = excluded.pii_redaction_enabled,
+         strict_audit_storage_enabled = excluded.strict_audit_storage_enabled,
+         updated_at = CURRENT_TIMESTAMP`,
+      [scopeWorkspaceId, retention_days || 90, pii_redaction_enabled ? 1 : 0, strict_audit_storage_enabled ? 1 : 0]
+    );
+    
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/workspace/members - List all members in the current user's workspace
 router.get('/members', authenticateToken, (req, res) => {
-  db.get('SELECT workspace_id FROM users WHERE id = ?', [req.user.id], (err, userRow) => {
+  db.get('SELECT workspace_id, id FROM users WHERE id = ?', [req.user.id], (err, userRow) => {
     if (err) return res.status(500).json({ error: err.message });
-    const workspaceId = userRow?.workspace_id;
-
-    if (!workspaceId) {
-      // If no workspace, return just the user themselves
-      return db.all('SELECT id, name, email, role, tier FROM users WHERE id = ?', [req.user.id], (err2, rows) => {
-        if (err2) return res.status(500).json({ error: err2.message });
-        res.json(rows);
-      });
-    }
-
+    const workspaceId = (userRow && userRow.workspace_id) || userRow.id;
     db.all(
       'SELECT id, name, email, role, tier FROM users WHERE workspace_id = ? ORDER BY name ASC',
       [workspaceId],

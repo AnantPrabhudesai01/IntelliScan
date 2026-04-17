@@ -51,8 +51,8 @@ router.get('/quota', authenticateToken, async (req, res) => {
   }
 });
 
-// GET /api/access/me
-router.get('/access/me', authenticateToken, async (req, res) => {
+// GET /api/access/me (mounted at /api/access)
+router.get('/me', authenticateToken, async (req, res) => {
   try {
     const user = await dbGetAsync('SELECT role, tier FROM users WHERE id = ?', [req.user.id]);
     const profile = buildAccessProfile(user?.role || req.user.role || 'user', user?.tier || req.user.tier || 'personal');

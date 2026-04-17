@@ -14,24 +14,9 @@ async function bootstrap() {
 
   try {
     // ══════════════════════════════════════════════════════════════════
-    // 2. Fast-Path Optimization (Turbo Boot)
+    // 2. Database Integrity Check
     // ══════════════════════════════════════════════════════════════════
-    // If the 'users' table already exists, we skip the heavy schema sync
-    // to prevent Vercel 20s execution timeouts on cold starts.
-    const tableCheckQuery = isPostgres 
-      ? "SELECT 1 FROM information_schema.tables WHERE table_name = 'users' LIMIT 1"
-      : "SELECT 1 FROM sqlite_master WHERE type='table' AND name='users' LIMIT 1";
-    
-    const coreTableExists = isPostgres 
-      ? (await pgPool.query(tableCheckQuery)).rowCount > 0
-      : (await dbGetAsync(tableCheckQuery));
-
-    if (coreTableExists) {
-      console.log('✅ [Boot] Fast-Path: Core schema detected. Skipping extensive sync.');
-      return; 
-    }
-
-    console.log('[Boot] Checking database integrity...');
+    console.log('[Boot] Verifying platform schema integrity...');
 
     // 2.1 Essential Platform Tables
     await dbRunAsync(`
@@ -300,6 +285,11 @@ async function bootstrap() {
     
     const patches = [
       { table: 'cards', column: 'location', type: 'TEXT' },
+      { table: 'crm_mappings', column: 'auto_sync', type: 'INTEGER DEFAULT 0' },
+      { table: 'user_cards', column: 'contact_email', type: 'TEXT' },
+      { table: 'user_cards', column: 'contact_phone', type: 'TEXT' },
+      { table: 'user_cards', column: 'contact_linkedin', type: 'TEXT' },
+      { table: 'user_cards', column: 'contact_whatsapp', type: 'TEXT' },
       { table: 'ai_drafts', column: 'version', type: 'INTEGER DEFAULT 1' },
       { table: 'ai_drafts', column: 'status', type: "TEXT DEFAULT 'draft'" },
       { table: 'contact_sequences', column: 'status', type: "TEXT DEFAULT 'active'" },

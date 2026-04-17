@@ -8,13 +8,19 @@ const { uploadToImgbb } = require('../services/imageService');
 const { ensureQuotaRow, resolveTierLimits } = require('../utils/quota');
 const { 
   getScopeForUser, 
-  getPoliciesForScope, 
-  runRetentionPurgeForScope,
-  applyPiiPolicyToContactOutput,
-  buildDedupeSuggestions
 } = require('../utils/workspaceUtils');
+const {
+  getPoliciesForScope,
+  runRetentionPurgeForScope,
+  applyPiiPolicyToContactOutput
+} = require('../utils/policyUtils');
+const { 
+  getContactCompletenessScore, 
+  selectPrimaryContact, 
+  buildFieldMergeSuggestions,
+  buildDedupeSuggestions
+} = require('../utils/contactUtils');
 const { normalizeEmail, firstNameFromFullName } = require('../utils/auth');
-const { getContactCompletenessScore, selectPrimaryContact, buildFieldMergeSuggestions } = require('../utils/contactUtils');
 
 /**
  * GET /api/contacts
