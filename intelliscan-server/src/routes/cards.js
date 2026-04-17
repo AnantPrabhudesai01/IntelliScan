@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const cardsController = require('../controllers/cardsController');
 const { authenticateToken } = require('../middleware/auth');
+const { upload } = require('../utils/imageUpload');
 
 /**
  * @route GET /api/my-card
@@ -23,5 +24,12 @@ router.post('/save', authenticateToken, cardsController.saveCard);
  * @access Private
  */
 router.post('/generate-logo', authenticateToken, cardsController.generateAiLogo);
+
+/**
+ * @route POST /api/cards/upload-logo
+ * @desc Upload a custom branding logo.
+ * @access Private
+ */
+router.post('/upload-logo', authenticateToken, upload.single('logo'), cardsController.uploadLogo);
 
 module.exports = router;

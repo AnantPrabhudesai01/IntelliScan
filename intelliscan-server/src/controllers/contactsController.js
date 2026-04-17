@@ -5,11 +5,16 @@ const { logAuditEvent, AUDIT_SUCCESS, AUDIT_DENIED, AUDIT_ERROR } = require('../
 const { triggerWebhook } = require('../services/webhookService');
 const { generateWithFallback, generateEmbedding, unifiedTextAIPipeline } = require('../services/aiService');
 const { uploadToImgbb } = require('../services/imageService');
-const { getScopeForUser } = require('../utils/workspaceUtils');
-const { getPoliciesForScope, applyPiiPolicyToContactOutput, runRetentionPurgeForScope } = require('../utils/policyUtils');
 const { ensureQuotaRow, resolveTierLimits } = require('../utils/quota');
+const { 
+  getScopeForUser, 
+  getPoliciesForScope, 
+  runRetentionPurgeForScope,
+  applyPiiPolicyToContactOutput,
+  buildDedupeSuggestions
+} = require('../utils/workspaceUtils');
 const { normalizeEmail, firstNameFromFullName } = require('../utils/auth');
-const { getContactCompletenessScore, selectPrimaryContact, buildFieldMergeSuggestions, buildDedupeSuggestions } = require('../utils/contactUtils');
+const { getContactCompletenessScore, selectPrimaryContact, buildFieldMergeSuggestions } = require('../utils/contactUtils');
 
 /**
  * GET /api/contacts
@@ -521,6 +526,41 @@ exports.getWorkspaceAnalytics = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+/**
+ * Enterprise Shared Rolodex Logic
+ * GET /api/workspace/contacts
+ */
+exports.getWorkspaceContacts = async (req, res) => {
+  try {
+    const { workspaceId, scopeWorkspaceId } = await getScopeForUser(req.user.id);
+    const policies = await getPoliciesForScope(scopeWorkspaceId);
+    const purge = await runRetentionPurgeForScope(scopeWorkspaceId, policies.retention_days);
+
+    const sql = workspaceId
+      ? `SELECT c.*, u.name as scanner_name 
+         FROM contacts c 
+         JOIN users u ON c.user_id = u.id 
+         WHERE u.workspace_id = ? AND c.is_deleted = FALSE
+         ORDER BY c.scan_date DESC`
+      : `SELECT c.*, u.name as scanner_name 
+         FROM contacts c 
+         JOIN users u ON c.user_id = u.id 
+         WHERE c.user_id = ? AND c.is_deleted = FALSE
+         ORDER BY c.scan_date DESC`;
+
+    const params = [workspaceId || req.user.id];
+    const rows = await dbAllAsync(sql, params);
+
+    const sanitizedRows = (rows || []).map(row => applyPiiPolicyToContactOutput(row, policies));
+    
+    res.setHeader('X-Retention-Purged', `${purge.purged}`);
+    res.json(sanitizedRows);
+  } catch (err) {
+    console.error('[Workspace Contacts Error]', err.message);
+    res.status(500).json({ error: err.message });
   }
 };
 

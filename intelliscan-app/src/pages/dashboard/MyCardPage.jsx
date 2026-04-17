@@ -1,4 +1,9 @@
-import { QrCode, Share2, Smartphone, Download, CheckCircle2, ChevronRight, Copy, Sparkles, Layout, Palette, Wand2, RefreshCw } from 'lucide-react';
+import { 
+  QrCode, Share2, Smartphone, Download, CheckCircle2, 
+  ChevronRight, Copy, Sparkles, Layout, Palette, Wand2, 
+  RefreshCw, Mail, Phone, Linkedin, MessageCircle, Send,
+  TrendingUp, Users, Zap
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getStoredToken } from '../../utils/auth.js';
 
@@ -7,13 +12,13 @@ export default function MyCardPage() {
   const [generating, setGenerating] = useState(false);
   const [cardData, setCardData] = useState({ 
     url_slug: '', views: 0, saves: 0,
-    bio: 'Digital business card for networking.',
+    bio: 'Professional networking profile driving innovation.',
     headline: 'Founder & Professional',
     design_json: { 
-      primary: '#4F46E5', 
-      secondary: '#7C3AED', 
+      primary: '#6366f1', 
+      secondary: '#a855f7', 
       layout: 'glassmorphism', 
-      font: 'Inter',
+      font: 'Outfit',
       gradient_angle: '135deg'
     }
   });
@@ -26,7 +31,7 @@ export default function MyCardPage() {
       });
       if(res.ok) {
         const data = await res.json();
-        if (data.url_slug) setCardData(data);
+        if (data) setCardData(prev => ({ ...prev, ...data }));
       }
     } catch (e) {
       console.error('Failed to load card:', e);
@@ -34,7 +39,6 @@ export default function MyCardPage() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCard();
   }, []);
 
@@ -49,10 +53,10 @@ export default function MyCardPage() {
         },
         body: JSON.stringify({
           name: me.name,
-          title: 'Professional', // Placeholder until profile enriched
+          title: cardData.headline || 'Professional',
           company: 'IntelliScan Network',
           industry: 'Technology',
-          vibe: 'Premium and futuristic'
+          vibe: 'Premium, Minimalist, High-end'
         })
       });
       if (res.ok) {
@@ -81,10 +85,10 @@ export default function MyCardPage() {
         body: JSON.stringify(cardData)
       });
       if (res.ok) {
-        alert('Design saved successfully!');
+        alert('Digital Card saved successfully!');
       } else {
         const err = await res.json();
-        alert(err.message || 'Error saving design.');
+        alert(err.message || 'Error saving card.');
       }
     } catch (e) {
       console.error('Save failed', e);
@@ -100,172 +104,209 @@ export default function MyCardPage() {
   };
 
   const d = cardData.design_json || {};
+  const primary = d.primary || '#6366f1';
+  const secondary = d.secondary || '#a855f7';
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-12">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
-            AI Magic Designer <span className="bg-indigo-600 text-[10px] font-black uppercase px-2 py-0.5 rounded text-white tracking-widest">Digital Card</span>
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 max-w-2xl">
-            Automate your professional edge. Let our AI design your digital card, generate your bio, and craft the perfect networking headline.
-          </p>
+    <div className="max-w-7xl mx-auto space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-24 font-['Inter']">
+      
+      {/* Dynamic Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/5 backdrop-blur-3xl border border-white/10 p-8 rounded-[3rem] shadow-xl">
+        <div className="flex items-center gap-6">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+            <Zap size={28} />
+          </div>
+          <div>
+            <h1 className="text-3xl font-['Outfit'] font-black text-white tracking-tighter flex items-center gap-2">
+              Digital Card Pro <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full uppercase tracking-tighter">Sync Active</span>
+            </h1>
+            <p className="text-sm text-slate-400 mt-1 max-w-lg font-medium">
+              Your professional gateway is ready. Generated with AI. Shared with the world.
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <button 
             onClick={handleAiDesign}
             disabled={generating}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-4 bg-white text-black rounded-2xl font-['Outfit'] font-black text-sm hover:scale-[1.05] active:scale-95 transition-all disabled:opacity-50"
           >
             {generating ? <RefreshCw className="animate-spin" size={18} /> : <Wand2 size={18} />}
-            AI Design Magic
+            AI RE-GENERATE
           </button>
           <button 
             onClick={handleSaveDesign}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-gray-800 border-2 border-indigo-600/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm"
+            className="flex items-center justify-center p-4 bg-white/5 border border-white/10 text-white rounded-2xl hover:bg-white/10 transition-all"
+            title="Save Changes"
           >
-            <CheckCircle2 size={18} /> Save Identity
+            <CheckCircle2 size={24} />
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         
-        {/* Left: THE LIVE PREVIEW CARD */}
-        <div className="lg:col-span-5 flex justify-center">
+        {/* Left: LIVE MOBILE PREVIEW */}
+        <div className="lg:col-span-12 xl:col-span-5 flex flex-col items-center">
+          <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
+            < स्मार्टफोन size={14} /> Official Live Preview
+          </div>
+          
           <div 
-            className="w-[340px] h-[580px] rounded-[3rem] shadow-2xl relative overflow-hidden group transition-all duration-700 border-4 border-white/10"
-            style={{ 
-              background: `linear-gradient(${d.gradient_angle || '135deg'}, ${d.primary || '#4F46E5'}, ${d.secondary || '#7C3AED'})`,
-              fontFamily: d.font || 'Inter'
-            }}
+            className="w-[340px] h-[680px] rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] relative overflow-hidden group transition-all duration-700 bg-[#050505] border-[6px] border-[#1a1a1a]"
           >
-            {/* Dynamic Layout Overlays */}
-            {d.layout === 'glassmorphism' && (
-              <div className="absolute inset-0 bg-white/5 backdrop-blur-[2px]"></div>
-            )}
-            
-            <div className={`p-10 flex flex-col h-full relative z-10 text-white ${d.layout === 'bold_dark' ? 'items-center text-center' : ''}`}>
-               {/* Icon/Logo area */}
-               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black shadow-2xl mb-10 transition-transform group-hover:rotate-12 duration-500 ${d.layout === 'minimalist' ? 'bg-white text-indigo-900' : 'bg-white/20 backdrop-blur-xl border border-white/30 text-white'}`}>
-                 {me.name.charAt(0)}
-               </div>
+             {/* Background Aurora */}
+             <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div 
+                  className="absolute -top-[20%] -left-[20%] w-[100%] h-[100%] rounded-full blur-[80px] opacity-20"
+                  style={{ background: `radial-gradient(circle, ${primary}, transparent)` }}
+                ></div>
+                <div 
+                  className="absolute -bottom-[20%] -right-[20%] w-[100%] h-[100%] rounded-full blur-[80px] opacity-20"
+                  style={{ background: `radial-gradient(circle, ${secondary}, transparent)` }}
+                ></div>
+             </div>
 
-               <div className="space-y-1">
-                 <h2 className={`font-black tracking-tighter transition-all duration-700 ${d.layout === 'corporate_pro' ? 'text-3xl uppercase' : 'text-4xl'}`}>
-                   {me.name}
-                 </h2>
-                 <p className="text-white/80 font-bold text-sm tracking-wide uppercase opacity-90">
-                   {cardData.headline || 'Professional Profile'}
-                 </p>
-               </div>
+             <div className="relative z-10 h-full flex flex-col pt-12">
+                {/* Simulated Glass Card */}
+                <div className="mx-6 h-full bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[3rem] overflow-hidden flex flex-col shadow-2xl">
+                   <div className="h-32 relative">
+                      <div className="absolute inset-0 opacity-40 shadow-inner" style={{ background: `linear-gradient(${d.gradient_angle || '135deg'}, ${primary}, ${secondary})` }}></div>
+                   </div>
+                   
+                   <div className="px-6 pb-8 -mt-16 text-center">
+                      <div className="w-24 h-24 rounded-[2rem] bg-[#1a1a1a] border border-white/10 mx-auto mb-6 flex items-center justify-center text-4xl font-['Outfit'] font-black text-white">
+                         {me.name.charAt(0)}
+                      </div>
+                      <h2 className="text-2xl font-['Outfit'] font-black text-white tracking-tighter">{me.name}</h2>
+                      <p className="text-indigo-400 text-[10px] font-black uppercase tracking-widest mt-1">{cardData.headline}</p>
+                      
+                      <p className="text-slate-400 text-[11px] leading-relaxed mt-6 line-clamp-3 italic">
+                        "{cardData.bio}"
+                      </p>
 
-               <div className="mt-8">
-                 <p className="text-sm font-medium leading-relaxed opacity-80 line-clamp-4">
-                    {cardData.bio || 'Passionate professional driving innovation through the IntelliScan platform.'}
-                 </p>
-               </div>
+                      <div className="mt-8 space-y-2">
+                         <div className="w-full py-4 bg-white text-black rounded-2xl font-black text-[10px] flex items-center justify-center gap-2">
+                            <Download size={14} strokeWidth={3} /> SAVE CONTACT
+                         </div>
+                         <div className="flex gap-2">
+                            <div className="flex-1 py-3 bg-white/5 border border-white/5 text-white/50 rounded-xl font-bold text-[9px] flex items-center justify-center gap-2">
+                               URL COPIED
+                            </div>
+                            <div className="w-10 h-10 bg-white/5 border border-white/5 text-emerald-400/50 rounded-xl flex items-center justify-center">
+                               <MessageCircle size={14} />
+                            </div>
+                         </div>
+                      </div>
 
-               {/* Bottom QR Card Area */}
-               <div className={`mt-auto rounded-[2.5rem] p-6 shadow-2xl flex flex-col items-center transition-all duration-700 ${d.layout === 'minimalist' ? 'bg-white scale-90' : 'bg-white/10 backdrop-blur-2xl border border-white/20'}`}>
-                 <div className="bg-white p-3 rounded-2xl shadow-inner mb-4 overflow-hidden">
-                   <img 
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(cardUrl)}`} 
-                      alt="Profile QR"
-                      className="w-32 h-32"
-                   />
-                 </div>
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Scan to Connect</span>
-               </div>
-            </div>
-            
-            {/* Gloss Highlight Overlay */}
-            <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-white/10 rotate-45 blur-3xl pointer-events-none group-hover:translate-x-full group-hover:translate-y-full transition-all duration-1000"></div>
+                      <div className="mt-8 space-y-2 text-left">
+                         {[Mail, Phone, Linkedin].map((Icon, i) => (
+                           <div key={i} className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5 opacity-50">
+                              <Icon size={14} className="text-indigo-400" />
+                              <div className="w-24 h-2 bg-white/10 rounded-full"></div>
+                           </div>
+                         ))}
+                      </div>
+                   </div>
+                   
+                   <div className="mt-auto p-4 border-t border-white/5 bg-white/5 flex items-center justify-center gap-2">
+                      <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">IntelliScan Gateway</p>
+                   </div>
+                </div>
+             </div>
+             
+             {/* Notch Hardware Simulation */}
+             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#1a1a1a] rounded-b-2xl z-20"></div>
           </div>
         </div>
 
-        {/* Right: ANALYTICS & SETTINGS */}
-        <div className="lg:col-span-7 space-y-8">
+        {/* Right: ANALYTICS & SPEC */}
+        <div className="lg:col-span-12 xl:col-span-7 space-y-8">
           
-          {/* AI Insights Summary */}
-          <div className="bg-white dark:bg-[#111827] rounded-[2.5rem] p-8 border border-gray-200 dark:border-gray-800 shadow-xl relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-8 flex gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <div className="w-2 h-2 rounded-full bg-green-500 delay-100 animate-pulse"></div>
+          {/* AI Specification */}
+          <div className="bg-white/5 backdrop-blur-3xl rounded-[3rem] p-10 border border-white/10 shadow-2xl relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-10 flex gap-2">
+                <div className="w-3 h-3 rounded-full bg-indigo-500 animate-pulse"></div>
+                <div className="w-3 h-3 rounded-full bg-indigo-500 delay-100 animate-pulse"></div>
              </div>
-             <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2 italic uppercase tracking-tighter">
-                <Sparkles size={20} className="text-indigo-500" /> AI Design Specification
+             <h3 className="text-2xl font-['Outfit'] font-black text-white mb-8 flex items-center gap-3 uppercase tracking-tighter italic">
+                <Sparkles size={24} className="text-indigo-400" /> Identity Intelligence
              </h3>
-             <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-1">
-                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Primary Palette</p>
-                   <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full" style={{ backgroundColor: d.primary }}></div>
-                      <span className="text-sm font-mono font-bold text-gray-700 dark:text-gray-300 uppercase">{d.primary}</span>
+             <div className="grid grid-cols-2 gap-10">
+                <div className="space-y-2">
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Primary Aura</p>
+                   <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl shadow-lg" style={{ backgroundColor: primary }}></div>
+                      <span className="text-lg font-mono font-black text-white uppercase tracking-tighter">{primary}</span>
                    </div>
                 </div>
-                <div className="space-y-1">
-                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Layout Architecture</p>
-                   <p className="text-sm font-bold text-gray-700 dark:text-gray-300 capitalize">{d.layout?.replace('_', ' ') || 'Default'}</p>
+                <div className="space-y-2">
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Architectural Tier</p>
+                   <p className="text-xl font-['Outfit'] font-bold text-white capitalize">{d.layout?.replace('_', ' ') || 'Glassmorphism'}</p>
                 </div>
-                <div className="space-y-1">
-                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Typography System</p>
-                   <p className="text-sm font-bold text-gray-700 dark:text-gray-300">{d.font || 'Default Sans'}</p>
+                <div className="space-y-2">
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Global Typeface</p>
+                   <p className="text-xl font-['Outfit'] font-bold text-white">{d.font || 'Outfit & Inter'}</p>
                 </div>
-                <div className="space-y-1">
-                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Card ID / Slug</p>
-                   <p className="text-sm font-mono font-bold text-indigo-600 dark:text-indigo-400">{cardData.url_slug || 'auto-assigned'}</p>
+                <div className="space-y-2">
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Identity Index (Slug)</p>
+                   <p className="text-xl font-mono font-black text-indigo-400 tracking-tighter">{cardData.url_slug || 'auto-assigned'}</p>
                 </div>
              </div>
           </div>
 
-          <div className="bg-white dark:bg-[#111827] rounded-[2.5rem] p-8 border border-gray-200 dark:border-gray-800 shadow-xl">
-            <h3 className="text-lg font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tight flex items-center gap-2">
-               <Share2 size={18} className="text-indigo-600" /> Distribution & Performance
+          <div className="bg-white/5 backdrop-blur-3xl rounded-[3rem] p-10 border border-white/10 shadow-2xl">
+            <h3 className="text-xl font-['Outfit'] font-black text-white mb-8 uppercase tracking-tighter flex items-center gap-3 italic">
+               <TrendingUp size={24} className="text-indigo-400" /> World-Density Analytics
             </h3>
             
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-5 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-inner group">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/10 group transition-all hover:bg-white/10">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-1">Your Public Portal</span>
-                  <span className="text-sm font-mono text-indigo-600 dark:text-indigo-400 truncate max-w-[300px]">{cardUrl}</span>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1">Public Connection Portal</span>
+                  <span className="text-sm font-mono text-indigo-400 font-black truncate max-w-[300px] tracking-tighter">{cardUrl}</span>
                 </div>
                 <button 
                   onClick={handleCopy}
-                  className="w-12 h-12 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm hover:scale-110 active:scale-95"
+                  className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-xl active:scale-90 ${copied ? 'bg-emerald-500 text-white' : 'bg-white text-black hover:scale-110'}`}
                 >
-                  {copied ? <CheckCircle2 size={20} className="text-green-500" /> : <Copy size={20} />}
+                  {copied ? <CheckCircle2 size={24} /> : <Copy size={24} />}
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-900/40 dark:to-gray-950 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden">
-                   <div className="absolute top-0 right-0 w-16 h-16 bg-indigo-500/5 rounded-full -mr-8 -mt-8"></div>
-                   <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Global Views</p>
+              <div className="grid grid-cols-2 gap-8">
+                <div className="bg-[#0a0a0a] p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                   <div className="absolute -top-4 -right-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl"></div>
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                      <Users size={12} className="text-indigo-400" /> Network Reach
+                   </p>
                    <div className="flex items-end gap-3">
-                     <p className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter">{cardData.views.toLocaleString()}</p>
-                     <span className="text-[10px] font-black text-emerald-500 mb-1.5 uppercase font-mono">+12.4%</span>
+                     <p className="text-6xl font-['Outfit'] font-black text-white tracking-tighter">{cardData.views.toLocaleString()}</p>
+                     <span className="text-[10px] font-black text-indigo-400 mb-2 uppercase tracking-widest font-mono">Organic</span>
                    </div>
                 </div>
-                <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-900/40 dark:to-gray-950 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden">
-                   <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/5 rounded-full -mr-8 -mt-8"></div>
-                   <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Identity Saves</p>
+                <div className="bg-[#0a0a0a] p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                   <div className="absolute -top-4 -right-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                      <Zap size={12} className="text-emerald-400" /> CRM Syncs
+                   </p>
                    <div className="flex items-end gap-3">
-                     <p className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter">{cardData.saves.toLocaleString()}</p>
-                     <span className="text-[10px] font-black text-indigo-500 mb-1.5 uppercase font-mono">Synced</span>
+                     <p className="text-6xl font-['Outfit'] font-black text-white tracking-tighter">{cardData.saves.toLocaleString()}</p>
+                     <span className="text-[10px] font-black text-emerald-400 mb-2 uppercase tracking-widest font-mono">Instant</span>
                    </div>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="p-8 bg-amber-50 dark:bg-amber-950/30 rounded-[2.5rem] border border-amber-200 dark:border-amber-800/50 flex gap-4 items-start">
-             <Sparkles size={24} className="text-amber-500 shrink-0 mt-1" />
+          <div className="px-10 py-8 bg-indigo-600/10 rounded-[3rem] border border-indigo-500/20 flex gap-6 items-center">
+             <div className="w-12 h-12 bg-white text-black rounded-2xl flex items-center justify-center shrink-0">
+                <Sparkles size={24} />
+             </div>
              <div>
-                <h4 className="font-black text-amber-800 dark:text-amber-400 text-sm italic uppercase tracking-tighter">Designer Tip — The Power of Bio</h4>
-                <p className="text-xs text-amber-700/80 dark:text-amber-500 leading-relaxed mt-1">
-                  Our AI doesn't just pick colors; it analyzes your role and creates a high-conversion Bio. Pro users who use AI bios see a <strong>42% increase</strong> in identity saves during networking events.
+                <h4 className="font-black text-white text-sm uppercase tracking-tighter italic">Identity Optimization Engine</h4>
+                <p className="text-xs text-slate-400 leading-relaxed mt-1">
+                  Your Digital Card has been optimized for **High-Conversion Networking**. We analyzed your name and role to generate a headline that increases contact retention by 42%.
                 </p>
              </div>
           </div>

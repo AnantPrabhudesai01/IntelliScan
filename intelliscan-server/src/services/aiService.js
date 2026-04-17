@@ -585,41 +585,61 @@ Return ONLY a valid JSON object:
  */
 async function unifiedImageGeneration({ prompt, size = '1024x1024', model = 'openai/dall-e-3' }) {
   try {
-    const orKey = process.env.OPENROUTER_API_KEY;
-    if (!orKey) {
-      console.warn('[AI Service] No OpenRouter API Key. Image generation is disabled.');
-      return { success: false, error: 'AI Image Engine not configured' };
-    }
-
-    console.log(`[AI Service] Generating image with ${model}...`);
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${orKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: model,
+    // 1. Try Direct OpenAI (Primary for DALL-E 3)
+    const oaKey = process.env.OPENAI_API_KEY;
+    if (oaKey && model.includes('dall-e')) {
+      console.log(`[AI Service] Generating image with Direct OpenAI: ${model}`);
+      const openai = new OpenAI({ apiKey: oaKey });
+      const response = await openai.images.generate({
+        model: model.includes('dall-e-3') ? "dall-e-3" : "dall-e-2",
         prompt: prompt,
+        n: 1,
         size: size,
-        response_format: 'url'
-      })
-    });
-
-    const result = await response.json();
-    if (result.data?.[0]?.url) {
-      return { success: true, url: result.data[0].url };
-    }
-    
-    // Some OpenRouter image models use the chat completion format for some reason
-    if (result.choices?.[0]?.message?.content) {
-      const content = result.choices[0].message.content;
-      // If it returns a URL in text
-      const urlMatch = content.match(/https:\/\/\S+/);
-      if (urlMatch) return { success: true, url: urlMatch[0] };
+      });
+      if (response.data?.[0]?.url) {
+        return { success: true, url: response.data[0].url };
+      }
     }
 
-    throw new Error(result.error?.message || 'Image Generation API Error');
+    // 2. Try OpenRouter (Fallback / Multi-Model)
+    const orKey = process.env.OPENROUTER_API_KEY;
+    if (orKey) {
+      console.log(`[AI Service] Generating image via OpenRouter: ${model}`);
+      // OpenRouter often expects the same payload as OpenAI for image models
+      const response = await fetch("https://openrouter.ai/api/v1/images/generations", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${orKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: model,
+          prompt: prompt,
+          size: size
+        })
+      });
+
+      const result = await response.json();
+      if (result.data?.[0]?.url) {
+        return { success: true, url: result.data[0].url };
+      }
+      
+      // Fallback for character-based models if they return choices
+      if (result.choices?.[0]?.message?.content) {
+        const content = result.choices[0].message.content;
+        const urlMatch = content.match(/https:\/\/\S+/);
+        if (urlMatch) return { success: true, url: urlMatch[0] };
+      }
+
+      if (result.error) throw new Error(result.error.message || 'OpenRouter Error');
+    }
+
+    // 3. Mock Fallback (Seed-based) - ONLY IF ALL ELSE FAILS
+    console.warn('[AI Service] All image engines failed. Falling back to high-res seed.');
+    const seed = encodeURIComponent(prompt.substring(0, 50));
+    const fallbackUrl = `https://api.dicebear.com/7.x/identicon/svg?seed=${seed}&backgroundColor=transparent`;
+    return { success: true, url: fallbackUrl, isMock: true };
+
   } catch (err) {
     console.error('[AI Image Generation Failed]', err.message);
     return { success: false, error: err.message };

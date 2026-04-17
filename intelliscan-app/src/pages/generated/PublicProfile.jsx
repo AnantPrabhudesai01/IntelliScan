@@ -1,22 +1,23 @@
-import { useParams } from 'react-router-dom';
-import { Download, Mail, Phone, Globe, MapPin, Sparkles } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { 
+  Download, Mail, Phone, Globe, MapPin, Sparkles, 
+  Linkedin, MessageCircle, Share2, Send, CheckCircle2, ChevronLeft 
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 /**
- * PublicProfile Component
- * 
- * This component is the public-facing gateway for digital business cards.
- * it renders the card using the AI-suggested 'Magic Design' specification.
+ * PublicProfile Component - Digital Card Pro
  */
 export default function PublicProfile() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-
     const load = async () => {
       setLoading(true);
       setError('');
@@ -34,7 +35,6 @@ export default function PublicProfile() {
         if (!cancelled) setLoading(false);
       }
     };
-
     load();
     return () => { cancelled = true; };
   }, [slug]);
@@ -46,108 +46,178 @@ export default function PublicProfile() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `${slug}.vcf`);
+    link.setAttribute('download', `${profile.name.replace(/\s+/g, '_')}.vcf`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  const shareProfile = (platform) => {
+    const url = window.location.href;
+    const text = `Connect with ${profile.name} on IntelliScan:`;
+    const links = {
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+      email: `mailto:?subject=${encodeURIComponent('Professional Connection')}&body=${encodeURIComponent(text + '\n' + url)}`
+    };
+    if (links[platform]) window.open(links[platform], '_blank');
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f18] flex items-center justify-center">
-         <div className="w-8 h-8 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+      <div className="min-h-screen bg-white dark:bg-[#0a0f18] flex items-center justify-center">
+         <div className="relative">
+            <div className="w-16 h-16 rounded-full border-4 border-indigo-600/20 border-t-indigo-600 animate-spin"></div>
+            <Sparkles className="absolute inset-0 m-auto text-indigo-600 animate-pulse" size={24} />
+         </div>
       </div>
     );
   }
 
   if (error || !profile) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f18] flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-3xl p-8 text-center shadow-xl">
-          <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
-             <Sparkles size={28} className="rotate-12" />
+      <div className="min-h-screen bg-[#0a0f18] flex items-center justify-center p-6 font-['Outfit']">
+        <div className="max-w-md w-full bg-[#161c28] border border-white/5 rounded-[2.5rem] p-10 text-center shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-transparent"></div>
+          <div className="w-20 h-20 bg-red-500/10 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-8 animate-bounce">
+             <MapPin size={32} />
           </div>
-          <h2 className="text-xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tighter">Identity Not Resolved</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{error || 'This public profile may have been moved or deactivated.'}</p>
-          <a href="/" className="inline-flex items-center gap-2 px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold text-sm">
-            Back to IntelliScan
-          </a>
+          <h2 className="text-3xl font-black text-white mb-4 tracking-tighter uppercase">Identity Not Resolved</h2>
+          <p className="text-slate-400 mb-10 leading-relaxed text-sm">This digital gateway is currently private or the connection has been moved. Verify the link with the profile owner.</p>
+          <button onClick={() => navigate('/')} className="w-full flex items-center justify-center gap-2 px-8 py-4 bg-white text-black rounded-2xl font-black text-sm hover:scale-[1.02] active:scale-95 transition-all">
+            <ChevronLeft size={18} /> BACK TO INTELLISCAN
+          </button>
         </div>
       </div>
     );
   }
 
   const d = profile.design_json || {};
-  const isDark = d.layout === 'bold_dark';
-  const isGlass = d.layout === 'glassmorphism';
+  const primary = d.primary || '#6366f1';
+  const secondary = d.secondary || '#a855f7';
 
   return (
     <div 
-      className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 transition-all duration-700"
-      style={{ 
-        background: `linear-gradient(${d.gradient_angle || '135deg'}, ${d.primary || '#4F46E5'}, ${d.secondary || '#7C3AED'})`,
-        fontFamily: d.font || 'Inter'
-      }}
+      className="min-h-screen font-['Inter'] selection:bg-white/20 overflow-x-hidden transition-colors duration-500 bg-[var(--surface)] text-[var(--text-main)]"
     >
-      {/* Gloss Highlight Overlay */}
-      <div className="fixed inset-0 bg-white/5 backdrop-blur-[1px] pointer-events-none"></div>
-      
-      <div className={`w-full max-w-sm rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] overflow-hidden relative group transition-all duration-700 border-4 border-white/10 ${isGlass ? 'bg-white/10 backdrop-blur-2xl' : 'bg-white dark:bg-[#161c28]'}`}>
-        
-        {/* Profile Content */}
-        <div className={`px-8 pt-12 pb-10 text-center relative z-10 ${isDark || isGlass ? 'text-white' : 'text-gray-900'}`}>
-          
-          <div className={`w-28 h-28 rounded-3xl flex items-center justify-center text-5xl font-black shadow-2xl mx-auto mb-8 transition-transform group-hover:rotate-6 duration-500 ${isDark || isGlass ? 'bg-white/20 backdrop-blur-3xl border border-white/30' : 'bg-indigo-600 text-white'}`}>
-            {profile.avatar_text}
-          </div>
-
-          <h1 className="text-3xl font-black tracking-tighter mb-1">{profile.name}</h1>
-          <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${isDark || isGlass ? 'text-white/80' : 'text-indigo-600'}`}>{profile.headline}</p>
-          <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-8 ${isDark || isGlass ? 'text-white/50' : 'text-gray-400'}`}>{profile.company}</p>
-
-          <div className={`text-sm font-medium leading-relaxed mb-10 opacity-90 px-2 line-clamp-4 ${isDark || isGlass ? 'text-white/80' : 'text-gray-600'}`}>
-            {profile.bio}
-          </div>
-
-          <button 
-            onClick={handleDownloadVCard}
-            className={`w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 mb-10 hover:scale-[1.02] active:scale-95 transition-all shadow-xl ${isDark || isGlass ? 'bg-white text-indigo-900 shadow-white/10' : 'bg-indigo-600 text-white shadow-indigo-600/20'}`}
-          >
-            <Download size={20} />
-            SAVE CONTACT
-          </button>
-
-          <div className="space-y-6 text-left">
-            {[
-              { icon: Phone, label: profile.phone, href: `tel:${profile.phone}` },
-              { icon: Mail, label: profile.email, href: `mailto:${profile.email}` },
-              { icon: MapPin, label: profile.location || 'Global Presence', href: '#' }
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-center gap-5 transition-transform hover:translate-x-1">
-                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 border ${isDark || isGlass ? 'bg-white/10 border-white/20' : 'bg-gray-50 border-gray-100'}`}>
-                  <item.icon size={18} className={isDark || isGlass ? 'text-white/70' : 'text-indigo-600'} />
-                </div>
-                {item.href !== '#' ? (
-                  <a href={item.href} className="text-sm font-bold truncate hover:underline">{item.label}</a>
-                ) : (
-                  <span className="text-sm font-bold truncate opacity-80">{item.label}</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Footer Branding */}
-        <div className={`border-t p-5 text-center relative z-10 ${isDark || isGlass ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-100'}`}>
-            <p className={`text-[9px] font-black uppercase tracking-[0.3em] ${isDark || isGlass ? 'text-white/40' : 'text-gray-400'}`}>
-               Powered by <span className={isDark || isGlass ? 'text-white' : 'text-indigo-600'}>IntelliScan</span>
-            </p>
-        </div>
+      {/* Animated Aurora Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className="absolute -top-[40%] -left-[20%] w-[100%] h-[100%] rounded-full blur-[120px] opacity-20 animate-pulse"
+          style={{ background: `radial-gradient(circle, ${primary}, transparent)` }}
+        ></div>
+        <div 
+          className="absolute -bottom-[40%] -right-[20%] w-[100%] h-[100%] rounded-full blur-[120px] opacity-20 animate-pulse delay-700"
+          style={{ background: `radial-gradient(circle, ${secondary}, transparent)` }}
+        ></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 contrast-150 brightness-100"></div>
       </div>
-      
-      {/* Decorative background flair */}
-      <div className="fixed -bottom-32 -left-32 w-96 h-96 bg-white/20 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="fixed -top-32 -right-32 w-96 h-96 bg-black/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+      <div className="relative z-10 max-w-lg mx-auto px-6 pt-12 pb-24 flex flex-col items-center">
+        
+        {/* Main Glass Card */}
+        <div className="w-full glass-card premium-grain rounded-[4rem] overflow-hidden transition-all duration-700 hover:shadow-indigo-500/20 group">
+          
+          {/* Header Banner */}
+          <div className="h-40 relative overflow-hidden">
+             <div className="absolute inset-0 opacity-40 group-hover:scale-110 transition-transform duration-1000" style={{ background: `linear-gradient(${d.gradient_angle || '135deg'}, ${primary}, ${secondary})` }}></div>
+             <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/20 to-transparent"></div>
+          </div>
+
+          <div className="px-8 pb-12 -mt-20 relative text-center">
+             {/* Avatar Box */}
+             <div className="w-36 h-36 rounded-[2.5rem] bg-[var(--surface-card)] p-1 mx-auto mb-8 shadow-2xl relative group-hover:-translate-y-2 transition-transform duration-500 border border-[var(--border-subtle)]">
+                <div className="w-full h-full rounded-[2.2rem] bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center text-6xl font-['Outfit'] font-black text-[var(--text-main)] relative overflow-hidden">
+                   <span className="relative z-10 drop-shadow-lg">{profile.avatar_text}</span>
+                   <div className="absolute inset-0 bg-white/5 animate-pulse"></div>
+                </div>
+                <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-2 rounded-2xl shadow-xl border-4 border-[var(--surface-card)]">
+                   <CheckCircle2 size={16} />
+                </div>
+             </div>
+
+             <div className="space-y-2 mb-8">
+                <h1 className="text-4xl font-['Outfit'] font-black text-[var(--text-main)] tracking-tighter">{profile.name}</h1>
+                <div className="flex items-center justify-center gap-2">
+                   <span className="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-widest">{profile.headline || 'Verified Professional'}</span>
+                   <span className="w-1 h-1 rounded-full bg-slate-700"></span>
+                   <span className="text-[var(--text-muted)] text-xs font-bold">{profile.company || 'Enterprise Partner'}</span>
+                </div>
+             </div>
+
+             <p className="text-slate-300 text-sm leading-relaxed mb-10 px-4 font-medium opacity-80 italic">
+                "{profile.bio}"
+             </p>
+
+             <div className="grid grid-cols-1 gap-3 mb-10">
+                <button 
+                  onClick={handleDownloadVCard}
+                  className="w-full py-5 bg-indigo-600 text-white rounded-[2rem] font-['Outfit'] font-black text-sm flex items-center justify-center gap-3 shadow-xl hover:bg-indigo-500 active:scale-95 transition-all"
+                >
+                  <Download size={20} strokeWidth={3} /> SAVE TO CONTACTS
+                </button>
+                <div className="flex gap-2">
+                   <button onClick={copyLink} className="flex-1 py-4 bg-[var(--surface-card)] border border-[var(--border-subtle)] text-[var(--text-main)] rounded-[1.5rem] font-bold text-xs flex items-center justify-center gap-2 hover:bg-white/10 active:scale-95 transition-all">
+                      {copied ? <CheckCircle2 size={16} className="text-emerald-400" /> : <LinkIcon size={16} />}
+                      {copied ? 'COPIED!' : 'COPY URL'}
+                   </button>
+                   <button onClick={() => shareProfile('whatsapp')} className="w-14 h-14 bg-[var(--surface-card)] border border-[var(--border-subtle)] text-emerald-400 rounded-2xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all">
+                      <MessageCircle size={20} />
+                   </button>
+                </div>
+             </div>
+
+             {/* Connection Grid */}
+             <div className="space-y-3">
+                {[
+                  { icon: Mail, label: profile.email, href: `mailto:${profile.email}`, color: 'text-indigo-400' },
+                  { icon: Phone, label: profile.phone, href: `tel:${profile.phone}`, color: 'text-emerald-400' },
+                  { icon: Linkedin, label: 'LinkedIn Profile', href: '#', color: 'text-blue-400' }
+                ].map((item, idx) => (
+                  <a key={idx} href={item.href} className="flex items-center gap-4 p-4 rounded-3xl bg-[var(--surface-card)] border border-[var(--border-subtle)] hover:bg-[var(--surface)] transition-all group/item shadow-sm">
+                    <div className={`w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center ${item.color} border border-[var(--border-subtle)]`}>
+                      <item.icon size={18} />
+                    </div>
+                    <span className="flex-1 text-left text-sm font-bold text-[var(--text-main)]">{item.label}</span>
+                    <ChevronLeft size={16} className="text-gray-400 rotate-180 group-hover/item:translate-x-1 transition-transform" />
+                  </a>
+                ))}
+             </div>
+          </div>
+
+          <div className="p-6 bg-white/5 border-t border-white/5 flex items-center justify-center gap-2">
+             <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+             <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Integrated Identity via <span className="text-white">IntelliScan</span></p>
+          </div>
+        </div>
+        
+        <p className="mt-12 text-slate-600 text-[10px] font-bold uppercase tracking-[0.2em]">Designed by AI in real-time</p>
+      </div>
     </div>
+  );
+}
+
+function LinkIcon({ size, className }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </svg>
   );
 }

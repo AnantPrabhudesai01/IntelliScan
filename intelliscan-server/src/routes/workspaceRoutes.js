@@ -14,6 +14,9 @@ const AUDIT_SUCCESS = 'SUCCESS';
 // Workspace Analytics (Bridge)
 router.get('/analytics', authenticateToken, contactsController.getWorkspaceAnalytics);
 
+// Shared Rolodex Contacts
+router.get('/contacts', authenticateToken, contactsController.getWorkspaceContacts);
+
 // Data Quality / Duplicates (Bridge) - Redirected from contacts/workspace/duplicates
 router.get('/contacts/duplicates', authenticateToken, contactsController.getDuplicates);
 

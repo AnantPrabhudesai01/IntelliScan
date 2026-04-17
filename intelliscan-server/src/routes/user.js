@@ -184,7 +184,27 @@ router.get('/profile/avatar-library', authenticateToken, (req, res) => {
     { id: 2, url: 'https://api.dicebear.com/7.x/micah/svg?seed=Midnight' },
     { id: 3, url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Robot' },
     { id: 4, url: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Destiny' },
-    { id: 5, url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka' }
+    { id: 5, url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka' },
+    { id: 6, url: 'https://api.dicebear.com/7.x/notionists/svg?seed=James' },
+    { id: 7, url: 'https://api.dicebear.com/7.x/micah/svg?seed=Sarah' },
+    { id: 8, url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alpha' },
+    { id: 9, url: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Zoe' },
+    { id: 10, url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Raj' },
+    { id: 11, url: 'https://api.dicebear.com/7.x/notionists/svg?seed=Kim' },
+    { id: 12, url: 'https://api.dicebear.com/7.x/micah/svg?seed=Leo' },
+    { id: 13, url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Spark' },
+    { id: 14, url: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Hunter' },
+    { id: 15, url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sasha' },
+    { id: 16, url: 'https://api.dicebear.com/7.x/notionists/svg?seed=Olivia' },
+    { id: 17, url: 'https://api.dicebear.com/7.x/micah/svg?seed=Marcus' },
+    { id: 18, url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Core' },
+    { id: 19, url: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Skye' },
+    { id: 20, url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aria' },
+    { id: 21, url: 'https://api.dicebear.com/7.x/notionists/svg?seed=Hugo' },
+    { id: 22, url: 'https://api.dicebear.com/7.x/micah/svg?seed=Elena' },
+    { id: 23, url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Gears' },
+    { id: 24, url: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Finn' },
+    { id: 25, url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maya' }
   ]);
 });
 

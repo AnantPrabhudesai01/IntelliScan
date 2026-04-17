@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, Download, Save, RefreshCw, CreditCard, Palette, Type, Zap, Image as ImageIcon, ShieldCheck, Crown, Cpu, Atom } from 'lucide-react';
+import { Sparkles, Download, Save, RefreshCw, CreditCard, Palette, Type, Zap, Image as ImageIcon, ShieldCheck, Crown, Cpu, Atom, Upload } from 'lucide-react';
 import { getStoredToken } from '../utils/auth';
+import { useTheme } from '../context/ThemeContext';
 
 const API = '/api';
 
@@ -43,6 +44,10 @@ const ELITE_STYLES = {
 };
 
 export default function CardCreatorPage() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const fileInputRef = useRef(null);
+  
   const [form, setForm] = useState({ 
     firstName: '', lastName: '', title: '', company: '', 
     email: '', phone: '', website: '', vibe: '' 
@@ -101,6 +106,8 @@ export default function CardCreatorPage() {
       if (data.success) {
         setLogoUrl(data.logoUrl);
         showToast('✦ Premium Logo Generated!');
+      } else {
+        throw new Error(data.error);
       }
     } catch (err) {
       showToast('Logo seed failed — please try again');
@@ -108,6 +115,33 @@ export default function CardCreatorPage() {
       setGeneratingLogo(false);
     }
   }
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('logo', file);
+
+    setGeneratingLogo(true);
+    try {
+      const token = getStoredToken();
+      const res = await fetch(`${API}/cards/upload-logo`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLogoUrl(data.logoUrl);
+        showToast('Logo Uploaded Successfully');
+      }
+    } catch (err) {
+      showToast('Upload failed');
+    } finally {
+      setGeneratingLogo(false);
+    }
+  };
 
   async function handleGenerateDesign() {
     setGenerating(true);
@@ -171,10 +205,12 @@ export default function CardCreatorPage() {
   const fullName = `${form.firstName} ${form.lastName}`.trim() || 'Executive Name';
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white p-6 lg:p-12 selection:bg-indigo-500/30">
+    <div className={`min-h-screen ${isDark ? 'bg-[#050505] text-white' : 'bg-gray-50 text-gray-900'} p-6 lg:p-12 selection:bg-indigo-500/30 transition-colors duration-500`}>
+      <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleLogoUpload} />
+      
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[60] bg-indigo-600/90 backdrop-blur-md px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl border border-white/20 animate-bounce">
+        <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[60] bg-indigo-600/90 backdrop-blur-md px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl border border-white/20 animate-bounce text-white">
           {toast}
         </div>
       )}
@@ -187,11 +223,11 @@ export default function CardCreatorPage() {
               <CreditCard className="text-white" size={24} />
             </div>
             <div>
-              <h1 className="text-4xl font-black tracking-tighter uppercase leading-none italic bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500">
+              <h1 className={`text-4xl font-black tracking-tighter uppercase leading-none italic bg-clip-text text-transparent bg-gradient-to-r ${isDark ? 'from-white to-gray-500' : 'from-indigo-600 to-indigo-900 underline decoration-indigo-200 decoration-4 underline-offset-8'}`}>
                 Identity <span className="text-indigo-500">Workbench</span>
               </h1>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-2 py-0.5 border border-white/10 rounded-full flex items-center gap-1.5">
+              <div className="flex items-center gap-2 mt-4">
+                <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 border ${isDark ? 'text-gray-500 border-white/10' : 'text-indigo-600 border-indigo-100 bg-indigo-50'} rounded-full flex items-center gap-1.5`}>
                   <Cpu size={10} className="text-indigo-400" /> AI Neural Engine 3.1
                 </span>
                 <span className="text-[10px] font-black text-emerald-500/80 uppercase tracking-widest px-2 py-0.5 bg-emerald-500/10 rounded-full flex items-center gap-1.5">
@@ -203,10 +239,10 @@ export default function CardCreatorPage() {
         </div>
 
         <div className="flex gap-3">
-          <button onClick={handleSave} className="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2">
+          <button onClick={handleSave} className={`px-6 py-3 ${isDark ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-gray-200 text-gray-700'} border rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-50 hover:text-indigo-600 transition-all flex items-center gap-2 shadow-sm`}>
             <Save size={14} className={saved ? "text-emerald-400" : ""} /> {saved ? 'Synced' : 'Cloud Sync'}
           </button>
-          <button onClick={handleDownloadPNG} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20">
+          <button onClick={handleDownloadPNG} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20 text-white">
             <Download size={14} /> Export PNG
           </button>
         </div>
@@ -215,47 +251,55 @@ export default function CardCreatorPage() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr,480px] gap-12 items-start">
         {/* LEFT COMPONENT — CONTROLS */}
         <div className="space-y-8 animate-in fade-in slide-in-from-left duration-700">
-          <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 backdrop-blur-sm">
-            <h2 className="text-sm font-black text-gray-400 uppercase tracking-[0.3em] mb-8 flex items-center gap-3">
+          <div className={`${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-xl'} border rounded-[32px] p-8 backdrop-blur-sm premium-grain`}>
+            <h2 className={`text-sm font-black ${isDark ? 'text-gray-400' : 'text-indigo-900'} uppercase tracking-[0.3em] mb-8 flex items-center gap-3`}>
               <Zap size={16} className="text-yellow-400" /> Identity Matrix
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">First Designation</label>
-                <input value={form.firstName} onChange={e => updateField('firstName', e.target.value)} className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-sm font-medium focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-gray-700" placeholder="John" />
+                <label className={`text-[10px] font-black ${isDark ? 'text-gray-500' : 'text-gray-400'} uppercase tracking-widest ml-1`}>First Designation</label>
+                <input value={form.firstName} onChange={e => updateField('firstName', e.target.value)} className={`w-full ${isDark ? 'bg-black/40 border-white/5 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-2xl px-5 py-4 text-sm font-medium focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-gray-700`} placeholder="John" />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Surname</label>
-                <input value={form.lastName} onChange={e => updateField('lastName', e.target.value)} className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-sm font-medium focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-gray-700" placeholder="Doe" />
+                <label className={`text-[10px] font-black ${isDark ? 'text-gray-500' : 'text-gray-400'} uppercase tracking-widest ml-1`}>Surname</label>
+                <input value={form.lastName} onChange={e => updateField('lastName', e.target.value)} className={`w-full ${isDark ? 'bg-black/40 border-white/5 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-2xl px-5 py-4 text-sm font-medium focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-gray-700`} placeholder="Doe" />
               </div>
             </div>
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Professional Title</label>
-                <input value={form.title} onChange={e => updateField('title', e.target.value)} className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-sm font-medium focus:border-indigo-500 outline-none transition-all" placeholder="Chief Strategy Officer" />
+                <label className={`text-[10px] font-black ${isDark ? 'text-gray-500' : 'text-gray-400'} uppercase tracking-widest ml-1`}>Professional Title</label>
+                <input value={form.title} onChange={e => updateField('title', e.target.value)} className={`w-full ${isDark ? 'bg-black/40 border-white/5 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-2xl px-5 py-4 text-sm font-medium focus:border-indigo-500 outline-none transition-all`} placeholder="Chief Strategy Officer" />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Corporation</label>
-                  <input value={form.company} onChange={e => updateField('company', e.target.value)} className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-sm font-medium focus:border-indigo-500 outline-none transition-all" placeholder="Starlight Capital" />
+                  <label className={`text-[10px] font-black ${isDark ? 'text-gray-500' : 'text-gray-400'} uppercase tracking-widest ml-1`}>Corporation</label>
+                  <input value={form.company} onChange={e => updateField('company', e.target.value)} className={`w-full ${isDark ? 'bg-black/40 border-white/5 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-2xl px-5 py-4 text-sm font-medium focus:border-indigo-500 outline-none transition-all`} placeholder="Starlight Capital" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Industry Sector</label>
-                  <input value={form.vibe} onChange={e => updateField('vibe', e.target.value)} className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-sm font-medium focus:border-indigo-500 outline-none transition-all" placeholder="Quantum Computing, Biotech" />
+                  <label className={`text-[10px] font-black ${isDark ? 'text-gray-500' : 'text-gray-400'} uppercase tracking-widest ml-1`}>Industry Sector</label>
+                  <input value={form.vibe} onChange={e => updateField('vibe', e.target.value)} className={`w-full ${isDark ? 'bg-black/40 border-white/5 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-2xl px-5 py-4 text-sm font-medium focus:border-indigo-500 outline-none transition-all`} placeholder="Quantum Computing, Biotech" />
                 </div>
               </div>
             </div>
 
             <div className="mt-12 flex flex-col md:flex-row gap-4">
-              <button onClick={handleGenerateLogo} disabled={generatingLogo} className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-gray-200 transition-all flex items-center justify-center gap-3 disabled:opacity-40">
-                {generatingLogo ? <RefreshCw className="animate-spin" size={16} /> : <ImageIcon size={16} />} 
-                {generatingLogo ? 'Synthesizing Logo...' : 'Forge AI Logo'}
+              <button 
+                onClick={() => fileInputRef.current?.click()} 
+                disabled={generatingLogo}
+                className={`flex-1 py-4 ${isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-900 text-white hover:bg-black'} font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all flex items-center justify-center gap-3 disabled:opacity-40`}
+              >
+                <Upload size={16} /> 
+                {generatingLogo ? 'Processing...' : 'Upload Logo'}
               </button>
-              <button onClick={handleGenerateDesign} disabled={generating} className="flex-1 py-4 bg-indigo-600 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-indigo-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-600/20 disabled:opacity-40">
+              <button onClick={handleGenerateLogo} disabled={generatingLogo} className={`flex-1 py-4 ${isDark ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50'} font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all flex items-center justify-center gap-3 disabled:opacity-40 shadow-lg shadow-indigo-500/10`}>
+                {generatingLogo ? <RefreshCw className="animate-spin" size={16} /> : <ImageIcon size={16} />} 
+                {generatingLogo ? 'Synthesizing...' : 'Forge AI Logo'}
+              </button>
+              <button onClick={handleGenerateDesign} disabled={generating} className="flex-1 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-600/20 disabled:opacity-40">
                 {generating ? <RefreshCw className="animate-spin" size={16} /> : <Sparkles size={16} />}
-                {generating ? 'Calculating Design...' : 'Synthesize Identity'}
+                {generating ? 'Calculating...' : 'Synthesize Identity'}
               </button>
             </div>
           </div>
@@ -266,12 +310,12 @@ export default function CardCreatorPage() {
               <button 
                 key={key} 
                 onClick={() => setActiveStyle(key)}
-                className={`p-4 rounded-3xl border transition-all flex flex-col items-center gap-2 group ${activeStyle === key ? 'bg-indigo-500/10 border-indigo-500 shadow-lg shadow-indigo-500/10' : 'bg-white/5 border-white/5 hover:border-white/20'}`}
+                className={`p-4 rounded-3xl border transition-all flex flex-col items-center gap-2 group ${activeStyle === key ? 'bg-indigo-500/10 border-indigo-500 shadow-lg shadow-indigo-500/10 scale-105' : `${isDark ? 'bg-white/5 border-white/5' : 'bg-white border-gray-100 shadow-sm'} hover:border-indigo-300`}`}
               >
-                <div className={`p-2 rounded-xl border transition-colors ${activeStyle === key ? 'bg-indigo-500 border-white/20' : 'bg-white/5 border-white/5 group-hover:bg-white/10'}`}>
-                  {React.cloneElement(cfg.icon, { size: 16, className: activeStyle === key ? 'text-white' : 'text-gray-500' })}
+                <div className={`p-2 rounded-xl border transition-colors ${activeStyle === key ? 'bg-indigo-500 border-white/20' : `${isDark ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-100'} group-hover:bg-indigo-50`}`}>
+                  {React.cloneElement(cfg.icon, { size: 16, className: activeStyle === key ? 'text-white' : 'text-gray-400' })}
                 </div>
-                <span className={`text-[9px] font-black uppercase tracking-widest ${activeStyle === key ? 'text-indigo-400' : 'text-gray-500'}`}>{key}</span>
+                <span className={`text-[9px] font-black uppercase tracking-widest ${activeStyle === key ? 'text-indigo-500' : 'text-gray-400'}`}>{key}</span>
               </button>
             ))}
           </div>
@@ -289,7 +333,7 @@ export default function CardCreatorPage() {
 
           <div 
             ref={cardRef}
-            className={`w-full aspect-[1.75/1] rounded-[40px] relative overflow-hidden transition-all duration-700 shadow-2xl ${currentStyle.cardClass}`}
+            className={`w-full aspect-[1.75/1] rounded-[40px] relative overflow-hidden transition-all duration-700 shadow-2xl premium-grain ${currentStyle.cardClass}`}
             style={{ 
               background: activeStyle === 'glass' ? 'linear-gradient(135deg, rgba(30,30,80,0.8), rgba(15,15,30,0.9))' : currentStyle.bg,
               padding: '40px'

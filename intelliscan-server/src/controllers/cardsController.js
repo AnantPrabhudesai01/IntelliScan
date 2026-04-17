@@ -104,8 +104,9 @@ Vibe: ${vibe}
 
 Guidelines:
 - Professional, minimalist, and high-end.
-- Mention specific colors and geometric shapes.
+- Mention specific colors and geometric shapes (e.g., "A golden geometric lotus with platinum accents").
 - No text inside the logo (emblem only).
+- Depth: 8k resolution, photorealistic, studio lighting, volumetric lighting, unreal engine 5 render style.
 - Return ONLY the prompt text.`;
 
     const conceptRes = await unifiedTextAIPipeline({ prompt: conceptPrompt, responseFormat: 'text' });
@@ -114,7 +115,7 @@ Guidelines:
     // 2. Materialization (OpenRouter / DALL-E)
     const logoRes = await unifiedImageGeneration({ 
       prompt: conceptRes.data,
-      model: 'openai/dall-e-3' // Flagship for professional logos
+      model: 'openai/dall-e-3' 
     });
 
     if (logoRes.success) {
@@ -125,5 +126,20 @@ Guidelines:
   } catch (err) {
     console.error('[AI Logo Error]', err);
     res.status(500).json({ error: 'Logo engine is currently offline. Please try again later.' });
+  }
+};
+
+exports.uploadLogo = async (req, res) => {
+  try {
+    const { uploadToImgbb } = require('../utils/imageUpload');
+    if (!req.file) return res.status(400).json({ error: 'No logo file provided' });
+    
+    const base64Data = req.file.buffer.toString('base64');
+    const permanentUrl = await uploadToImgbb(base64Data);
+    
+    res.json({ success: true, logoUrl: permanentUrl });
+  } catch (err) {
+    console.error('[Logo Upload Error]', err);
+    res.status(500).json({ error: 'Failed to upload custom logo: ' + err.message });
   }
 };

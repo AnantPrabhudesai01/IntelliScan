@@ -57,7 +57,17 @@ export default function SharedRolodexPage() {
     // Chat history
     fetch(`/api/chats/${encodeURIComponent(workspaceRoom)}`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.ok ? r.json() : [])
-      .then(data => setMessages(data.map(d => ({ id: d.id, user: d.user_name, text: d.message, color: d.color, timestamp: d.timestamp }))))
+      .then(data => {
+        if (Array.isArray(data)) {
+          setMessages(data.map(d => ({ 
+            id: d.id, 
+            user: d.user_name, 
+            text: d.message, 
+            color: d.color, 
+            timestamp: d.timestamp 
+          })));
+        }
+      })
       .catch(() => {});
 
     // Socket.IO
@@ -106,14 +116,14 @@ export default function SharedRolodexPage() {
 
   const isDuplicateEmail = (email) => duplicates.some(d => d.email === (email || '').toLowerCase().trim() && d.count > 1);
 
-  const filteredContacts = contacts.filter(c =>
+  const filteredContacts = (contacts || []).filter(c =>
     (c.name || '').toLowerCase().includes(search.toLowerCase()) ||
     (c.company || '').toLowerCase().includes(search.toLowerCase()) ||
     (c.email || '').toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalProcessed = contacts.length;
-  const repsScanningCount = new Set(contacts.map(c => c.scanner_name).filter(Boolean)).size || 1;
+  const totalProcessed = (contacts || []).length;
+  const repsScanningCount = new Set((contacts || []).map(c => c.scanner_name).filter(Boolean)).size || 1;
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
@@ -141,7 +151,7 @@ export default function SharedRolodexPage() {
             </button>
             <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 overflow-hidden">
               <div className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 border-b border-gray-100 dark:border-gray-800">Enterprise Sync</div>
-              {['salesforce', 'zoho', 'odoo'].map(crm => (
+              {['salesforce', 'zoho', 'odoo']?.map(crm => (
                 <button key={crm} onClick={() => handleExport(crm)} disabled={exportingCrm === crm}
                   className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-700 dark:hover:text-indigo-400 transition-colors capitalize disabled:opacity-50">
                   {exportingCrm === crm ? <RefreshCw size={14} className="animate-spin" /> : <Building2 size={14} />}
@@ -172,11 +182,11 @@ export default function SharedRolodexPage() {
               <p className="font-bold text-amber-900 dark:text-amber-300 text-sm">⚠️ Duplicate Outreach Detected — {duplicates.length} contact{duplicates.length > 1 ? 's' : ''} scanned by multiple team members</p>
               <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">Preventing double-emailing the same person. Rows marked with <span className="font-black">⚠</span> are duplicates.</p>
               <div className="mt-3 space-y-1.5">
-                {duplicates.slice(0, 3).map(dup => (
+                {duplicates?.slice(0, 3)?.map(dup => (
                   <div key={dup.email} className="flex items-center gap-2 text-xs text-amber-800 dark:text-amber-300">
                     <Mail size={12} />
                     <span className="font-mono font-bold">{dup.email}</span>
-                    <span>— scanned by: {dup.contacts.map(c => c.scanner_name).join(', ')}</span>
+                    <span>— scanned by: {dup.contacts?.map(c => c.scanner_name).join(', ') || 'Team'}</span>
                   </div>
                 ))}
               </div>
@@ -219,15 +229,7 @@ export default function SharedRolodexPage() {
                     {[...Array(6)].map((_, j) => <td key={j} className="px-6 py-4"><div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-24" /></td>)}
                   </tr>
                 ))
-              ) : filteredContacts.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-16 text-center">
-                    <Users size={40} className="mx-auto mb-3 text-gray-300 dark:text-gray-700" />
-                    <p className="text-gray-500 dark:text-gray-400 font-semibold text-sm">No contacts yet. Start scanning business cards!</p>
-                    <button onClick={() => navigate('/dashboard/scan')} className="mt-4 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors">Go to Scanner</button>
-                  </td>
-                </tr>
-              ) : filteredContacts.map(contact => {
+              ) : (filteredContacts || []).map(contact => {
                 const isDup = isDuplicateEmail(contact.email);
                 return (
                   <tr key={contact.id} className={`hover:bg-gray-50/50 dark:hover:bg-[#161c28]/50 transition-colors group cursor-pointer ${isDup ? 'bg-amber-50/30 dark:bg-amber-900/5' : ''}`} onClick={() => navigate('/workspace/contacts')}>
@@ -282,7 +284,7 @@ export default function SharedRolodexPage() {
       </div>
 
       {/* Live Cursors */}
-      {Object.values(cursors).map(c => (
+      {Object.values(cursors || {}).map(c => (
         <div key={c.id} className="pointer-events-none fixed z-[100] transition-all duration-75 ease-out" style={{ left: c.x, top: c.y }}>
           <MousePointer2 size={16} fill={c.color} color={c.color} className="drop-shadow-md" style={{ transform: 'rotate(-25deg) translate(-2px, -2px)' }} />
           <div className="ml-3 mt-1 px-2 py-0.5 rounded text-[10px] font-bold text-white shadow-md whitespace-nowrap" style={{ backgroundColor: c.color }}>{c.user}</div>
@@ -298,7 +300,7 @@ export default function SharedRolodexPage() {
               <button onClick={() => setChatOpen(false)} className="text-gray-400 hover:text-gray-600"><X size={16} /></button>
             </div>
             <div className="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50/50 dark:bg-black/20 flex flex-col">
-              {messages.length === 0 ? <p className="text-center text-xs text-gray-500 mt-10">No messages yet. Jump in!</p> : messages.map(m => (
+              {(!messages || messages?.length === 0) ? <p className="text-center text-xs text-gray-500 mt-10">No messages yet. Jump in!</p> : messages?.map(m => (
                 <div key={m.id} className={`flex flex-col ${m.user === userName ? 'items-end' : 'items-start'}`}>
                   <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">{m.user === userName ? 'You' : m.user}</span>
                   <div className={`px-3 py-2 rounded-xl text-sm ${m.user === userName ? 'bg-indigo-600 text-white rounded-tr-sm' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-sm shadow-sm'}`}>{m.text}</div>

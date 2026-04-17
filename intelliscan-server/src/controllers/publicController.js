@@ -10,7 +10,8 @@ exports.getPublicProfile = async (req, res) => {
   try {
     const { slug } = req.params;
 
-    // 1. Resolve card and associated user data in one join
+    // 1. Resolve card and associated user data with Name Fallback
+    // We look for direct slug match OR a slugified name match if no slug is explicitly set
     const profile = await dbGetAsync(`
       SELECT 
         u.name, 
@@ -24,11 +25,13 @@ exports.getPublicProfile = async (req, res) => {
         c.views,
         w.name as company,
         w.logo_url as company_logo
-      FROM user_cards c
-      JOIN users u ON c.user_id = u.id
+      FROM users u
+      LEFT JOIN user_cards c ON u.id = c.user_id
       LEFT JOIN workspaces w ON u.workspace_id = w.id
-      WHERE c.url_slug = ?
-    `, [slug]);
+      WHERE c.url_slug = ? 
+         OR (c.url_slug IS NULL AND LOWER(REPLACE(u.name, ' ', '')) = LOWER(?))
+      LIMIT 1
+    `, [slug, slug]);
 
     if (!profile) {
       return res.status(404).json({ error: 'Identity not found. This profile may have been deactivated or moved.' });
