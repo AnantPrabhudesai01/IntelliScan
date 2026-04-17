@@ -84,10 +84,17 @@ export default function SettingsPage() {
 
   useEffect(() => {
     fetchProfile();
-    fetchWorkspaceSettings();
   }, []);
 
+  useEffect(() => {
+    if (profile.tier) {
+      fetchWorkspaceSettings();
+    }
+  }, [profile.tier]);
+
   const fetchWorkspaceSettings = async () => {
+    // Only Fetch if Pro or Enterprise
+    if (profile.tier !== 'enterprise' && profile.tier !== 'pro') return;
     try {
       const res = await apiClient.get('/workspace/settings');
       if (res.data && res.data.settings?.smtp) {
@@ -706,11 +713,11 @@ export default function SettingsPage() {
       
       <div className="flex items-center gap-2 p-1 bg-gray-100 dark:bg-white/5 rounded-2xl w-fit border border-gray-200 dark:border-white/10">
         {[
-          { id: 'Personal Info', icon: User },
-          { id: 'Security', icon: Lock },
-          { id: 'Integrations', icon: Blocks },
-          { id: 'Communications', icon: MessageSquare }
-        ].map(tab => (
+          { id: 'Personal Info', icon: User, allowed: ['free', 'pro', 'enterprise'] },
+          { id: 'Security', icon: Lock, allowed: ['free', 'pro', 'enterprise'] },
+          { id: 'Integrations', icon: Blocks, allowed: ['pro', 'enterprise'] },
+          { id: 'Communications', icon: MessageSquare, allowed: ['enterprise'] }
+        ].filter(tab => tab.allowed.includes(profile.tier?.toLowerCase() || 'free')).map(tab => (
           <button 
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -807,9 +814,16 @@ export default function SettingsPage() {
                   <input className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all" type="text" value={profile.name} onChange={(e) => setProfile(prev => ({ ...prev, name: e.target.value }))}/>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Workspace Affiliation</label>
-                  <input className="w-full bg-gray-100 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-500 dark:text-gray-500 cursor-not-allowed" type="text" disabled value="IntelliScan Demo Workspace" />
+                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Account Identification</label>
+                  <input className="w-full bg-gray-100 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-500 dark:text-gray-500 cursor-not-allowed" type="text" disabled value={profile.tier === 'enterprise' ? 'Enterprise Managed Node' : 'Personal Independent Node'} />
                 </div>
+                
+                {profile.tier === 'enterprise' && (
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Workspace Affiliation</label>
+                    <input className="w-full bg-gray-100 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-500 dark:text-gray-500 cursor-not-allowed" type="text" disabled value="IntelliScan Demo Workspace" />
+                  </div>
+                )}
                 
                 <div className="space-y-2 md:col-span-2">
                   <div className="flex justify-between items-end">

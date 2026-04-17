@@ -3,7 +3,7 @@
  */
 const { dbGetAsync, dbAllAsync, dbRunAsync } = require('../utils/db');
 const { generateEmbedding, cosineSimilarity } = require('../utils/aiUtils');
-const { generateWithFallback } = require('../services/aiService');
+const { generateWithFallback, unifiedTextAIPipeline } = require('../services/aiService');
 
 /**
  * Uses AI to research and enrich contact data.
@@ -167,12 +167,20 @@ Platform features include:
 
 Be concise, helpful, and professional. Always use Markdown formatting if helpful. If the user asks something outside of IntelliScan or general networking, politely steer them back.`;
 
-    const formattedMessages = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\\n');
-    const fullPrompt = `${systemPrompt}\\n\\nConversation History:\\n${formattedMessages}\\n\\nASSISTANT: `;
+    const formattedHistory = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
+    const userPrompt = `Conversation History:\n${formattedHistory}\n\nASSISTANT: `;
 
-    const textReply = await generateWithFallback(fullPrompt);
+    const result = await unifiedTextAIPipeline({
+      prompt: userPrompt,
+      systemPrompt,
+      responseFormat: 'text'
+    });
     
-    res.json({ success: true, reply: textReply });
+    if (result.success) {
+      res.json({ success: true, reply: result.data });
+    } else {
+      throw new Error(result.error || 'AI Pipeline Failure');
+    }
   } catch (err) {
     console.error('Support Chat Error:', err);
     res.status(500).json({ error: 'Failed to process chat response' });
