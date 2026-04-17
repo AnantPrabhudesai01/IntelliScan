@@ -150,11 +150,9 @@ app.use('/api/workspace', workspaceRouter);
 app.use('/api/cron', cronRouter);
 app.use('/api/cards', cardRouter);
 
-// Optional WhatsApp Integration
-if (process.env.ENABLE_WHATSAPP === 'true') {
-  const whatsappRouter = require('./routes/whatsapp');
-  app.use('/api/whatsapp', whatsappRouter);
-}
+// WhatsApp Integration (Healthy by Default for Diagnostics)
+const whatsappRouter = require('./routes/whatsapp');
+app.use('/api/whatsapp', whatsappRouter);
 
 app.get('/api/my-card', authenticateToken, cardController.getMyCard);
 

@@ -25,9 +25,15 @@ function getTwilioClient() {
 /**
  * Main Webhook for Twilio WhatsApp
  */
-exports.handleIncomingMessage = async (req, res) => {
-  const { From, Body, MediaUrl0, MediaContentType0, FromCity, FromState, FromCountry } = req.body;
-  const fromPhone = normalizePhone(From);
+  // 👮 Check if service is enabled
+  if (process.env.ENABLE_WHATSAPP !== 'true') {
+     console.warn(`[WhatsApp] Webhook received but ENABLE_WHATSAPP is not 'true'. Ignoring.`);
+     return res.status(200).send(`
+       <Response>
+         <Message>⚠️ IntelliScan WhatsApp Engine is currently in Maintenance Mode. Please check your Dashboard Environment Variables!</Message>
+       </Response>
+     `);
+  }
 
   // 🕵️ Proceed with processing
   try {
@@ -268,6 +274,7 @@ exports.checkHealth = async (req, res) => {
     const dbCheck = await dbGetAsync('SELECT COUNT(*) as count FROM whatsapp_discoveries');
     const twilioSid = process.env.TWILIO_ACCOUNT_SID;
     const twilioFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886';
+    const isEnabled = process.env.ENABLE_WHATSAPP === 'true';
     
     // Auto-detect public URL
     let baseUrl = process.env.APP_BASE_URL;
@@ -278,7 +285,8 @@ exports.checkHealth = async (req, res) => {
     const isLocal = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
 
     res.json({
-      status: 'IntelliScan WhatsApp Engine Active',
+      status: 'IntelliScan WhatsApp Engine Interface',
+      service_active: isEnabled ? "✅ ENABLED (ENABLE_WHATSAPP=true)" : "❌ DISABLED (Action Required: Set ENABLE_WHATSAPP=true in Vercel)",
       config: {
         twilio_sid: twilioSid ? `Configured (${twilioSid.slice(0, 5)}...)` : 'MISSING',
         twilio_auth_token: process.env.TWILIO_AUTH_TOKEN ? 'Configured' : 'MISSING',
@@ -291,10 +299,16 @@ exports.checkHealth = async (req, res) => {
         discovery_table: 'Connected',
         discoveries_count: dbCheck?.count || 0
       },
-      instructions: "Copy the 'webhook_target' URL above and paste it into the 'When a message comes in' field in the Twilio Sandbox Console."
+      next_steps: [
+        "1. Ensure 'ENABLE_WHATSAPP' is set to 'true' in your Vercel Dashboard Settings.",
+        "2. Copy the 'webhook_target' URL above.",
+        "3. Go to Twilio Console -> Messaging -> Try it Out -> WhatsApp Sandbox.",
+        "4. Paste the URL into the 'When a message comes in' field and SAVE.",
+        "5. Send 'ping' to the WhatsApp number to verify."
+      ]
     });
   } catch (err) {
-    res.status(500).json({ status: 'error', error: err.message });
+    res.status(500).json({ status: 'error', error: err.message, advice: "Ensure your Database is migrated. Run `npm run boot` locally if needed." });
   }
 };
 
