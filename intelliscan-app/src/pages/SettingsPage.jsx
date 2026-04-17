@@ -1287,7 +1287,59 @@ export default function SettingsPage() {
                    </div>
                 </div>
 
-                <div className="bg-gray-50 dark:bg-gray-900/40 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 flex flex-col justify-center">
+                <div className="space-y-6">
+                   {/* WhatsApp Connect Block */}
+                   <div className="bg-indigo-50/50 dark:bg-indigo-900/10 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-900/20 relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                         <Smartphone size={80} />
+                      </div>
+                      
+                      <p className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+                         <MessageSquare size={14} /> WhatsApp Connect
+                      </p>
+                      
+                      <div className="space-y-4 relative z-10">
+                         <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+                           Link your account to extract business cards via WhatsApp. Get instant AI scans and magic Excel exports directly on your phone.
+                         </p>
+
+                         <div className="flex flex-wrap items-center gap-3">
+                            <a 
+                              href={`https://wa.me/14155238886?text=join%20baseball-eventually`} 
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => startPhoneDiscovery()}
+                              className={`inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-emerald-600/30 transition-all active:scale-95 ${isPollingDiscovery ? 'ring-4 ring-emerald-500/20' : ''}`}
+                            >
+                              {isPollingDiscovery ? <RefreshCw className="animate-spin" size={14} /> : <MessageSquare size={14} />}
+                              {isPollingDiscovery ? '1. Syncing Heartbeat...' : '1. Join Sandbox'}
+                            </a>
+
+                            {discoveryCode && (
+                              <div className="px-4 py-3 bg-white dark:bg-gray-800 border border-indigo-100 dark:border-indigo-900 rounded-xl flex items-center gap-3 shadow-sm">
+                                 <span className="text-[9px] text-gray-400 uppercase font-black tracking-widest leading-none">2. Code:</span>
+                                 <span className="text-sm font-mono font-bold text-indigo-600 dark:text-indigo-400 select-all leading-none">{discoveryCode}</span>
+                              </div>
+                            )}
+                         </div>
+
+                         {isPollingDiscovery ? (
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-amber-600 dark:text-amber-400 animate-pulse">
+                               <RefreshCw size={12} className="animate-spin" /> Heartbeat active. Waiting for your WhatsApp message...
+                            </div>
+                         ) : profile.phone_number ? (
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                               <Check size={14} /> WhatsApp linked to {profile.phone_number}
+                            </div>
+                         ) : (
+                            <div className="text-[10px] text-gray-400 italic">
+                               Click Step 1 and then send your Session Code to link your number.
+                            </div>
+                         )}
+                      </div>
+                   </div>
+
+                   <div className="bg-gray-50 dark:bg-gray-900/40 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 flex flex-col justify-center">
                    <div className="space-y-6">
                       <div className="flex gap-4">
                          <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 shrink-0">
