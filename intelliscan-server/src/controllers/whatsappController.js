@@ -55,6 +55,10 @@ exports.handleIncomingMessage = async (req, res) => {
         return sendWhatsAppReply(From, `📖 *IntelliScan WhatsApp Guide*\n\n1️⃣ *Link Account*: Send your Session Code (e.g., IS-1234).\n2️⃣ *Scan*: Send a photo of a business card.\n3️⃣ *Export*: Type "export" to get your contacts in Excel.\n\nNeed more help? Visit: https://intelli-scan-psi.vercel.app/setup-guide`);
       }
 
+      if (bodyLower === 'ping' || bodyLower === 'test') {
+        return sendWhatsAppReply(From, `🏓 *Pong!* Your IntelliScan server is alive and receiving your WhatsApp messages!`);
+      }
+
       return sendWhatsAppReply(From, `Hi! It looks like your number (${fromPhone}) isn't linked to an IntelliScan account yet.\n\nPlease log in to IntelliScan on your computer, navigate to Settings > Communications, and send the Session Code (e.g., IS-1234) here to connect! 🚀`);
     }
 

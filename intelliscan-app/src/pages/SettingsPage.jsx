@@ -322,14 +322,18 @@ export default function SettingsPage() {
     }
   };
 
-  const startPhoneDiscovery = () => {
+  const startPhoneDiscovery = (forcedCode = null) => {
     setIsPollingDiscovery(true);
     showToast('Waiting for WhatsApp message...', 'info');
+    
+    // Use the explicitly passed code, or the current state, or the localStorage fallback
+    const codeToPoll = forcedCode || discoveryCode || localStorage.getItem('discoveryCode');
+    console.log(`[Discovery] Starting heartbeat poll for code: ${codeToPoll}`);
     
     pollIntervalRef.current = setInterval(async () => {
       try {
         const res = await apiClient.post('/auth/whatsapp/discovery', { 
-          code: discoveryCode,
+          code: codeToPoll,
           autoLink: true
         });
         if (res.data.success && res.data.phone_number) {
@@ -348,13 +352,13 @@ export default function SettingsPage() {
       }
     }, 3000);
 
-    // Stop polling after 2 minutes
+    // Stop polling after 4 minutes
     setTimeout(() => {
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
         setIsPollingDiscovery(false);
       }
-    }, 120000);
+    }, 240000);
   };
 
   const requestUnlockOTP = async () => {

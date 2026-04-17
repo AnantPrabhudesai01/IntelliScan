@@ -591,7 +591,7 @@ router.post('/whatsapp/discovery', authenticateToken, async (req, res) => {
     if (!code) return res.status(400).json({ error: 'Discovery code is required' });
 
     const discovery = await dbGetAsync(
-      'SELECT phone_number FROM whatsapp_discoveries WHERE discovery_code = ? AND created_at > NOW() - INTERVAL \'10 minutes\'',
+      'SELECT phone_number FROM whatsapp_discoveries WHERE discovery_code = ? AND created_at > NOW() - INTERVAL \'60 minutes\'',
       [code.toUpperCase()]
     );
 

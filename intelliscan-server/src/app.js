@@ -153,14 +153,7 @@ app.use('/api/cards', cardRouter);
 // Optional WhatsApp Integration
 if (process.env.ENABLE_WHATSAPP === 'true') {
   const whatsappRouter = require('./routes/whatsapp');
-  app.use('/api/webhooks/whatsapp', (req, res, next) => {
-    try {
-      const logEntry = `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} | From: ${req.body?.From || 'N/A'} | Body: ${req.body?.Body || ''}\n`;
-    } catch (e) {
-      // console.error('Logging Error:', e);
-    }
-    next();
-  }, whatsappRouter);
+  app.use('/api/whatsapp', whatsappRouter);
 }
 
 app.get('/api/my-card', authenticateToken, cardController.getMyCard);
