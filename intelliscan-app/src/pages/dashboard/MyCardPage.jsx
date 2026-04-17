@@ -149,7 +149,7 @@ export default function MyCardPage() {
         {/* Left: LIVE MOBILE PREVIEW */}
         <div className="lg:col-span-12 xl:col-span-5 flex flex-col items-center">
           <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
-            < स्मार्टफोन size={14} /> Official Live Preview
+            <Smartphone size={14} /> Official Live Preview
           </div>
           
           <div 
