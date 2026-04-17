@@ -22,9 +22,15 @@ export default function ScanPage() {
   const [discoveryCode, setDiscoveryCode] = useState('');
 
   useEffect(() => {
-    // Generate a fresh discovery code for one-click setup
-    const code = `IS-${Math.floor(1000 + Math.random() * 9000)}`;
-    setDiscoveryCode(code);
+    // Persist or restore discovery code
+    const existingCode = localStorage.getItem('discoveryCode');
+    if (existingCode) {
+      setDiscoveryCode(existingCode);
+    } else {
+      const code = `IS-${Math.floor(1000 + Math.random() * 9000)}`;
+      localStorage.setItem('discoveryCode', code);
+      setDiscoveryCode(code);
+    }
   }, []);
   const [errorMsg, setErrorMsg] = useState('');
   const [scanMode, setScanMode] = useState('single'); // 'single' | 'multi' | 'batch'

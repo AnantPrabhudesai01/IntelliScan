@@ -121,8 +121,10 @@ export default function SettingsPage() {
         setPhoneStatus('LOCKED');
       } else {
         setPhoneStatus('EDIT');
-        generateDiscoveryCode();
       }
+      
+      // Always ensure we have a discovery code available for the Communications tab
+      generateDiscoveryCode();
     } catch (err) {
       console.error('Failed to fetch profile:', err);
     }
