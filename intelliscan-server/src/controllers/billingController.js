@@ -42,28 +42,24 @@ exports.createOrder = async (req, res) => {
     const notes = { user_id: req.user.id, workspace_id: scopeWorkspaceId, plan_id: plan.id };
 
     const creds = getRazorpayCredentials();
-    let simulated = false;
-    let orderId = '';
-    let keyId = '';
-    let finalAmount = amountPaise;
-    let finalCurrency = currency;
-
     if (!creds) {
-      simulated = true;
-      orderId = `sim_order_${Date.now()}`;
-    } else {
-      const order = await createRazorpayOrder({ amountPaise, currency, receipt, notes });
-      orderId = order.id;
-      finalAmount = Number(order.amount || amountPaise);
-      finalCurrency = String(order.currency || currency);
-      keyId = creds.keyId;
+      return res.status(503).json({ 
+        error: 'RAZORPAY_NOT_CONFIGURED', 
+        message: 'The payment gateway is not configured on the server. Please add RAZORPAY_KEY_ID to Vercel.' 
+      });
     }
+
+    const order = await createRazorpayOrder({ amountPaise, currency, receipt, notes });
+    const orderId = order.id;
+    const finalAmount = Number(order.amount || amountPaise);
+    const finalCurrency = String(order.currency || currency);
+    const keyId = creds.keyId;
 
     await dbRunAsync(
       `INSERT INTO billing_orders
         (user_id, workspace_id, plan_id, amount_paise, currency, razorpay_order_id, status, simulated)
-       VALUES (?, ?, ?, ?, ?, ?, 'created', ?)`,
-      [req.user.id, scopeWorkspaceId, plan.id, finalAmount, finalCurrency, orderId, simulated ? 1 : 0]
+       VALUES (?, ?, ?, ?, ?, ?, 'created', 0)`,
+      [req.user.id, scopeWorkspaceId, plan.id, finalAmount, finalCurrency, orderId]
     );
 
     logAuditEvent(req, {

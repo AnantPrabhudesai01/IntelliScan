@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, X, Zap, Mail, ArrowRight, ChevronDown, ChevronUp, Star, ShieldCheck, Globe, Database, Cpu, Layers, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { getStoredToken, safeReadStoredUser } from '../../utils/auth.js';
+import { useRole } from '../../context/RoleContext';
 import checkoutService from '../../utils/checkoutService';
 
 const COMPARISON_DATA = [
@@ -79,7 +80,7 @@ export default function GenSubscriptionPlanComparison() {
   const [statusText, setStatusText] = useState(null);
   const [toast, setToast] = useState(null);
   
-  const user = safeReadStoredUser();
+  const { tier, refreshAuth } = useRole();
   const isLoggedIn = !!getStoredToken();
 
   const showToast = (msg, type = 'success') => {
@@ -103,6 +104,8 @@ export default function GenSubscriptionPlanComparison() {
       const result = await checkoutService.handleUpgrade(planId, setStatusText);
       if (result.success) {
         showToast(result.message || 'Payment Successful! Your account is being upgraded...');
+        // Force refresh the auth context to get the new token/tier
+        await refreshAuth();
         setTimeout(() => navigate('/dashboard/scan'), 1500);
       }
     } catch (err) {
@@ -227,7 +230,7 @@ export default function GenSubscriptionPlanComparison() {
             </ul>
           </div>
           <button onClick={() => handleUpgrade('pro')} className="w-full py-5 rounded-2xl bg-white text-indigo-600 font-black text-xs uppercase tracking-widest shadow-xl hover:bg-indigo-50 transition-all active:scale-[0.98] flex items-center justify-center gap-3">
-            <Zap size={16} fill="currentColor"/> {user?.tier === 'pro' ? 'Current Plan' : 'UPGRADE NOW'}
+            <Zap size={16} fill="currentColor"/> {tier === 'pro' ? 'Current Plan' : 'UPGRADE NOW'}
           </button>
         </div>
 

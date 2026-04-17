@@ -6,15 +6,16 @@ const { dbGetAsync, dbRunAsync, isPostgres } = require('./db');
 function resolveTierLimits(tier) {
   const normalizedTier = String(tier || 'personal').toLowerCase();
   
-  if (normalizedTier === 'enterprise' || normalizedTier === 'business_admin') {
-    return { single: 99999, group: 99999, tier: 'enterprise' };
+  if (normalizedTier === 'enterprise' || normalizedTier === 'business_admin' || normalizedTier === 'super_admin') {
+    return { single: 1000000, group: 1000000, tier: 'enterprise' };
   }
   
   if (normalizedTier === 'pro') {
-    return { single: 100, group: 10, tier: 'pro' };
+    return { single: 5000, group: 100, tier: 'pro' };
   }
 
-  return { single: 10, group: 1, tier: 'personal' };
+  // Personal / Starter
+  return { single: 100, group: 5, tier: 'personal' };
 }
 
 /**

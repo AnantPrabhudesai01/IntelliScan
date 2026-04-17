@@ -47,23 +47,7 @@ class CheckoutService {
     const orderRes = await apiClient.post('/billing/create-order', { plan: planId });
     const { simulated, key_id, order_id, amount, currency, plan_name } = orderRes.data;
 
-    // 3. Handle Simulated Mode (for testing without API keys)
-    if (simulated) {
-      onStatusChange?.('Verifying simulated payment...');
-      const verifyRes = await apiClient.post('/billing/verify-payment', {
-        plan: planId,
-        order_id: order_id,
-        simulated: true
-      });
-      
-      if (verifyRes.data.success) {
-        setStoredAuth({ token: verifyRes.data.token, user: verifyRes.data.user });
-        return { success: true, simulated: true, message: verifyRes.data.message };
-      }
-      throw new Error(verifyRes.data.error || 'Verification failed');
-    }
-
-    // 4. Handle Real Razorpay Mode
+    // 3. Handle Razorpay Gateway
     return new Promise((resolve, reject) => {
       onStatusChange?.('Opening secure payment portal...');
       
@@ -96,7 +80,7 @@ class CheckoutService {
           }
         },
         prefill: {
-          name: '', // Will be filled from token if possible
+          name: '', 
           email: '',
           contact: ''
         },
