@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Download, Mail, Phone, Globe, MapPin, Sparkles, 
-  Linkedin, MessageCircle, Share2, Send, CheckCircle2, ChevronLeft 
+  MessageCircle, Share2, Send, CheckCircle2, ChevronLeft 
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -178,7 +178,7 @@ export default function PublicProfile() {
                 {[
                   { icon: Mail, label: profile.email, href: `mailto:${profile.email}`, color: 'text-indigo-400' },
                   { icon: Phone, label: profile.phone, href: `tel:${profile.phone}`, color: 'text-emerald-400' },
-                  { icon: Linkedin, label: 'LinkedIn Profile', href: '#', color: 'text-blue-400' }
+                  { icon: LinkedinIcon, label: 'LinkedIn Profile', href: '#', color: 'text-blue-400' }
                 ].map((item, idx) => (
                   <a key={idx} href={item.href} className="flex items-center gap-4 p-4 rounded-3xl bg-[var(--surface-card)] border border-[var(--border-subtle)] hover:bg-[var(--surface)] transition-all group/item shadow-sm">
                     <div className={`w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center ${item.color} border border-[var(--border-subtle)]`}>
@@ -218,6 +218,25 @@ function LinkIcon({ size, className }) {
     >
       <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
       <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </svg>
+  );
+}
+function LinkedinIcon({ size, className }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect width="4" height="12" x="2" y="9" />
+      <circle cx="4" cy="4" r="2" />
     </svg>
   );
 }

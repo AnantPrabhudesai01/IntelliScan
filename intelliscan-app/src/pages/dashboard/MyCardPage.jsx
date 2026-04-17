@@ -1,7 +1,7 @@
 import { 
   QrCode, Share2, Smartphone, Download, CheckCircle2, 
   ChevronRight, Copy, Sparkles, Layout, Palette, Wand2, 
-  RefreshCw, Mail, Phone, Linkedin, MessageCircle, Send,
+  RefreshCw, Mail, Phone, MessageCircle, Send,
   TrendingUp, Users, Zap
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -200,7 +200,7 @@ export default function MyCardPage() {
                       </div>
 
                       <div className="mt-8 space-y-2 text-left">
-                         {[Mail, Phone, Linkedin].map((Icon, i) => (
+                         {[Mail, Phone, LinkedinIcon].map((Icon, i) => (
                            <div key={i} className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5 opacity-50">
                               <Icon size={14} className="text-indigo-400" />
                               <div className="w-24 h-2 bg-white/10 rounded-full"></div>
@@ -315,5 +315,25 @@ export default function MyCardPage() {
 
       </div>
     </div>
+  );
+}
+
+function LinkedinIcon({ size, className }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect width="4" height="12" x="2" y="9" />
+      <circle cx="4" cy="4" r="2" />
+    </svg>
   );
 }
