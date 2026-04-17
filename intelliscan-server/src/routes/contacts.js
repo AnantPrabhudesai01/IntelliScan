@@ -30,6 +30,7 @@ router.put('/reorder', contactsController.reorderContacts);
  * @desc    Create a new contact (saved scan)
  */
 router.post('/', validate(createContactSchema), contactsController.createContact);
+router.post('/merge', contactsController.mergeContacts);
 
 /**
  * Trash / Recycle Bin Routes

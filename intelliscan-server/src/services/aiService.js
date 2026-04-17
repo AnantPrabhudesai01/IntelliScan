@@ -528,7 +528,6 @@ async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'j
  */
 async function validateProfilePhoto(imageBase64, mimeType = 'image/jpeg') {
   const base64Data = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
-  
   const prompt = `You are an Enterprise Identity Moderation AI. Your task is to validate profile photos for a professional business platform.
 
 Strictly evaluate the image for the following:

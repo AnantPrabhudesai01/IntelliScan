@@ -6,7 +6,7 @@ const router = express.Router();
 const { db, dbGetAsync, dbRunAsync, dbAllAsync } = require('../utils/db');
 const { authenticateToken } = require('../middleware/auth');
 const { logAuditEvent } = require('../utils/logger');
-const { createSmtpTransporterFromEnv } = require('../utils/smtp');
+const { createSmtpTransporterFromEnv, getWorkspaceTransporter } = require('../utils/smtp');
 const { AUDIT_SUCCESS, AUDIT_ERROR } = require('../config/constants');
 const { unifiedTextAIPipeline } = require('../services/aiService');
 
@@ -127,7 +127,10 @@ router.post('/:id/send', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'No recipient email on this draft. Please add a contact email first.' });
     }
 
-    const smtp = createSmtpTransporterFromEnv();
+    const user = await dbGetAsync('SELECT workspace_id, id FROM users WHERE id = ?', [req.user.id]);
+    const scopeWorkspaceId = user?.workspace_id || user?.id;
+
+    const smtp = await getWorkspaceTransporter(scopeWorkspaceId);
     if (!smtp) {
       await dbRunAsync(
         "UPDATE ai_drafts SET status = 'draft' WHERE id = ?",
@@ -136,12 +139,13 @@ router.post('/:id/send', authenticateToken, async (req, res) => {
       return res.json({
         success: false,
         sent: false,
-        message: 'SMTP not configured. Draft saved. Set SMTP_HOST, SMTP_USER, SMTP_PASS in .env to enable real sending.'
+        message: 'SMTP not configured. Draft saved. Set up your Communications server in Settings to enable real sending.'
       });
     }
 
+    const fromName = smtp.fromName || process.env.SMTP_FROM_NAME || 'IntelliScan';
     await smtp.transporter.sendMail({
-      from: smtp.from,
+      from: `"${fromName}" <${smtp.from}>`,
       to: draft.contact_email,
       subject: draft.subject,
       text: draft.body,

@@ -59,6 +59,19 @@ export default function SettingsPage() {
   const [isPollingDiscovery, setIsPollingDiscovery] = useState(false);
   const pollIntervalRef = useRef(null);
 
+  // SMTP Settings State
+  const [smtpConfig, setSmtpConfig] = useState({
+    host: '',
+    port: '587',
+    user: '',
+    pass: '',
+    from_email: '',
+    from_name: ''
+  });
+  const [isTestingSmtp, setIsTestingSmtp] = useState(false);
+  const [isSavingSmtp, setIsSavingSmtp] = useState(false);
+  const [smtpVerified, setSmtpVerified] = useState(false);
+
   // Policy Modal
   const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [pendingUploadFile, setPendingUploadFile] = useState(null);
@@ -71,7 +84,20 @@ export default function SettingsPage() {
 
   useEffect(() => {
     fetchProfile();
+    fetchWorkspaceSettings();
   }, []);
+
+  const fetchWorkspaceSettings = async () => {
+    try {
+      const res = await apiClient.get('/workspace/settings');
+      if (res.data && res.data.settings?.smtp) {
+        setSmtpConfig(res.data.settings.smtp);
+        if (res.data.settings.smtp.pass === '********') setSmtpVerified(true);
+      }
+    } catch (err) {
+      console.error('Failed to fetch workspace settings:', err);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -96,7 +122,13 @@ export default function SettingsPage() {
   };
 
   const generateDiscoveryCode = () => {
+    const existingCode = localStorage.getItem('discoveryCode');
+    if (existingCode) {
+      setDiscoveryCode(existingCode);
+      return;
+    }
     const code = `IS-${Math.floor(1000 + Math.random() * 9000)}`;
+    localStorage.setItem('discoveryCode', code);
     setDiscoveryCode(code);
   };
 
@@ -403,10 +435,37 @@ export default function SettingsPage() {
     try {
       await apiClient.delete('/auth/sessions/others');
       fetchSessions();
-      showToast('All other sessions have been logged out');
+      showToast('All other sessions revoked');
     } catch (err) {
-      console.error('Failed to clear other sessions:', err);
-      showToast('Failed to revoke other sessions', 'error');
+      console.error('Failed to revoke sessions:', err);
+      showToast('Failed to revoke sessions', 'error');
+    }
+  };
+
+  const handleSaveSmtp = async () => {
+    setIsSavingSmtp(true);
+    try {
+      await apiClient.post('/workspace/settings/smtp', smtpConfig);
+      showToast('SMTP Settings updated successfully!');
+      setSmtpVerified(true);
+    } catch (err) {
+      showToast('Failed to save SMTP: ' + (err.response?.data?.error || err.message), 'error');
+    } finally {
+      setIsSavingSmtp(false);
+    }
+  };
+
+  const handleTestSmtp = async () => {
+    setIsTestingSmtp(true);
+    try {
+      const res = await apiClient.post('/workspace/settings/smtp/test', smtpConfig);
+      showToast(res.data.message || 'Connection successful!');
+      setSmtpVerified(true);
+    } catch (err) {
+      showToast(err.response?.data?.error || 'Connection failed', 'error');
+      setSmtpVerified(false);
+    } finally {
+      setIsTestingSmtp(false);
     }
   };
 
@@ -650,7 +709,7 @@ export default function SettingsPage() {
           { id: 'Personal Info', icon: User },
           { id: 'Security', icon: Lock },
           { id: 'Integrations', icon: Blocks },
-          { id: 'Notifications', icon: MessageSquare }
+          { id: 'Communications', icon: MessageSquare }
         ].map(tab => (
           <button 
             key={tab.id}
@@ -799,23 +858,24 @@ export default function SettingsPage() {
                              WhatsApp Connect (Discovery Mode)
                            </h4>
                            <p className="text-[11px] text-indigo-700/80 dark:text-indigo-300/60 mb-3 font-medium leading-relaxed">
-                             Automatically link your device without typing. Click "Join" and send the generated session code.
+                             <strong>Step 1:</strong> Click "Join Sandbox" and send the pre-filled message.<br/>
+                             <strong>Step 2:</strong> After Twilio replies "You are all set", send your Session Code.
                            </p>
                            <div className="flex flex-wrap items-center gap-2">
                                <a 
-                                 href={`https://wa.me/14155238886?text=join%20baseball-eventually%20${discoveryCode}`} 
+                                 href={`https://wa.me/14155238886?text=join%20baseball-eventually`} 
                                  target="_blank"
                                  rel="noopener noreferrer"
                                  onClick={startPhoneDiscovery}
                                  className={`inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg hover:shadow-emerald-600/20 transition-all ${isPollingDiscovery ? 'animate-pulse ring-4 ring-emerald-500/20' : ''}`}
                                >
                                  {isPollingDiscovery ? <RefreshCw className="animate-spin" size={14} /> : <MessageSquare size={14} />}
-                                 {isPollingDiscovery ? 'Syncing Heartbeat...' : 'Join Sandbox & Sync'}
+                                 {isPollingDiscovery ? 'Syncing Heartbeat...' : '1. Join Sandbox'}
                                </a>
                               {discoveryCode && (
-                                <div className="px-3 py-2 bg-white dark:bg-gray-800 border border-indigo-100 dark:border-indigo-900 rounded-xl">
-                                   <span className="text-[10px] text-gray-400 uppercase font-black tracking-widest mr-2">Session Code:</span>
-                                   <span className="text-sm font-mono font-bold text-indigo-600 dark:text-indigo-400">{discoveryCode}</span>
+                                <div className="px-3 py-2 bg-white dark:bg-gray-800 border border-indigo-100 dark:border-indigo-900 rounded-xl flex items-center gap-2">
+                                   <span className="text-[10px] text-gray-400 uppercase font-black tracking-widest">2. Send Code:</span>
+                                   <span className="text-sm font-mono font-bold text-indigo-600 dark:text-indigo-400 select-all">{discoveryCode}</span>
                                 </div>
                               )}
                            </div>
@@ -1113,10 +1173,139 @@ export default function SettingsPage() {
           </section>
         )}
 
-        {activeTab === 'Notifications' && (
-          <section className="col-span-12 md:col-span-8 bg-white dark:bg-[#161c28] rounded-xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in">
-             <h3 className="text-lg font-headline font-bold text-gray-900 dark:text-white mb-6">Alert Preferences</h3>
-             <div className="text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest py-8 text-center border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-xl">Notification settings coming soon</div>
+        {activeTab === 'Communications' && (
+          <section className="col-span-12 bg-white dark:bg-[#161c28] rounded-xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in">
+             <div className="flex items-center gap-3 mb-8">
+                <MessageSquare className="text-indigo-600 dark:text-indigo-400" size={24} />
+                <h3 className="text-lg font-headline font-bold text-gray-900 dark:text-white">Email & Communication Servers</h3>
+             </div>
+             
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-6">
+                   <div className="space-y-4">
+                      <p className="text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">SMTP Host Settings</p>
+                      <div className="grid grid-cols-3 gap-4">
+                         <div className="col-span-2 space-y-2">
+                            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Mail Server Host</label>
+                            <input 
+                              className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                              placeholder="smtp.gmail.com"
+                              value={smtpConfig.host}
+                              onChange={(e) => setSmtpConfig({...smtpConfig, host: e.target.value})}
+                            />
+                         </div>
+                         <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Port</label>
+                            <input 
+                              className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                              placeholder="587"
+                              value={smtpConfig.port}
+                              onChange={(e) => setSmtpConfig({...smtpConfig, port: e.target.value})}
+                            />
+                         </div>
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Authentication User</label>
+                         <input 
+                           className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                           placeholder="user@example.com"
+                           value={smtpConfig.user}
+                           onChange={(e) => setSmtpConfig({...smtpConfig, user: e.target.value})}
+                         />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Password / App Key</label>
+                         <input 
+                           className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                           type="password"
+                           placeholder="••••••••••••"
+                           value={smtpConfig.pass}
+                           onChange={(e) => setSmtpConfig({...smtpConfig, pass: e.target.value})}
+                         />
+                      </div>
+                   </div>
+
+                   <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                      <p className="text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Sender Identity</p>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">From Name</label>
+                         <input 
+                           className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                           placeholder="Your Name / Company"
+                           value={smtpConfig.from_name}
+                           onChange={(e) => setSmtpConfig({...smtpConfig, from_name: e.target.value})}
+                         />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Verified From Email</label>
+                         <input 
+                           className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                           placeholder="outreach@company.com"
+                           value={smtpConfig.from_email}
+                           onChange={(e) => setSmtpConfig({...smtpConfig, from_email: e.target.value})}
+                         />
+                      </div>
+                   </div>
+
+                   <div className="pt-6 flex items-center gap-3">
+                      <button 
+                        onClick={handleTestSmtp}
+                        disabled={isTestingSmtp || !smtpConfig.host}
+                        className="px-6 py-2.5 rounded-xl border border-indigo-600 text-indigo-600 text-xs font-black uppercase tracking-widest hover:bg-indigo-50 dark:hover:bg-indigo-900/10 transition-all flex items-center gap-2 disabled:opacity-50"
+                      >
+                         {isTestingSmtp ? <RefreshCw className="animate-spin" size={14} /> : <RefreshCw size={14} />}
+                         Test Connection
+                      </button>
+                      <button 
+                        onClick={handleSaveSmtp}
+                        disabled={isSavingSmtp || !smtpVerified}
+                        className="px-8 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50"
+                      >
+                         {isSavingSmtp ? 'Saving...' : 'Save Settings'}
+                      </button>
+                   </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-900/40 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 flex flex-col justify-center">
+                   <div className="space-y-6">
+                      <div className="flex gap-4">
+                         <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 shrink-0">
+                            <Sparkles size={20} />
+                         </div>
+                         <div>
+                            <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Professional Outbound</h4>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">By using your own SMTP server, AI generated follow-up drafts will be sent directly from your professional address, improving deliverability and trust.</p>
+                         </div>
+                      </div>
+                      
+                      <div className="flex gap-4">
+                         <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 shrink-0">
+                            <Shield size={20} />
+                         </div>
+                         <div>
+                            <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Security Standards</h4>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">We support TLS (Port 587) and SSL (Port 465). For Gmail/Outlook, please ensure you use a dedicated <strong>App Password</strong> rather than your primary account password.</p>
+                         </div>
+                      </div>
+
+                      <div className="p-4 bg-white dark:bg-gray-850 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
+                         <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Workspace Integration Status</p>
+                         <div className="flex items-center justify-between">
+                            <span className="text-sm font-bold dark:text-gray-200">Email Engine</span>
+                            {smtpVerified ? (
+                               <span className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 text-[9px] font-black uppercase border border-emerald-500/20 flex items-center gap-1">
+                                  <Check size={10} strokeWidth={4} /> Valid / Active
+                               </span>
+                            ) : (
+                               <span className="px-2 py-1 rounded-lg bg-gray-500/10 text-gray-500 text-[9px] font-black uppercase border border-gray-500/20">
+                                  Inactive
+                               </span>
+                            )}
+                         </div>
+                      </div>
+                   </div>
+                </div>
+             </div>
           </section>
         )}
 

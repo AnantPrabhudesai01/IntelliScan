@@ -15,4 +15,7 @@ router.post('/suggest-time/:id', authenticateToken, aiController.suggestTime);
 // Rich Description Route
 router.post('/describe/:id', authenticateToken, aiController.generateDescription);
 
+// AI Support Chat Route (Public / Semi-auth)
+router.post('/chat/support', aiController.supportChat);
+
 module.exports = router;

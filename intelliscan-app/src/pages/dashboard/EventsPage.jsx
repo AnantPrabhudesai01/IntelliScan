@@ -70,14 +70,33 @@ export default function EventsPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      const token = getStoredToken();
+      // 1. Create the marketing event
       await fetch('/api/events', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getStoredToken()}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(formData)
       });
+      
+      // 2. Automatically sync with Calendar
+      // Parsing "Nov 12 - 14" loosely by creating a generic start date
+      await fetch('/api/calendar/events', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          title: `Campaign: ${formData.name}`,
+          description: `Networking hub for ${formData.location}. Scheduled during: ${formData.date}`,
+          startTime: new Date().toISOString(),
+          endTime: new Date(Date.now() + 86400000).toISOString() // +1 day default block
+        })
+      });
+
       setIsModalOpen(false);
       setFormData({ name: '', location: '', date: '', type: 'Conference' });
       fetchEvents();

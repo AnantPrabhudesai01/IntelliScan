@@ -6,10 +6,16 @@ const bcrypt = require('bcryptjs');
 const { db, dbGetAsync, dbRunAsync, dbAllAsync } = require('../utils/db');
 const { logAuditEvent } = require('../utils/logger');
 const { authenticateToken, requireEnterpriseAdmin } = require('../middleware/auth');
-const { createSmtpTransporterFromEnv } = require('../utils/smtp');
+const { createSmtpTransporterFromEnv, testSmtpConnection } = require('../utils/smtp');
 const contactsController = require('../controllers/contactsController');
 
 const AUDIT_SUCCESS = 'SUCCESS';
+
+async function getScopeForUser(userId) {
+  const user = await dbGetAsync('SELECT workspace_id, id FROM users WHERE id = ?', [userId]);
+  const scopeWorkspaceId = user?.workspace_id || user?.id;
+  return { scopeWorkspaceId };
+}
 
 const policyUtils = require('../utils/policyUtils');
 
@@ -256,6 +262,93 @@ router.delete('/members/:id', authenticateToken, requireEnterpriseAdmin, async (
     res.json({ message: 'Member removed successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to remove member' });
+  }
+});
+
+// Workspace Settings (Branding, SMTP, etc.)
+router.get('/settings', authenticateToken, async (req, res) => {
+  try {
+    const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
+    const workspace = await dbGetAsync('SELECT * FROM workspaces WHERE id = ?', [scopeWorkspaceId]);
+    
+    if (!workspace) {
+      // Auto-init workspace if missing (same as invite logic)
+      return res.json({ name: 'My Workspace', settings: {} });
+    }
+
+    const settings = typeof workspace.settings_json === 'string' 
+      ? JSON.parse(workspace.settings_json || '{}') 
+      : (workspace.settings_json || {});
+
+    // Redact SMTP password
+    if (settings.smtp && settings.smtp.pass) {
+      settings.smtp.pass = '********';
+    }
+
+    res.json({
+      id: workspace.id,
+      name: workspace.name,
+      logo_url: workspace.logo_url,
+      settings
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/settings/smtp', authenticateToken, requireEnterpriseAdmin, async (req, res) => {
+  try {
+    const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
+    const { host, port, user, pass, from_email, from_name } = req.body;
+
+    const workspace = await dbGetAsync('SELECT * FROM workspaces WHERE id = ?', [scopeWorkspaceId]);
+    let settings = typeof workspace?.settings_json === 'string' 
+      ? JSON.parse(workspace?.settings_json || '{}') 
+      : (workspace?.settings_json || {});
+
+    // Handle password redaction on update
+    let finalPass = pass;
+    if (pass === '********' && settings.smtp?.pass) {
+      finalPass = settings.smtp.pass;
+    }
+
+    settings.smtp = { host, port, user, pass: finalPass, from_email, from_name };
+
+    await dbRunAsync(
+      'UPDATE workspaces SET settings_json = ? WHERE id = ?',
+      [JSON.stringify(settings), scopeWorkspaceId]
+    );
+
+    logAuditEvent(req, {
+      action: 'UPDATE_SMTP_SETTINGS',
+      resource: 'WORKSPACE',
+      status: 'SUCCESS',
+      details: { workspace_id: scopeWorkspaceId }
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/settings/smtp/test', authenticateToken, requireEnterpriseAdmin, async (req, res) => {
+  try {
+    const { host, port, user, pass, from_email } = req.body;
+    
+    // Resolve password if hidden
+    let finalPass = pass;
+    if (pass === '********') {
+      const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
+      const ws = await dbGetAsync('SELECT settings_json FROM workspaces WHERE id = ?', [scopeWorkspaceId]);
+      const settings = JSON.parse(ws?.settings_json || '{}');
+      finalPass = settings.smtp?.pass;
+    }
+
+    await testSmtpConnection({ host, port, user, pass: finalPass });
+    res.json({ success: true, message: 'SMTP credentials verified successfully!' });
+  } catch (err) {
+    res.status(400).json({ error: `Connection failed: ${err.message}` });
   }
 });
 

@@ -55,6 +55,119 @@ const SortableItem = ({ id, children, disabled }) => {
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       {children}
+      {/* Deduplication Hub Modal */}
+      {showDedupeModal && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-6 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#161c28] w-full max-w-2xl rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col max-h-[90vh] overflow-hidden animate-scale-up">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                  <Cpu size={20} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-headline font-black text-gray-900 dark:text-white uppercase tracking-tight">Deduplication Hub</h3>
+                  <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Intelligent Rolodex Cleanup</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowDedupeModal(false)}
+                className="p-2 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+              {duplicateGroups.length === 0 ? (
+                <div className="text-center py-10 space-y-4">
+                  <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 rounded-full flex items-center justify-center mx-auto">
+                    <CheckCircle2 size={32} />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-gray-900 dark:text-white">Workspace is Clean</h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs mx-auto">We couldn't find any duplicate contacts in your workspace. Your rolodex is optimized!</p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200/50 dark:border-amber-800/30 rounded-xl flex gap-3">
+                    <AlertTriangle className="text-amber-500 shrink-0" size={18} />
+                    <p className="text-[11px] text-amber-800 dark:text-amber-300 font-medium leading-relaxed uppercase tracking-wide">
+                      We discovered <strong>{duplicateGroups.length}</strong> groups of potentially duplicate contacts based on email, phone, and name matching. Merging will consolidate all notes and tags into the primary record.
+                    </p>
+                  </div>
+
+                  {duplicateGroups.map((group, idx) => (
+                    <div key={group.fingerprint} className="border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
+                      <div className="bg-gray-50 dark:bg-gray-800/50 px-5 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+                           Match Group #{idx + 1} • {group.reason}
+                        </span>
+                        <span className="text-[9px] font-black uppercase px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded">
+                           {group.confidence}% Match
+                        </span>
+                      </div>
+                      
+                      <div className="p-5 space-y-4">
+                        <div className="flex items-center gap-4">
+                          <div className="relative shrink-0">
+                            <div className="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-lg font-black italic">
+                              {group.primary_contact.name?.[0] || 'U'}
+                            </div>
+                            <div className="absolute -top-2 -right-2 bg-indigo-600 text-white p-1 rounded-full border-2 border-white dark:border-[#161c28]">
+                               <Zap size={10} strokeWidth={3} />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-black text-gray-900 dark:text-white truncate uppercase tracking-tight">{group.primary_contact.name}</h4>
+                            <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest">{group.primary_contact.company || 'Unknown Company'}</p>
+                          </div>
+                          <div className="text-right">
+                             <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Primary Record</span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2 pt-2">
+                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest px-1">Duplicate instances FOUND ({group.duplicates.length})</p>
+                          {group.duplicates.map(dupe => (
+                            <div key={dupe.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 opacity-60">
+                              <div className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 font-bold text-xs">
+                                {dupe.name?.[0] || 'U'}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-bold text-gray-700 dark:text-gray-300 truncate">{dupe.email || dupe.phone || 'No identifier'}</p>
+                                <p className="text-[10px] text-gray-400">Captured {new Date(dupe.scan_date).toLocaleDateString()}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <button 
+                          onClick={() => handleMergeGroup(group)}
+                          disabled={isMerging}
+                          className="w-full mt-2 py-3 bg-white dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border border-indigo-600 dark:border-indigo-400 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 dark:hover:text-white transition-all flex items-center justify-center gap-2 group shadow-lg shadow-indigo-600/5"
+                        >
+                          {isMerging ? <RefreshCw className="animate-spin" size={14} /> : <Wand2 size={14} className="group-hover:rotate-12 transition-transform" />}
+                          Resolve Duplicate Group
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-black/20 flex justify-end">
+               <button 
+                onClick={() => setShowDedupeModal(false)}
+                className="px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-black dark:hover:bg-gray-100 transition-all shadow-xl shadow-black/10"
+              >
+                Close Hub
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -133,6 +246,13 @@ export default function ContactsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Deduplication Hub State
+  const [showDedupeModal, setShowDedupeModal] = useState(false);
+  const [duplicateGroups, setDuplicateGroups] = useState([]);
+  const [isScanningDuplicates, setIsScanningDuplicates] = useState(false);
+  const [isMerging, setIsMerging] = useState(false);
+  const [dedupeMessage, setDedupeMessage] = useState('');
 
   const openContactDetail = (contact) => {
     if (!contact) return;
@@ -200,6 +320,42 @@ export default function ContactsPage() {
       setSequences(data || []);
     } catch (err) {
       console.error('Failed to fetch sequences:', err);
+    }
+  };
+
+  const scanForDuplicates = async () => {
+    setIsScanningDuplicates(true);
+    setDedupeMessage('Scanning contact rolodex for exact and fuzzy matches...');
+    try {
+      const res = await apiClient.get('/workspace/contacts/duplicates');
+      setDuplicateGroups(res.data.duplicates || []);
+      setShowDedupeModal(true);
+      if (res.data.duplicates?.length === 0) {
+        showComposerToast('✨ Great news! No duplicates found in your workspace.');
+      }
+    } catch (err) {
+      showComposerToast('Deduplication scan failed: ' + err.message, 'error');
+    } finally {
+      setIsScanningDuplicates(false);
+    }
+  };
+
+  const handleMergeGroup = async (group) => {
+    setIsMerging(true);
+    try {
+      await apiClient.post('/contacts/merge', {
+        primaryId: group.primary_contact_id,
+        duplicateIds: group.duplicates.map(d => d.id)
+      });
+      // Remove handled group
+      setDuplicateGroups(prev => prev.filter(g => g.fingerprint !== group.fingerprint));
+      showComposerToast('✅ Contacts successfully merged!');
+      // Contact context will refresh via socket.io, but we can call it manually to be sure
+      // (The context refresh is usually handled by polling or socket events)
+    } catch (err) {
+      showComposerToast('Merge failed: ' + err.message, 'error');
+    } finally {
+      setIsMerging(false);
     }
   };
 

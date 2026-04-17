@@ -143,3 +143,39 @@ The tone should be concise and strategic for a CRM dashboard.`;
     res.status(500).json({ error: 'Failed to generate contact description' });
   }
 };
+
+/**
+ * Handles conversations for the AI Support Chatbot widget.
+ * Provides platform-specific guidance and intelligence.
+ * POST /api/ai/chat/support
+ */
+exports.supportChat = async (req, res) => {
+  try {
+    const { messages } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Messages array is required' });
+    }
+
+    const systemPrompt = `You are the IntelliScan Expert, an advanced AI Support Assistant.
+You guide users on how to use the IntelliScan Enterprise platform.
+Platform features include:
+1. Business Card Scanning (Web & WhatsApp Sandbox via Twilio using Discovery Codes).
+2. Contact Management (Enrichment, Export to VCard/CSV/CRM).
+3. Campaign Center (Creates networking events, logs them to Calendar, tracks ROI).
+4. Billing & Tiers (Personal (10 credits), Advanced, Scale). Note: Scale/Enterprise requires contacting sales via the Company Registration modal.
+5. Email Marketing & Drafts (Follow-ups using Gemini AI).
+
+Be concise, helpful, and professional. Always use Markdown formatting if helpful. If the user asks something outside of IntelliScan or general networking, politely steer them back.`;
+
+    const formattedMessages = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\\n');
+    const fullPrompt = `${systemPrompt}\\n\\nConversation History:\\n${formattedMessages}\\n\\nASSISTANT: `;
+
+    const textReply = await generateWithFallback(fullPrompt);
+    
+    res.json({ success: true, reply: textReply });
+  } catch (err) {
+    console.error('Support Chat Error:', err);
+    res.status(500).json({ error: 'Failed to process chat response' });
+  }
+};
+

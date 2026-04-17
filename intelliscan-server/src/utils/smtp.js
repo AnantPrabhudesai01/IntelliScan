@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const { dbGetAsync } = require('./db');
 
 /**
  * Creates a Nodemailer transporter using environment variables.
@@ -31,6 +32,63 @@ function createSmtpTransporterFromEnv() {
   };
 }
 
+/**
+ * Creates a transporter for a specific workspace.
+ * Prioritizes workspace credentials over environment variables.
+ */
+async function getWorkspaceTransporter(workspaceId) {
+  if (!workspaceId) return createSmtpTransporterFromEnv();
+
+  try {
+    const ws = await dbGetAsync('SELECT settings_json FROM workspaces WHERE id = ?', [workspaceId]);
+    if (!ws || !ws.settings_json) return createSmtpTransporterFromEnv();
+
+    const settings = typeof ws.settings_json === 'string' ? JSON.parse(ws.settings_json) : ws.settings_json;
+    const smtp = settings.smtp;
+
+    if (!smtp || !smtp.host || !smtp.user || !smtp.pass) {
+      return createSmtpTransporterFromEnv();
+    }
+
+    return {
+      transporter: nodemailer.createTransport({
+        host: smtp.host,
+        port: parseInt(smtp.port || '587'),
+        secure: smtp.port == '465',
+        auth: {
+          user: smtp.user,
+          pass: smtp.pass
+        }
+      }),
+      from: smtp.from_email || smtp.user,
+      fromName: smtp.from_name || 'IntelliScan'
+    };
+  } catch (err) {
+    console.error(`Error loading workspace SMTP for ${workspaceId}:`, err);
+    return createSmtpTransporterFromEnv();
+  }
+}
+
+/**
+ * Utility to verify a configuration before saving
+ */
+async function testSmtpConnection(config) {
+  const transporter = nodemailer.createTransport({
+    host: config.host,
+    port: parseInt(config.port || '587'),
+    secure: config.port == '465',
+    auth: {
+      user: config.user,
+      pass: config.pass
+    },
+    connectTimeout: 5000
+  });
+
+  return transporter.verify();
+}
+
 module.exports = {
-  createSmtpTransporterFromEnv
+  createSmtpTransporterFromEnv,
+  getWorkspaceTransporter,
+  testSmtpConnection
 };

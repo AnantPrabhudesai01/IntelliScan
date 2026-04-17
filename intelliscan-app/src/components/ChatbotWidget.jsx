@@ -30,7 +30,7 @@ export default function ChatbotWidget({ role = 'user' }) {
 
     try {
       const token = getStoredToken();
-      const response = await fetch('/api/chat/support', {
+      const response = await fetch('/api/ai/chat/support', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

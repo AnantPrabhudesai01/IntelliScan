@@ -39,9 +39,9 @@ exports.handleIncomingMessage = async (req, res) => {
       console.warn(`[WhatsApp] Unauthorized: Number ${fromPhone} not linked to any user.`);
       
       // 🕵️ Check for Discovery Code (e.g., join baseball-eventually IS-1234)
-      const discoMatch = (Body || '').match(/IS-(\d{4})/i);
-      if (discoMatch) {
-        const discoCode = discoMatch[0].toUpperCase();
+      const isCmd = (Body || '').match(/IS-(\d{4})/i);
+      if (isCmd) {
+        const discoCode = isCmd[0].toUpperCase();
         console.log(`[WhatsApp] Discovery detected! Code: ${discoCode} for Phone: ${fromPhone}`);
         await dbRunAsync(
           'INSERT INTO whatsapp_discoveries (discovery_code, phone_number) VALUES (?, ?) ON CONFLICT (discovery_code) DO UPDATE SET phone_number = EXCLUDED.phone_number, created_at = CURRENT_TIMESTAMP',
@@ -50,7 +50,7 @@ exports.handleIncomingMessage = async (req, res) => {
         return sendWhatsAppReply(From, `✨ *Discovery Code Detected!* I've linked your session. Now, go back to the IntelliScan dashboard to complete your registration! 🚀`);
       }
 
-      return sendWhatsAppReply(From, `Hi! It looks like your number (${fromPhone}) isn't linked to an IntelliScan account yet.\n\nPlease add your WhatsApp number in the Settings page of the IntelliScan dashboard to start scanning! 🚀`);
+      return sendWhatsAppReply(From, `Hi! It looks like your number (${fromPhone}) isn't linked to an IntelliScan account yet.\n\nPlease log in to IntelliScan on your computer, navigate to Settings > Communications, and send the Session Code (e.g., IS-1234) here to connect! 🚀`);
     }
 
     // 2. Check for Commands (Export/Excel)
@@ -108,14 +108,18 @@ exports.handleIncomingMessage = async (req, res) => {
       mimeType: MediaContentType0 || 'image/jpeg',
       userId: user.id,
       tier: user.tier,
-      prompt: `Extract ALL business cards from this image.
+      prompt: `Act as a world-class OCR and Data Extraction AI. Look carefully at the image and extract ALL business cards found.
+Even if the lighting is poor or it's angled, try your absolute best to read the text.
 JSON FORMAT ONLY:
 {
   "cards": [
     {
-      "name": "Full Name",
-      "company": "Company Name",
-      "title": "Job Title",
+      "name": "Full Name (In English)",
+      "name_native": "Name in original non-English script (if applicable)",
+      "company": "Company Name (In English)",
+      "company_native": "Company in original non-English script (if applicable)",
+      "title": "Job Title (In English)",
+      "title_native": "Title in original non-English script (if applicable)",
       "email": "email address",
       "phone": "standardized phone",
       "website": "url",

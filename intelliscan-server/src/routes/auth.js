@@ -83,7 +83,7 @@ router.post('/register', validate(registerSchema), async (req, res) => {
         const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
         const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
         await dbRunAsync(
-          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, true)',
           [userId, token, deviceInfo, ipAddress, 'Unknown Location']
         );
       } catch (sessionErr) {
@@ -180,7 +180,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
 
     try {
       await dbRunAsync(
-        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, true)',
         [user.id, token, deviceInfo, ipAddress, location]
       );
       await ensureQuotaRow(user.id, user.tier || 'personal');
@@ -240,7 +240,7 @@ router.get('/google/callback',
         const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
         const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
         await dbRunAsync(
-          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, true)',
           [user.id, token, deviceInfo, ipAddress, 'Unknown Location']
         );
       } catch (sessionErr) {
@@ -377,7 +377,7 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
       const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
       await dbRunAsync(
-        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, true)',
         [userId, token, deviceInfo, ipAddress, 'Unknown Location']
       );
     } catch (sessionErr) {
@@ -430,7 +430,7 @@ router.get('/me', authenticateToken, async (req, res) => {
 router.get('/sessions/me', authenticateToken, async (req, res) => {
   try {
     const sessions = await dbAllAsync(
-      'SELECT id, device_info, ip_address, location, last_active, token FROM sessions WHERE user_id = ? AND is_active = 1 ORDER BY last_active DESC',
+      'SELECT id, device_info, ip_address, location, last_active, token FROM sessions WHERE user_id = ? AND is_active = true ORDER BY last_active DESC',
       [req.user.id]
     );
 

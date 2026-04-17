@@ -143,6 +143,26 @@ exports.createContact = async (req, res) => {
       name_native, company_native, title_native
     } = input;
 
+    // 🕵️ Duplicate Prevention (Outreach Protection)
+    if (email || phone) {
+      const existing = await dbGetAsync(
+        `SELECT id, name, company FROM contacts 
+         WHERE user_id = ? AND is_deleted = FALSE AND (
+           (LOWER(email) = LOWER(?) AND email <> '') OR 
+           (phone = ? AND phone <> '')
+         ) LIMIT 1`,
+        [req.user.id, email || '', phone || '']
+      );
+
+      if (existing) {
+        return res.status(409).json({ 
+          error: 'Duplicate contact detected', 
+          message: `A contact named "${existing.name}" from "${existing.company || 'Unknown'}" already exists with this ${email === existing.email ? 'email' : 'phone number'}.`,
+          existingId: existing.id
+        });
+      }
+    }
+
     const inserted = await dbRunAsync(
       `INSERT INTO contacts (
         user_id, name, email, phone, company, job_title, confidence,
@@ -793,6 +813,79 @@ exports._cosineSimilarity = (vecA, vecB) => {
 exports._getWorkspaceId = async (userId) => {
   const row = await dbGetAsync('SELECT workspace_id FROM users WHERE id = ?', [userId]);
   return row?.workspace_id || userId;
+};
+
+/**
+ * POST /api/contacts/merge
+ * Merges multiple contacts into one primary record.
+ */
+exports.mergeContacts = async (req, res) => {
+  const { primaryId, duplicateIds } = req.body;
+  if (!primaryId || !Array.isArray(duplicateIds) || duplicateIds.length === 0) {
+    return res.status(400).json({ error: 'Primary ID and at least one duplicate ID are required' });
+  }
+
+  try {
+    const userId = req.user.id;
+    const allIds = [primaryId, ...duplicateIds];
+    
+    // 1. Fetch all records to merge data
+    const placeholders = allIds.map(() => '?').join(',');
+    const contacts = await dbAllAsync(`SELECT * FROM contacts WHERE id IN (${placeholders}) AND user_id = ?`, [...allIds, userId]);
+    
+    if (contacts.length < 2) return res.status(404).json({ error: 'Contacts not found or not owned by user' });
+
+    const primary = contacts.find(c => c.id === Number(primaryId));
+    const duplicates = contacts.filter(c => c.id !== Number(primaryId));
+
+    // 2. Consolidate notes and tags
+    let mergedNotes = primary.notes || '';
+    let mergedTags = primary.tags || '';
+    
+    duplicates.forEach(d => {
+      if (d.notes) mergedNotes += `\n[Merged from ${d.scan_date}]: ${d.notes}`;
+      if (d.tags) {
+        const existingTags = mergedTags.split(',').map(t => t.trim());
+        const newTags = d.tags.split(',').map(t => t.trim());
+        mergedTags = [...new Set([...existingTags, ...newTags])].filter(Boolean).join(', ');
+      }
+    });
+
+    // 3. Update primary with consolidated data and potentially fill missing fields
+    const { buildFieldMergeSuggestions } = require('../utils/contactUtils');
+    const suggestions = buildFieldMergeSuggestions(primary, duplicates);
+    
+    const updateFields = {
+      notes: mergedNotes,
+      tags: mergedTags,
+      ...suggestions
+    };
+
+    const setClause = Object.keys(updateFields).map(k => `${k} = ?`).join(', ');
+    const params = [...Object.values(updateFields), primaryId, userId];
+
+    await dbRunAsync(`UPDATE contacts SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?`, params);
+
+    // 4. Delete duplicates (Hard delete since they've been merged)
+    await dbRunAsync(`DELETE FROM contacts WHERE id IN (${duplicateIds.map(() => '?').join(',')}) AND user_id = ?`, [...duplicateIds, userId]);
+
+    logAuditEvent(req, {
+      action: 'CONTACT_MERGE',
+      resource: `/api/contacts/${primaryId}`,
+      status: AUDIT_SUCCESS,
+      details: { primaryId, duplicateCount: duplicateIds.length }
+    });
+
+    res.json({ success: true, message: `Successfully merged ${duplicateIds.length} duplicates into primary contact.`, primaryId });
+
+    // Multi-Device Real-time Sync
+    if (getIo()) {
+      getIo().to(`user-${userId}`).emit('contacts_updated', { action: 'merge', id: primaryId, deleted: duplicateIds });
+    }
+  } catch (err) {
+    console.error('[Merge Error]', err.message);
+    res.status(500).json({ error: 'Merge failed: ' + err.message });
+  }
 };
 
 /**
