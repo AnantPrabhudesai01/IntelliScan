@@ -78,13 +78,17 @@ router.post('/register', validate(registerSchema), async (req, res) => {
         { expiresIn: JWT_EXPIRES_IN }
       );
 
-      // Session tracking
-      const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
-      const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
-      await dbRunAsync(
-        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
-        [userId, token, deviceInfo, ipAddress, 'Unknown Location']
-      );
+      // Session tracking (fail-safe)
+      try {
+        const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
+        const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
+        await dbRunAsync(
+          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+          [userId, token, deviceInfo, ipAddress, 'Unknown Location']
+        );
+      } catch (sessionErr) {
+        console.warn('[Register] Session tracking failed (non-critical):', sessionErr.message);
+      }
 
       res.status(201).json({
         message: 'User registered successfully',
@@ -230,6 +234,18 @@ router.get('/google/callback',
         JWT_SECRET,
         { expiresIn: JWT_EXPIRES_IN }
       );
+
+      // Session tracking (fail-safe)
+      try {
+        const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
+        const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
+        await dbRunAsync(
+          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+          [user.id, token, deviceInfo, ipAddress, 'Unknown Location']
+        );
+      } catch (sessionErr) {
+        console.warn('[GoogleSSO] Session tracking failed (non-critical):', sessionErr.message);
+      }
 
       logAuditEvent(req, {
         action: 'USER_LOGIN_SSO_GOOGLE',
