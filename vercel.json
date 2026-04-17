@@ -1,11 +1,11 @@
 {
   "version": 2,
+  "cleanUrls": true,
   "buildCommand": "npm run build",
-  "outputDirectory": "intelliscan-app/dist",
+  "outputDirectory": "intelliscan-app/app",
   "functions": {
     "api/index.js": {
-      "includeFiles": "intelliscan-server/**",
-      "maxDuration": 60
+      "maxDuration": 20
     }
   },
   "rewrites": [
@@ -17,5 +17,11 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/process-all",
+      "schedule": "0 0 * * *"
+    }
   ]
-}
+} 
