@@ -717,15 +717,18 @@ export default function SettingsPage() {
           { id: 'Security', icon: Lock, allowed: ['free', 'pro', 'enterprise'] },
           { id: 'Integrations', icon: Blocks, allowed: ['pro', 'enterprise'] },
           { id: 'Communications', icon: MessageSquare, allowed: ['enterprise'] }
-        ].filter(tab => tab.allowed.includes(profile.tier?.toLowerCase() || 'free')).map(tab => (
-          <button 
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-white dark:bg-gray-900 text-indigo-600 dark:text-indigo-400 shadow-xl' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
-          >
-            <tab.icon size={14} /> {tab.id}
-          </button>
-        ))}
+        ].filter(tab => tab.allowed.includes(profile.tier?.toLowerCase() || 'free')).map(tab => {
+          const Icon = tab.icon;
+          return (
+            <button 
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-white dark:bg-gray-900 text-indigo-600 dark:text-indigo-400 shadow-xl' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+            >
+              <Icon size={14} /> {tab.id}
+            </button>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-12 gap-6">

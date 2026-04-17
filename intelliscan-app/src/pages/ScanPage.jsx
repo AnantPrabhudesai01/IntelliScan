@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useContacts } from '../context/ContactContext';
-import { Upload, Camera, RefreshCw, Lightbulb, Sparkles, Save, Edit3, X, ZoomIn, FileText, Layers, CheckCircle2, Users, Zap, MessageCircle } from 'lucide-react';
+import { Upload, Camera, RefreshCw, Lightbulb, Sparkles, Save, Edit3, X, ZoomIn, FileText, Layers, CheckCircle2, Users, Zap, MessageCircle, Wand2 } from 'lucide-react';
 import { getStoredToken } from '../utils/auth';
 import { useNotifications } from '../context/NotificationContext';
 import toast from 'react-hot-toast';
@@ -481,9 +481,10 @@ export default function ScanPage() {
               <FileText size={14} /> Single Card
             </button>
             {(() => {
-              const used = quotaData?.group_scans_used || 0;
-              const limit = quotaData?.group_limits?.group || 1;
-              const isLocked = quotaData?.tier === 'personal' && used >= limit;
+              const used = (quotaData?.group_scans_used || 0);
+              const limit = (quotaData?.group_limits?.group || 1);
+              const isLocked = (quotaData?.tier === 'personal' && used >= limit);
+              
               return (
                 <button 
                   onClick={() => { 
@@ -494,7 +495,7 @@ export default function ScanPage() {
                   className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${scanMode === 'multi' ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
                   title={isLocked ? 'Free Plan: Group Photo limit reached (1/1)' : 'Extract multiple cards from a single photograph'}
                 >
-                  <Layers size={14} /> Group Photo {isLocked && '🔒'}
+                  <Layers size={14} /> Group Photo {isLocked ? '🔒' : ''}
                 </button>
               );
             })()}

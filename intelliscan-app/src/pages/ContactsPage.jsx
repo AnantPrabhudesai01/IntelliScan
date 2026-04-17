@@ -63,7 +63,7 @@ export default function ContactsPage() {
   const { 
     contacts, deleteContact, deleteContacts, getDeletedContacts, 
     restoreContacts, emptyTrash, permanentlyDeleteContacts, 
-    enrichContact, semanticSearch, reorderContacts, 
+    enrichContact, semanticSearch, reorderContacts, updateContact,
     isSyncing: backendSyncing, lastSyncTime 
   } = useContacts();
   const navigate = useNavigate();
@@ -167,9 +167,6 @@ export default function ContactsPage() {
     if (!detailContact?.id) return;
     setIsSaving(true);
     try {
-      const { updateContact: contextUpdate } = useContacts; // Note: using from destructuring at top of component
-      // Actually use it from the outer scope hook: 
-      // const { updateContact } = useContacts();  (already there)
       await updateContact(detailContact.id, editForm);
       setDetailContact({ ...detailContact, ...editForm });
       setIsEditing(false);
@@ -1804,7 +1801,6 @@ export default function ContactsPage() {
               </>
             ) : (
               <>
-                <CheckCircle2 size={24} className="text-emerald-500 flex-shrink-0" />
                 <div className="flex-1">
                   <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">Sync Complete</p>
                   <p className="text-xs text-gray-500">{syncMessage}</p>
@@ -1814,8 +1810,7 @@ export default function ContactsPage() {
           </div>
         </div>
       )}
-    </div>
-
+      
       {/* Deduplication Hub Modal */}
       {showDedupeModal && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-6 bg-black/60 backdrop-blur-sm animate-fade-in">
