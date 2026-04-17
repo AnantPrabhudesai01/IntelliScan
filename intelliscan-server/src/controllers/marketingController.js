@@ -458,6 +458,55 @@ exports.getLists = async (req, res) => {
   }
 };
 
+// GET /api/email/lists/:id
+exports.getListById = async (req, res) => {
+  try {
+    const list = await dbGetAsync("SELECT * FROM email_lists WHERE id = ? AND user_id = ?", [req.params.id, req.user.id]);
+    if (!list) return res.status(404).json({ success: false, error: "Audience list not found" });
+
+    const contacts = await dbAllAsync(`
+      SELECT * FROM email_list_contacts 
+      WHERE list_id = ? 
+      ORDER BY created_at DESC`, [req.params.id]);
+
+    res.json({ success: true, list, contacts });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+// POST /api/email/lists/:id/contacts
+exports.addContactsToList = async (req, res) => {
+  try {
+    const { contacts } = req.body;
+    const listId = req.params.id;
+
+    if (!Array.isArray(contacts)) {
+      return res.status(400).json({ success: false, error: "Invalid contacts payload" });
+    }
+
+    // Verify ownership
+    const list = await dbGetAsync("SELECT id FROM email_lists WHERE id = ? AND user_id = ?", [listId, req.user.id]);
+    if (!list) return res.status(404).json({ success: false, error: "Audience list not found" });
+
+    for (const contact of contacts) {
+      await dbRunAsync(
+        `INSERT INTO email_list_contacts (list_id, email, first_name, last_name, company, subscribed) 
+         VALUES (?, ?, ?, ?, ?, 1)
+         ON CONFLICT(list_id, email) DO UPDATE SET 
+         first_name = EXCLUDED.first_name, 
+         last_name = EXCLUDED.last_name, 
+         company = EXCLUDED.company`,
+        [listId, contact.email, contact.first_name, contact.last_name, contact.company]
+      );
+    }
+
+    res.json({ success: true, message: `${contacts.length} contacts processed successfully` });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
 // --- TEMPLATE MANAGEMENT ---
 
 // GET /api/email/templates

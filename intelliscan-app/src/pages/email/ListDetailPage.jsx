@@ -3,6 +3,7 @@ import { Users, Search, Plus, Trash2, ArrowLeft, Download, Filter, Mail, CheckCi
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { getStoredToken } from '../../utils/auth.js';
+import toast from 'react-hot-toast';
 
 export default function ListDetailPage() {
   const { id } = useParams();
@@ -14,6 +15,7 @@ export default function ListDetailPage() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [matchingContacts, setMatchingContacts] = useState([]);
   const [importing, setImporting] = useState(false);
+  const [isInjecting, setIsInjecting] = useState(false);
 
   async function fetchListData() {
     try {
@@ -55,11 +57,12 @@ export default function ListDetailPage() {
         const first_name = parts[0] || '';
         const last_name = parts.slice(1).join(' ');
         return {
-          contact_id: c?.id,
+          id: c?.id,
           email: c?.email,
           first_name,
           last_name,
-          company: c?.company || ''
+          company: c?.company || '',
+          selected: false
         };
       };
 
@@ -75,6 +78,7 @@ export default function ListDetailPage() {
   };
 
   const handleImport = async (selectedContacts) => {
+    setIsInjecting(true);
     try {
       const res = await fetch(`/api/email/lists/${id}/contacts`, {
         method: 'POST',
@@ -86,11 +90,19 @@ export default function ListDetailPage() {
       });
       const data = await res.json();
       if (data.success) {
+        toast.success(data.message || 'Contacts injected successfully!', {
+          style: { borderRadius: '10px', background: '#21132E', color: '#fff' }
+        });
         fetchListData();
         setShowImportModal(false);
+      } else {
+        toast.error(data.error || 'Import failed');
       }
     } catch (err) {
       console.error('Import failed:', err);
+      toast.error('Connection error: Failed to reach marketing server');
+    } finally {
+      setIsInjecting(false);
     }
   };
 
@@ -248,9 +260,19 @@ export default function ListDetailPage() {
                 ) : (
                   <table className="w-full text-left">
                      <thead>
-                       <tr className="border-b border-gray-800 bg-gray-800/10 text-[9px] font-black uppercase text-gray-600 tracking-widest">
-                         <th className="px-4 py-3">Select</th>
-                         <th className="px-4 py-3">Contact</th>
+                        <tr className="border-b border-gray-800 bg-gray-800/10 text-[9px] font-black uppercase text-gray-600 tracking-widest">
+                          <th className="px-4 py-3 text-center">
+                            <input 
+                              type="checkbox" 
+                              className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                              checked={matchingContacts.length > 0 && matchingContacts.every(c => c.selected)}
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                setMatchingContacts(prev => prev.map(item => ({ ...item, selected: checked })));
+                              }}
+                            />
+                          </th>
+                          <th className="px-4 py-3">Contact</th>
                          <th className="px-4 py-3">Email</th>
                        </tr>
                      </thead>
@@ -258,18 +280,16 @@ export default function ListDetailPage() {
                         {matchingContacts.map(mc => (
                           <tr key={mc.id} className="hover:bg-white/5 transition-colors">
                             <td className="px-4 py-3 text-center">
-                              <input 
-                                type="checkbox" 
-                                id={`mc-${mc.id}`} 
-                                className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-indigo-600 focus:ring-indigo-500" 
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setMatchingContacts(prev => prev.map(item => item.id === mc.id ? {...item, selected: true} : item));
-                                  } else {
-                                    setMatchingContacts(prev => prev.map(item => item.id === mc.id ? {...item, selected: false} : item));
-                                  }
-                                }}
-                              />
+                                <input 
+                                  type="checkbox" 
+                                  id={`mc-${mc.id}`} 
+                                  className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-indigo-600 focus:ring-indigo-500 cursor-pointer" 
+                                  checked={!!mc.selected}
+                                  onChange={(e) => {
+                                    const checked = e.target.checked;
+                                    setMatchingContacts(prev => prev.map(item => item.id === mc.id ? {...item, selected: checked} : item));
+                                  }}
+                                />
                             </td>
                             <td className="px-4 py-3">
                               <label htmlFor={`mc-${mc.id}`} className="text-xs font-bold text-gray-200 uppercase tracking-tighter h-full w-full block cursor-pointer">
@@ -285,12 +305,12 @@ export default function ListDetailPage() {
               </div>
 
               <div className="flex gap-4">
-                 <button 
-                  disabled={matchingContacts.filter(m => m.selected).length === 0}
+                  disabled={matchingContacts.filter(m => m.selected).length === 0 || isInjecting}
                   onClick={() => handleImport(matchingContacts.filter(m => m.selected))}
-                  className="flex-1 py-4 bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-xl shadow-indigo-600/20"
+                  className="flex-1 py-4 bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-2"
                  >
-                   Inject {matchingContacts.filter(m => m.selected).length} selected profiles
+                   {isInjecting && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                   {isInjecting ? 'Processing Architecture...' : `Inject ${matchingContacts.filter(m => m.selected).length} selected profiles`}
                  </button>
               </div>
            </div>

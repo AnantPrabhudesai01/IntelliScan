@@ -18,6 +18,8 @@ router.post('/campaigns/:id/send', authenticateToken, requireTier('enterprise'),
 
 // Resource Retrieval Routes (Audience & Templates)
 router.get('/lists', authenticateToken, marketingController.getLists);
+router.get('/lists/:id', authenticateToken, marketingController.getListById);
+router.post('/lists/:id/contacts', authenticateToken, marketingController.addContactsToList);
 router.get('/templates', authenticateToken, marketingController.getTemplates);
 router.post('/templates/generate-ai', authenticateToken, marketingController.generateAiTemplate);
 

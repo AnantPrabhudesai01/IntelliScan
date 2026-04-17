@@ -289,14 +289,20 @@ export default function SettingsPage() {
     
     pollIntervalRef.current = setInterval(async () => {
       try {
-        const res = await apiClient.post('/auth/whatsapp/discovery', { code: discoveryCode });
+        const res = await apiClient.post('/auth/whatsapp/discovery', { 
+          code: discoveryCode,
+          autoLink: true
+        });
         if (res.data.success && res.data.phone_number) {
            const parsed = parsePhone(res.data.phone_number);
            setCountryCode(parsed.code);
            setLocalPhone(parsed.local);
+           setOriginalPhone(res.data.phone_number);
+           setPhoneStatus('LOCKED');
            setIsPollingDiscovery(false);
            clearInterval(pollIntervalRef.current);
-           showToast('Phone number detected automatically! 🚀');
+           showToast('WhatsApp Account Linked Successfully! 🚀');
+           fetchProfile(); // Refresh entire state
         }
       } catch (e) {
         // Continue polling until timeout or success
@@ -796,19 +802,16 @@ export default function SettingsPage() {
                              Automatically link your device without typing. Click "Join" and send the generated session code.
                            </p>
                            <div className="flex flex-wrap items-center gap-2">
-                              <a 
-                                href={`https://wa.me/14155238886?text=join%20baseball-eventually%20${discoveryCode}`} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                onClick={() => {
-                                  startPhoneDiscovery();
-                                  showToast('WhatsApp opening... Send the pre-filled code to link your account!');
-                                }}
-                                className="inline-flex items-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white px-6 py-3 rounded-2xl text-xs font-black transition-all shadow-lg shadow-green-500/20 active:scale-95 group"
-                              >
-                                {isPollingDiscovery ? <RefreshCw className="animate-spin" size={14} /> : <MessageSquare size={14} className="group-hover:scale-110 transition-transform" />}
-                                {isPollingDiscovery ? 'Polling WhatsApp Security...' : '1-Click WhatsApp Connect'}
-                              </a>
+                               <a 
+                                 href={`https://wa.me/14155238886?text=join%20baseball-eventually%20${discoveryCode}`} 
+                                 target="_blank"
+                                 rel="noopener noreferrer"
+                                 onClick={startPhoneDiscovery}
+                                 className={`inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg hover:shadow-emerald-600/20 transition-all ${isPollingDiscovery ? 'animate-pulse ring-4 ring-emerald-500/20' : ''}`}
+                               >
+                                 {isPollingDiscovery ? <RefreshCw className="animate-spin" size={14} /> : <MessageSquare size={14} />}
+                                 {isPollingDiscovery ? 'Syncing Heartbeat...' : 'Join Sandbox & Sync'}
+                               </a>
                               {discoveryCode && (
                                 <div className="px-3 py-2 bg-white dark:bg-gray-800 border border-indigo-100 dark:border-indigo-900 rounded-xl">
                                    <span className="text-[10px] text-gray-400 uppercase font-black tracking-widest mr-2">Session Code:</span>

@@ -7,8 +7,8 @@ const { normalizePhone, firstNameFromFullName } = require('../utils/auth');
 const { normalizeExtractedCard } = require('../utils/scanUtils');
 const { hasMeaningfulContactData } = require('../utils/aiUtils');
 const { sendFollowupEmail } = require('../services/emailService');
-const fs = require('fs');
 const path = require('path');
+const marketingController = require('./marketingController');
 
 // Initialize Twilio Client (Lazily)
 let twilioClient;
@@ -36,7 +36,7 @@ exports.handleIncomingMessage = async (req, res) => {
     const user = await dbGetAsync('SELECT * FROM users WHERE phone_number = ?', [fromPhone]);
 
     if (!user) {
-      console.warn(`[WhatsApp] Unauthorized access attempt from ${fromPhone}`);
+      console.warn(`[WhatsApp] Unauthorized: Number ${fromPhone} not linked to any user.`);
       
       // 🕵️ Check for Discovery Code (e.g., join baseball-eventually IS-1234)
       const discoMatch = (Body || '').match(/IS-(\d{4})/i);
@@ -87,49 +87,46 @@ exports.handleIncomingMessage = async (req, res) => {
       return sendWhatsAppReply(From, `⚠️ Quota Exhausted!\n\nYou've reached your limit of ${limits.single} scans for the ${user.tier.toUpperCase()} plan.`);
     }
 
-    // 4. Download & Process Image (Background)
-    console.log(`[WhatsApp] Processing Batch Scan for ${user.email}...`);
-    const imageBase64 = await downloadImageAsBase64(MediaUrl0);
+    // 4. Download & AI Extraction (INTELLIGENT BATCH MODE)
+    console.log(`[WhatsApp] Processing request for ${user.email} | Phone: ${fromPhone}`);
     
-    // 5. AI Extraction (EXHAUSTIVE SCAN MODE)
+    let imageBase64;
+    try {
+      console.log(`[WhatsApp] Downloading media from Twilio...`);
+      imageBase64 = await downloadImageAsBase64(MediaUrl0);
+      console.log(`[WhatsApp] Media download success (${Math.round(imageBase64.length / 1024)} KB)`);
+    } catch (downErr) {
+      console.error(`[WhatsApp] Media download failed:`, downErr.message);
+      return sendWhatsAppReply(From, `❌ I couldn't download the image from Twilio's servers. Please try sending it again in a moment!`);
+    }
+    
+    console.log(`[WhatsApp] Calling AI Engine (Gemini Flash)...`);
+    const aiStart = Date.now();
+    
     const extractionResult = await unifiedExtractionPipeline({
       imageBase64,
       mimeType: MediaContentType0 || 'image/jpeg',
       userId: user.id,
       tier: user.tier,
-      prompt: `You are a world-class Business Card Extraction Engine in EXHAUSTIVE SCAN MODE.
-The image may contain one or MANY separate business cards (up to 25). You MUST identify EVERY SINGLE card.
-
-### RULES:
-1. **Name Fallback**: If a person's name is NOT on the card, use the 'Company Name' as the 'name' field.
-2. **Exhaustive Capture**: For EVERY CARD found, you MUST extract: name, company, title, email, phone, website, address.
-3. **Multilingual Support**: If the card contains text in a non-Latin script (Gujarati, Hindi, Arabic, etc.), you MUST provide:
-   - "name_native": The name in the original script.
-   - "company_native": The company in the original script.
-   - "title_native": The title in the original script.
-4. **No Skipping**: Scan systematically from top-left to bottom-right.
-5. **Validation**: Ensure phone numbers are cleaned (+123...).
-
-Return ONLY a valid JSON object:
+      prompt: `Extract ALL business cards from this image.
+JSON FORMAT ONLY:
 {
-  "engine_used": "Gemini 3 Flash (Exhaustive)",
   "cards": [
     {
-      "name": "Full Name or Company (English)",
-      "name_native": "Full Name (Original Script)",
-      "company": "Company Name (English)",
-      "company_native": "Company Name (Original Script)",
-      "title": "Job title (English)",
-      "title_native": "Job title (Original Script)",
-      "email": "email",
-      "phone": "+123456789",
+      "name": "Full Name",
+      "company": "Company Name",
+      "title": "Job Title",
+      "email": "email address",
+      "phone": "standardized phone",
       "website": "url",
-      "address": "address",
+      "address": "physical address",
       "confidence": 95
     }
   ]
 }`
     });
+
+    console.log(`[WhatsApp] AI process finished in ${((Date.now() - aiStart)/1000).toFixed(1)}s`);
 
     if (extractionResult.error) throw new Error(extractionResult.error);
 
@@ -175,7 +172,6 @@ Return ONLY a valid JSON object:
         // 📧 Auto-Followup Trigger (If Email exists)
         if (normalized.email) {
           // Automation Hook: Sync to Marketing List
-          const marketingController = require('./marketingController');
           marketingController.syncContactToDefaultList(user.id, normalized)
             .catch(e => console.error('[WhatsApp Sync Hook Error]', e.message));
 

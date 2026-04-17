@@ -773,7 +773,7 @@ export default function ScanPage() {
             </button>
 
             <a 
-              href="https://wa.me/14155238886?text=Hello"
+              href={`https://wa.me/14155238886?text=join%20baseball-eventually%20${discoveryCode}`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 w-full py-2 px-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-900/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-all flex items-center justify-center gap-2"

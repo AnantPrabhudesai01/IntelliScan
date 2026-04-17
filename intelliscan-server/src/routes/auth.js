@@ -599,6 +599,14 @@ router.post('/whatsapp/discovery', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'No discovery found yet. Please send the WhatsApp message.' });
     }
 
+    // Auto-link number to user profile if requested
+    if (req.body.autoLink) {
+      const normalized = normalizePhone(discovery.phone_number);
+      await dbRunAsync('UPDATE users SET phone_number = ? WHERE id = ?', [normalized, req.user.id]);
+      console.log(`[Discovery] Auto-linked ${normalized} to User ${req.user.id}`);
+      return res.json({ success: true, phone_number: normalized, autoLinked: true });
+    }
+
     res.json({ success: true, phone_number: discovery.phone_number });
   } catch (err) {
     res.status(500).json({ error: err.message });
