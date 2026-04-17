@@ -66,7 +66,9 @@ let isBootstrapped = false;
 let bootPromise = null;
 
 app.use(async (req, res, next) => {
-  if (isBootstrapped) return next();
+  // ⚡ Bypassing bootstrap for diagnostic routes to keep status visible
+  const isDiagnostic = req.path.includes('/health') || req.path.includes('/public');
+  if (isBootstrapped || isDiagnostic) return next();
   
   // Prevent parallel boot calls
   if (!bootPromise) {
@@ -78,10 +80,18 @@ app.use(async (req, res, next) => {
     }).catch(err => {
       bootPromise = null;
       console.error('❌ Critical Boot Failure:', err.message);
+      // We don't throw here to avoid crashing the whole process; 
+      // let the route handler decide what to do if tables are missing.
     });
   }
   
-  await bootPromise;
+  // If we're not a diagnostic route, wait for the boot to finish
+  if (bootPromise) {
+    await Promise.race([
+      bootPromise,
+      new Promise(resolve => setTimeout(resolve, 8000)) // Don't block for more than 8s (Vercel limit)
+    ]);
+  }
   next();
 });
 

@@ -237,7 +237,10 @@ async function bootstrap() {
       )
     `);
 
-    // Seed default models if none exist
+    // Batch check existing models
+    const existingModels = await dbAllAsync('SELECT api_model_id FROM ai_models');
+    const existingIds = new Set((existingModels || []).map(m => m.api_model_id));
+
     const defaultModels = [
       ['Nvidia Nemotron 340B (Primary)', 'Flagship Intelligence', 'nvidia/nemotron-4-340b-instruct', 'deployed', 99.1, 750, 0, 0],
       ['Gemini 3 Flash (Secondary)', 'Outreach / Vision', 'google/gemini-2.0-flash-001', 'deployed', 98.4, 450, 0, 12450],
@@ -245,10 +248,9 @@ async function bootstrap() {
       ['Claude 3.5 Sonnet', 'High Reasoning', 'anthropic/claude-3.5-sonnet', 'deployed', 98.8, 650, 0, 500],
       ['Llama 3 70B (Base)', 'Signal Aggregator', 'meta-llama/llama-3-70b-instruct', 'training', 92.1, 1200, 48.2, 450]
     ];
-
+    
     for (const m of defaultModels) {
-      const exists = await dbGetAsync('SELECT id FROM ai_models WHERE api_model_id = ?', [m[2]]);
-      if (!exists) {
+      if (!existingIds.has(m[2])) {
         await dbRunAsync(
           'INSERT INTO ai_models (name, type, api_model_id, status, accuracy, latency_ms, vram_gb, calls_30d) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
           m

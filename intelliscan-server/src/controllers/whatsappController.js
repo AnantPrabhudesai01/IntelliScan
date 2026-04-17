@@ -293,6 +293,7 @@ exports.checkHealth = async (req, res) => {
     ]);
 
     const twilioSid = process.env.TWILIO_ACCOUNT_SID;
+    const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
     const twilioFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886';
     const isEnabled = process.env.ENABLE_WHATSAPP === 'true';
     
@@ -311,8 +312,8 @@ exports.checkHealth = async (req, res) => {
       
       critical_configuration: {
         ENABLE_WHATSAPP: isEnabled ? "✅ Correct" : "❌ Action Required: Set to 'true' in Vercel Environment Variables.",
-        TWILIO_ACCOUNT_SID: twilioSid ? "✅ Found" : "❌ Missing: Set in Vercel.",
-        TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN ? "✅ Found" : "❌ Missing: Set in Vercel.",
+        TWILIO_ACCOUNT_SID: twilioSid ? "✅ Found" : "❌ Missing: Set TWILIO_ACCOUNT_SID in Vercel.",
+        TWILIO_AUTH_TOKEN: twilioAuthToken ? "✅ Found" : "❌ Missing: Set TWILIO_AUTH_TOKEN in Vercel.",
         PUBLIC_URL: baseUrl
       },
 
