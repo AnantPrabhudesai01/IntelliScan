@@ -508,14 +508,20 @@ export default function ScanPage() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <a 
-              href={`https://wa.me/14155238886?text=join%20baseball-eventually%20${discoveryCode}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 bg-[#25D366] text-white hover:bg-[#128C7E] shadow-xl shadow-green-500/20 active:scale-95 group"
-            >
-              <MessageCircle size={16} className="group-hover:rotate-12 transition-transform" /> Scan via WhatsApp
-            </a>
+            <div className="flex gap-2">
+              <a 
+                href={`https://wa.me/14155238886?text=join%20baseball-eventually`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all gap-3 bg-[#25D366] text-white hover:bg-[#128C7E] shadow-xl shadow-green-500/20 active:scale-95 group flex items-center justify-center"
+              >
+                <MessageCircle size={16} className="group-hover:rotate-12 transition-transform" /> 1. Join Sandbox
+              </a>
+              <div className="bg-white dark:bg-gray-800 border border-emerald-500/30 px-4 py-2 rounded-2xl flex flex-col justify-center items-center shadow-lg">
+                <span className="text-[8px] font-black text-emerald-600 uppercase tracking-tighter">2. Send Code</span>
+                <span className="text-xs font-mono font-bold text-gray-900 dark:text-white">{discoveryCode}</span>
+              </div>
+            </div>
             <div className="text-center space-y-1">
               <Link 
                 to="/setup/whatsapp"
@@ -524,7 +530,7 @@ export default function ScanPage() {
                 Setup Guide & Instructions
               </Link>
               <p className="text-[7px] text-gray-500 font-bold uppercase tracking-tighter">
-                First time? Send the pre-filled code to enable AI scanning.
+                Click join first, then send the IS-Code once Twilio replies.
               </p>
             </div>
           </div>
@@ -773,12 +779,12 @@ export default function ScanPage() {
             </button>
 
             <a 
-              href={`https://wa.me/14155238886?text=join%20baseball-eventually%20${discoveryCode}`}
+              href={`https://wa.me/14155238886?text=join%20baseball-eventually`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 w-full py-2 px-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-900/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-all flex items-center justify-center gap-2"
             >
-              <MessageCircle size={12} /> Mobile Scan via WhatsApp
+              <MessageCircle size={12} /> Mobile Scan (Join First)
             </a>
           </div>
         </div>
