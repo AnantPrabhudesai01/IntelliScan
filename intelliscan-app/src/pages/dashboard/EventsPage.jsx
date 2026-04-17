@@ -13,6 +13,29 @@ export default function EventsPage() {
   const [formData, setFormData] = useState({ name: '', location: '', date: '', type: 'Conference' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showLocationSugg, setShowLocationSugg] = useState(false);
+  const [locationResults, setLocationResults] = useState([]);
+
+  useEffect(() => {
+    if (!formData.location || formData.location.length < 2) {
+      setLocationResults([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(formData.location)}&limit=5`);
+        const data = await res.json();
+        const simplified = data.features.map(f => {
+          const p = f.properties;
+          return [p.name, p.city, p.country].filter(Boolean).join(', ');
+        });
+        setLocationResults([...new Set(simplified)]);
+      } catch (err) {
+        console.error('Geocoding error:', err);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [formData.location]);
 
   const fetchEvents = async () => {
     try {
@@ -283,9 +306,40 @@ export default function EventsPage() {
                 <input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} type="text" className="w-full px-6 py-4 border border-gray-100 dark:border-white/10 rounded-2xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="e.g. Q4 Global AI Summit" />
               </div>
               <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1 text-left block w-full">Location</label>
-                  <input required value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} type="text" className="w-full px-6 py-4 border border-gray-100 dark:border-white/10 rounded-2xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="San Francisco, CA" />
+                <div className="space-y-2 relative">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1 text-left block w-full">Location Hub</label>
+                  <div className="relative">
+                    <input 
+                      required 
+                      value={formData.location} 
+                      onFocus={() => setShowLocationSugg(true)}
+                      onBlur={() => setTimeout(() => setShowLocationSugg(false), 200)}
+                      onChange={e => setFormData({...formData, location: e.target.value})} 
+                      type="text" 
+                      className="w-full px-6 py-4 border border-gray-100 dark:border-white/10 rounded-2xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all" 
+                      placeholder="e.g. San Francisco" 
+                    />
+                    <MapPin size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  </div>
+                  
+                  {showLocationSugg && locationResults.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                      {locationResults.map(city => (
+                        <button
+                          key={city}
+                          type="button"
+                          onClick={() => {
+                            setFormData({...formData, location: city});
+                            setShowLocationSugg(false);
+                          }}
+                          className="w-full px-6 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-white/5 transition-colors flex items-center gap-3"
+                        >
+                          <Globe size={12} className="text-indigo-400" />
+                          {city}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1 text-left block w-full">Campaign Slot</label>

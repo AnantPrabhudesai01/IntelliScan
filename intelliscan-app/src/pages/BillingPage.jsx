@@ -26,7 +26,8 @@ function PlanCard({ plan, currentTier, onUpgrade, loading }) {
   const cfg = PLAN_FEATURES[plan.id] || PLAN_FEATURES.personal;
   const IconComp = cfg.icon;
   const isCurrentPlan = currentTier === plan.id;
-  const isDowngrade = plan.id === 'personal' && currentTier !== 'personal';
+  const tierWeights = { personal: 0, pro: 1, enterprise: 2 };
+  const isDowngrade = tierWeights[plan.id] < tierWeights[currentTier];
   const colorMap = { gray: 'border-gray-200 dark:border-gray-800', indigo: 'border-indigo-400 dark:border-indigo-600', amber: 'border-amber-400 dark:border-amber-600' };
   const badgeMap = { Popular: 'bg-indigo-600 text-white', 'Best Value': 'bg-amber-500 text-white', Free: 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300' };
 

@@ -30,9 +30,35 @@ const apps = [
       { id: 'leads', label: 'Create Lead Records', desc: 'Required to funnel new networking prospects into your pipeline.' },
       { id: 'metadata', label: 'Read Org Metadata', desc: 'Used for custom field mapping configuration.' }
     ],
-    configFields: ['Salesforce Domain', 'API Key', 'Sync Frequency', 'Target Object'],
+    configFields: ['Salesforce Domain', 'Access Token', 'Security Token', 'Target Object'],
     rating: 4.9,
     reviews: 1284,
+    developer: 'IntelliScan Native',
+    verified: true
+  },
+  {
+    id: 'googlesheets', 
+    name: 'Google Sheets', 
+    icon: Database, 
+    category: 'Productivity', 
+    color: 'text-[#0f9d58]', 
+    tagline: 'Direct-to-spreadsheet intelligence for easy analysis.',
+    desc: 'Instantly append scanned contacts into a Google Sheet. Perfect for real-time collaboration, simple lead management, and custom reporting.',
+    longDesc: 'The Google Sheets bridge connects your scanner to any spreadsheet in your Google Drive. Each scan appends a new row with all extracted intelligence. No more CSV exports or manual copy-pasting.',
+    features: [
+      'Real-time row appending',
+      'Automatic column mapping',
+      'Supports shared drives',
+      'One-click spreadsheet creation',
+      'Offline sync safe'
+    ],
+    permissions: [
+      { id: 'sheets', label: 'Edit Spreadsheets', desc: 'Required to create and append data to your selection.' },
+      { id: 'drive', label: 'View Drive Metadata', desc: 'Used to help you select the correct spreadsheet ID.' }
+    ],
+    configFields: ['Spreadsheet ID', 'Google Access Token', 'Target Sheet Name'],
+    rating: 4.9,
+    reviews: 940,
     developer: 'IntelliScan Native',
     verified: true
   },
@@ -275,10 +301,10 @@ export default function MarketplaceDetailPage() {
                     <div key={field}>
                       <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{field}</label>
                       <input 
-                        type={field.toLowerCase().includes('key') ? 'password' : 'text'}
+                        type={field.toLowerCase().includes('token') || field.toLowerCase().includes('key') ? 'password' : 'text'}
                         value={form[field] || ''}
                         onChange={e => setForm({...form, [field]: e.target.value})}
-                        className="w-full px-5 py-3.5 bg-gray-100 dark:bg-gray-900/50 border border-gray-200 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                        className="w-full px-5 py-3.5 bg-gray-100 dark:bg-gray-900/50 border border-gray-200 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all lg:placeholder:uppercase lg:placeholder:text-[9px]"
                         placeholder={`Enter your ${field.toLowerCase()}...`}
                       />
                     </div>
@@ -286,7 +312,9 @@ export default function MarketplaceDetailPage() {
                 </div>
                 <p className="text-[10px] text-gray-400 font-medium flex items-center gap-1.5 bg-gray-50 dark:bg-white/5 p-4 rounded-xl italic">
                    <Info size={14} className="text-indigo-400" />
-                   Tip: You can find your {app.name} credentials in your {app.name} admin settings under "Integrations".
+                   {app.id === 'googlesheets' 
+                     ? 'Tip: Find your Spreadsheet ID in the URL: docs.google.com/spreadsheets/d/[ID_IS_HERE]/edit'
+                     : `Tip: You can find your ${app.name} credentials in your ${app.name} admin settings under "Integrations".`}
                 </p>
               </div>
             )}

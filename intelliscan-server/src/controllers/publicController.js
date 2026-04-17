@@ -23,6 +23,10 @@ exports.getPublicProfile = async (req, res) => {
         c.bio as card_bio, 
         c.design_json, 
         c.views,
+        c.contact_email,
+        c.contact_phone,
+        c.contact_linkedin,
+        c.contact_whatsapp,
         w.name as company,
         w.logo_url as company_logo
       FROM users u
@@ -44,8 +48,10 @@ exports.getPublicProfile = async (req, res) => {
     // 3. Prepare response with design logic
     res.json({
       name: profile.name,
-      email: profile.email,
-      phone: profile.phone || 'Contact for Phone',
+      email: profile.contact_email || profile.email,
+      phone: profile.contact_phone || profile.phone || 'Contact for Phone',
+      linkedin: profile.contact_linkedin,
+      whatsapp: profile.contact_whatsapp,
       company: profile.company || 'Professional Network',
       company_logo: profile.company_logo,
       headline: profile.headline || 'Independent Professional',

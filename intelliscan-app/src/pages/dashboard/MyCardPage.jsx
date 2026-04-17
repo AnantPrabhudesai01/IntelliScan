@@ -14,6 +14,10 @@ export default function MyCardPage() {
     url_slug: '', views: 0, saves: 0,
     bio: 'Professional networking profile driving innovation.',
     headline: 'Founder & Professional',
+    contact_email: '',
+    contact_phone: '',
+    contact_linkedin: '',
+    contact_whatsapp: '',
     design_json: { 
       primary: '#6366f1', 
       secondary: '#a855f7', 
@@ -200,12 +204,33 @@ export default function MyCardPage() {
                       </div>
 
                       <div className="mt-8 space-y-2 text-left">
-                         {[Mail, Phone, LinkedinIcon].map((Icon, i) => (
-                           <div key={i} className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5 opacity-50">
-                              <Icon size={14} className="text-indigo-400" />
-                              <div className="w-24 h-2 bg-white/10 rounded-full"></div>
-                           </div>
-                         ))}
+                         {cardData.contact_email && (
+                            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                               <Mail size={14} className="text-indigo-400" />
+                               <span className="text-[10px] text-slate-300 font-bold truncate">{cardData.contact_email}</span>
+                            </div>
+                         )}
+                         {cardData.contact_phone && (
+                            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                               <Phone size={14} className="text-emerald-400" />
+                               <span className="text-[10px] text-slate-300 font-bold truncate">{cardData.contact_phone}</span>
+                            </div>
+                         )}
+                         {cardData.contact_linkedin && (
+                            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                               <LinkedinIcon size={14} className="text-blue-400" />
+                               <span className="text-[10px] text-slate-300 font-bold truncate">LinkedIn Profile</span>
+                            </div>
+                         )}
+                         {cardData.contact_whatsapp && (
+                            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                               <MessageCircle size={14} className="text-green-400" />
+                               <span className="text-[10px] text-slate-300 font-bold truncate">WhatsApp Chat</span>
+                            </div>
+                         )}
+                         {!cardData.contact_email && !cardData.contact_phone && (
+                            <p className="text-[8px] text-slate-600 italic text-center">No contact info added yet.</p>
+                         )}
                       </div>
                    </div>
                    
@@ -252,6 +277,35 @@ export default function MyCardPage() {
                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Identity Index (Slug)</p>
                    <p className="text-xl font-mono font-black text-indigo-400 tracking-tighter">{cardData.url_slug || 'auto-assigned'}</p>
                 </div>
+             </div>
+          </div>
+
+          {/* Contact Details Editor */}
+          <div className="bg-white/5 backdrop-blur-3xl rounded-[3rem] p-10 border border-white/10 shadow-2xl space-y-8">
+             <h3 className="text-xl font-['Outfit'] font-black text-white flex items-center gap-3 uppercase tracking-tighter italic">
+                <Share2 size={24} className="text-emerald-400" /> Contact Hub 
+                <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full ml-auto">Live Sync</span>
+             </h3>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { key: 'contact_email', label: 'Work Email', icon: Mail, placeholder: 'name@company.com' },
+                  { key: 'contact_phone', label: 'Primary Phone', icon: Phone, placeholder: '+91 99999 99999' },
+                  { key: 'contact_linkedin', label: 'LinkedIn URL', icon: LinkedinIcon, placeholder: 'linkedin.com/in/username' },
+                  { key: 'contact_whatsapp', label: 'WhatsApp Number', icon: MessageCircle, placeholder: 'Phone only (for chat link)' },
+                ].map((field) => (
+                  <div key={field.key} className="space-y-2" style={{ textAlign: 'left' }}>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 px-1">
+                       <field.icon size={12} /> {field.label}
+                    </label>
+                    <input 
+                      type="text" 
+                      value={cardData[field.key] || ''} 
+                      onChange={(e) => setCardData({ ...cardData, [field.key]: e.target.value })}
+                      placeholder={field.placeholder}
+                      className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-white text-xs font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all placeholder:text-white/10"
+                    />
+                  </div>
+                ))}
              </div>
           </div>
 
