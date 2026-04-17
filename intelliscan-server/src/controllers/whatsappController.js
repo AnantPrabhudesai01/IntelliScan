@@ -257,6 +257,36 @@ JSON FORMAT ONLY:
 };
 
 /**
+ * Diagnostic Health Check
+ */
+exports.checkHealth = async (req, res) => {
+  try {
+    const dbCheck = await dbGetAsync('SELECT COUNT(*) as count FROM whatsapp_discoveries');
+    const twilioSid = process.env.TWILIO_ACCOUNT_SID;
+    const twilioFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886';
+    const baseUrl = process.env.APP_BASE_URL || `https://${req.headers.host}`;
+
+    res.json({
+      status: 'IntelliScan WhatsApp Engine Active',
+      config: {
+        twilio_sid: twilioSid ? `Configured (${twilioSid.slice(0, 5)}...)` : 'MISSING',
+        twilio_auth_token: process.env.TWILIO_AUTH_TOKEN ? 'Configured' : 'MISSING',
+        twilio_whatsapp_number: twilioFrom,
+        app_base_url: baseUrl,
+        webhook_target: `${baseUrl}/api/whatsapp/webhook`
+      },
+      database: {
+        discovery_table: 'Connected',
+        discoveries_count: dbCheck?.count || 0
+      },
+      instructions: "Ensure the 'webhook_target' above matches exactly what is in your Twilio Sandbox console."
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+};
+
+/**
  * Helper to find a duplicate contact
  */
 async function findExistingContact(userId, email, name) {
