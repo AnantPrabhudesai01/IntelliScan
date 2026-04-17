@@ -6,7 +6,9 @@ const { authenticateToken, requireTier } = require('../middleware/auth');
 // Sequence Management Routes
 router.get('/sequences', authenticateToken, marketingController.getSequences);
 router.post('/sequences', authenticateToken, marketingController.createSequence);
-router.post('/contacts/:id/enroll', authenticateToken, marketingController.enrollContact);
+router.get('/sequences/:id', authenticateToken, marketingController.getSequenceById);
+router.put('/sequences/:id', authenticateToken, marketingController.updateSequence);
+router.post('/enroll', authenticateToken, marketingController.enrollContact);
 
 // Campaign Management Routes
 router.get('/campaigns', authenticateToken, requireTier('enterprise'), marketingController.getCampaigns);

@@ -358,8 +358,40 @@ Return ONLY a valid JSON object:
 /**
  * Unified Text AI Pipeline for generic interactions (e.g. Chatbot, Draft Email)
  */
-async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'json' }) {
+async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'json', model: preferredModel }) {
   const combinedPrompt = systemPrompt ? `${systemPrompt}\n\n${prompt}` : prompt;
+
+  // 0. Specific Model Override (Multi-Model Support)
+  if (preferredModel && preferredModel !== 'gemini') {
+    try {
+      const orKey = process.env.OPENROUTER_API_KEY;
+      if (orKey) {
+        console.log(`[AI Service] Routing to preferred model: ${preferredModel} via OpenRouter`);
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${orKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: preferredModel,
+            messages: [{ role: "user", content: combinedPrompt }]
+          })
+        });
+        const result = await response.json();
+        if (result.choices?.[0]?.message?.content) {
+          const text = result.choices[0].message.content;
+          if (responseFormat === 'json') {
+            const extracted = extractJsonObjectFromText(text.trim());
+            return { success: true, data: JSON.parse(extracted || text.trim()) };
+          }
+          return { success: true, data: text.trim() };
+        }
+      }
+    } catch (err) {
+      console.warn(`[AI Service] Preferred model ${preferredModel} failed, falling back to default chain:`, err.message);
+    }
+  }
 
   // 1. Try Gemini (Primary) - TEMPORARILY DISABLED
   /*

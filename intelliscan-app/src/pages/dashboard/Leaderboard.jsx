@@ -35,7 +35,7 @@ export default function Leaderboard() {
       const token = getStoredToken();
       setLoading(true);
       try {
-        const res = await fetch('/api/admin/leaderboard', {
+        const res = await fetch(`/api/admin/leaderboard?timeframe=${encodeURIComponent(activeTab)}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();

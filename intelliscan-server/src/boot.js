@@ -130,21 +130,24 @@ async function bootstrap() {
     `);
 
     await dbRunAsync(`
-      CREATE TABLE IF NOT EXISTS ai_sequences (
+      CREATE TABLE IF NOT EXISTS email_sequences (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
         name TEXT NOT NULL,
-        status TEXT DEFAULT 'active'
+        status TEXT DEFAULT 'active',
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
       )
     `);
 
     await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS email_sequence_steps (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
-        sequence_id INTEGER NOT NULL REFERENCES ai_sequences(id) ON DELETE CASCADE,
+        sequence_id INTEGER NOT NULL REFERENCES email_sequences(id) ON DELETE CASCADE,
         order_index INTEGER NOT NULL,
         subject TEXT NOT NULL,
         html_body TEXT NOT NULL,
+        ai_intent TEXT,
+        ai_model TEXT DEFAULT 'gemini',
         delay_days INTEGER DEFAULT 0
       )
     `);
@@ -153,10 +156,11 @@ async function bootstrap() {
       CREATE TABLE IF NOT EXISTS contact_sequences (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         contact_id INTEGER NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
-        sequence_id INTEGER NOT NULL REFERENCES ai_sequences(id) ON DELETE CASCADE,
+        sequence_id INTEGER NOT NULL REFERENCES email_sequences(id) ON DELETE CASCADE,
         status TEXT DEFAULT 'active',
         current_step_index INTEGER DEFAULT 0,
-        next_send_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'}
+        next_send_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        last_error TEXT
       )
     `);
 
@@ -229,6 +233,7 @@ async function bootstrap() {
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         name TEXT,
         type TEXT,
+        api_model_id TEXT,
         status TEXT DEFAULT 'training',
         accuracy REAL DEFAULT 0,
         latency_ms INTEGER DEFAULT 0,
@@ -243,14 +248,14 @@ async function bootstrap() {
     const modelCount = await dbGetAsync('SELECT COUNT(*) as cnt FROM ai_models');
     if (modelCount.cnt === 0) {
       const defaultModels = [
-        ['Gemini 2.5 Pro (Enterprise)', 'OCR / Vision', 'deployed', 98.4, 450, 0, 12450],
-        ['OpenAI GPT-4o Mini', 'Extract / Logic', 'deployed', 96.2, 320, 0, 8900],
-        ['Llama 3 70B (Local)', 'Signal Aggregator', 'training', 92.1, 1200, 48.2, 450],
-        ['Claude 3.5 Sonnet', 'Outreach AI', 'paused', 97.8, 650, 0, 0]
+        ['Gemini 3 Flash (Primary)', 'Outreach / Vision', 'google/gemini-2.0-flash-001', 'deployed', 98.4, 450, 0, 12450],
+        ['OpenAI GPT-4o Mini', 'Logic / Speed', 'openai/gpt-4o-mini', 'deployed', 96.2, 320, 0, 8900],
+        ['Claude 3.5 Sonnet', 'High Reasoning', 'anthropic/claude-3.5-sonnet', 'deployed', 98.8, 650, 0, 500],
+        ['Llama 3 70B (Base)', 'Signal Aggregator', 'meta-llama/llama-3-70b-instruct', 'training', 92.1, 1200, 48.2, 450]
       ];
       for (const m of defaultModels) {
         await dbRunAsync(
-          'INSERT INTO ai_models (name, type, status, accuracy, latency_ms, vram_gb, calls_30d) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          'INSERT INTO ai_models (name, type, api_model_id, status, accuracy, latency_ms, vram_gb, calls_30d) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
           m
         );
       }
@@ -291,7 +296,9 @@ async function bootstrap() {
       { table: 'cards', column: 'location', type: 'TEXT' },
       { table: 'ai_drafts', column: 'version', type: 'INTEGER DEFAULT 1' },
       { table: 'ai_drafts', column: 'status', type: "TEXT DEFAULT 'draft'" },
-      { table: 'contact_sequences', column: 'status', type: "TEXT DEFAULT 'active'" }
+      { table: 'contact_sequences', column: 'status', type: "TEXT DEFAULT 'active'" },
+      { table: 'ai_models', column: 'api_model_id', type: 'TEXT' },
+      { table: 'email_sequence_steps', column: 'ai_model', type: "TEXT DEFAULT 'gemini'" }
     ];
 
     for (const patch of patches) {

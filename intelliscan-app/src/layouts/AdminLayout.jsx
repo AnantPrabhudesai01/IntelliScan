@@ -16,6 +16,7 @@ import NotificationCenter from '../components/NotificationCenter';
 const businessAdminNav = [
   { section: 'Overview', items: [
     { to: '/workspace/dashboard',      label: 'Dashboard',      icon: Home       },
+    { to: '/workspace/analytics',      label: 'System Analytics', icon: BarChart2  },
     { to: '/workspace/contacts',       label: 'All Contacts',   icon: Users      },
     { to: '/workspace/members',        label: 'Members',        icon: UserIcon   },
     { to: '/workspace/pipeline',       label: 'Sales Pipeline', icon: Layers     },

@@ -64,6 +64,7 @@ import TemplateEditorPage from './pages/email/TemplateEditorPage';
 import ContactListsPage from './pages/email/ContactListsPage';
 import ListDetailPage from './pages/email/ListDetailPage';
 import EmailSequencesPage from './pages/email/EmailSequencesPage';
+import SequenceDetailPage from './pages/email/SequenceDetailPage';
 
 // Calendar Pages
 import CalendarPage from './pages/calendar/CalendarPage';
@@ -231,6 +232,7 @@ export default function App() {
               <Route path="/dashboard/email-marketing/lists" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><ContactListsPage /></RoleGuard></TierGuard>} />
               <Route path="/dashboard/email-marketing/lists/:id" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><ListDetailPage /></RoleGuard></TierGuard>} />
               <Route path="/dashboard/email-marketing/automations" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><EmailSequencesPage /></RoleGuard></TierGuard>} />
+              <Route path="/dashboard/email-marketing/automations/:id" element={<TierGuard minTier="pro" featureName="Email Marketing"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><SequenceDetailPage /></RoleGuard></TierGuard>} />
               
               {/* Auto-routes that default to DashboardLayout */}
               {generatedRoutes

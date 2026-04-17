@@ -6,6 +6,21 @@ export default function DraftsPage() {
   const [drafts, setDrafts] = useState([]);
   const [editingDraft, setEditingDraft] = useState(null);
   const [toast, setToast] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+  const [verificationStatus, setVerificationStatus] = useState(null); // { status: 'checking' | 'valid' | 'invalid', reason?: string }
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  const fetchProfile = async () => {
+    try {
+      const res = await fetch('/api/user/profile', {
+        headers: { 'Authorization': `Bearer ${getStoredToken()}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUserProfile(data);
+      }
+    } catch (err) { console.error('Failed to fetch profile', err); }
+  };
 
   const fetchDrafts = async () => {
     try {
@@ -18,9 +33,54 @@ export default function DraftsPage() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDrafts();
+    fetchProfile();
   }, []);
+
+  const fillPlaceholders = (text) => {
+    if (!text || !userProfile) return text;
+    let filled = text;
+    filled = filled.replace(/\[Your Name\]/g, userProfile.name || '');
+    filled = filled.replace(/\[Your Full Name\]/g, userProfile.name || '');
+    filled = filled.replace(/\[Your Position\]/g, userProfile.position || 'Professional');
+    filled = filled.replace(/\[Your Contact Information\]/g, userProfile.email || '');
+    filled = filled.replace(/\[IntelliScan Website\]/g, 'www.intelliscan.ai');
+    return filled;
+  };
+
+  const handleEditClick = (draft) => {
+    // Auto-fill placeholders on open
+    const personalizedDraft = {
+      ...draft,
+      subject: fillPlaceholders(draft.subject),
+      body: fillPlaceholders(draft.body)
+    };
+    setEditingDraft(personalizedDraft);
+    setVerificationStatus(null);
+  };
+
+  const handleVerifyEmail = async (email) => {
+    if (!email) return;
+    setIsVerifying(true);
+    setVerificationStatus({ status: 'checking' });
+    try {
+      const res = await fetch('/api/public/verify-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setVerificationStatus({ status: 'valid' });
+      } else {
+        setVerificationStatus({ status: 'invalid', reason: data.reason });
+      }
+    } catch (err) {
+      setVerificationStatus({ status: 'invalid', reason: 'Verification service unavailable' });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   const showToast = (msg) => {
     setToast(msg);
@@ -99,7 +159,26 @@ export default function DraftsPage() {
             <div className="p-6 space-y-4">
               <div>
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">To</label>
-                <input type="text" disabled value={`${editingDraft.contact_name}`} className="w-full mt-1 bg-gray-100 dark:bg-gray-800 border-none rounded-lg px-4 py-2 text-sm text-gray-700 dark:text-gray-300 outline-none" />
+                <div className="flex items-center gap-2 mt-1">
+                  <input type="text" disabled value={editingDraft.contact_name} className="flex-1 bg-gray-100 dark:bg-gray-800 border-none rounded-lg px-4 py-2 text-sm text-gray-700 dark:text-gray-300 outline-none" />
+                  <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg whitespace-nowrap">
+                    <span className="text-[10px] font-black uppercase text-gray-400">Email: {editingDraft.contact_email}</span>
+                    <button 
+                      onClick={() => handleVerifyEmail(editingDraft.contact_email)}
+                      disabled={isVerifying}
+                      className={`text-[10px] font-black uppercase px-2 py-1 rounded transition-all ${
+                        verificationStatus?.status === 'valid' ? 'bg-green-100 text-green-700' :
+                        verificationStatus?.status === 'invalid' ? 'bg-red-100 text-red-700' :
+                        'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
+                      }`}
+                    >
+                      {isVerifying ? 'Verifying...' : verificationStatus?.status === 'valid' ? 'Correct ✅' : verificationStatus?.status === 'invalid' ? 'Invalid ❌' : 'Verify Domain'}
+                    </button>
+                  </div>
+                </div>
+                {verificationStatus?.reason && (
+                  <p className="text-[10px] text-red-500 font-bold mt-1 ml-1">{verificationStatus.reason}</p>
+                )}
               </div>
               <div>
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</label>
@@ -169,7 +248,7 @@ export default function DraftsPage() {
                   <button onClick={() => handleDelete(draft.id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete Draft">
                     <Trash2 size={18} />
                   </button>
-                  <button onClick={() => setEditingDraft(draft)} className="flex items-center gap-2 px-4 py-1.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm font-bold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <button onClick={() => handleEditClick(draft)} className="flex items-center gap-2 px-4 py-1.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm font-bold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     <Edit size={14} /> Edit
                   </button>
                   <button onClick={() => handleSend(draft.id)} className="flex items-center gap-2 px-5 py-1.5 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm focus:ring-4 focus:ring-indigo-500/30">

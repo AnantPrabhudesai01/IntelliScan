@@ -1,4 +1,5 @@
 const { dbGetAsync, dbRunAsync } = require('../utils/db');
+const dns = require('dns').promises;
 
 /**
  * Controller for resolving public digital business cards.
@@ -53,5 +54,29 @@ exports.getPublicProfile = async (req, res) => {
   } catch (err) {
     console.error('[Public Profile Resolver Error]', err);
     res.status(500).json({ error: 'Identity gateway is currently unavailable.' });
+  }
+};
+
+exports.verifyEmail = async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email is required' });
+
+  // 1. Basic Regex Check
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.json({ valid: false, reason: 'Invalid format' });
+  }
+
+  // 2. DNS MX Check
+  const domain = email.split('@')[1];
+  try {
+    const mxRecords = await dns.resolveMx(domain);
+    if (mxRecords && mxRecords.length > 0) {
+      return res.json({ valid: true, domain, records: mxRecords.length });
+    } else {
+      return res.json({ valid: false, reason: 'No mail servers (MX) found for this domain' });
+    }
+  } catch (err) {
+    return res.json({ valid: false, reason: 'Domain not found or unreachable' });
   }
 };

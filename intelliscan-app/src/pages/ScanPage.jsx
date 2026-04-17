@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useContacts } from '../context/ContactContext';
-import { Upload, Camera, RefreshCw, Lightbulb, Sparkles, Save, Edit3, X, ZoomIn, FileText, Layers, CheckCircle2, Users, Zap } from 'lucide-react';
+import { Upload, Camera, RefreshCw, Lightbulb, Sparkles, Save, Edit3, X, ZoomIn, FileText, Layers, CheckCircle2, Users, Zap, MessageCircle } from 'lucide-react';
 import { getStoredToken } from '../utils/auth';
 import { useNotifications } from '../context/NotificationContext';
 import toast from 'react-hot-toast';
@@ -498,6 +498,15 @@ export default function ScanPage() {
               <Zap size={14} /> Batch Upload
             </button>
           </div>
+
+          <a 
+            href="https://wa.me/14155238886?text=Hi%20IntelliScan!%20I'd%20like%20to%20scan%20a%20new%20card."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 bg-[#25D366] text-white hover:bg-[#128C7E] shadow-lg shadow-green-500/20 active:scale-95"
+          >
+            <MessageCircle size={14} /> Scan via WhatsApp
+          </a>
         </div>
       </header>
 
@@ -741,6 +750,15 @@ export default function ScanPage() {
               {isCheckingHealth ? <RefreshCw size={12} className="animate-spin" /> : <Zap size={12} />}
               {isCheckingHealth ? 'Running Diagnostics...' : 'Check System & AI Health'}
             </button>
+
+            <a 
+              href="https://wa.me/14155238886?text=Hello"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 w-full py-2 px-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-900/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-all flex items-center justify-center gap-2"
+            >
+              <MessageCircle size={12} /> Mobile Scan via WhatsApp
+            </a>
           </div>
         </div>
 

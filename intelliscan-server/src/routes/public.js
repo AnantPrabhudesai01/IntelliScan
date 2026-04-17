@@ -8,5 +8,6 @@ const publicController = require('../controllers/publicController');
  * @access Public
  */
 router.get('/profile/:slug', publicController.getPublicProfile);
+router.post('/verify-email', publicController.verifyEmail);
 
 module.exports = router;

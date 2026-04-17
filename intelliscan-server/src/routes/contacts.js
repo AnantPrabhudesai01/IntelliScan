@@ -59,11 +59,14 @@ router.post('/:id/send-followup', authenticateToken, contactsController.sendFoll
  */
 router.put('/:id/deal', validate(updateDealSchema), contactsController.updateDeal);
 
+const marketingController = require('../controllers/marketingController');
+
 /**
  * @route   POST /api/contacts/:id/enrich
  * @desc    Enrich contact data using AI
  */
 router.post('/:id/enrich', contactsController.enrichContact);
+router.post('/:id/enroll-sequence', marketingController.enrollContact);
 
 /**
  * @route   GET /api/workspace/analytics

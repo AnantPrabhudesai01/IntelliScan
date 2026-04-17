@@ -1174,6 +1174,30 @@ export default function ContactsPage() {
                          {isSendingFollowup === contact.id ? <RefreshCw size={14} className="animate-spin" /> : <Mail size={14} />}
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); openComposer(contact); }} title="AI Email Composer" className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all"><Sparkles size={14} /></button>
+                      <div className="relative group/seq">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); }} 
+                          title="Enroll in AI Sequence" 
+                          className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all"
+                        >
+                          <Zap size={14} />
+                        </button>
+                        <div className="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-2xl p-2 hidden group-hover/seq:block z-[70] animate-in slide-in-from-bottom-2 duration-200">
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2 py-1 mb-1 border-b border-gray-100 dark:border-gray-800">Select Sequence</p>
+                          <div className="max-h-40 overflow-y-auto">
+                            {sequences.map(s => (
+                              <button 
+                                key={s.id}
+                                onClick={(e) => { e.stopPropagation(); handleEnrollSequence(contact.id, s.id); }}
+                                className="w-full text-left px-2 py-1.5 rounded-lg text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 hover:text-indigo-600 transition-colors flex items-center gap-2"
+                              >
+                                <Zap size={10} /> {s.name}
+                              </button>
+                            ))}
+                            {sequences.length === 0 && <p className="text-[10px] text-gray-500 p-2 italic">No sequences found</p>}
+                          </div>
+                        </div>
+                      </div>
                       <button onClick={(e) => { e.stopPropagation(); deleteContact(contact.id); }} className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"><Trash2 size={14} /></button>
                     </>
                   ) : (
@@ -1398,6 +1422,31 @@ export default function ContactsPage() {
                     <p className={`text-sm leading-relaxed ${detailContact.linkedin_bio ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 italic'}`}>
                       {detailContact.linkedin_bio || 'No enrichment data available. Run "Enrich Lead" to identify professional background and personality traits.'}
                     </p>
+                  </div>
+                </div>
+
+                {/* Sequence Activity Section */}
+                <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-3xl p-6">
+                  <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest flex items-center gap-2 mb-4">
+                     <Clock size={16} className="text-indigo-500" /> Active Automations
+                  </h4>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-bold text-gray-700 dark:text-gray-300">Enroll in Outreach Sequence</p>
+                      <p className="text-[10px] text-gray-500 font-medium">Auto-send follow-ups via Gemini AI.</p>
+                    </div>
+                    <div className="flex gap-2">
+                       <select 
+                         className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-indigo-500"
+                         onChange={(e) => handleEnrollSequence(detailContact.id, e.target.value)}
+                         defaultValue=""
+                       >
+                         <option value="" disabled>Select Sequence...</option>
+                         {sequences.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                       </select>
+                    </div>
+                  </div>
+                </div>
                   </div>
                 </div>
               </div>

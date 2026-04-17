@@ -331,7 +331,12 @@ export default function SettingsPage() {
   useEffect(() => {
     if (activeTab === 'Security') {
       fetchSessions();
+      // Set up real-time polling every 30 seconds
+      pollIntervalRef.current = setInterval(fetchSessions, 30000);
+    } else {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     }
+    
     return () => {
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     };
@@ -340,7 +345,7 @@ export default function SettingsPage() {
   const fetchSessions = async () => {
     setIsLoadingSessions(true);
     try {
-      const res = await apiClient.get('/sessions/me');
+      const res = await apiClient.get('/auth/sessions/me');
       setSessions(res.data);
     } catch (err) {
       console.error('Failed to fetch sessions:', err);
@@ -349,24 +354,53 @@ export default function SettingsPage() {
     }
   };
 
+  const formatDeviceInfo = (ua) => {
+    if (!ua) return 'Unknown Device';
+    
+    // Browser Detection
+    let browser = 'Unknown Browser';
+    if (ua.includes('Edg/')) browser = 'Microsoft Edge';
+    else if (ua.includes('Chrome/')) browser = 'Google Chrome';
+    else if (ua.includes('Firefox/')) browser = 'Mozilla Firefox';
+    else if (ua.includes('Safari/') && !ua.includes('Chrome/')) browser = 'Apple Safari';
+    else browser = ua.split(' ')[0] || 'Browser';
+
+    // OS Detection
+    let os = 'Unknown OS';
+    if (ua.includes('Windows NT 10.0')) os = 'Windows 10/11';
+    else if (ua.includes('Windows NT 6.1')) os = 'Windows 7';
+    else if (ua.includes('Macintosh')) os = 'macOS';
+    else if (ua.includes('iPhone')) os = 'iOS';
+    else if (ua.includes('iPad')) os = 'iPadOS';
+    else if (ua.includes('Android')) os = 'Android';
+    else if (ua.includes('Linux')) os = 'Linux';
+    else os = 'System';
+
+    return `${browser} • ${os}`;
+  };
+
   const currentSession = sessions.find(s => s.isCurrent);
   const otherSessions = sessions.filter(s => !s.isCurrent);
 
   const handleRevokeSession = async (id) => {
     try {
-      await apiClient.delete(`/sessions/${id}`);
+      await apiClient.delete(`/auth/sessions/${id}`);
       fetchSessions();
+      showToast('Session revoked successfully');
     } catch (err) {
       console.error('Failed to revoke session:', err);
+      showToast('Failed to revoke session', 'error');
     }
   };
 
   const handleRevokeAllOtherSessions = async () => {
     try {
-      await apiClient.delete('/sessions/others');
+      await apiClient.delete('/auth/sessions/others');
       fetchSessions();
+      showToast('All other sessions have been logged out');
     } catch (err) {
       console.error('Failed to clear other sessions:', err);
+      showToast('Failed to revoke other sessions', 'error');
     }
   };
 
@@ -927,11 +961,11 @@ export default function SettingsPage() {
                 {currentSession && (
                   <div className="flex items-start gap-4 p-4 rounded-xl border border-indigo-200 dark:border-indigo-800/40 bg-indigo-50/50 dark:bg-indigo-900/10">
                     <div className="mt-1 p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-lg text-indigo-600 dark:text-indigo-400">
-                      <Laptop size={20} />
+                      {currentSession.device_info?.includes('iPhone') || currentSession.device_info?.includes('Android') ? <Smartphone size={20} /> : currentSession.device_info?.includes('iPad') ? <Tablet size={20} /> : <Monitor size={20} />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start mb-0.5">
-                        <p className="font-headline font-bold text-gray-900 dark:text-white truncate">{currentSession.device_info}</p>
+                        <p className="font-headline font-bold text-gray-900 dark:text-white truncate">{formatDeviceInfo(currentSession.device_info)}</p>
                         <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded block whitespace-nowrap">This Device</span>
                       </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 font-body mb-2">{currentSession.location} • {currentSession.ip_address}</p>
@@ -944,11 +978,11 @@ export default function SettingsPage() {
                 {otherSessions.map(session => (
                   <div key={session.id} className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-100 dark:border-gray-800/60 transition-colors group">
                     <div className="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-500 dark:text-gray-400">
-                      {session.device_info.includes('Mobile') || session.device_info.includes('iPhone') || session.device_info.includes('Android') ? <Smartphone size={20} /> : <Monitor size={20} />}
+                      {session.device_info.includes('iPhone') || session.device_info.includes('Android') ? <Smartphone size={20} /> : session.device_info.includes('iPad') ? <Tablet size={20} /> : <Monitor size={20} />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start mb-0.5">
-                        <p className="font-headline font-bold text-gray-900 dark:text-white truncate">{session.device_info}</p>
+                        <p className="font-headline font-bold text-gray-900 dark:text-white truncate">{formatDeviceInfo(session.device_info)}</p>
                         <button onClick={() => handleRevokeSession(session.id)} className="text-[10px] font-bold text-gray-400 hover:text-red-500 flex items-center gap-1 uppercase tracking-widest transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
                           <Trash2 size={12} /> Revoke
                         </button>

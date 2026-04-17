@@ -1,22 +1,19 @@
-/**
- * Marketing Controller — Management of email sequences and automated outreach
- */
 const crypto = require('crypto');
 const { dbGetAsync, dbAllAsync, dbRunAsync } = require('../utils/db');
 const { createSmtpTransporterFromEnv } = require('../utils/smtp');
-const { requireEnterpriseTier } = require('../middleware/auth'); // Check if needed in exports
+const { unifiedTextAIPipeline } = require('../services/aiService');
 
-// GET /api/email-sequences
+// GET /api/email-sequences/sequences
 exports.getSequences = async (req, res) => {
   try {
-    const sequences = await dbAllAsync('SELECT * FROM email_sequences WHERE user_id = ?', [req.user.id]);
+    const sequences = await dbAllAsync('SELECT * FROM email_sequences WHERE user_id = ? ORDER BY created_at DESC', [req.user.id]);
     res.json(sequences);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// POST /api/email-sequences
+// POST /api/email-sequences/sequences
 exports.createSequence = async (req, res) => {
   const { name, steps } = req.body;
   if (!name || !steps || !Array.isArray(steps)) return res.status(400).json({ error: 'Name and steps array required' });
@@ -27,8 +24,8 @@ exports.createSequence = async (req, res) => {
 
     for (const step of steps) {
       await dbRunAsync(
-        'INSERT INTO email_sequence_steps (sequence_id, order_index, subject, html_body, delay_days) VALUES (?, ?, ?, ?, ?)',
-        [sequenceId, step.step_number || step.order_index, step.subject, step.template_body || step.html_body, step.delay_days || 0]
+        'INSERT INTO email_sequence_steps (sequence_id, order_index, subject, html_body, ai_intent, ai_model, delay_days) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [sequenceId, step.step_number || step.order_index, step.subject, step.template_body || step.html_body, step.ai_intent || null, step.ai_model || 'gemini', step.delay_days || 0]
       );
     }
 
@@ -38,32 +35,78 @@ exports.createSequence = async (req, res) => {
   }
 };
 
-// POST /api/contacts/:id/enroll-sequence
-exports.enrollContact = async (req, res) => {
-  const { sequenceId, sequence_id } = req.body;
-  const targetId = sequenceId || sequence_id;
-  const contactId = req.params.id;
+// GET /api/email-sequences/sequences/:id
+exports.getSequenceById = async (req, res) => {
+  try {
+    const sequence = await dbGetAsync('SELECT * FROM email_sequences WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
+    if (!sequence) return res.status(404).json({ error: 'Sequence not found' });
 
-  if (!targetId) return res.status(400).json({ error: 'sequence_id is required' });
+    const steps = await dbAllAsync('SELECT * FROM email_sequence_steps WHERE sequence_id = ? ORDER BY order_index ASC', [req.params.id]);
+    const enrollments = await dbAllAsync(`
+      SELECT cs.*, c.name as contact_name, c.email as contact_email 
+      FROM contact_sequences cs
+      JOIN contacts c ON cs.contact_id = c.id
+      WHERE cs.sequence_id = ? AND cs.status = 'active'
+    `, [req.params.id]);
+
+    res.json({ sequence, steps, enrollments });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// PUT /api/email-sequences/sequences/:id
+exports.updateSequence = async (req, res) => {
+  const { name, steps } = req.body;
+  try {
+    const sequence = await dbGetAsync('SELECT id FROM email_sequences WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
+    if (!sequence) return res.status(404).json({ error: 'Sequence not found' });
+
+    if (name) {
+      await dbRunAsync('UPDATE email_sequences SET name = ?, updated_at = NOW() WHERE id = ?', [name, req.params.id]);
+    }
+
+    if (steps && Array.isArray(steps)) {
+      // Simple strategy: Clear and re-insert steps
+      await dbRunAsync('DELETE FROM email_sequence_steps WHERE sequence_id = ?', [req.params.id]);
+      for (const step of steps) {
+        await dbRunAsync(
+          'INSERT INTO email_sequence_steps (sequence_id, order_index, subject, html_body, ai_intent, ai_model, delay_days) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [req.params.id, step.order_index, step.subject, step.html_body, step.ai_intent, step.ai_model || 'gemini', step.delay_days || 0]
+        );
+      }
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// POST /api/email-sequences/enroll
+exports.enrollContact = async (req, res) => {
+  const { sequenceId, contactId: bodyContactId } = req.body;
+  const contactId = req.params.id || bodyContactId;
+  
+  if (!sequenceId || !contactId) return res.status(400).json({ error: 'sequenceId and contactId are required' });
 
   try {
-    const firstStep = await dbGetAsync('SELECT delay_days FROM email_sequence_steps WHERE sequence_id = ? ORDER BY order_index ASC LIMIT 1', [targetId]);
+    const firstStep = await dbGetAsync('SELECT delay_days FROM email_sequence_steps WHERE sequence_id = ? ORDER BY order_index ASC LIMIT 1', [sequenceId]);
     if (!firstStep) return res.status(400).json({ error: 'Sequence has no steps' });
 
     // Check if contact is already enrolled in this sequence
-    const existing = await dbGetAsync('SELECT id FROM contact_sequences WHERE contact_id = ? AND sequence_id = ? AND status = ?', [contactId, targetId, 'active']);
+    const existing = await dbGetAsync('SELECT id FROM contact_sequences WHERE contact_id = ? AND sequence_id = ? AND status = ?', [contactId, sequenceId, 'active']);
     if (existing) return res.status(409).json({ error: 'Contact is already actively enrolled in this sequence.' });
 
     const nextSend = new Date();
-    // For the first step, we typically send immediately, but we honor the delay_days of the first step
     nextSend.setDate(nextSend.getDate() + (firstStep.delay_days || 0));
 
     await dbRunAsync(
       'INSERT INTO contact_sequences (contact_id, sequence_id, current_step_index, next_send_at, status) VALUES (?, ?, ?, ?, ?)',
-      [contactId, targetId, 0, nextSend.toISOString(), 'active']
+      [contactId, sequenceId, 0, nextSend.toISOString(), 'active']
     );
 
-    res.json({ success: true, message: 'Contact successfully enrolled in AI Sequence.', nextSendAt: nextSend.toISOString() });
+    res.json({ success: true, message: 'Contact successfully enrolled.', nextSendAt: nextSend.toISOString() });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -77,16 +120,12 @@ exports.processPendingSequences = async () => {
   try {
     const pending = await dbAllAsync(`
       SELECT cs.*, c.email as contact_email, c.name as contact_name, c.company as contact_company, 
-             c.job_title as contact_job_title, s.user_id 
+             c.job_title as contact_job_title, c.inferred_industry as contact_industry, s.user_id 
       FROM contact_sequences cs
       JOIN contacts c ON cs.contact_id = c.id
       JOIN email_sequences s ON cs.sequence_id = s.id
       WHERE cs.status = 'active' AND cs.next_send_at <= ?
     `, [now]);
-
-    if (pending.length > 0) {
-      console.log(`[Marketing] Sequence Worker: Found ${pending.length} pending steps to process.`);
-    }
 
     for (const p of pending) {
       const step = await dbGetAsync(
@@ -102,13 +141,42 @@ exports.processPendingSequences = async () => {
           name: p.contact_name, 
           email: p.contact_email, 
           company: p.contact_company,
-          job_title: p.contact_job_title
+          job_title: p.contact_job_title,
+          industry: p.contact_industry
         };
 
-        if (smtp) {
-          const html = applyTemplateVariables(step.html_body, vars);
-          const subject = applyTemplateVariables(step.subject, vars);
+        let html = applyTemplateVariables(step.html_body, vars);
+        let subject = applyTemplateVariables(step.subject, vars);
 
+        // ADVANCED: AI Personalization Upgrade (Multi-Model Support)
+        if (step.ai_intent) {
+          try {
+            const aiPrompt = `Write a professional, context-aware email for a networking sequence.
+Contact: ${p.contact_name} at ${p.contact_company} (${p.contact_job_title || 'N/A'})
+Intent: ${step.ai_intent}
+Base Template: ${step.html_body}
+
+Ensure the tone is professional but natural. Return ONLY the JSON body:
+{
+  "personalized_subject": "...",
+  "personalized_body": "..."
+}`;
+            const aiRes = await unifiedTextAIPipeline({ 
+              prompt: aiPrompt, 
+              responseFormat: 'json',
+              model: step.ai_model || 'gemini' 
+            });
+            if (aiRes.success && aiRes.data.personalized_body) {
+              html = aiRes.data.personalized_body;
+              subject = aiRes.data.personalized_subject || subject;
+              console.log(`[Marketing] Model ${step.ai_model || 'Gemini'} personalized step for ${p.contact_email}`);
+            }
+          } catch (aiErr) {
+            console.error('[Marketing] AI Personalization failed, falling back to template:', aiErr.message);
+          }
+        }
+
+        if (smtp) {
           try {
             await smtp.transporter.sendMail({
               from: process.env.SMTP_FROM || `"IntelliScan AI" <${process.env.SMTP_USER}>`,
@@ -119,31 +187,29 @@ exports.processPendingSequences = async () => {
             console.log(`[Marketing] Step sent successfully to ${p.contact_email}`);
           } catch (mailErr) {
             console.error(`[Marketing] Mail delivery failed for ${p.contact_email}:`, mailErr.message);
-            // Skip updating to next step if delivery failed? 
-            // For now we continue to next step to avoid infinite retries on bad emails
           }
         } else {
           console.warn(`[Marketing][MOCK] SMTP not configured. Mocking send to ${p.contact_email}`);
         }
 
         // Determine next step
-  // ✅ FIXED CODE (Backticks allow multiline strings)
-const steps = await dbAllAsync(`
-  SELECT order_index, delay_days 
-  FROM email_sequence_steps 
-  WHERE sequence_id = ?
-`, [sequenceId]);
+        const allSteps = await dbAllAsync(
+          'SELECT order_index, delay_days FROM email_sequence_steps WHERE sequence_id = ? ORDER BY order_index ASC',
+          [p.sequence_id]
+        );
+        
+        const nextStep = allSteps.find(s => s.order_index > p.current_step_index);
 
         if (nextStep) {
           const nextDate = new Date();
           nextDate.setDate(nextDate.getDate() + (nextStep.delay_days || 0));
           await dbRunAsync(
-            'UPDATE contact_sequences SET current_step_index = ?, next_send_at = ? WHERE id = ?',
+            'UPDATE contact_sequences SET current_step_index = ?, next_send_at = ?, updated_at = NOW() WHERE id = ?',
             [nextStep.order_index, nextDate.toISOString(), p.id]
           );
           console.log(`[Marketing] Sequence scheduled for Step ${nextStep.order_index + 1} at ${nextDate.toISOString()}`);
         } else {
-          await dbRunAsync("UPDATE contact_sequences SET status = 'completed' WHERE id = ?", [p.id]);
+          await dbRunAsync("UPDATE contact_sequences SET status = 'completed', updated_at = NOW() WHERE id = ?", [p.id]);
           console.log(`[Marketing] Sequence completed for ${p.contact_email}`);
         }
       }

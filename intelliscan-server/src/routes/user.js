@@ -120,7 +120,14 @@ router.post('/simulate-upgrade', authenticateToken, async (req, res) => {
 // GET /api/profile
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
-    const user = await dbGetAsync('SELECT id, name, email, role, tier, avatar_url, phone_number, bio FROM users WHERE id = ?', [req.user.id]);
+    const user = await dbGetAsync(`
+      SELECT 
+        u.id, u.name, u.email, u.role, u.tier, u.avatar_url, u.phone_number, u.bio,
+        p.preferences_json->>'jobTitle' as position
+      FROM users u
+      LEFT JOIN onboarding_prefs p ON u.id = p.user_id
+      WHERE u.id = ?
+    `, [req.user.id]);
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json(user);
   } catch (err) {

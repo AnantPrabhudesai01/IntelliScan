@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Zap, Plus, ArrowRight, Sparkles, Trash2, Edit3, CheckCircle2, AlertCircle } from 'lucide-react';
-import { getStoredToken } from '../../utils/auth.js';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function EmailSequencesPage() {
+  const navigate = useNavigate();
   const [sequences, setSequences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
@@ -44,9 +43,9 @@ export default function EmailSequencesPage() {
         body: JSON.stringify({
           name: newSequenceName,
           steps: [
-            { step_number: 1, delay_days: 0, subject: "Great meeting you!", template_body: "Hi {{name}}, it was great connecting at {{company}}..." },
-            { step_number: 2, delay_days: 3, subject: "Sharing some insights", template_body: "Hi {{name}}, I thought you might find this article interesting..." },
-            { step_number: 3, delay_days: 7, subject: "Quick coffee chat?", template_body: "Hi {{name}}, are you open for a 15-minute call next week?" }
+            { order_index: 1, delay_days: 0, subject: "Great meeting you!", template_body: "Hi {{name}}, it was great connecting at {{company}}..." },
+            { order_index: 2, delay_days: 3, subject: "Sharing some insights", template_body: "Hi {{name}}, I thought you might find this article interesting..." },
+            { order_index: 3, delay_days: 7, subject: "Quick coffee chat?", template_body: "Hi {{name}}, are you open for a 15-minute call next week?" }
           ]
         })
       });
@@ -69,7 +68,7 @@ export default function EmailSequencesPage() {
           <h1 className="text-4xl font-black text-white tracking-tighter uppercase mb-2">
             AI <span className="text-indigo-500">Outreach</span> Sequences
           </h1>
-          <p className="text-gray-400 font-medium">Automated multi-step networking loops powered by Gemini AI.</p>
+          <p className="text-gray-400 font-medium tracking-tight">Automated multi-step networking loops powered by Gemini AI.</p>
         </div>
         <div className="flex bg-gray-900 border border-gray-800 p-2 rounded-2xl items-center gap-3">
           <input 
@@ -112,41 +111,37 @@ export default function EmailSequencesPage() {
             <div key={seq.id} className="bg-gray-900/40 border border-gray-800 p-6 rounded-2xl group hover:border-indigo-500/50 transition-all shadow-sm flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
                     <Zap size={20} />
                   </div>
                   <div className="flex gap-2">
-                    <button className="p-1.5 text-gray-500 hover:text-white transition-colors"><Edit3 size={16} /></button>
+                    <Link to={`/dashboard/email-marketing/automations/${seq.id}`} className="p-1.5 text-gray-500 hover:text-white transition-colors"><Edit3 size={16} /></Link>
                     <button className="p-1.5 text-gray-500 hover:text-red-400 transition-colors"><Trash2 size={16} /></button>
                   </div>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-1">{seq.name}</h3>
-                <p className="text-xs text-gray-500 uppercase tracking-widest font-black mb-4">3 Step Sequence</p>
+                <h3 className="text-lg font-black text-white mb-1 group-hover:text-indigo-300 transition-colors">{seq.name}</h3>
+                <p className="text-[10px] text-gray-500 uppercase tracking-[2px] font-black mb-4">Multi-Step Lifecycle</p>
                 
                 <div className="space-y-3 relative">
                   <div className="absolute left-1.5 top-2 bottom-2 w-0.5 bg-gray-800" />
                   <div className="flex items-center gap-3 relative">
-                    <div className="w-3 h-3 rounded-full bg-indigo-500 border-2 border-gray-900" />
+                    <div className="w-3 h-3 rounded-full bg-indigo-500 border-2 border-gray-900 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
                     <span className="text-[11px] font-bold text-gray-300">Step 1: Immediate Outreach</span>
                   </div>
                   <div className="flex items-center gap-3 relative">
                     <div className="w-3 h-3 rounded-full bg-gray-700 border-2 border-gray-900" />
-                    <span className="text-[11px] font-bold text-gray-500">Step 2: Value-Add (3 Days)</span>
-                  </div>
-                  <div className="flex items-center gap-3 relative">
-                    <div className="w-3 h-3 rounded-full bg-gray-700 border-2 border-gray-900" />
-                    <span className="text-[11px] font-bold text-gray-500">Step 3: Coffee Chat (7 Days)</span>
+                    <span className="text-[11px] font-bold text-gray-500">Scheduled Follow-ups</span>
                   </div>
                 </div>
               </div>
 
               <div className="mt-6 pt-4 border-t border-gray-800 flex items-center justify-between">
-                <span className="text-[10px] font-black text-emerald-500 uppercase flex items-center gap-1">
+                <span className="text-[10px] font-black text-emerald-500 uppercase flex items-center gap-1 bg-emerald-500/10 px-2 py-0.5 rounded">
                   <CheckCircle2 size={12} /> AI Active
                 </span>
-                <button className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 uppercase tracking-tighter">
+                <Link to={`/dashboard/email-marketing/automations/${seq.id}`} className="text-xs font-black text-indigo-400 hover:text-indigo-300 flex items-center gap-1 uppercase tracking-widest transition-all">
                   View Detail <ArrowRight size={12} />
-                </button>
+                </Link>
               </div>
             </div>
           ))

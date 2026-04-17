@@ -78,6 +78,14 @@ router.post('/register', validate(registerSchema), async (req, res) => {
         { expiresIn: JWT_EXPIRES_IN }
       );
 
+      // Session tracking
+      const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
+      const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
+      await dbRunAsync(
+        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+        [userId, token, deviceInfo, ipAddress, 'Unknown Location']
+      );
+
       res.status(201).json({
         message: 'User registered successfully',
         token,
@@ -163,7 +171,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
 
     // Session tracking
     const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
-    const ipAddress = req.ip || 'Unknown IP';
+    const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
     const location = 'Unknown Location';
 
     try {
@@ -336,7 +344,15 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       { expiresIn: JWT_EXPIRES_IN }
     );
 
-    console.log(`[AuthSync] Successfully synchronized ${email} (${tier})`);
+    // Session tracking
+    const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
+    const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
+    await dbRunAsync(
+      'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+      [userId, token, deviceInfo, ipAddress, 'Unknown Location']
+    );
+
+    console.log(`[AuthSync] Successfully synchronized ${email} (${tier}) and created session`);
 
     res.json({
       token,
@@ -362,6 +378,54 @@ router.get('/me', authenticateToken, async (req, res) => {
     );
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @route GET /api/auth/sessions/me
+ * @desc Get all active sessions for the current user
+ */
+router.get('/sessions/me', authenticateToken, async (req, res) => {
+  try {
+    const sessions = await dbAllAsync(
+      'SELECT id, device_info, ip_address, location, last_active, token FROM sessions WHERE user_id = ? AND is_active = 1 ORDER BY last_active DESC',
+      [req.user.id]
+    );
+
+    const currentToken = req.headers.authorization?.split(' ')[1];
+
+    const result = sessions.map(s => ({
+      id: s.id,
+      device_info: s.device_info,
+      ip_address: s.ip_address,
+      location: s.location || 'Unknown Location',
+      last_active: s.last_active,
+      isCurrent: s.token === currentToken
+    }));
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @route DELETE /api/auth/sessions/:id
+ * @desc Revoke a specific session
+ */
+router.delete('/sessions/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (id === 'others') {
+      const currentToken = req.headers.authorization?.split(' ')[1];
+      await dbRunAsync('DELETE FROM sessions WHERE user_id = ? AND token != ?', [req.user.id, currentToken]);
+      return res.json({ success: true, message: 'All other sessions revoked' });
+    }
+
+    await dbRunAsync('DELETE FROM sessions WHERE id = ? AND user_id = ?', [id, req.user.id]);
+    res.json({ success: true, message: 'Session revoked' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

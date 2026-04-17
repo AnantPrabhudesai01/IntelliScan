@@ -5,28 +5,38 @@ const { dbGetAsync, dbAllAsync, dbRunAsync } = require('../utils/db');
 
 // GET /api/admin/leaderboard
 exports.getLeaderboard = async (req, res) => {
+  const { timeframe } = req.query; // 'This Week', 'This Month', 'All Time'
+  
   try {
     const userRow = await dbGetAsync('SELECT workspace_id FROM users WHERE id = ?', [req.user.id]);
     const workspaceId = userRow.workspace_id || req.user.id;
+
+    let dateFilter = '1=1'; // Default: All Time
+    if (timeframe === 'This Week') {
+      dateFilter = "c.scan_date >= NOW() - INTERVAL '7 days'";
+    } else if (timeframe === 'This Month') {
+      dateFilter = "c.scan_date >= NOW() - INTERVAL '30 days'";
+    }
 
     const rankings = await dbAllAsync(`
       SELECT 
         u.name, 
         u.email,
-        COUNT(c.id) as total_scans,
-        SUM(CASE WHEN c.deal_status = 'Closed' THEN 1 ELSE 0 END) as deals_closed,
-        SUM(d.value) as pipeline_value
+        COUNT(CASE WHEN ${dateFilter} THEN c.id ELSE NULL END) as total_scans,
+        SUM(CASE WHEN ${dateFilter} AND c.deal_status = 'Closed' THEN 1 ELSE 0 END) as deals_closed,
+        COALESCE(SUM(CASE WHEN ${dateFilter} THEN d.value ELSE 0 END), 0) as pipeline_value
       FROM users u
       LEFT JOIN contacts c ON u.id = c.user_id
       LEFT JOIN deals d ON c.id = d.contact_id
       WHERE u.workspace_id = ? OR u.id = ?
-      GROUP BY u.id
-      ORDER BY total_scans DESC
+      GROUP BY u.id, u.name, u.email
+      ORDER BY total_scans DESC, pipeline_value DESC
     `, [workspaceId, req.user.id]);
 
     res.json({ success: true, rankings });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[Leaderboard Error]', err);
+    res.status(500).json({ success: false, error: err.message });
   }
 };
 

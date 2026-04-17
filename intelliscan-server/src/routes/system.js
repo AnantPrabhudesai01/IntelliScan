@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { dbGetAsync, isPostgres } = require('../utils/db');
+const { dbGetAsync, dbAllAsync, isPostgres } = require('../utils/db');
 const os = require('os');
 
 /**
@@ -41,6 +41,19 @@ router.get('/health', async (req, res) => {
 
   const statusCode = health.status === 'healthy' ? 200 : 503;
   res.status(statusCode).json(health);
+});
+
+/**
+ * GET /api/system/ai-models
+ * List available AI models for outreach and processing.
+ */
+router.get('/ai-models', async (req, res) => {
+  try {
+    const models = await dbAllAsync("SELECT id, name, type, api_model_id as apiId, status FROM ai_models WHERE status IN ('deployed', 'ready')");
+    res.json(models);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;
