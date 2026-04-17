@@ -68,10 +68,15 @@ export default function DashboardLayout() {
   const enterpriseOnlyLabels = ['Leaderboard', 'Analytics', 'Org Chart', 'Pipeline', 'Members'];
   const proOrHigherLabels = ['Calendar', 'AI Coach', 'Email Marketing', 'AI Sequences', 'Meeting Presence', 'Event Kiosk', 'Digital Card', 'Card Creator', 'Apps'];
   
-  const filteredNavItems = dynamicNavItems.filter(item => {
-    if (enterpriseOnlyLabels.includes(item.label) && !isEnterpriseOrHigher) return false;
-    if (proOrHigherLabels.includes(item.label) && !isProOrHigher) return false;
-    return true;
+  const processedNavItems = dynamicNavItems.map(item => {
+    const isEnterpriseOnly = enterpriseOnlyLabels.includes(item.label);
+    const isProOnly = proOrHigherLabels.includes(item.label);
+    
+    let isLocked = false;
+    if (isEnterpriseOnly && !isEnterpriseOrHigher) isLocked = true;
+    if (isProOnly && !isProOrHigher) isLocked = true;
+    
+    return { ...item, isLocked };
   });
 
   const handleSignOut = () => {
@@ -145,28 +150,44 @@ export default function DashboardLayout() {
 
       {/* Nav Items */}
       <nav className={`flex-1 ${sidebarCollapsed && !isMobile ? 'px-1.5' : 'px-2.5'} py-3 overflow-y-auto sidebar-scroll space-y-0.5`}>
-        {filteredNavItems.map((item) => {
+        {processedNavItems.map((item) => {
           const isActive = location.pathname === item.to;
           return (
             <Link
               key={item.to}
-              to={item.to}
-              onClick={() => isMobile && setMobileSidebarOpen(false)}
+              to={item.isLocked ? '/subscription-plan-comparison' : item.to}
+              onClick={() => {
+                if (isMobile) setMobileSidebarOpen(false);
+                if (item.isLocked) {
+                  console.log(`[Gate] Redirecting to upgrade for ${item.label}`);
+                }
+              }}
               title={sidebarCollapsed && !isMobile ? item.label : undefined}
               className={`flex items-center gap-2.5 ${sidebarCollapsed && !isMobile ? 'justify-center px-2 py-2.5' : 'px-3 py-2'} rounded-md text-[13px] font-medium transition-all duration-150 group relative ${
                 isActive
                   ? 'bg-sidebar-active text-white'
-                  : 'text-sidebar-text hover:bg-sidebar-hover hover:text-white'
+                  : item.isLocked 
+                    ? 'text-sidebar-text/50 hover:bg-white/5 cursor-pointer'
+                    : 'text-sidebar-text hover:bg-sidebar-hover hover:text-white'
               }`}
             >
               {isActive && (
                 <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-brand-light rounded-r-full" />
               )}
-              <item.icon size={18} className={`flex-shrink-0 ${isActive ? 'text-brand-light' : 'text-sidebar-text group-hover:text-white'}`} />
+              <div className="relative">
+                <item.icon size={18} className={`flex-shrink-0 ${isActive ? 'text-brand-light' : 'text-sidebar-text group-hover:text-white'} ${item.isLocked ? 'opacity-40' : ''}`} />
+                {item.isLocked && (
+                  <div className="absolute -top-1 -right-1 bg-[#1A1119] rounded-full p-0.5 border border-[#3D2650]">
+                    <Zap size={8} className="text-brand-light fill-brand-light" />
+                  </div>
+                )}
+              </div>
               {(!sidebarCollapsed || isMobile) && (
                 <>
-                  <span className="truncate flex-1">{item.label}</span>
-                  {item.tag && (
+                  <span className={`truncate flex-1 ${item.isLocked ? 'text-white/40' : ''}`}>{item.label}</span>
+                  {item.isLocked ? (
+                    <span className="text-[7px] font-black px-1 py-0.5 bg-brand/20 text-brand-light rounded border border-brand/30 uppercase tracking-tighter">Pro</span>
+                  ) : item.tag && (
                     <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-tight ${
                       item.tag === 'NEW' ? 'bg-green-500/20 text-green-300' : 'bg-brand/30 text-brand-200'
                     }`}>

@@ -58,6 +58,33 @@ app.set('trust proxy', 1);
 // Passport Auth Config
 configurePassport();
 
+// ══════════════════════════════════════════════════════════════════
+// SERVERLESS SELF-HEALING BOOT (fixes Vercel missing tables)
+// ══════════════════════════════════════════════════════════════════
+const { bootstrap } = require('./boot');
+let isBootstrapped = false;
+let bootPromise = null;
+
+app.use(async (req, res, next) => {
+  if (isBootstrapped) return next();
+  
+  // Prevent parallel boot calls
+  if (!bootPromise) {
+    console.log('[System] Triggering cold-start database bootstrap...');
+    bootPromise = bootstrap().then(() => {
+      isBootstrapped = true;
+      bootPromise = null;
+      console.log('[System] Bootstrap complete. Ready for traffic.');
+    }).catch(err => {
+      bootPromise = null;
+      console.error('❌ Critical Boot Failure:', err.message);
+    });
+  }
+  
+  await bootPromise;
+  next();
+});
+
 // Security Middleware
 app.use(helmet({
   contentSecurityPolicy: false,

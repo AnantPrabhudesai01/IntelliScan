@@ -499,14 +499,22 @@ export default function ScanPage() {
             </button>
           </div>
 
-          <a 
-            href="https://wa.me/14155238886?text=join%20baseball-eventually"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 bg-[#25D366] text-white hover:bg-[#128C7E] shadow-xl shadow-green-500/20 active:scale-95 group"
-          >
-            <MessageCircle size={16} className="group-hover:rotate-12 transition-transform" /> Scan via WhatsApp
-          </a>
+          <div className="flex flex-col gap-2">
+            <a 
+              href="https://wa.me/14155238886?text=join%20baseball-eventually"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 bg-[#25D366] text-white hover:bg-[#128C7E] shadow-xl shadow-green-500/20 active:scale-95 group"
+            >
+              <MessageCircle size={16} className="group-hover:rotate-12 transition-transform" /> Scan via WhatsApp
+            </a>
+            <button 
+              onClick={() => window.open('/WHATSAPP_SETUP_GUIDE.md', '_blank')}
+              className="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:underline text-center"
+            >
+              Setup Guide & Instructions
+            </button>
+          </div>
         </div>
       </header>
 
