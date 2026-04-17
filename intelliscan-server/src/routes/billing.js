@@ -12,4 +12,7 @@ router.post('/create-order', authenticateToken, billingController.createOrder);
 // Payment verification
 router.post('/verify-payment', authenticateToken, billingController.verifyPayment);
 
+// Toggle auto-pay
+router.post('/auto-pay', authenticateToken, billingController.toggleAutoPay);
+
 module.exports = router;

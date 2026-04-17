@@ -6,30 +6,49 @@ const crypto = require('crypto');
 const BILLING_PLANS = [
   {
     id: 'personal',
-    name: 'Personal',
+    name: 'Starter',
     price: 0,
     currency: 'INR',
     period: 'free',
-    features: ['10 scans/month', '1 group scan', 'Basic AI drafts', 'Standard support'],
-    limits: { single: 10, group: 1 }
+    features: [
+      '100 Credit Points / month', 
+      'Gemini Flash OCR Engine',
+      'Basic AI Follow-up Drafts',
+      'Community Documentation'
+    ],
+    limits: { single: 100, group: 1, ai_credits: 100 }
   },
   {
     id: 'pro',
-    name: 'Professional',
-    price: 499,
+    name: 'Advanced',
+    price: 49,
     currency: 'INR',
     period: 'month',
-    features: ['100 scans/month', '10 group scans', 'AI coach', 'Priority support', 'CRM integration'],
-    limits: { single: 100, group: 10 }
+    features: [
+      '5,000 Credit Points / month',
+      'Gemini Pro Vision (Ultra Precision)',
+      'Real-time CRM Sync (Salesforce/Sheets)',
+      'Priority Email Support',
+      'AI Personal Identity Policy',
+      'No Branding on Digital Cards'
+    ],
+    limits: { single: 5000, group: 100, ai_credits: 5000 }
   },
   {
     id: 'enterprise',
-    name: 'Enterprise',
+    name: 'Scale',
     price: 1999,
     currency: 'INR',
     period: 'month',
-    features: ['Unlimited scans', 'Unlimited group scans', 'Full AI suite', 'Dedicated support', 'RBAC & Workspaces', 'Audit trail'],
-    limits: { single: 99999, group: 99999 }
+    features: [
+      'Unlimited Credit Points',
+      'Custom AI Training (Your Industry)',
+      'Single Sign-On (SSO) & SAML',
+      'Global Workspace Audit Trails',
+      'Dedicated Account Manager',
+      'Bulk Team Member Workspaces'
+    ],
+    limits: { single: 999999, group: 999999, ai_credits: -1 }
   }
 ];
 

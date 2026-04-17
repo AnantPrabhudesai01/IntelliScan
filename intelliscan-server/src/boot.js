@@ -277,6 +277,52 @@ async function bootstrap() {
       )
     `);
 
+    // ── Missing CRM & Billing Tables (fixes workspace_id error) ──
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS crm_mappings (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        workspace_id INTEGER NOT NULL,
+        provider TEXT NOT NULL,
+        field_mappings ${isPostgres ? 'JSONB' : 'TEXT'} DEFAULT '[]',
+        custom_fields ${isPostgres ? 'JSONB' : 'TEXT'} DEFAULT '[]',
+        is_connected INTEGER DEFAULT 0,
+        auto_sync INTEGER DEFAULT 0,
+        connected_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        last_sync ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        UNIQUE(workspace_id, provider)
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS crm_sync_log (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        workspace_id INTEGER,
+        provider TEXT,
+        status TEXT DEFAULT 'info',
+        message TEXT,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS billing_orders (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        plan_id TEXT NOT NULL,
+        amount INTEGER DEFAULT 0,
+        currency TEXT DEFAULT 'INR',
+        razorpay_order_id TEXT,
+        razorpay_payment_id TEXT,
+        status TEXT DEFAULT 'created',
+        auto_pay INTEGER DEFAULT 0,
+        period_start ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        period_end ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        reminder_sent INTEGER DEFAULT 0,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
     // 2.2 Performance Indexes
     await dbRunAsync('CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id)');
     await dbRunAsync('CREATE INDEX IF NOT EXISTS idx_contacts_is_deleted ON contacts(is_deleted)');

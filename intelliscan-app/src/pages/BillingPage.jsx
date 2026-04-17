@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
-import { Check, Zap, Crown, Building2, RefreshCw, ArrowUpRight, Shield, Star } from 'lucide-react';
+import { Check, CheckCircle2, Zap, Crown, Building2, RefreshCw, ArrowUpRight, Shield, Star, X, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
 import { getStoredToken, setStoredAuth } from '../utils/auth';
 
 const PLAN_FEATURES = {
   personal: {
-    color: 'gray', icon: Shield, badge: 'Free',
-    features: ['10 card scans/month', '1 business card design', 'Basic AI extraction', 'CSV & vCard export'],
-    limits: ['No workspace sharing', 'No CRM sync', 'No analytics']
+    color: 'gray', icon: Shield, badge: 'Starter',
+    features: ['100 AI Credit Points / month', 'Gemini Flash Engine', 'Basic AI Follow-up Drafts', 'Community Documentation'],
+    limits: ['Manual CRM Export', 'No real-time sync']
   },
   pro: {
-    color: 'indigo', icon: Zap, badge: 'Popular',
-    features: ['100 card scans/month', 'Unlimited card designs', 'AI industry & seniority enrichment', 'CRM export (Salesforce, Zoho, Odoo)', 'Full analytics dashboard', 'Priority support'],
-    limits: ['1 seat only', 'No shared Rolodex']
+    color: 'indigo', icon: Zap, badge: 'Advanced',
+    features: ['5,000 AI Credit Points / month', 'Gemini Pro Vision Engine', 'Real-time CRM Sync (Live)', 'Priority Verification Support', 'Custom AI Identity Policy', 'No Branding on Digital Cards'],
+    limits: ['Up to 10 Seats']
   },
   enterprise: {
-    color: 'amber', icon: Crown, badge: 'Best Value',
-    features: ['Unlimited scans', 'Up to 50 seats', 'Shared Rolodex (team view)', 'Live duplicate detection', 'Lead routing automation', 'CRM sync & API access', 'Workspace analytics', 'Dedicated support'],
+    color: 'amber', icon: Crown, badge: 'Scale',
+    features: ['Unlimited Credit Points', 'Custom AI Training (Your Industry)', 'Single Sign-On (SSO) & SAML', 'Global Workspace Audit Trails', 'Dedicated Account Manager', 'Bulk Team Member Workspaces'],
     limits: []
   }
 };
@@ -28,58 +28,58 @@ function PlanCard({ plan, currentTier, onUpgrade, loading }) {
   const isCurrentPlan = currentTier === plan.id;
   const tierWeights = { personal: 0, pro: 1, enterprise: 2 };
   const isDowngrade = tierWeights[plan.id] < tierWeights[currentTier];
-  const colorMap = { gray: 'border-gray-200 dark:border-gray-800', indigo: 'border-indigo-400 dark:border-indigo-600', amber: 'border-amber-400 dark:border-amber-600' };
-  const badgeMap = { Popular: 'bg-indigo-600 text-white', 'Best Value': 'bg-amber-500 text-white', Free: 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300' };
+  const colorMap = { gray: 'border-white/10 bg-white/5', indigo: 'border-indigo-500/30 bg-indigo-500/5', amber: 'border-amber-500/30 bg-amber-500/5' };
+  const badgeMap = { Scale: 'bg-amber-500 text-white', Advanced: 'bg-indigo-600 text-white', Starter: 'bg-gray-700 text-gray-300' };
 
   return (
-    <div className={`relative bg-white dark:bg-gray-900 rounded-3xl border-2 ${colorMap[cfg.color]} p-8 flex flex-col hover:shadow-2xl transition-shadow ${plan.id === 'pro' ? 'shadow-indigo-100 dark:shadow-indigo-900/20 shadow-xl' : 'shadow-sm'}`}>
+    <div className={`relative rounded-3xl border-2 ${colorMap[cfg.color]} p-8 flex flex-col shadow-2xl transition-all duration-300 hover:scale-[1.02] ${plan.id === 'pro' ? 'border-indigo-500 shadow-indigo-500/10' : ''}`}>
       {cfg.badge && (
-        <span className={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[11px] font-black uppercase tracking-widest ${badgeMap[cfg.badge]}`}>
+        <span className={`absolute -top-3 left-8 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${badgeMap[cfg.badge]}`}>
           {cfg.badge}
         </span>
       )}
-      <div className="flex items-center gap-3 mb-6">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${cfg.color === 'indigo' ? 'bg-indigo-100 dark:bg-indigo-900/30' : cfg.color === 'amber' ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-gray-100 dark:bg-gray-800'}`}>
-          <IconComp size={20} className={cfg.color === 'indigo' ? 'text-indigo-600' : cfg.color === 'amber' ? 'text-amber-600' : 'text-gray-500'} />
+      <div className="flex items-center gap-3 mb-6 pt-2">
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${cfg.color === 'indigo' ? 'bg-indigo-500/20' : cfg.color === 'amber' ? 'bg-amber-500/20' : 'bg-white/10'}`}>
+          <IconComp size={24} className={cfg.color === 'indigo' ? 'text-indigo-400' : cfg.color === 'amber' ? 'text-amber-400' : 'text-gray-400'} />
         </div>
-        <h3 className="font-headline font-extrabold text-xl text-gray-900 dark:text-white">{plan.name}</h3>
+        <h3 className="font-headline font-black italic text-2xl text-white uppercase tracking-tighter">{plan.name}</h3>
       </div>
       <div className="mb-6">
         {plan.price === 0 ? (
-          <p className="text-4xl font-black text-gray-900 dark:text-white">Free</p>
+          <p className="text-4xl font-black text-white italic">Free</p>
         ) : (
           <div className="flex items-baseline gap-1">
             <span className="text-2xl font-bold text-gray-500">₹</span>
-            <span className="text-4xl font-black text-gray-900 dark:text-white">{plan.price.toLocaleString()}</span>
-            <span className="text-gray-500 font-medium">/mo</span>
+            <span className="text-5xl font-black text-white italic tracking-tighter">{plan.price.toLocaleString()}</span>
+            <span className="text-gray-500 font-black text-xs uppercase ml-1">/ mo</span>
           </div>
         )}
       </div>
-      <ul className="space-y-2.5 mb-8 flex-1">
+      <ul className="space-y-4 mb-10 flex-1">
         {cfg.features.map(f => (
-          <li key={f} className="flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300">
-            <Check size={16} className={`shrink-0 mt-0.5 ${cfg.color === 'indigo' ? 'text-indigo-500' : cfg.color === 'amber' ? 'text-amber-500' : 'text-emerald-500'}`} />
+          <li key={f} className="flex items-start gap-3 text-sm font-bold text-gray-300">
+            <CheckCircle2 size={18} className={`shrink-0 ${cfg.color === 'indigo' ? 'text-indigo-500' : cfg.color === 'amber' ? 'text-amber-500' : 'text-emerald-500'}`} />
             {f}
           </li>
         ))}
         {cfg.limits.map(l => (
-          <li key={l} className="flex items-start gap-2.5 text-sm text-gray-400">
-            <span className="shrink-0 mt-0.5 w-4 h-4 flex items-center justify-center text-gray-300 font-bold text-xs">–</span>
+          <li key={l} className="flex items-start gap-3 text-sm font-medium text-gray-500">
+            <X size={18} className="shrink-0 text-gray-600" />
             {l}
           </li>
         ))}
       </ul>
       {isCurrentPlan ? (
-        <div className="py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-center text-sm font-bold text-gray-600 dark:text-gray-300">Current Plan</div>
+        <div className="py-4 rounded-2xl bg-white/5 border border-white/10 text-center text-xs font-black uppercase tracking-widest text-indigo-400">Your Current Active Tier</div>
       ) : isDowngrade ? (
-        <div className="py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-center text-sm text-gray-400">Included with Free</div>
+        <div className="py-4 rounded-2xl border border-white/5 text-center text-xs font-black uppercase text-gray-600">Standard Access</div>
       ) : (
         <button onClick={() => onUpgrade(plan.id)} disabled={loading}
-          className={`w-full py-3 rounded-xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${
-            cfg.color === 'amber' ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/25'
-            : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/25'
+          className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 ${
+            cfg.color === 'amber' ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xl shadow-amber-500/20'
+            : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-500/20'
           } disabled:opacity-60`}>
-          {loading ? <RefreshCw size={16} className="animate-spin" /> : <><ArrowUpRight size={16} /> Upgrade to {plan.id.charAt(0).toUpperCase() + plan.id.slice(1)}</>}
+          {loading ? <RefreshCw size={16} className="animate-spin" /> : <><Sparkles size={16} /> Elevate to {plan.name}</>}
         </button>
       )}
     </div>
@@ -129,8 +129,8 @@ export default function BillingPage() {
     load();
   }, [token]);
 
-  const handleUpgrade = (plan) => {
-    navigate(`/dashboard/checkout/${plan}`);
+  const handleUpgrade = (planId) => {
+    navigate('/subscription-plan-comparison');
   };
 
   const refreshPaymentMethods = async () => {
@@ -270,6 +270,7 @@ export default function BillingPage() {
             Go Scan <ArrowUpRight size={16} />
           </button>
         </div>
+
         <div className="flex justify-between items-end mb-2">
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{quota?.used || 0} / {quota?.limit || 10} scans used</p>
           <span className={`text-sm font-black ${usedPct >= 85 ? 'text-red-500' : 'text-gray-900 dark:text-white'}`}>{usedPct}%</span>
@@ -278,6 +279,40 @@ export default function BillingPage() {
           <div className={`h-full rounded-full transition-all ${usedPct >= 85 ? 'bg-red-500' : usedPct >= 60 ? 'bg-amber-500' : 'bg-indigo-500'}`} style={{ width: `${usedPct}%` }} />
         </div>
         {usedPct >= 85 && <p className="text-xs text-red-500 mt-2 font-medium">⚠️ Approaching limit — upgrade to avoid disruption.</p>}
+
+        {/* Auto-pay Toggle */}
+        {currentTier !== 'personal' && (
+          <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+            <div>
+              <h4 className="text-sm font-bold text-gray-900 dark:text-white">Auto-Pay Renewal</h4>
+              <p className="text-xs text-gray-500">Automatically renew your {currentTier} plan when it expires.</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                className="sr-only peer" 
+                checked={quota?.auto_pay || false}
+                onChange={async (e) => {
+                  const enabled = e.target.checked;
+                  try {
+                    const res = await fetch('/api/billing/auto-pay', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                      body: JSON.stringify({ enabled })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error);
+                    setQuota(prev => ({ ...prev, auto_pay: data.auto_pay }));
+                    setMessage({ text: data.message, type: 'success' });
+                  } catch (err) {
+                    setMessage({ text: err.message, type: 'error' });
+                  }
+                }}
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+            </label>
+          </div>
+        )}
       </div>
 
       {/* Plans */}

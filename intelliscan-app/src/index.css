@@ -14,15 +14,15 @@
   --sidebar-text: #BBA8C8;
   --accent: #1890FF;
   
-  /* Vibrant Light Mode Overhaul */
-  --surface: #F4F7FA;
-  --surface-card: #FFFFFF;
-  --border-subtle: #E2E8F0;
-  --text-main: #1A202C;
-  --text-muted: #4A5568;
-  --shadow-vibrant: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.4);
+  /* Warm Creamy Light Mode */
+  --surface: #FAF8F5;
+  --surface-card: #FFFDF9;
+  --border-subtle: #E8E2D9;
+  --text-main: #2D2518;
+  --text-muted: #6B5E4F;
+  --shadow-vibrant: 0 10px 15px -3px rgba(45, 37, 24, 0.08), 0 4px 6px -2px rgba(45, 37, 24, 0.04);
+  --glass-bg: rgba(255, 253, 249, 0.75);
+  --glass-border: rgba(232, 226, 217, 0.5);
 }
 
 .dark {

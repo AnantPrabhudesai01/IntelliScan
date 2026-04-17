@@ -38,13 +38,20 @@ router.get('/quota', authenticateToken, async (req, res) => {
 
     const limits = resolveTierLimits(displayTier);
 
+    // Fetch the latest paid order to check auto-pay status
+    const latestOrder = await dbGetAsync(
+      `SELECT auto_pay FROM billing_orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 1`,
+      [req.user.id]
+    );
+
     res.json({
       tier: displayTier,
       used: Number(quota?.used_count || 0),
       limit: Number(quota?.limit_amount || limits.single),
       group_scans_used: Number(quota?.group_scans_used || 0),
       group_scans_limit: Number(limits.group),
-      tierMatch: (req.user.tier || '').toLowerCase() === displayTier.toLowerCase()
+      tierMatch: (req.user.tier || '').toLowerCase() === displayTier.toLowerCase(),
+      auto_pay: !!latestOrder?.auto_pay
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

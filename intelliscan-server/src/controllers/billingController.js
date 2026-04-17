@@ -255,3 +255,37 @@ exports.verifyPayment = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+/**
+ * POST /api/billing/auto-pay
+ * Toggle auto-pay for the user's active subscription
+ */
+exports.toggleAutoPay = async (req, res) => {
+  try {
+    const enabled = req.body.enabled === true || req.body.enabled === 'true';
+    const userId = req.user.id;
+
+    // Find the user's latest paid order
+    const order = await dbGetAsync(
+      `SELECT id FROM billing_orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 1`,
+      [userId]
+    );
+
+    if (!order) {
+      return res.status(404).json({ error: 'No active subscription found. Upgrade first.' });
+    }
+
+    await dbRunAsync('UPDATE billing_orders SET auto_pay = ? WHERE id = ?', [enabled ? 1 : 0, order.id]);
+
+    logAuditEvent(req, {
+      action: 'BILLING_AUTOPAY_TOGGLE',
+      resource: '/api/billing/auto-pay',
+      status: AUDIT_SUCCESS,
+      details: { enabled, order_id: order.id }
+    });
+
+    res.json({ success: true, auto_pay: enabled, message: enabled ? 'Auto-pay enabled. Your plan will renew automatically.' : 'Auto-pay disabled.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
