@@ -63,7 +63,8 @@ exports.updateSequence = async (req, res) => {
     if (!sequence) return res.status(404).json({ error: 'Sequence not found' });
 
     if (name) {
-      await dbRunAsync('UPDATE email_sequences SET name = ?, updated_at = NOW() WHERE id = ?', [name, req.params.id]);
+      const timestamp = new Date().toISOString();
+      await dbRunAsync(isPostgres ? 'UPDATE email_sequences SET name = ?, updated_at = NOW() WHERE id = ?' : 'UPDATE email_sequences SET name = ?, updated_at = ? WHERE id = ?', isPostgres ? [name, req.params.id] : [name, timestamp, req.params.id]);
     }
 
     if (steps && Array.isArray(steps)) {
@@ -152,11 +153,18 @@ exports.processPendingSequences = async () => {
         if (step.ai_intent) {
           try {
             const aiPrompt = `Write a professional, context-aware email for a networking sequence.
-Contact: ${p.contact_name} at ${p.contact_company} (${p.contact_job_title || 'N/A'})
-Intent: ${step.ai_intent}
+Contact: ${p.contact_name}
+Company: ${p.contact_company}
+Job Title: ${p.contact_job_title || 'N/A'}
+Industry: ${p.contact_industry || 'N/A'}
+
+Intent / Instruction: ${step.ai_intent}
 Base Template: ${step.html_body}
 
-Ensure the tone is professional but natural. Return ONLY the JSON body:
+[CRITICAL]
+- Ensure the tone is professional but natural.
+- Use the provided context to make it feel personalized.
+- Return ONLY the JSON body:
 {
   "personalized_subject": "...",
   "personalized_body": "..."
@@ -419,20 +427,134 @@ exports.getAnalyticsOverview = async (req, res) => {
   }
 };
 
+// --- LIST MANAGEMENT ---
+
+// GET /api/email/lists
+exports.getLists = async (req, res) => {
+  try {
+    const lists = await dbAllAsync(`
+      SELECT l.*, (SELECT COUNT(*) FROM email_list_contacts WHERE list_id = l.id) as contact_count 
+      FROM email_lists l 
+      WHERE l.user_id = ? 
+      ORDER BY l.created_at DESC`, [req.user.id]);
+    
+    // Auto-seed a default list if none exist for a smoother UX
+    if (lists.length === 0) {
+      const result = await dbRunAsync("INSERT INTO email_lists (user_id, name, description) VALUES (?, ?, ?)", [req.user.id, "All Scanned Contacts", "Automatically populated from your recent scans"]);
+      const newList = { id: result.lastID, name: "All Scanned Contacts", description: "Automatically populated from your recent scans", contact_count: 0 };
+      
+      // Attempt to sync some contacts into this list
+      const recentContacts = await dbAllAsync("SELECT email, name, company FROM contacts WHERE user_id = ? AND is_deleted = 0 LIMIT 50", [req.user.id]);
+      for (const c of recentContacts) {
+        await dbRunAsync("INSERT OR IGNORE INTO email_list_contacts (list_id, email, first_name, company) VALUES (?, ?, ?, ?)", [result.lastID, c.email, c.name?.split(' ')[0], c.company]);
+      }
+      newList.contact_count = recentContacts.length;
+      return res.json({ success: true, lists: [newList] });
+    }
+
+    res.json({ success: true, lists });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+// --- TEMPLATE MANAGEMENT ---
+
+// GET /api/email/templates
+exports.getTemplates = async (req, res) => {
+  try {
+    const templates = await dbAllAsync("SELECT * FROM email_templates WHERE user_id = ? ORDER BY created_at DESC", [req.user.id]);
+    res.json({ success: true, templates });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+// POST /api/email/templates/generate-ai
+exports.generateAiTemplate = async (req, res) => {
+  const { purpose, tone, industry, companyName, recipientType, keyMessage, callToAction } = req.body;
+  
+  try {
+    const prompt = `Act as a world-class growth marketer. Write a highly converting email campaign.
+    Purpose: ${purpose}
+    Tone: ${tone}
+    Industry: ${industry}
+    Company: ${companyName}
+    Target Recipient: ${recipientType}
+    Payload/Value Proposition: ${keyMessage}
+    Desired Action: ${callToAction}
+
+    ### PREMIUM HTML GUIDELINES:
+    1. **Structure**: Use a clean, single-column layout with generous padding.
+    2. **Typography**: Use professional sans-serif fonts (Helvetica, Arial).
+    3. **Aesthetics**: Use subtle shadows, rounded corners for buttons, and a clean white/light-gray background.
+    4. **Animation Hook**: Add a class 'animate fadeInUp' to the main content div (our frontend simulator will handle the movement).
+    5. **Personalization**: Use {{firstName}} or {{name}}.
+
+    Return a JSON object with:
+    {
+      "subject": "Compelling subject line",
+      "preview_text": "Short engaging preview snippet",
+      "html": "A high-fidelity HTML email body using inline CSS. Ensure and <style> block is NOT needed; everything must be inline. Place content inside a <div style='max-width: 600px; margin: 0 auto; font-family: sans-serif; padding: 40px; border-radius: 16px; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.05);'>."
+    }`;
+
+    const aiRes = await unifiedTextAIPipeline({
+      prompt,
+      responseFormat: 'json',
+      model: 'gemini' // Fastest for template structure
+    });
+
+    if (aiRes.success) {
+      res.json({ success: true, ...aiRes.data });
+    } else {
+      throw new Error("AI engine failed to materialize template");
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
 // ── HELPERS ──
 
 /** Template variable substitutions for email campaigns */
 function applyTemplateVariables(template, contact) {
   if (!template) return '';
-  // Support both snake_case (legacy) and camelCase (new) placeholders
   return String(template)
     .replace(/\{\{firstName\}\}/gi, String(contact?.first_name || contact?.name || 'there').split(/\s+/)[0])
     .replace(/\{\{first_name\}\}/gi, String(contact?.first_name || contact?.name || 'there').split(/\s+/)[0])
+    .replace(/\{\{lastName\}\}/gi, String(contact?.last_name || '').split(/\s+/).pop())
     .replace(/\{\{last_name\}\}/gi, String(contact?.last_name || '').split(/\s+/).pop())
     .replace(/\{\{name\}\}/gi, String(contact?.name || contact?.first_name || ''))
     .replace(/\{\{email\}\}/gi, String(contact?.email || ''))
-    .replace(/\{\{company\}\}/gi, String(contact?.company || ''))
-    .replace(/\{\{title\}\}/gi, String(contact?.job_title || ''))
-    .replace(/\{\{industry\}\}/gi, String(contact?.inferred_industry || ''))
-    .replace(/\{\{seniority\}\}/gi, String(contact?.inferred_seniority || ''));
+    .replace(/\{\{company\}\}/gi, String(contact?.company || 'partner organization'))
+    .replace(/\{\{job_title\}\}/gi, String(contact?.job_title || 'Professional'))
+    .replace(/\{\{title\}\}/gi, String(contact?.job_title || 'Professional'))
+    .replace(/\{\{industry\}\}/gi, String(contact?.industry || contact?.inferred_industry || 'relevant industry'))
+    .replace(/\{\{seniority\}\}/gi, String(contact?.inferred_seniority || ''))
+    .replace(/\{\{senderName\}\}/gi, 'IntelliScan AI Team');
 }
+
+/**
+ * Internal helper to automatically add a contact to the user's default list.
+ * Ensuring newly scanned cards are immediately available for campaigns.
+ */
+exports.syncContactToDefaultList = async (userId, contact) => {
+  if (!contact.email) return;
+  try {
+    // 1. Find or Create default list
+    let list = await dbGetAsync('SELECT id FROM email_lists WHERE user_id = ? AND name = ?', [userId, "All Scanned Contacts"]);
+    if (!list) {
+      const result = await dbRunAsync("INSERT INTO email_lists (user_id, name, description) VALUES (?, ?, ?)", [userId, "All Scanned Contacts", "Automatically populated from your scans"]);
+      list = { id: result.lastID };
+    }
+
+    // 2. Upsert contact into list (using unique constraint added in boot.js)
+    await dbRunAsync(
+      "INSERT INTO email_list_contacts (list_id, email, first_name, company) VALUES (?, ?, ?, ?) ON CONFLICT(list_id, email) DO UPDATE SET first_name = EXCLUDED.first_name, company = EXCLUDED.company",
+      [list.id, contact.email, contact.name?.split(' ')[0], contact.company]
+    );
+    console.log(`[Marketing Sync] Contact ${contact.email} synced to List: ${list.id}`);
+  } catch (err) {
+    console.error('[Marketing Sync Error]', err.message);
+  }
+};

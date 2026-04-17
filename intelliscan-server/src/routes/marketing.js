@@ -16,6 +16,11 @@ router.post('/campaigns', authenticateToken, requireTier('enterprise'), marketin
 router.get('/campaigns/:id', authenticateToken, requireTier('enterprise'), marketingController.getCampaignById);
 router.post('/campaigns/:id/send', authenticateToken, requireTier('enterprise'), marketingController.sendCampaign);
 
+// Resource Retrieval Routes (Audience & Templates)
+router.get('/lists', authenticateToken, marketingController.getLists);
+router.get('/templates', authenticateToken, marketingController.getTemplates);
+router.post('/templates/generate-ai', authenticateToken, marketingController.generateAiTemplate);
+
 // Tracking & Analytics (Public & Protected)
 router.get('/track/open/:trackingId', marketingController.trackOpen);
 router.get('/track/click/:trackingId', marketingController.trackClick);

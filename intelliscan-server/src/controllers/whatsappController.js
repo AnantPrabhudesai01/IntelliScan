@@ -29,11 +29,9 @@ exports.handleIncomingMessage = async (req, res) => {
   const { From, Body, MediaUrl0, MediaContentType0, FromCity, FromState, FromCountry } = req.body;
   const fromPhone = normalizePhone(From);
 
-  // ⚡️ SPEED FIX: Send 200 OK immediately to Twilio to prevent timeout
-  res.status(200).send('<Response></Response>');
-
-  // 🕵️ Proceed with processing in the background
+  // 🕵️ Proceed with processing
   try {
+    console.log(`[WhatsApp Incoming] Message from ${fromPhone}`);
     // 1. Resolve User
     const user = await dbGetAsync('SELECT * FROM users WHERE phone_number = ?', [fromPhone]);
 
@@ -46,7 +44,7 @@ exports.handleIncomingMessage = async (req, res) => {
         const discoCode = discoMatch[0].toUpperCase();
         console.log(`[WhatsApp] Discovery detected! Code: ${discoCode} for Phone: ${fromPhone}`);
         await dbRunAsync(
-          'INSERT INTO whatsapp_discoveries (discovery_code, phone_number) VALUES (?, ?) ON CONFLICT (discovery_code) DO UPDATE SET phone_number = EXCLUDED.phone_number, created_at = NOW()',
+          'INSERT INTO whatsapp_discoveries (discovery_code, phone_number) VALUES (?, ?) ON CONFLICT (discovery_code) DO UPDATE SET phone_number = EXCLUDED.phone_number, created_at = CURRENT_TIMESTAMP',
           [discoCode, fromPhone]
         );
         return sendWhatsAppReply(From, `✨ *Discovery Code Detected!* I've linked your session. Now, go back to the IntelliScan dashboard to complete your registration! 🚀`);
@@ -176,6 +174,11 @@ Return ONLY a valid JSON object:
 
         // 📧 Auto-Followup Trigger (If Email exists)
         if (normalized.email) {
+          // Automation Hook: Sync to Marketing List
+          const marketingController = require('./marketingController');
+          marketingController.syncContactToDefaultList(user.id, normalized)
+            .catch(e => console.error('[WhatsApp Sync Hook Error]', e.message));
+
           // Send after a short delay (10 seconds for demo, can be longer for prod)
           setTimeout(() => {
             sendFollowupEmail({ ...normalized, id: contactId, location_context: locationStr })
@@ -210,7 +213,7 @@ Return ONLY a valid JSON object:
 
     await sendWhatsAppReply(From, replyMsg);
 
-    notifyUser(user.id, {
+    await notifyUser(user.id, {
       type: 'success',
       title: 'Batch Scan Success',
       message: `Processed ${cards.length} cards from WhatsApp photo.`
@@ -218,8 +221,19 @@ Return ONLY a valid JSON object:
 
   } catch (error) {
     console.error('[WhatsApp Webhook Error]', error);
-    if (error.message.includes('timeout') || error.message.includes('engine')) {
-      sendWhatsAppReply(From, `⚠️ AI Error: The image was too complex or AI is slow. I'll keep trying! Check your dashboard in a minute.`);
+    if (error.message.includes('download')) {
+      await sendWhatsAppReply(From, `❌ Failed to download your photo. Please check your internet connection or try sending the image again!`);
+    } else if (error.message.includes('timeout') || error.message.includes('engine')) {
+      await sendWhatsAppReply(From, `⚠️ AI Error: The image was too complex or AI is slow. I'll keep trying! Check your dashboard in a minute.`);
+    } else {
+      await sendWhatsAppReply(From, `❌ Sorry, something went wrong while processing your request. Please try again later.`);
+    }
+  } finally {
+    // ⚡️ FINAL RESPONSE: Always send a 200 OK TwiML to Twilio to conclude the webhook session
+    try {
+      res.status(200).send('<Response></Response>');
+    } catch (e) {
+      console.error('[WhatsApp Final Response Error]', e.message);
     }
   }
 };

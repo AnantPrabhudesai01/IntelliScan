@@ -11,8 +11,8 @@ const { extractJsonObjectFromText } = require('../utils/aiUtils');
  */
 async function generateWithFallback(prompt) {
   // 1. Try Gemini
-  let geminiKey = process.env.GEMINI_API_KEY;
-  let geminiModelName = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite-preview";
+  let geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
+  let geminiModelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-8b";
   try {
     const customConfig = await dbGetAsync('SELECT value FROM engine_config WHERE key = "gemini_api_key" OR key = "GEMINI_API_KEY" LIMIT 1');
     if (customConfig && customConfig.value) geminiKey = customConfig.value;
@@ -211,10 +211,11 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
   // 1. Gemini (TEMPORARILY DISABLED)
   if (isEngineActive('gemini')) {
     try {
-      const apiKey = process.env.GEMINI_API_KEY;
+      const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
       if (apiKey) {
         // Use REST API for maximum control over version/naming
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`;
+        const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-8b";
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -396,9 +397,10 @@ async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'j
   // 1. Try Gemini (Primary) - TEMPORARILY DISABLED
   /*
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
     if (apiKey) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`;
+      const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-8b";
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -547,7 +549,8 @@ Return ONLY a valid JSON object:
       return { valid: true }; // Fallback to allow if AI is unconfigured
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`;
+    const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-8b";
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -577,6 +580,52 @@ Return ONLY a valid JSON object:
   }
 }
 
+/**
+ * Unified Image AI Pipeline for generating professional brand assets (e.g. Logos).
+ */
+async function unifiedImageGeneration({ prompt, size = '1024x1024', model = 'openai/dall-e-3' }) {
+  try {
+    const orKey = process.env.OPENROUTER_API_KEY;
+    if (!orKey) {
+      console.warn('[AI Service] No OpenRouter API Key. Image generation is disabled.');
+      return { success: false, error: 'AI Image Engine not configured' };
+    }
+
+    console.log(`[AI Service] Generating image with ${model}...`);
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${orKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: model,
+        prompt: prompt,
+        size: size,
+        response_format: 'url'
+      })
+    });
+
+    const result = await response.json();
+    if (result.data?.[0]?.url) {
+      return { success: true, url: result.data[0].url };
+    }
+    
+    // Some OpenRouter image models use the chat completion format for some reason
+    if (result.choices?.[0]?.message?.content) {
+      const content = result.choices[0].message.content;
+      // If it returns a URL in text
+      const urlMatch = content.match(/https:\/\/\S+/);
+      if (urlMatch) return { success: true, url: urlMatch[0] };
+    }
+
+    throw new Error(result.error?.message || 'Image Generation API Error');
+  } catch (err) {
+    console.error('[AI Image Generation Failed]', err.message);
+    return { success: false, error: err.message };
+  }
+}
+
 module.exports = {
   generateWithFallback,
   generateEmbedding,
@@ -584,5 +633,6 @@ module.exports = {
   runTesseractOcrInWorker,
   unifiedExtractionPipeline,
   unifiedTextAIPipeline,
+  unifiedImageGeneration,
   validateProfilePhoto
 };

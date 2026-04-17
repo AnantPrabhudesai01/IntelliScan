@@ -46,6 +46,7 @@ const coachRouter = require('./routes/coach');
 const analyticsRouter = require('./routes/analytics');
 const systemRouter = require('./routes/system');
 const publicRouter = require('./routes/public');
+const integrationsRouter = require('./routes/integrations');
 
 // Controllers
 const scanController = require('./controllers/scanController');
@@ -139,6 +140,7 @@ app.get('/api/my-card', authenticateToken, cardController.getMyCard);
 
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/signals', analyticsRouter);
+app.use('/api/integrations', integrationsRouter);
 
 // Centralized Error Handling
 app.use((err, req, res, next) => {

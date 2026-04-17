@@ -163,6 +163,11 @@ exports.createContact = async (req, res) => {
 
     res.status(201).json({ success: true, contact_id: contactId });
     
+    // Automation Hook: Sync to Marketing List
+    const marketingController = require('./marketingController');
+    marketingController.syncContactToDefaultList(req.user.id, { email, name, company })
+      .catch(e => console.error('[Sync Hook Error]', e.message));
+
     // Multi-Device Real-time Sync
     if (getIo()) {
       getIo().to(`user-${req.user.id}`).emit('contacts_updated', { action: 'create', id: contactId });

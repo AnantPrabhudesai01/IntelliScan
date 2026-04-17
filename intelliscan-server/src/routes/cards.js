@@ -18,10 +18,10 @@ router.get('/my-card', authenticateToken, cardsController.getMyCard);
 router.post('/save', authenticateToken, cardsController.saveCard);
 
 /**
- * @route POST /api/cards/generate-design
- * @desc Generate a premium design using Gemini AI.
+ * @route POST /api/cards/generate-logo
+ * @desc Generate an AI branding logo.
  * @access Private
  */
-router.post('/generate-design', authenticateToken, cardsController.generateAiDesign);
+router.post('/generate-logo', authenticateToken, cardsController.generateAiLogo);
 
 module.exports = router;

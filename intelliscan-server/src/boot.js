@@ -245,21 +245,23 @@ async function bootstrap() {
     `);
 
     // Seed default models if none exist
-    const modelCount = await dbGetAsync('SELECT COUNT(*) as cnt FROM ai_models');
-    if (modelCount.cnt === 0) {
-      const defaultModels = [
-        ['Gemini 3 Flash (Primary)', 'Outreach / Vision', 'google/gemini-2.0-flash-001', 'deployed', 98.4, 450, 0, 12450],
-        ['OpenAI GPT-4o Mini', 'Logic / Speed', 'openai/gpt-4o-mini', 'deployed', 96.2, 320, 0, 8900],
-        ['Claude 3.5 Sonnet', 'High Reasoning', 'anthropic/claude-3.5-sonnet', 'deployed', 98.8, 650, 0, 500],
-        ['Llama 3 70B (Base)', 'Signal Aggregator', 'meta-llama/llama-3-70b-instruct', 'training', 92.1, 1200, 48.2, 450]
-      ];
-      for (const m of defaultModels) {
+    const defaultModels = [
+      ['Nvidia Nemotron 340B (Primary)', 'Flagship Intelligence', 'nvidia/nemotron-4-340b-instruct', 'deployed', 99.1, 750, 0, 0],
+      ['Gemini 3 Flash (Secondary)', 'Outreach / Vision', 'google/gemini-2.0-flash-001', 'deployed', 98.4, 450, 0, 12450],
+      ['OpenAI GPT-4o Mini', 'Logic / Speed', 'openai/gpt-4o-mini', 'deployed', 96.2, 320, 0, 8900],
+      ['Claude 3.5 Sonnet', 'High Reasoning', 'anthropic/claude-3.5-sonnet', 'deployed', 98.8, 650, 0, 500],
+      ['Llama 3 70B (Base)', 'Signal Aggregator', 'meta-llama/llama-3-70b-instruct', 'training', 92.1, 1200, 48.2, 450]
+    ];
+
+    for (const m of defaultModels) {
+      const exists = await dbGetAsync('SELECT id FROM ai_models WHERE api_model_id = ?', [m[2]]);
+      if (!exists) {
         await dbRunAsync(
           'INSERT INTO ai_models (name, type, api_model_id, status, accuracy, latency_ms, vram_gb, calls_30d) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
           m
         );
+        console.log(`🤖 System: Seeded AI Model: ${m[0]}`);
       }
-      console.log('🤖 System: AI Models seeded successfully.');
     }
 
     await dbRunAsync(`
@@ -324,6 +326,122 @@ async function bootstrap() {
         console.warn(`[Boot] Patch check failed for ${patch.table}.${patch.column} (Table might not exist yet):`, patchErr.message);
       }
     }
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS email_lists (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        name TEXT NOT NULL,
+        description TEXT,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS email_list_contacts (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        list_id INTEGER NOT NULL REFERENCES email_lists(id) ON DELETE CASCADE,
+        email TEXT NOT NULL,
+        first_name TEXT,
+        last_name TEXT,
+        company TEXT,
+        subscribed INTEGER DEFAULT 1,
+        unsubscribed_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        UNIQUE(list_id, email)
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS email_templates (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        name TEXT NOT NULL,
+        subject TEXT,
+        html_body TEXT NOT NULL,
+        preview_text TEXT,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS email_campaigns (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        name TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        preview_text TEXT,
+        from_name TEXT,
+        from_email TEXT,
+        reply_to TEXT,
+        html_body TEXT NOT NULL,
+        text_body TEXT,
+        template_id INTEGER REFERENCES email_templates(id),
+        list_ids TEXT, -- Store as JSON array string for list IDs
+        status TEXT DEFAULT 'draft',
+        sent_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS email_sends (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        campaign_id INTEGER NOT NULL REFERENCES email_campaigns(id) ON DELETE CASCADE,
+        email TEXT NOT NULL,
+        first_name TEXT,
+        tracking_id TEXT UNIQUE,
+        status TEXT DEFAULT 'pending',
+        sent_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        opened_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        clicked_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        unsubscribed_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        open_count INTEGER DEFAULT 0,
+        click_count INTEGER DEFAULT 0,
+        bounce_reason TEXT
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS email_clicks (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        send_id INTEGER NOT NULL REFERENCES email_sends(id) ON DELETE CASCADE,
+        campaign_id INTEGER NOT NULL REFERENCES email_campaigns(id) ON DELETE CASCADE,
+        url TEXT NOT NULL,
+        timestamp ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS workspace_integrations (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        app_id TEXT NOT NULL,
+        config_json TEXT,
+        is_active BOOLEAN DEFAULT false,
+        last_sync_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        UNIQUE(user_id, app_id)
+      )
+    `);
+
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS whatsapp_discoveries (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        discovery_code TEXT UNIQUE NOT NULL,
+        phone_number TEXT NOT NULL,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
+    
+    await dbRunAsync(`
+      CREATE TABLE IF NOT EXISTS coach_insights_cache (
+        user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+        insights_json TEXT NOT NULL,
+        contact_count_at_cache INTEGER DEFAULT 0,
+        updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )
+    `);
 
     // ══════════════════════════════════════════════════════════════════
     // 3. System Seeding

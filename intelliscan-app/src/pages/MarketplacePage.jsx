@@ -1,41 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, Star, Download, Cloud, Globe, MessageSquare, Database, ArrowRight, CheckCircle2, Settings2, X, ExternalLink, Zap, RefreshCw, Check, AlertTriangle, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getStoredToken } from '../utils/auth';
 
 const apps = [
   {
-    id: 1, name: 'Salesforce CRM', icon: Cloud, category: 'CRM', color: 'text-[#00a1e0]', installed: true,
+    id: 'salesforce', name: 'Salesforce CRM', icon: Cloud, category: 'CRM', color: 'text-[#00a1e0]', 
     desc: 'Automatically sync parsed business cards as new Leads or Contacts in Salesforce.',
     configFields: ['Salesforce Domain', 'API Key', 'Sync Frequency'],
-    configValues: { 'Salesforce Domain': 'intelliscan.my.salesforce.com', 'API Key': 'sf_••••••••••••4f92', 'Sync Frequency': 'Real-time' },
     badge: 'Auto-sync Active',
   },
   {
-    id: 2, name: 'HubSpot', icon: Globe, category: 'Marketing', color: 'text-[#ff5a5f]', installed: false,
+    id: 'hubspot', name: 'HubSpot', icon: Globe, category: 'Marketing', color: 'text-[#ff5a5f]', 
     desc: 'Enrich incoming scanned prospects with HubSpot marketing data instantly.',
     configFields: ['HubSpot API Key', 'Pipeline', 'Default Owner'],
-    configValues: {},
     badge: 'Install Required',
   },
   {
-    id: 3, name: 'Slack Notifications', icon: MessageSquare, category: 'Communication', color: 'text-indigo-400', installed: true,
+    id: 'slack', name: 'Slack Notifications', icon: MessageSquare, category: 'Communication', color: 'text-indigo-400', 
     desc: 'Get a direct message in Slack whenever a VIP contact is scanned at an event.',
     configFields: ['Slack Webhook URL', 'Channel', 'Alert Trigger'],
-    configValues: { 'Slack Webhook URL': 'https://hooks.slack.com/T0••••/B••••', 'Channel': '#sales-vip-alerts', 'Alert Trigger': 'VIP tag on scan' },
     badge: 'Active',
   },
   {
-    id: 4, name: 'Snowflake Sync', icon: Database, category: 'Data Warehouse', color: 'text-indigo-400', installed: false,
+    id: 'snowflake', name: 'Snowflake Sync', icon: Database, category: 'Data Warehouse', color: 'text-indigo-400', 
     desc: 'Enterprise data warehouse pipeline. Requires business admin approval.',
     configFields: ['Account Identifier', 'Warehouse', 'Database Schema'],
-    configValues: {},
     badge: 'Approval Required',
   },
   {
-    id: 5, name: 'Google Sheets', icon: Database, category: 'Export', color: 'text-emerald-500', installed: false,
+    id: 'sheets', name: 'Google Sheets', icon: Database, category: 'Export', color: 'text-emerald-500', 
     desc: 'Real-time appending of scanned contacts to a shared Google Sheet.',
     configFields: ['Sheet ID', 'Tab Name', 'Overwrite Policy'],
-    configValues: {},
     badge: 'Install',
   }
 ];
@@ -43,29 +39,30 @@ const apps = [
 function Toast({ msg }) {
   if (!msg) return null;
   return (
-    <div className="fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-2xl text-sm font-bold text-white bg-green-600 flex items-center gap-3">
+    <div className="fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-2xl text-sm font-bold text-white bg-green-600 flex items-center gap-3 animate-slide-in">
       <Check size={16} /> {msg}
     </div>
   );
 }
 
-function AppModal({ app, onClose, onInstall, onUninstall }) {
-  const [form, setForm] = useState(app.configValues || {});
+function AppModal({ app, onClose, onInstall, onUninstall, initialConfig }) {
+  const [form, setForm] = useState(initialConfig || {});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
+    const success = await onInstall(app.id, form);
+    setSaving(false);
+    if (success) {
       setSaved(true);
-      setTimeout(() => { setSaved(false); onClose(); onInstall(app.id, form); }, 1200);
-    }, 1500);
+      setTimeout(() => { setSaved(false); onClose(); }, 1200);
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-white dark:bg-[#1a2035] border border-gray-200 dark:border-white/10 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+      <div className="bg-white dark:bg-[#1a2035] border border-gray-200 dark:border-white/10 rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden animate-scale-up" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="px-8 py-6 border-b border-gray-100 dark:border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -73,8 +70,8 @@ function AppModal({ app, onClose, onInstall, onUninstall }) {
               <app.icon size={28} className={app.color} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{app.name}</h2>
-              <p className="text-sm text-gray-500">{app.category} Integration</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">{app.name}</h2>
+              <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest">{app.category} Integration</p>
             </div>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-white p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-all">
@@ -84,41 +81,43 @@ function AppModal({ app, onClose, onInstall, onUninstall }) {
 
         {/* Info */}
         <div className="px-8 py-4 bg-indigo-50 dark:bg-indigo-500/10 border-b border-indigo-100 dark:border-indigo-500/20">
-          <p className="text-sm text-indigo-700 dark:text-indigo-300">{app.desc}</p>
+          <p className="text-sm text-indigo-700 dark:text-indigo-300 font-medium">{app.desc}</p>
         </div>
 
         {/* Configuration Form */}
         <div className="px-8 py-6 space-y-4">
-          <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4">
-            {app.installed ? 'Configuration' : 'Setup Configuration'}
+          <h3 className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4">
+            {app.installed ? 'Operational Configuration' : 'Sync Orchestration Setup'}
           </h3>
-          {app.configFields.map(field => (
-            <div key={field}>
-              <label className="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wider">{field}</label>
-              <input
-                type={field.toLowerCase().includes('key') || field.toLowerCase().includes('url') ? 'password' : 'text'}
-                value={form[field] || ''}
-                onChange={e => setForm(f => ({ ...f, [field]: e.target.value }))}
-                placeholder={`Enter ${field.toLowerCase()}...`}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-              />
-            </div>
-          ))}
+          <div className="grid grid-cols-1 gap-4">
+            {app.configFields.map(field => (
+              <div key={field}>
+                <label className="block text-[10px] font-black text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-widest">{field}</label>
+                <input
+                  type={field.toLowerCase().includes('key') || field.toLowerCase().includes('url') ? 'password' : 'text'}
+                  value={form[field] || ''}
+                  onChange={e => setForm(f => ({ ...f, [field]: e.target.value }))}
+                  placeholder={`Enter ${field.toLowerCase()}...`}
+                  className="w-full px-5 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Actions */}
-        <div className="px-8 py-6 border-t border-gray-100 dark:border-white/10 flex items-center justify-between gap-4">
+        <div className="px-8 py-6 border-t border-gray-100 dark:border-white/10 flex items-center justify-between gap-4 bg-gray-50/50 dark:bg-gray-900/30">
           {app.installed && (
             <button onClick={() => { onUninstall(app.id); onClose(); }}
-              className="text-sm text-red-500 hover:text-red-700 font-bold flex items-center gap-1 hover:bg-red-50 dark:hover:bg-red-500/10 px-3 py-2 rounded-lg transition-all">
-              Disconnect
+              className="text-[10px] text-red-500 hover:text-red-700 font-black uppercase tracking-widest flex items-center gap-1.5 hover:bg-red-50 dark:hover:bg-red-500/10 px-4 py-2 rounded-xl transition-all border border-transparent hover:border-red-100 dark:hover:border-red-900/30">
+              <X size={14} /> Disconnect App
             </button>
           )}
           <div className="flex gap-3 ml-auto">
-            <button onClick={onClose} className="px-5 py-2 text-sm font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-white/10 rounded-xl hover:bg-gray-200 dark:hover:bg-white/20 transition-all">Cancel</button>
+            <button onClick={onClose} className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">Cancel</button>
             <button onClick={handleSave} disabled={saving || saved}
-              className={`px-6 py-2 text-sm font-bold text-white rounded-xl transition-all active:scale-95 flex items-center gap-2 ${saved ? 'bg-green-600' : saving ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
-              {saved ? <><Check size={16} /> Saved!</> : saving ? <><RefreshCw size={15} className="animate-spin" /> Connecting...</> : app.installed ? <><Settings2 size={15} /> Save Config</> : <><Zap size={15} /> Install App</>}
+              className={`px-8 py-2.5 text-[10px] font-black uppercase tracking-widest text-white rounded-xl transition-all active:scale-95 flex items-center gap-2 shadow-lg ${saved ? 'bg-emerald-600 shadow-emerald-500/20' : saving ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20'}`}>
+              {saved ? <><Check size={16} /> Saved!</> : saving ? <><RefreshCw size={15} className="animate-spin" /> Verifying...</> : app.installed ? <><Settings2 size={15} /> Save Changes</> : <><Zap size={15} /> Link Account</>}
             </button>
           </div>
         </div>
@@ -130,37 +129,55 @@ function AppModal({ app, onClose, onInstall, onUninstall }) {
 function ApiDocModal({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-white dark:bg-[#1a2035] border border-gray-200 dark:border-white/10 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100 dark:border-white/10">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">API Documentation</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-all">
+      <div className="bg-[#0b1120] border border-white/10 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden animate-scale-up" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-8 py-6 border-b border-white/10">
+          <div>
+            <h2 className="text-xl font-bold text-white uppercase tracking-tighter italic flex items-center gap-2">
+              <Database className="text-indigo-500" /> API Intelligence <span className="text-indigo-500">v2.1</span>
+            </h2>
+            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">Direct Data Orchestration</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all">
             <X size={20} />
           </button>
         </div>
-        <div className="px-8 py-6 space-y-4">
-          <div className="bg-gray-900 rounded-xl p-6 font-mono text-sm text-gray-300 space-y-3">
-            <div><span className="text-amber-400">POST</span> <span className="text-emerald-400">https://api.intelliscan.ai/v2/webhooks</span></div>
-            <div className="pl-4 text-gray-500">Authorization: Bearer {'<YOUR_API_KEY>'}</div>
-            <div className="pl-4 text-gray-500">Content-Type: application/json</div>
-            <pre className="text-indigo-300 mt-3 text-xs overflow-x-auto">{JSON.stringify({ event: 'contact.scanned', target_url: 'https://your-app.com/webhook', secret: 'your_secret_key', filters: { has_email: true, min_confidence: 0.85 } }, null, 2)}</pre>
-          </div>
-          {[
-            { method: 'GET', path: '/v2/contacts', desc: 'List all extracted contacts with pagination' },
-            { method: 'POST', path: '/v2/scan', desc: 'Submit a document for OCR processing' },
-            { method: 'DELETE', path: '/v2/contacts/{id}', desc: 'GDPR-compliant contact deletion' },
-          ].map(ep => (
-            <div key={ep.path} className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/10">
-              <span className={`text-xs font-bold px-2 py-1 rounded ${ep.method === 'GET' ? 'bg-indigo-500/20 text-indigo-400' : ep.method === 'POST' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>{ep.method}</span>
-              <code className="text-sm font-mono text-gray-700 dark:text-gray-300">{ep.path}</code>
-              <span className="text-xs text-gray-500 ml-auto">{ep.desc}</span>
+        <div className="px-8 py-6 space-y-6">
+          <div className="bg-black/40 rounded-2xl p-6 font-mono text-sm text-gray-300 space-y-3 border border-white/5 shadow-inner">
+            <div className="flex items-center justify-between">
+              <div><span className="text-amber-400 font-bold shrink-0">POST</span> <span className="text-indigo-400">/api/v2/webhooks</span></div>
+              <span className="text-[9px] font-black text-gray-600 uppercase">Synchronous</span>
             </div>
-          ))}
+            <div className="pl-4 text-xs text-gray-500 border-l border-gray-800">Authorization: Bearer {'<YOUR_API_KEY>'}</div>
+            <div className="pl-4 text-xs text-gray-500 border-l border-gray-800">Content-Type: application/json</div>
+            <pre className="text-emerald-400/80 mt-3 text-[11px] overflow-x-auto leading-relaxed">{JSON.stringify({ 
+              event: 'contact.scanned', 
+              target_url: 'https://your-app.com/webhook', 
+              secret: 'your_secret_key', 
+              filters: { 
+                has_email: true, 
+                min_confidence: 0.85 
+              } 
+            }, null, 2)}</pre>
+          </div>
+          <div className="grid grid-cols-1 gap-3">
+            {[
+              { method: 'GET', path: '/v2/contacts', desc: 'List extracted contacts with pagination' },
+              { method: 'POST', path: '/v2/scan', desc: 'Submit document for AI OCR processing' },
+              { method: 'DELETE', path: '/v2/contacts/{id}', desc: 'GDPR-compliant contact deletion' },
+            ].map(ep => (
+              <div key={ep.path} className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                <span className={`text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest ${ep.method === 'GET' ? 'bg-indigo-500/20 text-indigo-400' : ep.method === 'POST' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-500'}`}>{ep.method}</span>
+                <code className="text-[11px] font-bold text-gray-200">{ep.path}</code>
+                <span className="text-[10px] font-black text-gray-500 uppercase tracking-tighter ml-auto">{ep.desc}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="px-8 py-4 border-t border-gray-100 dark:border-white/10 flex justify-between items-center">
-          <span className="text-xs text-gray-400">API v2.1.4 — Rate limit: 2,000 req/min</span>
+        <div className="px-8 py-5 border-t border-white/10 flex justify-between items-center bg-white/5">
+          <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Rate limit: 2,000 req/min (Pro)</span>
           <Link to="/api-docs"
-            className="flex items-center gap-1 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
-            Full Docs <ExternalLink size={14} />
+            className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300 transition-colors">
+            Full Developer Docs <ExternalLink size={14} />
           </Link>
         </div>
       </div>
@@ -171,33 +188,75 @@ function ApiDocModal({ onClose }) {
 export default function MarketplacePage() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
-  const [installedApps, setInstalledApps] = useState({ 1: true, 3: true });
+  const [integrations, setIntegrations] = useState({});
+  const [loading, setLoading] = useState(true);
   const [selectedApp, setSelectedApp] = useState(null);
   const [showApiDoc, setShowApiDoc] = useState(false);
   const [toast, setToast] = useState(null);
   const categories = ['All', 'CRM', 'Marketing', 'Communication', 'Data Warehouse', 'Export'];
 
-  const filteredApps = apps.filter(app => {
-    const matchesSearch = app.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = activeCategory === 'All' || app.category === activeCategory;
-    return matchesSearch && matchesCategory;
-  });
+  useEffect(() => {
+    fetchIntegrations();
+  }, []);
 
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
+  const fetchIntegrations = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/integrations', {
+        headers: { 'Authorization': `Bearer ${getStoredToken()}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIntegrations(data.integrations || {});
+      }
+    } catch (err) {
+      console.error('Failed to fetch integrations:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleInstall = (id) => {
-    setInstalledApps(prev => ({ ...prev, [id]: true }));
-    const app = apps.find(a => a.id === id);
-    showToast(`${app?.name} ${installedApps[id] ? 'configuration saved!' : 'installed successfully!'}`);
+  const handleInstall = async (appId, config) => {
+    try {
+      const isUpdating = !!integrations[appId];
+      const res = await fetch('/api/integrations', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getStoredToken()}`
+        },
+        body: JSON.stringify({ appId, config, isActive: true })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIntegrations(prev => ({
+          ...prev,
+          [appId]: { isActive: true, config }
+        }));
+        showToast(`${appId.toUpperCase()} ${isUpdating ? 'configuration updated!' : 'connected successfully!'}`);
+        return true;
+      }
+    } catch (err) {
+      console.error('Link failed:', err);
+    }
+    return false;
   };
 
-  const handleUninstall = (id) => {
-    setInstalledApps(prev => { const copy = { ...prev }; delete copy[id]; return copy; });
-    const app = apps.find(a => a.id === id);
-    showToast(`${app?.name} disconnected.`);
+  const handleUninstall = async (appId) => {
+    try {
+      await fetch(`/api/integrations/${appId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${getStoredToken()}` }
+      });
+      setIntegrations(prev => { 
+        const copy = { ...prev }; 
+        delete copy[appId]; 
+        return copy; 
+      });
+      showToast(`${appId.toUpperCase()} disconnected.`);
+    } catch (err) {
+      console.error('Remove failed:', err);
+    }
   };
 
   const openApp = (app) => {
@@ -218,19 +277,38 @@ export default function MarketplacePage() {
       {showApiDoc && <ApiDocModal onClose={() => setShowApiDoc(false)} />}
 
       {/* Header */}
-      <div className="bg-indigo-600 rounded-3xl p-8 md:p-12 mb-10 text-white relative overflow-hidden shadow-xl shadow-indigo-600/20">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl translate-x-1/3 -translate-y-1/3 pointer-events-none" />
-        <div className="relative z-10 max-w-2xl">
-          <h1 className="text-3xl md:text-5xl font-extrabold font-headline mb-4 tracking-tight">Integration Marketplace</h1>
-          <p className="text-indigo-100 text-lg md:text-xl font-body mb-8 max-w-xl">Supercharge your workflow. Connect IntelliScan with the tools your team already uses.</p>
-          <div className="flex bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/20 w-full md:w-96 focus-within:ring-2 focus-within:ring-white transition-all">
+      <div className="bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 rounded-3xl p-8 md:p-12 mb-10 text-white relative overflow-hidden shadow-2xl shadow-indigo-600/30">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
+        <div className="relative z-10 max-w-3xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/20 text-[10px] font-black uppercase tracking-widest mb-6">
+            <Zap size={12} className="text-amber-400" /> Professional Bridge Ecosystem
+          </div>
+          <h1 className="text-4xl md:text-6xl font-black font-headline mb-6 tracking-tighter leading-none">Intelligence <span className="text-indigo-200">Marketplace</span></h1>
+          <p className="text-indigo-100 text-lg md:text-xl font-medium mb-8 max-w-xl leading-relaxed">Architect your lead-flow. Automatically route extracted intelligence into your enterprise toolstack.</p>
+          
+          {/* Quick Guide / Workflow logic */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {[
+              { step: '01', title: 'Capture', desc: 'Scan via Web or WhatsApp' },
+              { step: '02', title: 'Validate', desc: 'AI extracts verified data' },
+              { step: '03', title: 'Synchronize', desc: 'Auto-link to your CRM' }
+            ].map(s => (
+              <div key={s.step} className="bg-white/5 border border-white/10 p-4 rounded-2xl">
+                <span className="block text-[10px] font-black text-indigo-300 mb-1">{s.step}</span>
+                <h4 className="font-bold text-sm mb-0.5">{s.title}</h4>
+                <p className="text-[10px] text-indigo-200/60 uppercase font-black">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/20 w-full md:w-96 focus-within:ring-2 focus-within:ring-white/40 transition-all shadow-inner">
             <Search className="text-indigo-200 ml-3 mr-2 my-auto" size={20} />
             <input
               type="text"
-              placeholder="Search apps..."
+              placeholder="Search intelligence bridges..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="bg-transparent border-none text-white placeholder-indigo-200 focus:outline-none w-full py-2 font-medium"
+              className="bg-transparent border-none text-white placeholder-indigo-300 focus:outline-none w-full py-2 font-bold text-sm"
             />
           </div>
         </div>

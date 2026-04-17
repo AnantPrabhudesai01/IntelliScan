@@ -131,7 +131,13 @@ export default function SequenceDetailPage() {
             <ArrowLeft size={20} className="text-gray-400" />
           </button>
           <div>
-            <h1 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">{sequence?.name}</h1>
+            <input 
+              type="text"
+              value={sequence?.name || ''}
+              onChange={(e) => setSequence({ ...sequence, name: e.target.value })}
+              className="text-3xl font-black text-white tracking-tighter uppercase leading-none bg-transparent border-none outline-none focus:text-indigo-400 transition-colors w-full"
+              placeholder="Sequence Name"
+            />
             <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">AI Outreach Lifecycle</p>
           </div>
         </div>
@@ -276,27 +282,37 @@ export default function SequenceDetailPage() {
             </div>
           </div>
 
-          <div className="bg-gray-900/60 border border-gray-800 rounded-3xl p-6 flex-1 min-h-[300px]">
+          <div className="bg-gray-900/60 border border-gray-800 rounded-3xl p-6 flex flex-col h-[400px]">
             <h3 className="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
               <User size={18} className="text-indigo-400" /> Active Leads
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar">
               {enrollments.length === 0 ? (
-                <p className="text-center py-10 text-xs font-bold text-gray-600">No leads currently enrolled.</p>
+                <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
+                  <User size={32} className="mb-2" />
+                  <p className="text-[10px] font-black uppercase tracking-widest">No leads enrolled.</p>
+                </div>
               ) : (
                 enrollments.map((enr, i) => (
-                  <div key={i} className="flex items-center justify-between group">
+                  <div key={i} className="flex items-center justify-between group bg-gray-950/30 p-2 rounded-xl hover:bg-indigo-500/5 transition-all">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-[10px] font-black text-gray-400">
+                      <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-[10px] font-black text-indigo-400 border border-indigo-500/20">
                         {enr.contact_name?.charAt(0) || '?'}
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-white leading-none mb-1">{enr.contact_name}</p>
-                        <p className="text-[10px] text-gray-500 font-medium">Step {enr.current_step_index + 1} • {new Date(enr.next_send_at).toLocaleDateString()}</p>
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-xs font-black text-white leading-none">{enr.contact_name}</p>
+                          <span className={`text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest ${
+                            enr.status === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-500/10 text-gray-400'
+                          }`}>
+                            {enr.status}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tight">Step {enr.current_step_index + 1} • {new Date(enr.next_send_at).toLocaleDateString()}</p>
                       </div>
                     </div>
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="text-gray-600 hover:text-red-500 transition-colors">
+                      <button className="p-1.5 text-gray-700 hover:text-red-500 transition-colors">
                         <Trash2 size={12} />
                       </button>
                     </div>

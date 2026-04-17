@@ -424,8 +424,15 @@ export default function SettingsPage() {
         message="As an Enterprise user, your profile photo must adhere to company identity guidelines and maintain a professional appearance. This action will be audited by your administrator."
         confirmText="Acknowledge & Upload"
         type="info"
-        onConfirm={() => startUpload(pendingUploadFile)}
-        onCancel={() => setShowPolicyModal(false)}
+        onConfirm={async () => {
+          await startUpload(pendingUploadFile);
+          setShowPolicyModal(false);
+          setPendingUploadFile(null);
+        }}
+        onCancel={() => {
+          setShowPolicyModal(false);
+          setPendingUploadFile(null);
+        }}
       />
 
       <ConfirmationModal 
@@ -777,11 +784,14 @@ export default function SettingsPage() {
                                 href={`https://wa.me/14155238886?text=join%20baseball-eventually%20${discoveryCode}`} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                onClick={startPhoneDiscovery}
-                                className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95"
+                                onClick={() => {
+                                  startPhoneDiscovery();
+                                  showToast('WhatsApp opening... Send the pre-filled code to link your account!');
+                                }}
+                                className="inline-flex items-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white px-6 py-3 rounded-2xl text-xs font-black transition-all shadow-lg shadow-green-500/20 active:scale-95 group"
                               >
-                                {isPollingDiscovery ? <RefreshCw className="animate-spin" size={12} /> : <MessageSquare size={12} />}
-                                {isPollingDiscovery ? 'Polling WhatsApp...' : 'Step 1: Click to Connect'}
+                                {isPollingDiscovery ? <RefreshCw className="animate-spin" size={14} /> : <MessageSquare size={14} className="group-hover:scale-110 transition-transform" />}
+                                {isPollingDiscovery ? 'Polling WhatsApp Security...' : '1-Click WhatsApp Connect'}
                               </a>
                               {discoveryCode && (
                                 <div className="px-3 py-2 bg-white dark:bg-gray-800 border border-indigo-100 dark:border-indigo-900 rounded-xl">
@@ -811,9 +821,9 @@ export default function SettingsPage() {
                                     href={`https://wa.me/14155238886?text=join%20baseball-eventually`} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all shadow-md active:scale-95"
+                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center gap-2"
                                   >
-                                    1. Re-connect WhatsApp
+                                    <MessageSquare size={12} /> Re-link WhatsApp Instance
                                   </a>
                                   <button 
                                     onClick={() => setShowPhoneModal(true)}

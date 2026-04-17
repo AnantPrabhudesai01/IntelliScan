@@ -500,12 +500,12 @@ export default function ScanPage() {
           </div>
 
           <a 
-            href="https://wa.me/14155238886?text=Hi%20IntelliScan!%20I'd%20like%20to%20scan%20a%20new%20card."
+            href="https://wa.me/14155238886?text=join%20baseball-eventually"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 bg-[#25D366] text-white hover:bg-[#128C7E] shadow-lg shadow-green-500/20 active:scale-95"
+            className="px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 bg-[#25D366] text-white hover:bg-[#128C7E] shadow-xl shadow-green-500/20 active:scale-95 group"
           >
-            <MessageCircle size={14} /> Scan via WhatsApp
+            <MessageCircle size={16} className="group-hover:rotate-12 transition-transform" /> Scan via WhatsApp
           </a>
         </div>
       </header>

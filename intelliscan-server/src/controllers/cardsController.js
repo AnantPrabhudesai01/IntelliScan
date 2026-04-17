@@ -1,7 +1,5 @@
 const { dbGetAsync, dbRunAsync, isPostgres } = require('../utils/db');
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY);
+const { unifiedImageGeneration, unifiedTextAIPipeline } = require('../services/aiService');
 
 /**
  * Controller for managing digital business cards and AI designs.
@@ -31,6 +29,7 @@ exports.saveCard = async (req, res) => {
     const userId = req.user.id;
     const { headline, bio, design_json, url_slug } = req.body;
     
+    // Validate if design_json has the new logo field
     const finalSlug = url_slug || `identity-${userId}-${Math.random().toString(36).substring(7)}`;
     const designStr = typeof design_json === 'string' ? design_json : JSON.stringify(design_json);
 
@@ -56,48 +55,75 @@ exports.generateAiDesign = async (req, res) => {
   try {
     const { name, title, company, industry, vibe } = req.body;
 
-    if (!process.env.GEMINI_API_KEY && !process.env.GOOGLE_API_KEY) {
-      // Fallback for mock environments
-      return res.json({
-        headline: `${title} at ${company}`,
-        bio: `Connect with ${name}, a professional in ${industry}. Designed with ${vibe} vibes.`,
-        design: {
-          primary: '#4F46E5',
-          secondary: '#7C3AED',
-          layout: 'glassmorphism',
-          font: 'Inter',
-          gradient_angle: '135deg'
-        }
-      });
+    const aiPrompt = `You are a professional premium brand designer. Generate a high-end digital business card configuration for:
+Name: ${name}
+Title: ${title}
+Company: ${company}
+Industry: ${industry}
+Style Vibe: ${vibe}
+
+Return ONLY a JSON object:
+{
+  "headline": "...",
+  "bio": "...",
+  "design": {
+    "style": "glass | executive | futurist | signature | bold_dark",
+    "primary": "hex",
+    "secondary": "hex",
+    "accentColor": "hex",
+    "fontClass": "font-sans | font-serif | font-mono",
+    "gradient_angle": "135deg",
+    "tagline": "...",
+    "mood": "Luxury | Tech | Minimalist",
+    "designNotes": "Reasoning for the design choices"
+  }
+}`;
+
+    const aiRes = await unifiedTextAIPipeline({ prompt: aiPrompt, responseFormat: 'json' });
+    
+    if (aiRes.success) {
+      res.json(aiRes.data);
+    } else {
+      throw new Error(aiRes.error);
     }
-
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const prompt = `
-      You are a professional brand designer for IntelliScan. 
-      Generate a premium digital business card design configuration in JSON format.
-      
-      User Profile:
-      - Name: ${name}
-      - Title: ${title}
-      - Company: ${company}
-      - Industry: ${industry}
-      - Theme Vibe: ${vibe}
-
-      Rules:
-      1. Return JSON ONLY. No markdown blocks.
-      2. Include: "headline", "bio" (compelling short bio), and a "design" object.
-      3. Design object must have: "primary" (hex), "secondary" (hex), "layout" (one of: glassmorphism, minimal, bold_dark, corporate_pro), "font" (Inter, Roboto, Playfair Display), and "gradient_angle".
-    `;
-
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text().trim();
-    // Clean potential markdown blocks
-    const cleanJson = responseText.replace(/```json|```/g, "").trim();
-    const aiDesign = JSON.parse(cleanJson);
-
-    res.json(aiDesign);
   } catch (err) {
     console.error('[AI Design Error]', err);
     res.status(500).json({ error: 'AI Designer is currently calibrating. Please try again.' });
+  }
+};
+
+exports.generateAiLogo = async (req, res) => {
+  try {
+    const { company, industry, vibe } = req.body;
+
+    // 1. Concept Generation (Gemini)
+    const conceptPrompt = `You are a professional logo designer. Create a highly detailed image generation prompt for a corporate logo.
+Company: ${company}
+Industry: ${industry}
+Vibe: ${vibe}
+
+Guidelines:
+- Professional, minimalist, and high-end.
+- Mention specific colors and geometric shapes.
+- No text inside the logo (emblem only).
+- Return ONLY the prompt text.`;
+
+    const conceptRes = await unifiedTextAIPipeline({ prompt: conceptPrompt, responseFormat: 'text' });
+    if (!conceptRes.success) throw new Error('Logo conceptualization failed');
+
+    // 2. Materialization (OpenRouter / DALL-E)
+    const logoRes = await unifiedImageGeneration({ 
+      prompt: conceptRes.data,
+      model: 'openai/dall-e-3' // Flagship for professional logos
+    });
+
+    if (logoRes.success) {
+      res.json({ success: true, logoUrl: logoRes.url, concept: conceptRes.data });
+    } else {
+      throw new Error(logoRes.error);
+    }
+  } catch (err) {
+    console.error('[AI Logo Error]', err);
+    res.status(500).json({ error: 'Logo engine is currently offline. Please try again later.' });
   }
 };
