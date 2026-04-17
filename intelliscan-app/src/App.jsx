@@ -43,6 +43,7 @@ import ScanPage from './pages/ScanPage';
 import ContactsPage from './pages/ContactsPage';
 import SettingsPage from './pages/SettingsPage';
 import MarketplacePage from './pages/MarketplacePage';
+import MarketplaceDetailPage from './pages/MarketplaceDetailPage';
 import FeedbackPage from './pages/FeedbackPage';
 import EventsPage from './pages/dashboard/EventsPage';
 import DraftsPage from './pages/dashboard/DraftsPage';
@@ -221,6 +222,7 @@ export default function App() {
               <Route path="/dashboard/leaderboard" element={<TierGuard minTier="enterprise" featureName="Performance Leaderboard"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><Leaderboard /></RoleGuard></TierGuard>} />
               <Route path="/setup/whatsapp" element={<SetupGuidePage />} />
               <Route path="/marketplace" element={<TierGuard minTier="pro" featureName="Marketplace Apps"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><MarketplacePage /></RoleGuard></TierGuard>} />
+              <Route path="/marketplace/:appId" element={<TierGuard minTier="pro" featureName="Marketplace Apps"><RoleGuard allowedRoles={['user', 'business_admin', 'super_admin']}><MarketplaceDetailPage /></RoleGuard></TierGuard>} />
               <Route path="/subscription-plan-comparison" element={<GenSubscriptionPlanComparison />} />
               
               {/* Email Marketing Persistence Group */}

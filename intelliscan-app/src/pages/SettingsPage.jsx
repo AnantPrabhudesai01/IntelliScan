@@ -629,15 +629,31 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tighter text-gray-900 dark:text-white font-headline">Account Settings</h1>
+      <header className="mb-0">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-indigo-600 rounded-2xl text-white shadow-lg shadow-indigo-500/20">
+            <Settings2 size={24} />
+          </div>
+          <h1 className="text-4xl font-black tracking-tighter text-gray-900 dark:text-white font-headline uppercase italic">Account Settings</h1>
+        </div>
+        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium ml-14 mt-1">Configure your personal scanning workspace and enterprise identity.</p>
       </header>
       
-      <div className="flex items-center gap-8 mb-10 border-b border-gray-200 dark:border-gray-800 overflow-x-auto">
-        {renderTabHeader('Personal Info')}
-        {renderTabHeader('Security')}
-        {renderTabHeader('Integrations')}
-        {renderTabHeader('Notifications')}
+      <div className="flex items-center gap-2 p-1 bg-gray-100 dark:bg-white/5 rounded-2xl w-fit border border-gray-200 dark:border-white/10">
+        {[
+          { id: 'Personal Info', icon: User },
+          { id: 'Security', icon: Lock },
+          { id: 'Integrations', icon: Blocks },
+          { id: 'Notifications', icon: MessageSquare }
+        ].map(tab => (
+          <button 
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-white dark:bg-gray-900 text-indigo-600 dark:text-indigo-400 shadow-xl' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+          >
+            <tab.icon size={14} /> {tab.id}
+          </button>
+        ))}
       </div>
 
       <div className="grid grid-cols-12 gap-6">
