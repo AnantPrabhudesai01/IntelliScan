@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { dbGetAsync, dbAllAsync, dbRunAsync } = require('../utils/db');
+const { dbGetAsync, dbAllAsync, dbRunAsync, isPostgres } = require('../utils/db');
 const { createSmtpTransporterFromEnv } = require('../utils/smtp');
 const { unifiedTextAIPipeline } = require('../services/aiService');
 

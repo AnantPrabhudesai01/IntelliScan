@@ -22,8 +22,8 @@ const pgPool = new Pool({
   ssl: { rejectUnauthorized: false }, 
   max: 3, 
   idleTimeoutMillis: 60000, // Increase idle persistence
-  connectionTimeoutMillis: 5000, // Wait longer for initial link
-  query_timeout: 15000, // Ensure no single query hangs for >15s
+  connectionTimeoutMillis: 4000, // Faster failure on Vercel
+  query_timeout: 7000, // Must be lower than Vercel's 10s kill-switch
 });
 
 // ── Legacy compatibility shim ──────────────────────────────────

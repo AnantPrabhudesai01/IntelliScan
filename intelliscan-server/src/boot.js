@@ -9,9 +9,13 @@ const { seedDefaultAdmin } = require('./utils/adminSeeder');
  * We use this bootstrapper to handle environment sanity checks, 
  * automated schema migrations ("self-healing"), and system seeding.
  */
+let isBootstrappedInProcess = false;
+
 async function bootstrap() {
+  if (isBootstrappedInProcess) return;
   console.log('[Boot] Initializing system sequence...');
 
+  const startTime = Date.now();
   try {
     // ══════════════════════════════════════════════════════════════════
     // 2. Database Integrity Check
@@ -515,7 +519,8 @@ async function bootstrap() {
     await seedDefaultAdmin();
     console.log('[Boot] System seeding complete.');
 
-    console.log('[Boot] Sequence finished successfully.');
+    console.log(`[Boot] Sequence finished successfully in ${Date.now() - startTime}ms.`);
+    isBootstrappedInProcess = true;
   } catch (err) {
     console.error('[Boot] Critical Failure during startup:', err);
     throw err;

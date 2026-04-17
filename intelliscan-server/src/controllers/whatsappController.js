@@ -283,7 +283,15 @@ JSON FORMAT ONLY:
  */
 exports.checkHealth = async (req, res) => {
   try {
-    const dbCheck = await dbGetAsync('SELECT COUNT(*) as count FROM whatsapp_discoveries');
+    // 🚦 RACE: Fail fast if DB check hangs too long
+    const healthData = await Promise.race([
+      (async () => {
+        const dbCheck = await dbGetAsync('SELECT COUNT(*) as count FROM whatsapp_discoveries');
+        return { db: '✅ Connected', count: dbCheck?.count || 0 };
+      })(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Database check timed out')), 5000))
+    ]);
+
     const twilioSid = process.env.TWILIO_ACCOUNT_SID;
     const twilioFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886';
     const isEnabled = process.env.ENABLE_WHATSAPP === 'true';
@@ -294,11 +302,11 @@ exports.checkHealth = async (req, res) => {
       baseUrl = `https://${req.headers.host}`;
     }
     
-    const isLocal = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
-
     res.json({
       status: 'IntelliScan WhatsApp Diagnostic Interface',
       server_time: new Date().toISOString(),
+      database: healthData.db,
+      active_discoveries: healthData.count,
       service_status: isEnabled ? "✅ ACTIVE" : "❌ INACTIVE (Maintenance Mode)",
       
       critical_configuration: {
@@ -323,7 +331,12 @@ exports.checkHealth = async (req, res) => {
       ]
     });
   } catch (err) {
-    res.status(500).json({ status: 'error', error: err.message });
+    console.error('[WhatsApp Health Check Error]', err.message);
+    res.status(500).json({ 
+      status: 'error', 
+      error: err.message,
+      recommendation: "If this error persists, ensure your database connection is active and stable."
+    });
   }
 };
 
