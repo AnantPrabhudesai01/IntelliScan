@@ -305,6 +305,7 @@ export default function ListDetailPage() {
               </div>
 
               <div className="flex gap-4">
+                 <button 
                   disabled={matchingContacts.filter(m => m.selected).length === 0 || isInjecting}
                   onClick={() => handleImport(matchingContacts.filter(m => m.selected))}
                   className="flex-1 py-4 bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-2"
