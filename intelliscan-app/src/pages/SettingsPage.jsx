@@ -130,6 +130,26 @@ export default function SettingsPage() {
     }
   };
 
+  const [whatsappStatus, setWhatsappStatus] = useState({ loading: true, active: false, diagnostics: null });
+
+  const checkWhatsappConnectivity = async () => {
+    setWhatsappStatus(prev => ({ ...prev, loading: true }));
+    try {
+      const res = await apiClient.get('/whatsapp/health');
+      setWhatsappStatus({
+        loading: false,
+        active: res.data.service_status?.includes('ACTIVE'),
+        diagnostics: res.data
+      });
+    } catch (err) {
+      setWhatsappStatus({ loading: false, active: false, diagnostics: null });
+    }
+  };
+
+  useEffect(() => {
+    checkWhatsappConnectivity();
+  }, []);
+
   const generateDiscoveryCode = () => {
     const existingCode = localStorage.getItem('discoveryCode');
     if (existingCode) {
@@ -1296,9 +1316,24 @@ export default function SettingsPage() {
                          <Smartphone size={80} />
                       </div>
                       
-                      <p className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
-                         <MessageSquare size={14} /> WhatsApp Connect
-                      </p>
+                      <div className="flex items-center justify-between mb-4">
+                         <p className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+                            <MessageSquare size={14} /> WhatsApp Connect
+                         </p>
+                         {whatsappStatus.loading ? (
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-gray-400">
+                               <RefreshCw size={10} className="animate-spin" /> Checking Sync...
+                            </span>
+                         ) : whatsappStatus.active ? (
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-[8px] font-black border border-emerald-500/20">
+                               ONLINE
+                            </span>
+                         ) : (
+                            <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 text-[8px] font-black border border-amber-500/20">
+                               OFFLINE / Action Required
+                            </span>
+                         )}
+                      </div>
                       
                       <div className="space-y-4 relative z-10">
                          <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
@@ -1332,6 +1367,11 @@ export default function SettingsPage() {
                          ) : profile.phone_number ? (
                             <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                                <Check size={14} /> WhatsApp linked to {profile.phone_number}
+                            </div>
+                         ) : !whatsappStatus.loading && !whatsappStatus.active ? (
+                            <div className="text-[10px] text-amber-500 font-bold flex items-center gap-2 underline-offset-2">
+                               ⚠️ Engine Inactive. Please set ENABLE_WHATSAPP=true in Vercel.
+                               <button onClick={checkWhatsappConnectivity} className="underline hover:text-amber-600 ml-1">Retry Check</button>
                             </div>
                          ) : (
                             <div className="text-[10px] text-gray-400 italic">

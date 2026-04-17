@@ -37,7 +37,9 @@ function getTwilioClient() {
 
   // 🕵️ Proceed with processing
   try {
-    console.log(`[WhatsApp Incoming] Message from ${fromPhone}`);
+    console.log(`[WhatsApp Incoming] Webhook Triggered from ${fromPhone}`);
+    console.log(`[WhatsApp Body] "${(Body || '').substring(0, 50)}..."`);
+    
     // 1. Resolve User
     const user = await dbGetAsync('SELECT * FROM users WHERE phone_number = ?', [fromPhone]);
 
@@ -278,37 +280,40 @@ exports.checkHealth = async (req, res) => {
     
     // Auto-detect public URL
     let baseUrl = process.env.APP_BASE_URL;
-    if (!baseUrl || baseUrl.includes('localhost')) {
+    if (!baseUrl || baseUrl.includes('localhost') || !baseUrl.startsWith('http')) {
       baseUrl = `https://${req.headers.host}`;
     }
     
     const isLocal = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
 
     res.json({
-      status: 'IntelliScan WhatsApp Engine Interface',
-      service_active: isEnabled ? "✅ ENABLED (ENABLE_WHATSAPP=true)" : "❌ DISABLED (Action Required: Set ENABLE_WHATSAPP=true in Vercel)",
-      config: {
-        twilio_sid: twilioSid ? `Configured (${twilioSid.slice(0, 5)}...)` : 'MISSING',
-        twilio_auth_token: process.env.TWILIO_AUTH_TOKEN ? 'Configured' : 'MISSING',
-        twilio_whatsapp_number: twilioFrom,
-        app_base_url: baseUrl,
-        webhook_target: `${baseUrl}/api/whatsapp/webhook`,
-        environment_warning: isLocal ? "⚠️ LOCALHOST DETECTED: Twilio cannot reach localhost. You must use a tool like ngrok to create a public URL or deploy to Vercel." : "✅ Public Environment Detected."
+      status: 'IntelliScan WhatsApp Diagnostic Interface',
+      server_time: new Date().toISOString(),
+      service_status: isEnabled ? "✅ ACTIVE" : "❌ INACTIVE (Maintenance Mode)",
+      
+      critical_configuration: {
+        ENABLE_WHATSAPP: isEnabled ? "✅ Correct" : "❌ Action Required: Set to 'true' in Vercel Environment Variables.",
+        TWILIO_ACCOUNT_SID: twilioSid ? "✅ Found" : "❌ Missing: Set in Vercel.",
+        TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN ? "✅ Found" : "❌ Missing: Set in Vercel.",
+        PUBLIC_URL: baseUrl
       },
-      database: {
-        discovery_table: 'Connected',
-        discoveries_count: dbCheck?.count || 0
+
+      twilio_console_setup: {
+        ACTION: "COPY the URL below and PASTE it into your Twilio Sandbox Console field: 'WHEN A MESSAGE COMES IN'",
+        WEBHOOK_TARGET_URL: `${baseUrl}/api/whatsapp/webhook`,
+        METHOD: "POST"
       },
-      next_steps: [
-        "1. Ensure 'ENABLE_WHATSAPP' is set to 'true' in your Vercel Dashboard Settings.",
-        "2. Copy the 'webhook_target' URL above.",
-        "3. Go to Twilio Console -> Messaging -> Try it Out -> WhatsApp Sandbox.",
-        "4. Paste the URL into the 'When a message comes in' field and SAVE.",
-        "5. Send 'ping' to the WhatsApp number to verify."
+      
+      troubleshooting_steps: [
+        "1. Open Vercel Dashboard -> Settings -> Environment Variables. Ensure 'ENABLE_WHATSAPP' is set to 'true'.",
+        "2. If values were changed, you MUST Re-deploy your project for them to take effect.",
+        "3. Go to Twilio Console -> Messaging -> Sandbox Settings.",
+        "4. Paste the 'WEBHOOK_TARGET_URL' provided above.",
+        "5. Send 'ping' to the bot from your phone. If you don't get 'Pong!', check your Vercel logs for errors."
       ]
     });
   } catch (err) {
-    res.status(500).json({ status: 'error', error: err.message, advice: "Ensure your Database is migrated. Run `npm run boot` locally if needed." });
+    res.status(500).json({ status: 'error', error: err.message });
   }
 };
 
