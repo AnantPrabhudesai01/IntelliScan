@@ -294,7 +294,8 @@ exports.checkHealth = async (req, res) => {
 
     const twilioSid = process.env.TWILIO_ACCOUNT_SID;
     const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
-    const twilioFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886';
+    const hasJwtSecret = process.env.JWT_SECRET ? "✅ Found" : "❌ Missing: Set JWT_SECRET in Vercel.";
+    const hasDbUrl = (process.env.DATABASE_URL || process.env.POSTGRES_URL) ? "✅ Found" : "❌ Missing: Set DATABASE_URL (Supabase) in Vercel.";
     const isEnabled = process.env.ENABLE_WHATSAPP === 'true';
     
     // Auto-detect public URL
@@ -312,6 +313,8 @@ exports.checkHealth = async (req, res) => {
       
       critical_configuration: {
         ENABLE_WHATSAPP: isEnabled ? "✅ Correct" : "❌ Action Required: Set to 'true' in Vercel Environment Variables.",
+        DATABASE_URL: hasDbUrl,
+        JWT_SECRET: hasJwtSecret,
         TWILIO_ACCOUNT_SID: twilioSid ? "✅ Found" : "❌ Missing: Set TWILIO_ACCOUNT_SID in Vercel.",
         TWILIO_AUTH_TOKEN: twilioAuthToken ? "✅ Found" : "❌ Missing: Set TWILIO_AUTH_TOKEN in Vercel.",
         PUBLIC_URL: baseUrl

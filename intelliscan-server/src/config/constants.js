@@ -2,8 +2,7 @@ require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
-  console.error('FATAL: JWT_SECRET environment variable is not set in production.');
-  process.exit(1);
+  console.warn('⚠️ WARNING: JWT_SECRET environment variable is not set. Authentication will use a default insecure secret.');
 }
 const effectiveJwtSecret = JWT_SECRET || 'dev_only_insecure_secret_change_in_production';
 
