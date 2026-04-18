@@ -65,7 +65,11 @@ exports.webhook = async (req, res) => {
           'INSERT INTO whatsapp_discoveries (discovery_code, phone_number) VALUES (?, ?) ON CONFLICT (discovery_code) DO UPDATE SET phone_number = EXCLUDED.phone_number, created_at = CURRENT_TIMESTAMP',
           [discoCode, fromPhone]
         );
-        return sendWhatsAppReply(From, `✨ *Discovery Code Detected!* I've linked your session. Now, go back to the IntelliScan dashboard to complete your registration! 🚀`);
+        const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+        const host = req.headers.host;
+        const baseUrl = (host.includes('localhost') || !host) ? 'https://intelli-scan-psi.vercel.app' : `${protocol}://${host}`;
+
+        return sendWhatsAppReply(From, `✨ *Discovery Code Detected!* I've linked your session. Now, go back to the IntelliScan dashboard to complete your registration! 🚀\n\n🔗 *Dashboard*: ${baseUrl}/dashboard`);
       }
 
       const bodyLower = (Body || '').toLowerCase().trim();
@@ -77,7 +81,11 @@ exports.webhook = async (req, res) => {
         return sendWhatsAppReply(From, `🏓 *Pong!* Your IntelliScan server is alive and receiving your WhatsApp messages!`);
       }
 
-      return sendWhatsAppReply(From, `Hi! It looks like your number (${fromPhone}) isn't linked to an IntelliScan account yet.\n\nPlease log in to IntelliScan on your computer, navigate to Settings > Communications, and send the Session Code (e.g., IS-1234) here to connect! 🚀`);
+      const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+      const host = req.headers.host;
+      const baseUrl = (host.includes('localhost') || !host) ? 'https://intelli-scan-psi.vercel.app' : `${protocol}://${host}`;
+
+      return sendWhatsAppReply(From, `Hi! It looks like your number (${fromPhone}) isn't linked to an IntelliScan account yet.\n\nPlease log in to IntelliScan on your computer, navigate to Settings > Communications, and send the Session Code (e.g., IS-1234) here to connect! 🚀\n\n🔗 *Login here*: ${baseUrl}/sign-in`);
     }
 
     // 2. Check for Commands (Export/Excel)
@@ -90,17 +98,29 @@ exports.webhook = async (req, res) => {
         { expiresIn: '15m' }
       );
       
-      const rawDomain = process.env.APP_BASE_URL || req.headers.host || 'intelli-scan-psi.vercel.app';
+      const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+      const host = req.headers.host;
+      let rawDomain = `${protocol}://${host}`;
+      
+      // Safety: If host is localhost but we are in production, or if no host, fallback to production
+      if (host.includes('localhost') || !host) {
+        rawDomain = 'https://intelli-scan-psi.vercel.app';
+      }
+
       const cleanDomain = rawDomain.replace(/^https?:\/\//, '');
-      const protocol = rawDomain.startsWith('http://') ? 'http' : 'https';
+      const finalProtocol = rawDomain.startsWith('http://') ? 'http' : 'https';
       
-      const exportUrl = `${protocol}://${cleanDomain}/api/contacts/export/magic?token=${exportToken}`;
+      const exportUrl = `${finalProtocol}://${cleanDomain}/api/contacts/export/magic?token=${exportToken}`;
       
-      return sendWhatsAppReply(From, `✨ *Your Magic Excel Export is ready!*\n\nThis file contains all your active contacts formatted for marketing and CRM growth.\n\n📥 *Download link:* \n${exportUrl}\n\n_(Link expires in 15 minutes)_`);
+      return sendWhatsAppReply(From, `✨ *Your Magic Excel Export is ready!*\n\nThis file is attached below. You can also download it from the cloud link if needed.\n\n📥 *Cloud Link:* \n${exportUrl}\n\n🔗 *Visit Dashboard:* \n${rawDomain}/dashboard/contacts\n\n_(Link expires in 15 minutes)_`, exportUrl);
     }
 
     if (body === 'help' || body === 'guide') {
-      return sendWhatsAppReply(From, `📖 *IntelliScan WhatsApp Help*\n\n📸 *Scan*: Just send me a photo!\n📊 *Excel*: Type "export"\n💰 *Status*: Type "status"\n\nHappy scanning! 🚀`);
+      const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+      const host = req.headers.host;
+      const baseUrl = (host.includes('localhost') || !host) ? 'https://intelli-scan-psi.vercel.app' : `${protocol}://${host}`;
+
+      return sendWhatsAppReply(From, `📖 *IntelliScan WhatsApp Help*\n\n📸 *Scan*: Just send me a photo!\n📊 *Excel*: Type "export"\n💰 *Status*: Type "status"\n\n🔗 *Dashboard*: ${baseUrl}/dashboard\n\nHappy scanning! 🚀`);
     }
 
     if (body === 'status' || body === 'quota') {
@@ -109,7 +129,11 @@ exports.webhook = async (req, res) => {
       const used = quota?.used_count || 0;
       const remaining = Math.max(0, limits.single - used);
       
-      return sendWhatsAppReply(From, `📊 *IntelliScan Status*\n\n👤 *User*: ${user.name}\n🏆 *Plan*: ${user.tier.toUpperCase()}\n📈 *Usage*: ${used} / ${limits.single} Scans\n🔋 *Remaining*: ${remaining}\n\nNeed more? Visit your dashboard to upgrade!`);
+      const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+      const host = req.headers.host;
+      const baseUrl = (host.includes('localhost') || !host) ? 'https://intelli-scan-psi.vercel.app' : `${protocol}://${host}`;
+
+      return sendWhatsAppReply(From, `📊 *IntelliScan Status*\n\n👤 *User*: ${user.name}\n🏆 *Plan*: ${user.tier.toUpperCase()}\n📈 *Usage*: ${used} / ${limits.single} Scans\n🔋 *Remaining*: ${remaining}\n\n🔗 *Dashboard:* ${baseUrl}/dashboard\n\nNeed more? Visit your dashboard to upgrade!`);
     }
 
     // 2. Check for Image
@@ -259,8 +283,18 @@ JSON FORMAT ONLY:
       replyMsg += `\n\n_...and more in your dashboard._`;
     }
 
-    const rawBaseUrl = process.env.APP_BASE_URL || `https://${req.headers.host}` || 'https://intelli-scan-psi.vercel.app';
-    const cleanBaseUrl = rawBaseUrl.endsWith('/') ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
+    const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+    const host = req.headers.host;
+    let cleanBaseUrl = `${protocol}://${host}`;
+
+    // Safety: If host is localhost or missing, fallback to the real production site
+    if (host.includes('localhost') || !host) {
+      cleanBaseUrl = 'https://intelli-scan-psi.vercel.app';
+    }
+
+    // Ensure no trailing slash
+    if (cleanBaseUrl.endsWith('/')) cleanBaseUrl = cleanBaseUrl.slice(0, -1);
+    
     replyMsg += `\n\n🔗 *Full Data Here:* \n${cleanBaseUrl}/dashboard/contacts`;
 
     await sendWhatsAppReply(From, replyMsg);
@@ -370,35 +404,37 @@ async function findExistingContact(userId, email, name) {
 /**
  * Internal helper to send a WhatsApp message back via Twilio
  * Handles automatic chunking for messages over 1600 characters
+ * Supports optional mediaUrl for sending attachments (images, docs, etc.)
  */
-async function sendWhatsAppReply(to, message) {
+async function sendWhatsAppReply(to, message, mediaUrl = null) {
   try {
     const client = getTwilioClient();
     const MAX_LENGTH = 1500; // Leave buffer for metadata
 
-    // ✂️ Chunking Logic
-    if (message.length <= MAX_LENGTH) {
-      let twilioFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886';
-      if (!twilioFrom.startsWith('whatsapp:')) {
-        twilioFrom = `whatsapp:${twilioFrom}`;
-      }
+    let twilioFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886';
+    if (!twilioFrom.startsWith('whatsapp:')) {
+      twilioFrom = `whatsapp:${twilioFrom}`;
+    }
 
-      await client.messages.create({
+    // ✂️ Chunking Logic (Only if message is too long and no media is attached to avoid multiple media sends)
+    if (message.length <= MAX_LENGTH || mediaUrl) {
+      const msgData = {
         from: twilioFrom,
         to: to,
         body: message
-      });
+      };
+      
+      if (mediaUrl) {
+        msgData.mediaUrl = [mediaUrl];
+      }
+
+      await client.messages.create(msgData);
     } else {
       const parts = [];
       let current = message;
       while (current.length > 0) {
         parts.push(current.substring(0, MAX_LENGTH));
         current = current.substring(MAX_LENGTH);
-      }
-
-      let twilioFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+14155238886';
-      if (!twilioFrom.startsWith('whatsapp:')) {
-        twilioFrom = `whatsapp:${twilioFrom}`;
       }
 
       for (let i = 0; i < parts.length; i++) {
