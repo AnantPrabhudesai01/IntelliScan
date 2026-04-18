@@ -66,10 +66,22 @@ configurePassport();
 // SERVERLESS SELF-HEALING BOOT (fixes Vercel missing tables)
 // ══════════════════════════════════════════════════════════════════
 const { bootstrap } = require('./boot');
-let isBootstrapped = false;
-let bootPromise = null;
-
 let bootError = null;
+
+// Global trigger to start boot as soon as module loads
+if (!bootPromise) {
+  console.log('[System] Initializing background shadow boot...');
+  bootPromise = bootstrap().then(() => {
+    isBootstrapped = true;
+    bootPromise = null;
+    bootError = null;
+    console.log('[System] Background bootstrap complete.');
+  }).catch(err => {
+    bootPromise = null;
+    bootError = err;
+    console.error('❌ Critical Background Boot Failure:', err.message);
+  });
+}
 
 app.use(async (req, res, next) => {
   const isDiagnostic = req.path.includes('/health') || req.path.includes('/public');
@@ -79,22 +91,13 @@ app.use(async (req, res, next) => {
     return res.status(500).send(`[System] Initial Database Setup Failed: ${bootError.message}\n\nStack: ${bootError.stack}`);
   }
 
-  if (!bootPromise) {
-    console.log('[System] Triggering cold-start database bootstrap...');
-    bootPromise = bootstrap().then(() => {
-      isBootstrapped = true;
-      bootPromise = null;
-      bootError = null;
-      console.log('[System] Bootstrap complete. Ready for traffic.');
-    }).catch(err => {
-      bootPromise = null;
-      bootError = err;
-      console.error('❌ Critical Boot Failure:', err.message);
-    });
-  }
-  
+  // If boot is still in progress, wait for it up to the Vercel limit
   if (bootPromise) {
-    await bootPromise;
+    try {
+       await bootPromise;
+    } catch (e) {
+       // Error is already handled in the catch block above
+    }
   }
 
   if (bootError) {

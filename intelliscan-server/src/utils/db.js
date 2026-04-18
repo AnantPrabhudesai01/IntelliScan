@@ -16,10 +16,10 @@ try {
   pgPool = new Pool({
     connectionString: DATABASE_URL,
     ssl: { rejectUnauthorized: false }, 
-    max: 3, 
-    idleTimeoutMillis: 60000, 
     connectionTimeoutMillis: 15000, 
-    query_timeout: 20000, 
+    query_timeout: 30000,
+    statement_timeout: 30000,
+    keepAlive: true,
   });
   
   // Early check to prevent silent constructor failures from hanging later
@@ -80,6 +80,11 @@ function translateSqliteToPostgres(sql) {
   // Placeholder conversion: '?' → '$1, $2...'
   let index = 1;
   out = out.replace(/\?/g, () => `$${index++}`);
+  
+  // Ensure table names are quoted if they contain spaces (unlikely but safe)
+  out = out.replace(/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+([a-zA-Z0-9_]+)/gi, 'CREATE TABLE IF NOT EXISTS "$1"');
+  out = out.replace(/INSERT\s+INTO\s+([a-zA-Z0-9_]+)/gi, 'INSERT INTO "$1"');
+
   return out;
 }
 
