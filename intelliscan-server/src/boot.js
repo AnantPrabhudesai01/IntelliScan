@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { db, pgPool, dbGetAsync, dbAllAsync, dbRunAsync, isPostgres } = require('./utils/db');
+const { db, pgPool, dbGetAsync, dbAllAsync, dbRunAsync, dbExecAsync, isPostgres } = require('./utils/db');
 const { seedDefaultAdmin } = require('./utils/adminSeeder');
 
 /**
@@ -22,8 +22,7 @@ async function bootstrap() {
     // ══════════════════════════════════════════════════════════════════
     console.log('[Boot] Verifying platform schema integrity...');
 
-    // 2.1 Essential Platform Tables
-    // 2.1 Essential Platform Tables (Consolidated for Serverless Performance)
+    // 2.1 Consolidated Platform Schema (Optimized for Vercel Cold-Starts)
     await dbExecAsync(`
       CREATE TABLE IF NOT EXISTS users (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
@@ -67,19 +66,28 @@ async function bootstrap() {
         confidence INTEGER DEFAULT 95,
         engine_used TEXT,
         workspace_id INTEGER REFERENCES workspaces(id),
+        workspace_scope INTEGER,
         is_deleted BOOLEAN DEFAULT ${isPostgres ? 'FALSE' : '0'},
         deleted_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
-        crm_synced INTEGER DEFAULT 0
+        crm_synced INTEGER DEFAULT 0,
+        sort_order INTEGER DEFAULT 0,
+        deal_status TEXT,
+        name_native TEXT,
+        company_native TEXT,
+        title_native TEXT
       );
 
       CREATE TABLE IF NOT EXISTS deals (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         contact_id INTEGER NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
         user_id INTEGER NOT NULL REFERENCES users(id),
+        workspace_id INTEGER REFERENCES workspaces(id),
         stage TEXT DEFAULT 'Prospect',
         value NUMERIC DEFAULT 0,
+        notes TEXT,
         expected_close ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
-        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
       );
 
       CREATE TABLE IF NOT EXISTS calendars (
@@ -87,7 +95,8 @@ async function bootstrap() {
         user_id INTEGER NOT NULL REFERENCES users(id),
         name TEXT NOT NULL,
         color TEXT DEFAULT '#7b2fff',
-        is_primary BOOLEAN DEFAULT ${isPostgres ? 'FALSE' : '0'}
+        is_primary BOOLEAN DEFAULT ${isPostgres ? 'FALSE' : '0'},
+        type TEXT DEFAULT 'personal'
       );
 
       CREATE TABLE IF NOT EXISTS calendar_events (
@@ -185,9 +194,7 @@ async function bootstrap() {
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
         updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
       );
-    `);
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS user_quotas (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER UNIQUE REFERENCES users(id),
@@ -196,8 +203,17 @@ async function bootstrap() {
         group_scans_used INTEGER DEFAULT 0,
         group_limit_amount INTEGER DEFAULT 1,
         last_reset_date ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
+
+      CREATE TABLE IF NOT EXISTS notifications (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        type TEXT,
+        title TEXT,
+        message TEXT,
+        is_read INTEGER DEFAULT 0,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      );
 
       CREATE TABLE IF NOT EXISTS ai_models (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
@@ -276,6 +292,52 @@ async function bootstrap() {
       CREATE INDEX IF NOT EXISTS idx_contacts_is_deleted ON contacts(is_deleted);
       CREATE INDEX IF NOT EXISTS idx_audit_created_at ON audit_trail(created_at);
       CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
+
+      CREATE TABLE IF NOT EXISTS workspace_policies (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        workspace_id INTEGER NOT NULL UNIQUE,
+        retention_days INTEGER DEFAULT 90,
+        pii_redaction_enabled INTEGER DEFAULT 1,
+        strict_audit_storage_enabled INTEGER DEFAULT 1,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      );
+
+      CREATE TABLE IF NOT EXISTS ai_drafts (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        contact_id INTEGER,
+        contact_name TEXT,
+        contact_email TEXT,
+        subject TEXT,
+        body TEXT,
+        tone TEXT,
+        version INTEGER DEFAULT 1,
+        status TEXT DEFAULT 'draft',
+        sent_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      );
+
+      CREATE TABLE IF NOT EXISTS routing_rules (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        condition_field TEXT,
+        condition_op TEXT,
+        condition_val TEXT,
+        action TEXT,
+        target TEXT,
+        priority INTEGER DEFAULT 0,
+        is_active INTEGER DEFAULT 1,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      );
+
+      CREATE TABLE IF NOT EXISTS workspace_chats (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        workspace_id TEXT NOT NULL,
+        user_id INTEGER REFERENCES users(id),
+        user_name TEXT,
+        message TEXT,
+        timestamp ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      );
     `);
 
     // Batch check existing models
@@ -313,7 +375,21 @@ async function bootstrap() {
       { table: 'ai_drafts', column: 'status', type: "TEXT DEFAULT 'draft'" },
       { table: 'contact_sequences', column: 'status', type: "TEXT DEFAULT 'active'" },
       { table: 'ai_models', column: 'api_model_id', type: 'TEXT' },
-      { table: 'email_sequence_steps', column: 'ai_model', type: "TEXT DEFAULT 'gemini'" }
+      { table: 'contacts', column: 'crm_synced', type: 'INTEGER DEFAULT 0' },
+      { table: 'contacts', column: 'is_deleted', type: `BOOLEAN DEFAULT ${isPostgres ? 'FALSE' : '0'}` },
+      { table: 'contacts', column: 'deleted_at', type: `${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'}` },
+      { table: 'contacts', column: 'workspace_scope', type: 'INTEGER' },
+      { table: 'contacts', column: 'sort_order', type: 'INTEGER DEFAULT 0' },
+      { table: 'contacts', column: 'deal_status', type: 'TEXT' },
+      { table: 'contacts', column: 'name_native', type: 'TEXT' },
+      { table: 'contacts', column: 'company_native', type: 'TEXT' },
+      { table: 'contacts', column: 'title_native', type: 'TEXT' },
+      { table: 'audit_trail', column: 'actor_role', type: 'TEXT' },
+      { table: 'audit_trail', column: 'user_agent', type: 'TEXT' },
+      { table: 'deals', column: 'workspace_id', type: 'INTEGER' },
+      { table: 'deals', column: 'notes', type: 'TEXT' },
+      { table: 'deals', column: 'updated_at', type: `${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}` },
+      { table: 'calendars', column: 'type', type: 'TEXT' }
     ];
 
     for (const patch of patches) {
@@ -459,6 +535,20 @@ async function bootstrap() {
         expires_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'} NOT NULL,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
         UNIQUE(user_id, type)
+      );
+
+      CREATE TABLE IF NOT EXISTS data_quality_dedupe_queue (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        workspace_id INTEGER,
+        fingerprint TEXT NOT NULL,
+        contact_ids_json ${isPostgres ? 'JSONB' : 'TEXT'},
+        primary_contact_id INTEGER,
+        reason TEXT,
+        confidence REAL,
+        status TEXT DEFAULT 'pending',
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        UNIQUE(workspace_id, fingerprint)
       );
     `);
 
