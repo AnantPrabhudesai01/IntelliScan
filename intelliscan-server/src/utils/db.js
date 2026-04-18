@@ -23,6 +23,10 @@ try {
   });
   
   // Early check to prevent silent constructor failures from hanging later
+  pgPool.query('SELECT 1').catch(err => {
+    console.error('❌ Database Connection Test Failed:', err.message);
+  });
+  
   pgPool.on('error', (err) => {
     console.error('🔥 [DB] Unexpected Pool Error:', err.message);
   });
@@ -80,10 +84,6 @@ function translateSqliteToPostgres(sql) {
   // Placeholder conversion: '?' → '$1, $2...'
   let index = 1;
   out = out.replace(/\?/g, () => `$${index++}`);
-  
-  // Ensure table names are quoted if they contain spaces (unlikely but safe)
-  out = out.replace(/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+([a-zA-Z0-9_]+)/gi, 'CREATE TABLE IF NOT EXISTS "$1"');
-  out = out.replace(/INSERT\s+INTO\s+([a-zA-Z0-9_]+)/gi, 'INSERT INTO "$1"');
 
   return out;
 }

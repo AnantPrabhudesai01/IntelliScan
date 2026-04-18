@@ -355,29 +355,36 @@ async function bootstrap() {
       }
     }
 
-    // Batch check existing models
-    const existingModels = await dbAllAsync('SELECT api_model_id FROM ai_models');
-    const existingIds = new Set((existingModels || []).map(m => m.api_model_id));
+    // Batch check existing models (non-critical — wrapped in try/catch)
+    try {
+      const existingModels = await dbAllAsync('SELECT api_model_id FROM ai_models');
+      const existingIds = new Set((existingModels || []).map(m => m.api_model_id));
 
-    const defaultModels = [
-      ['Nvidia Nemotron 340B (Primary)', 'Flagship Intelligence', 'nvidia/nemotron-4-340b-instruct', 'deployed', 99.1, 750, 0, 0],
-      ['Gemini 3 Flash (Secondary)', 'Outreach / Vision', 'google/gemini-2.0-flash-001', 'deployed', 98.4, 450, 0, 12450],
-      ['OpenAI GPT-4o Mini', 'Logic / Speed', 'openai/gpt-4o-mini', 'deployed', 96.2, 320, 0, 8900],
-      ['Claude 3.5 Sonnet', 'High Reasoning', 'anthropic/claude-3.5-sonnet', 'deployed', 98.8, 650, 0, 500],
-      ['Llama 3 70B (Base)', 'Signal Aggregator', 'meta-llama/llama-3-70b-instruct', 'training', 92.1, 1200, 48.2, 450]
-    ];
-    
-    for (const m of defaultModels) {
-      if (!existingIds.has(m[2])) {
-        await dbRunAsync(
-          'INSERT INTO ai_models (name, type, api_model_id, status, accuracy, latency_ms, vram_gb, calls_30d) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-          m
-        );
-        console.log(`🤖 System: Seeded AI Model: ${m[0]}`);
+      const defaultModels = [
+        ['Nvidia Nemotron 340B (Primary)', 'Flagship Intelligence', 'nvidia/nemotron-4-340b-instruct', 'deployed', 99.1, 750, 0, 0],
+        ['Gemini 3 Flash (Secondary)', 'Outreach / Vision', 'google/gemini-2.0-flash-001', 'deployed', 98.4, 450, 0, 12450],
+        ['OpenAI GPT-4o Mini', 'Logic / Speed', 'openai/gpt-4o-mini', 'deployed', 96.2, 320, 0, 8900],
+        ['Claude 3.5 Sonnet', 'High Reasoning', 'anthropic/claude-3.5-sonnet', 'deployed', 98.8, 650, 0, 500],
+        ['Llama 3 70B (Base)', 'Signal Aggregator', 'meta-llama/llama-3-70b-instruct', 'training', 92.1, 1200, 48.2, 450]
+      ];
+      
+      for (const m of defaultModels) {
+        if (!existingIds.has(m[2])) {
+          try {
+            await dbRunAsync(
+              'INSERT INTO ai_models (name, type, api_model_id, status, accuracy, latency_ms, vram_gb, calls_30d) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+              m
+            );
+            console.log(`🤖 System: Seeded AI Model: ${m[0]}`);
+          } catch (seedErr) {
+            console.warn(`[Boot] Model seed warning for ${m[0]}:`, seedErr.message);
+          }
+        }
       }
+    } catch (modelErr) {
+      console.warn('[Boot] AI model seeding skipped (non-critical):', modelErr.message);
     }
 
-    // Model seeding logic (Must be separate as it has JS logic)
     
     const patches = [
       { table: 'cards', column: 'location', type: 'TEXT' },
@@ -455,16 +462,15 @@ async function bootstrap() {
       }
     }
 
-    await dbExecAsync(`
-      CREATE TABLE IF NOT EXISTS email_lists (
+    const tables2 = [
+      `CREATE TABLE IF NOT EXISTS email_lists (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
         name TEXT NOT NULL,
         description TEXT,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      );
-
-      CREATE TABLE IF NOT EXISTS email_list_contacts (
+      )`,
+      `CREATE TABLE IF NOT EXISTS email_list_contacts (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         list_id INTEGER NOT NULL REFERENCES email_lists(id) ON DELETE CASCADE,
         email TEXT NOT NULL,
@@ -475,9 +481,8 @@ async function bootstrap() {
         unsubscribed_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
         UNIQUE(list_id, email)
-      );
-
-      CREATE TABLE IF NOT EXISTS email_templates (
+      )`,
+      `CREATE TABLE IF NOT EXISTS email_templates (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
         name TEXT NOT NULL,
@@ -485,9 +490,8 @@ async function bootstrap() {
         html_body TEXT NOT NULL,
         preview_text TEXT,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      );
-
-      CREATE TABLE IF NOT EXISTS email_campaigns (
+      )`,
+      `CREATE TABLE IF NOT EXISTS email_campaigns (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
         name TEXT NOT NULL,
@@ -503,9 +507,8 @@ async function bootstrap() {
         status TEXT DEFAULT 'draft',
         sent_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      );
-
-      CREATE TABLE IF NOT EXISTS email_sends (
+      )`,
+      `CREATE TABLE IF NOT EXISTS email_sends (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         campaign_id INTEGER NOT NULL REFERENCES email_campaigns(id) ON DELETE CASCADE,
         email TEXT NOT NULL,
@@ -519,17 +522,15 @@ async function bootstrap() {
         open_count INTEGER DEFAULT 0,
         click_count INTEGER DEFAULT 0,
         bounce_reason TEXT
-      );
-
-      CREATE TABLE IF NOT EXISTS email_clicks (
+      )`,
+      `CREATE TABLE IF NOT EXISTS email_clicks (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         send_id INTEGER NOT NULL REFERENCES email_sends(id) ON DELETE CASCADE,
         campaign_id INTEGER NOT NULL REFERENCES email_campaigns(id) ON DELETE CASCADE,
         url TEXT NOT NULL,
         timestamp ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      );
-
-      CREATE TABLE IF NOT EXISTS workspace_integrations (
+      )`,
+      `CREATE TABLE IF NOT EXISTS workspace_integrations (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
         app_id TEXT NOT NULL,
@@ -538,67 +539,35 @@ async function bootstrap() {
         last_sync_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
         UNIQUE(user_id, app_id)
-      );
-
-      CREATE TABLE IF NOT EXISTS whatsapp_discoveries (
+      )`,
+      `CREATE TABLE IF NOT EXISTS whatsapp_discoveries (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         discovery_code TEXT UNIQUE NOT NULL,
         phone_number TEXT NOT NULL,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      );
-      
-      CREATE TABLE IF NOT EXISTS coach_insights_cache (
+      )`,
+      `CREATE TABLE IF NOT EXISTS coach_insights_cache (
         user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
         insights_json TEXT NOT NULL,
         contact_count_at_cache INTEGER DEFAULT 0,
         updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      );
-      
-      CREATE TABLE IF NOT EXISTS sessions (
-        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
-        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        token TEXT UNIQUE NOT NULL,
-        device_info TEXT,
-        ip_address TEXT,
-        location TEXT,
-        is_active BOOLEAN DEFAULT TRUE,
-        last_active ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      );
+      )`
+    ];
 
-      CREATE TABLE IF NOT EXISTS otp_codes (
-        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
-        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        type TEXT NOT NULL,
-        code TEXT NOT NULL,
-        meta_data ${isPostgres ? 'JSONB' : 'TEXT'},
-        expires_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'} NOT NULL,
-        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
-        UNIQUE(user_id, type)
-      );
-
-      CREATE TABLE IF NOT EXISTS data_quality_dedupe_queue (
-        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
-        workspace_id INTEGER,
-        fingerprint TEXT NOT NULL,
-        contact_ids_json ${isPostgres ? 'JSONB' : 'TEXT'},
-        primary_contact_id INTEGER,
-        reason TEXT,
-        confidence REAL,
-        status TEXT DEFAULT 'pending',
-        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
-        updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
-        UNIQUE(workspace_id, fingerprint)
-      );
-    `);
+    for (const sql of tables2) {
+      try {
+        await dbExecAsync(sql);
+      } catch (err) {
+        console.warn('[Boot] Table provisioning warning (non-critical):', err.message);
+      }
+    }
 
     // ══════════════════════════════════════════════════════════════════
     // 3. System Seeding
     // ══════════════════════════════════════════════════════════════════
     // 4. Data Integrity (Self-Healing)
-    await dbExecAsync(`
-      UPDATE contacts SET is_deleted = ${isPostgres ? 'FALSE' : '0'} WHERE is_deleted IS NULL;
-      UPDATE contacts SET crm_synced = 0 WHERE crm_synced IS NULL;
-    `);
+    try { await dbExecAsync(`UPDATE contacts SET is_deleted = ${isPostgres ? 'FALSE' : '0'} WHERE is_deleted IS NULL`); } catch(e) { console.warn('[Boot] Self-heal is_deleted:', e.message); }
+    try { await dbExecAsync(`UPDATE contacts SET crm_synced = 0 WHERE crm_synced IS NULL`); } catch(e) { console.warn('[Boot] Self-heal crm_synced:', e.message); }
     
     console.log('[Boot] System seeding complete.');
 
