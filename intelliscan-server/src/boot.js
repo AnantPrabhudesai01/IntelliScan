@@ -518,7 +518,11 @@ async function bootstrap() {
     // ══════════════════════════════════════════════════════════════════
     // 3. System Seeding
     // ══════════════════════════════════════════════════════════════════
-    await seedDefaultAdmin();
+    // 4. Data Integrity (Self-Healing)
+    console.log('[Boot] Running data health checks...');
+    await dbRunAsync('UPDATE contacts SET is_deleted = ? WHERE is_deleted IS NULL', [false]);
+    await dbRunAsync('UPDATE contacts SET crm_synced = 0 WHERE crm_synced IS NULL');
+    
     console.log('[Boot] System seeding complete.');
 
     console.log(`[Boot] Sequence finished successfully in ${Date.now() - startTime}ms.`);

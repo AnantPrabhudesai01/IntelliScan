@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Database, RefreshCw, ArrowRight, Save, Check, Plus,
   Globe, Plug, Shield, Sparkles, XCircle, Trash2,
-  CheckCircle2, AlertCircle, Loader2, Link2, Unlink
+  CheckCircle2, AlertCircle, Loader2, Link2, Unlink, Code2
 } from 'lucide-react';
 import { getStoredToken } from '../../utils/auth';
 import ConfirmationModal from '../../components/common/ConfirmationModal';

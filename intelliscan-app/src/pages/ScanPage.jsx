@@ -417,7 +417,14 @@ export default function ScanPage() {
         const status = err?.response?.status;
         const apiMsg = err?.response?.data?.error || err?.response?.data?.message;
         if (status === 409) {
-          setShowDuplicateModal(true);
+          setScannedData(null);
+          setSelectedImage(null);
+          localStorage.removeItem('intelliscan_cached_scan');
+          localStorage.removeItem('intelliscan_cached_image');
+          toast.success('Contact already synced to your database!', {
+            icon: '✨',
+            style: { borderRadius: '10px', background: '#21132E', color: '#fff', fontSize: '13px', border: '1px solid #3D2650' }
+          });
         } else if (status === 403) {
           setErrorMsg(apiMsg || 'Credit points exhausted. Please upgrade to continue saving scans.');
         } else {

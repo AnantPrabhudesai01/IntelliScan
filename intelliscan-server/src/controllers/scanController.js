@@ -4,6 +4,7 @@ const { unifiedExtractionPipeline } = require('../services/aiService');
 const { hasMeaningfulContactData } = require('../utils/aiUtils');
 const { notifyUser } = require('../services/notificationService');
 const { uploadToImgbb } = require('../utils/imageUpload');
+const { getScopeForUser } = require('../utils/workspaceUtils');
 const {
   shouldUseMockAiFallback,
   buildFallbackSingleCardResponse,
@@ -162,8 +163,9 @@ Accuracy is paramount. If you see a business card, extract every detail with hig
       if (imageBase64) {
         finalImageUrl = await uploadToImgbb(imageBase64);
       }
-      await saveContact(req.user.id, normalizedCard, 'Scanned via Web App', 'Web Dashboard', finalImageUrl);
-      console.log(`[Auto-Save] Card saved for user ${req.user.id}`);
+      const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
+      await saveContact(req.user.id, normalizedCard, 'Scanned via Web App', 'Web Dashboard', finalImageUrl, scopeWorkspaceId);
+      console.log(`[Auto-Save] Card saved for user ${req.user.id} with scope ${scopeWorkspaceId}`);
     } catch (saveErr) {
       console.error('[Auto-Save Error]', saveErr.message);
       // Don't fail the request if saving fails, but log it
@@ -324,9 +326,10 @@ If you cannot detect any cards, return:
       if (imageBase64) {
         groupImageUrl = await uploadToImgbb(imageBase64);
       }
+      const { scopeWorkspaceId } = await getScopeForUser(userId);
       for (const card of cardsWithDupInfo) {
         if (!card.is_duplicate) {
-          await saveContact(userId, card, 'Batch Scanned via Web', 'Web Group Scan', groupImageUrl);
+          await saveContact(userId, card, 'Batch Scanned via Web', 'Web Group Scan', groupImageUrl, scopeWorkspaceId);
         }
       }
     } catch (saveErr) {
@@ -354,14 +357,14 @@ If you cannot detect any cards, return:
 /**
  * Internal helper to save the contact to DB
  */
-async function saveContact(userId, card, customNotes = '', locationContext = '', imageUrl = null) {
+async function saveContact(userId, card, customNotes = '', locationContext = '', imageUrl = null, workspaceScope = null) {
   try {
     await dbRunAsync(`
       INSERT INTO contacts (
         user_id, name, email, phone, company, job_title, confidence, 
         notes, engine_used, inferred_industry, inferred_seniority, location_context,
-        name_native, company_native, title_native, image_url
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        name_native, company_native, title_native, image_url, workspace_scope, is_deleted
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       userId, card.name, card.email || '', card.phone || '', card.company || '', 
       card.title || '', card.confidence || 95, 
@@ -369,7 +372,7 @@ async function saveContact(userId, card, customNotes = '', locationContext = '',
       card.inferred_industry || null, card.inferred_seniority || null,
       locationContext,
       card.name_native || null, card.company_native || null, card.title_native || null,
-      imageUrl
+      imageUrl, workspaceScope, false
     ]);
   } catch (err) {
     console.error('[saveContact helper error]', err.message);

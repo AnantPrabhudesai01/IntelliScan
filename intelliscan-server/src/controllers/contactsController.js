@@ -34,7 +34,7 @@ exports.getContacts = async (req, res) => {
 
     const sql = `
       SELECT * FROM contacts 
-      WHERE user_id = ? AND is_deleted = FALSE 
+      WHERE user_id = ? AND (is_deleted IS FALSE OR is_deleted IS NULL OR is_deleted = 0)
       ORDER BY sort_order ASC, scan_date DESC
     `;
     db.all(sql, [req.user.id], (err, rows) => {
@@ -63,12 +63,12 @@ exports.getWorkspaceContacts = async (req, res) => {
       ? `SELECT c.*, u.name as scanner_name
          FROM contacts c
          JOIN users u ON c.user_id = u.id
-         WHERE u.workspace_id = ? AND c.is_deleted = FALSE
+         WHERE u.workspace_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL OR c.is_deleted = 0)
          ORDER BY c.sort_order ASC, c.scan_date DESC`
       : `SELECT c.*, u.name as scanner_name
          FROM contacts c
          JOIN users u ON c.user_id = u.id
-         WHERE c.user_id = ? AND c.is_deleted = FALSE
+         WHERE c.user_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL OR c.is_deleted = 0)
          ORDER BY c.sort_order ASC, c.scan_date DESC`;
     
     const params = [workspaceId || req.user.id];
@@ -569,12 +569,12 @@ exports.getWorkspaceContacts = async (req, res) => {
       ? `SELECT c.*, u.name as scanner_name 
          FROM contacts c 
          JOIN users u ON c.user_id = u.id 
-         WHERE u.workspace_id = ? AND c.is_deleted = FALSE
+         WHERE u.workspace_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL OR c.is_deleted = 0)
          ORDER BY c.scan_date DESC`
       : `SELECT c.*, u.name as scanner_name 
          FROM contacts c 
          JOIN users u ON c.user_id = u.id 
-         WHERE c.user_id = ? AND c.is_deleted = FALSE
+         WHERE c.user_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL OR c.is_deleted = 0)
          ORDER BY c.scan_date DESC`;
 
     const params = [workspaceId || req.user.id];

@@ -149,24 +149,6 @@ export default function SignUpPage() {
               </div>
             </div>
 
-              <div className="mt-8 text-center">
-                <p className="text-[#c7c4d8] text-sm font-medium font-body">
-                  Already have an account?
-                  <Link to="/sign-in" className="text-[#c3c0ff] hover:text-white font-bold ml-1 transition-colors">Sign In</Link>
-                </p>
-              </div>
-
-              <div className="mt-10 pt-8 border-t border-white/[0.05] flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-indigo-600"></div>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#918fa1]">SECURE AUTH v2.4</span>
-                </div>
-                <div className="px-2 py-1 bg-[#242a36] rounded text-[10px] font-mono text-[#c3c0ff] uppercase">
-                  Enterprise Grade
-                </div>
-              </div>
-            </div>
-
             <p className="mt-12 text-center text-[9px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)] leading-relaxed max-w-[320px] mx-auto relative z-10">
               Provisioning node constitutes agreement to 
               <a className="text-[var(--text-main)] hover:underline mx-1" href="#">Protocol Terms</a> and 
