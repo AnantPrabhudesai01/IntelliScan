@@ -252,8 +252,8 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
     return rows.some((m) => String(m.status || '').toLowerCase() === 'deployed');
   };
 
-  // 1. Gemini (TEMPORARILY DISABLED)
-  if (isEngineActive('gemini')) {
+  // 1. Gemini (DISABLED BY USER REQUEST)
+  if (false && isEngineActive('gemini')) {
     try {
       const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
       if (apiKey) {
@@ -293,8 +293,8 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
     }
   }
 
-  // 2. OpenAI (ACTIVE FALLBACK)
-  if (isEngineActive('openai')) {
+  // 2. OpenAI (DISABLED BY USER REQUEST)
+  if (false && isEngineActive('openai')) {
     try {
       const oaKey = process.env.OPENAI_API_KEY;
       if (oaKey) {
