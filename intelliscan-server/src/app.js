@@ -93,7 +93,7 @@ app.use(async (req, res, next) => {
   if (bootPromise) {
     await Promise.race([
       bootPromise,
-      new Promise(resolve => setTimeout(resolve, 8000)) // Don't block for more than 8s (Vercel limit)
+      new Promise(resolve => setTimeout(resolve, 15000)) // Increased to 15s for high-latency cold starts
     ]);
   }
   next();

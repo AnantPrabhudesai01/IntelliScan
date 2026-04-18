@@ -17,15 +17,13 @@ function logAuditEvent(req, event) {
   const ip_address = req?.headers?.['x-forwarded-for'] || req?.socket?.remoteAddress || 'unknown';
   const user_agent = req?.headers?.['user-agent'] || 'unknown';
 
-  db.run(
+  const { dbRunAsync } = require('./db');
+  dbRunAsync(
     'INSERT INTO audit_trail (actor_user_id, actor_email, actor_role, action, resource, status, ip_address, user_agent, details_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [actor_user_id, actor_email, actor_role, action, resource, status, ip_address, user_agent, JSON.stringify(details || {})],
-    (err) => {
-      if (err) {
-        console.error('[AUDIT] Log Error:', err.message);
-      }
-    }
-  );
+    [actor_user_id, actor_email, actor_role, action, resource, status, ip_address, user_agent, JSON.stringify(details || {})]
+  ).catch(err => {
+    console.error('[AUDIT] Log Error:', err.message);
+  });
 }
 
 module.exports = {

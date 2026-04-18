@@ -23,7 +23,8 @@ async function bootstrap() {
     console.log('[Boot] Verifying platform schema integrity...');
 
     // 2.1 Essential Platform Tables
-    await dbRunAsync(`
+    // 2.1 Essential Platform Tables (Consolidated for Serverless Performance)
+    await dbExecAsync(`
       CREATE TABLE IF NOT EXISTS users (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         name TEXT,
@@ -37,10 +38,8 @@ async function bootstrap() {
         bio TEXT,
         google_id TEXT,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS workspaces (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         name TEXT NOT NULL,
@@ -48,10 +47,8 @@ async function bootstrap() {
         logo_url TEXT,
         settings_json ${isPostgres ? 'JSONB' : 'TEXT'} DEFAULT '{}',
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS contacts (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER REFERENCES users(id),
@@ -71,11 +68,10 @@ async function bootstrap() {
         engine_used TEXT,
         workspace_id INTEGER REFERENCES workspaces(id),
         is_deleted BOOLEAN DEFAULT ${isPostgres ? 'FALSE' : '0'},
-        deleted_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'}
-      )
-    `);
+        deleted_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        crm_synced INTEGER DEFAULT 0
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS deals (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         contact_id INTEGER NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
@@ -84,20 +80,16 @@ async function bootstrap() {
         value NUMERIC DEFAULT 0,
         expected_close ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS calendars (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
         name TEXT NOT NULL,
         color TEXT DEFAULT '#7b2fff',
         is_primary BOOLEAN DEFAULT ${isPostgres ? 'FALSE' : '0'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS calendar_events (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         calendar_id INTEGER NOT NULL REFERENCES calendars(id) ON DELETE CASCADE,
@@ -108,10 +100,8 @@ async function bootstrap() {
         end_datetime ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'} NOT NULL,
         location TEXT,
         status TEXT DEFAULT 'confirmed'
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS event_reminders (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         event_id INTEGER NOT NULL REFERENCES calendar_events(id) ON DELETE CASCADE,
@@ -119,20 +109,16 @@ async function bootstrap() {
         method TEXT DEFAULT 'email',
         minutes_before INTEGER NOT NULL,
         sent_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS email_sequences (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
         name TEXT NOT NULL,
         status TEXT DEFAULT 'active',
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS email_sequence_steps (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         sequence_id INTEGER NOT NULL REFERENCES email_sequences(id) ON DELETE CASCADE,
@@ -142,10 +128,8 @@ async function bootstrap() {
         ai_intent TEXT,
         ai_model TEXT DEFAULT 'gemini',
         delay_days INTEGER DEFAULT 0
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS contact_sequences (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         contact_id INTEGER NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
@@ -154,24 +138,22 @@ async function bootstrap() {
         current_step_index INTEGER DEFAULT 0,
         next_send_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
         last_error TEXT
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS audit_trail (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         actor_user_id INTEGER,
         actor_email TEXT,
+        actor_role TEXT,
         action TEXT NOT NULL,
         resource TEXT,
         status TEXT DEFAULT 'SUCCESS',
         ip_address TEXT,
+        user_agent TEXT,
         details_json ${isPostgres ? 'JSONB' : 'TEXT'} DEFAULT '{}',
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS analytics_logs (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_email TEXT,
@@ -179,10 +161,8 @@ async function bootstrap() {
         path TEXT,
         duration_ms INTEGER,
         timestamp ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS events (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER REFERENCES users(id),
@@ -191,10 +171,8 @@ async function bootstrap() {
         location TEXT,
         type TEXT,
         status TEXT DEFAULT 'active'
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS user_cards (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER UNIQUE REFERENCES users(id),
@@ -206,7 +184,7 @@ async function bootstrap() {
         design_json ${isPostgres ? 'JSONB' : 'TEXT'} DEFAULT '{}',
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
         updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
+      );
     `);
 
     await dbRunAsync(`
@@ -221,7 +199,6 @@ async function bootstrap() {
       )
     `);
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS ai_models (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         name TEXT,
@@ -234,7 +211,71 @@ async function bootstrap() {
         calls_30d INTEGER DEFAULT 0,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
         updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
+      );
+
+      CREATE TABLE IF NOT EXISTS webhooks (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER REFERENCES users(id),
+        workspace_id INTEGER REFERENCES workspaces(id),
+        url TEXT NOT NULL,
+        event_type TEXT DEFAULT 'on_scan',
+        secret_key TEXT,
+        is_active INTEGER DEFAULT 1,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      );
+
+      CREATE TABLE IF NOT EXISTS webhook_logs (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        webhook_id INTEGER REFERENCES webhooks(id),
+        status_code INTEGER,
+        response_body TEXT,
+        latency_ms INTEGER,
+        timestamp ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      );
+
+      CREATE TABLE IF NOT EXISTS crm_mappings (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        workspace_id INTEGER NOT NULL,
+        provider TEXT NOT NULL,
+        field_mappings ${isPostgres ? 'JSONB' : 'TEXT'} DEFAULT '[]',
+        custom_fields ${isPostgres ? 'JSONB' : 'TEXT'} DEFAULT '[]',
+        is_connected INTEGER DEFAULT 0,
+        auto_sync INTEGER DEFAULT 0,
+        connected_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        last_sync ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        UNIQUE(workspace_id, provider)
+      );
+
+      CREATE TABLE IF NOT EXISTS crm_sync_log (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        workspace_id INTEGER,
+        provider TEXT,
+        status TEXT DEFAULT 'info',
+        message TEXT,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      );
+
+      CREATE TABLE IF NOT EXISTS billing_orders (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        plan_id TEXT NOT NULL,
+        amount INTEGER DEFAULT 0,
+        currency TEXT DEFAULT 'INR',
+        razorpay_order_id TEXT,
+        razorpay_payment_id TEXT,
+        status TEXT DEFAULT 'created',
+        auto_pay INTEGER DEFAULT 0,
+        period_start ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        period_end ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
+        reminder_sent INTEGER DEFAULT 0,
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id);
+      CREATE INDEX IF NOT EXISTS idx_contacts_is_deleted ON contacts(is_deleted);
+      CREATE INDEX IF NOT EXISTS idx_audit_created_at ON audit_trail(created_at);
+      CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
     `);
 
     // Batch check existing models
@@ -259,81 +300,7 @@ async function bootstrap() {
       }
     }
 
-    await dbRunAsync(`
-      CREATE TABLE IF NOT EXISTS webhooks (
-        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
-        user_id INTEGER REFERENCES users(id),
-        workspace_id INTEGER REFERENCES workspaces(id),
-        url TEXT NOT NULL,
-        event_type TEXT DEFAULT 'on_scan',
-        secret_key TEXT,
-        is_active INTEGER DEFAULT 1,
-        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
-
-    await dbRunAsync(`
-      CREATE TABLE IF NOT EXISTS webhook_logs (
-        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
-        webhook_id INTEGER REFERENCES webhooks(id),
-        status_code INTEGER,
-        response_body TEXT,
-        latency_ms INTEGER,
-        timestamp ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
-
-    // ── Missing CRM & Billing Tables (fixes workspace_id error) ──
-    await dbRunAsync(`
-      CREATE TABLE IF NOT EXISTS crm_mappings (
-        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
-        workspace_id INTEGER NOT NULL,
-        provider TEXT NOT NULL,
-        field_mappings ${isPostgres ? 'JSONB' : 'TEXT'} DEFAULT '[]',
-        custom_fields ${isPostgres ? 'JSONB' : 'TEXT'} DEFAULT '[]',
-        is_connected INTEGER DEFAULT 0,
-        auto_sync INTEGER DEFAULT 0,
-        connected_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
-        last_sync ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
-        updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
-        UNIQUE(workspace_id, provider)
-      )
-    `);
-
-    await dbRunAsync(`
-      CREATE TABLE IF NOT EXISTS crm_sync_log (
-        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
-        workspace_id INTEGER,
-        provider TEXT,
-        status TEXT DEFAULT 'info',
-        message TEXT,
-        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
-
-    await dbRunAsync(`
-      CREATE TABLE IF NOT EXISTS billing_orders (
-        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
-        user_id INTEGER NOT NULL REFERENCES users(id),
-        plan_id TEXT NOT NULL,
-        amount INTEGER DEFAULT 0,
-        currency TEXT DEFAULT 'INR',
-        razorpay_order_id TEXT,
-        razorpay_payment_id TEXT,
-        status TEXT DEFAULT 'created',
-        auto_pay INTEGER DEFAULT 0,
-        period_start ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
-        period_end ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
-        reminder_sent INTEGER DEFAULT 0,
-        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
-
-    // 2.2 Performance Indexes
-    await dbRunAsync('CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id)');
-    await dbRunAsync('CREATE INDEX IF NOT EXISTS idx_contacts_is_deleted ON contacts(is_deleted)');
-    await dbRunAsync('CREATE INDEX IF NOT EXISTS idx_audit_created_at ON audit_trail(created_at)');
-    await dbRunAsync('CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email)');
+    // Model seeding logic (Must be separate as it has JS logic)
     
     const patches = [
       { table: 'cards', column: 'location', type: 'TEXT' },
@@ -373,17 +340,15 @@ async function bootstrap() {
       }
     }
 
-    await dbRunAsync(`
+    await dbExecAsync(`
       CREATE TABLE IF NOT EXISTS email_lists (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
         name TEXT NOT NULL,
         description TEXT,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS email_list_contacts (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         list_id INTEGER NOT NULL REFERENCES email_lists(id) ON DELETE CASCADE,
@@ -395,10 +360,8 @@ async function bootstrap() {
         unsubscribed_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
         UNIQUE(list_id, email)
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS email_templates (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
@@ -407,10 +370,8 @@ async function bootstrap() {
         html_body TEXT NOT NULL,
         preview_text TEXT,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS email_campaigns (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
@@ -423,14 +384,12 @@ async function bootstrap() {
         html_body TEXT NOT NULL,
         text_body TEXT,
         template_id INTEGER REFERENCES email_templates(id),
-        list_ids TEXT, -- Store as JSON array string for list IDs
+        list_ids TEXT, 
         status TEXT DEFAULT 'draft',
         sent_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS email_sends (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         campaign_id INTEGER NOT NULL REFERENCES email_campaigns(id) ON DELETE CASCADE,
@@ -445,20 +404,16 @@ async function bootstrap() {
         open_count INTEGER DEFAULT 0,
         click_count INTEGER DEFAULT 0,
         bounce_reason TEXT
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS email_clicks (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         send_id INTEGER NOT NULL REFERENCES email_sends(id) ON DELETE CASCADE,
         campaign_id INTEGER NOT NULL REFERENCES email_campaigns(id) ON DELETE CASCADE,
         url TEXT NOT NULL,
         timestamp ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS workspace_integrations (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
@@ -468,28 +423,22 @@ async function bootstrap() {
         last_sync_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
         UNIQUE(user_id, app_id)
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS whatsapp_discoveries (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         discovery_code TEXT UNIQUE NOT NULL,
         phone_number TEXT NOT NULL,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
-    
-    await dbRunAsync(`
+      );
+      
       CREATE TABLE IF NOT EXISTS coach_insights_cache (
         user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
         insights_json TEXT NOT NULL,
         contact_count_at_cache INTEGER DEFAULT 0,
         updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
-    
-    await dbRunAsync(`
+      );
+      
       CREATE TABLE IF NOT EXISTS sessions (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -499,10 +448,8 @@ async function bootstrap() {
         location TEXT,
         is_active INTEGER DEFAULT 1,
         last_active ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
-      )
-    `);
+      );
 
-    await dbRunAsync(`
       CREATE TABLE IF NOT EXISTS otp_codes (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -512,16 +459,17 @@ async function bootstrap() {
         expires_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'} NOT NULL,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
         UNIQUE(user_id, type)
-      )
+      );
     `);
 
     // ══════════════════════════════════════════════════════════════════
     // 3. System Seeding
     // ══════════════════════════════════════════════════════════════════
     // 4. Data Integrity (Self-Healing)
-    console.log('[Boot] Running data health checks...');
-    await dbRunAsync('UPDATE contacts SET is_deleted = ? WHERE is_deleted IS NULL', [false]);
-    await dbRunAsync('UPDATE contacts SET crm_synced = 0 WHERE crm_synced IS NULL');
+    await dbExecAsync(`
+      UPDATE contacts SET is_deleted = ${isPostgres ? 'FALSE' : '0'} WHERE is_deleted IS NULL;
+      UPDATE contacts SET crm_synced = 0 WHERE crm_synced IS NULL;
+    `);
     
     console.log('[Boot] System seeding complete.');
 
