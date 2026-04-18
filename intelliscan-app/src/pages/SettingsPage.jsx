@@ -502,32 +502,7 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSaveSmtp = async () => {
-    setIsSavingSmtp(true);
-    try {
-      await apiClient.post('/workspace/settings/smtp', smtpConfig);
-      showToast('SMTP Settings updated successfully!');
-      setSmtpVerified(true);
-    } catch (err) {
-      showToast('Failed to save SMTP: ' + (err.response?.data?.error || err.message), 'error');
-    } finally {
-      setIsSavingSmtp(false);
-    }
-  };
 
-  const handleTestSmtp = async () => {
-    setIsTestingSmtp(true);
-    try {
-      const res = await apiClient.post('/workspace/settings/smtp/test', smtpConfig);
-      showToast(res.data.message || 'Connection successful!');
-      setSmtpVerified(true);
-    } catch (err) {
-      showToast(err.response?.data?.error || 'Connection failed', 'error');
-      setSmtpVerified(false);
-    } finally {
-      setIsTestingSmtp(false);
-    }
-  };
 
   const renderTabHeader = (name) => {
     const isActive = activeTab === name;
