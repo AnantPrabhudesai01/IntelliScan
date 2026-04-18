@@ -254,7 +254,6 @@ export default function GenSubscriptionPlanComparison() {
           })
         )}
       </div>
->
 
       {/* Detail Matrix */}
       <section className="mt-32 max-w-6xl mx-auto px-6">
