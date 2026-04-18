@@ -19,7 +19,7 @@ const OPENROUTER_FREE_POOL = [
 async function generateWithFallback(prompt) {
   // 1. Try Gemini
   let geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
-  let geminiModelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-8b";
+  let geminiModelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
   try {
     const customConfig = await dbGetAsync('SELECT value FROM engine_config WHERE key = "gemini_api_key" OR key = "GEMINI_API_KEY" LIMIT 1');
     if (customConfig && customConfig.value) geminiKey = customConfig.value;
@@ -258,8 +258,8 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
       const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
       if (apiKey) {
         // Use REST API for maximum control over version/naming
-        const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-8b";
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+        const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -292,12 +292,12 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
     }
   }
 
-  // 2. OpenAI (TEMPORARILY DISABLED)
-  /*
+  // 2. OpenAI (ACTIVE FALLBACK)
   if (isEngineActive('openai')) {
     try {
       const oaKey = process.env.OPENAI_API_KEY;
       if (oaKey) {
+        console.log('[AI Service] Calling OpenAI Fallback (gpt-4o-mini)');
         const openai = new OpenAI({ apiKey: oaKey });
         const response = await openai.chat.completions.create({
           model: "gpt-4o-mini",
@@ -305,21 +305,7 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
             {
               role: "user",
               content: [
-                { type: "text", text: `You are a world-class Business Card Extraction Engine in EXHAUSTIVE SCAN MODE.
-The image contains up to 25 separate business cards. You MUST identify EVERY SINGLE card.
-Use a Scan-Line Strategy: Start at the Top-Left corner and move Left-to-Right, then Top-to-Bottom. Do not skip any card.
-
-Return ONLY a valid JSON object:
-{
-  "engine_used": "Gemini 3 Flash (Exhaustive)",
-  "cards": [
-    {
-      "box_2d": [ymin, xmin, ymax, xmax],
-      "name": "Person Name",
-      ...
-    }
-  ]
-}` },
+                { type: "text", text: prompt },
                 { type: "image_url", image_url: { url: `data:${effectiveMime};base64,${base64Data}` } }
               ]
             }
@@ -334,7 +320,6 @@ Return ONLY a valid JSON object:
       console.error('OpenAI Extraction Failed:', err.message);
     }
   }
-  */
 
   // 3. OpenRouter (Secondary Cloud Fallback)
   if (isEngineActive('openrouter')) {
@@ -443,8 +428,8 @@ async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'j
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
     if (apiKey) {
       // Use Flash-8B for CHAT to get ~1s response time.
-      const modelName = preferredModel || process.env.GEMINI_MODEL || "gemini-1.5-flash-8b-latest";
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+      const modelName = preferredModel || process.env.GEMINI_MODEL || "gemini-1.5-flash-latest";
+      const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
       
       const response = await fetch(url, {
         method: 'POST',
@@ -631,8 +616,8 @@ Return ONLY a valid JSON object:
       return { valid: true }; // Fallback to allow if AI is unconfigured
     }
 
-    const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-8b";
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+    const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+    const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

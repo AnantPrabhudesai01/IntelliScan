@@ -9,6 +9,7 @@ const { hasMeaningfulContactData } = require('../utils/aiUtils');
 const { sendFollowupEmail } = require('../services/emailService');
 const path = require('path');
 const marketingController = require('./marketingController');
+const { uploadToImgbb } = require('../utils/imageUpload');
 
 // Initialize Twilio Client (Lazily)
 let twilioClient;
@@ -173,25 +174,52 @@ exports.webhook = async (req, res) => {
     const aiStart = Date.now();
     
     let extractionResult;
-    try {
       extractionResult = await unifiedExtractionPipeline({
         imageBase64,
         mimeType: MediaContentType0 || 'image/jpeg',
         userId: user.id,
         tier: user.tier,
-        prompt: `Act as a world-class OCR and Data Extraction AI. Look carefully at the image and extract ALL business cards found.
-Even if the lighting is poor or it's angled, try your absolute best to read the text.
-JSON FORMAT ONLY:
+        prompt: `Act as a world-class AI specialized in Business Card OCR and professional document extraction. 
+Accuracy is paramount. If you see a business card, extract every detail with high precision.
+
+### EXTRACTION RULES:
+1. **Name & Entity Scripting (CRITICAL)**: 
+   - 'name': ALWAYS English/Latin script. If the card is only in a native script (Hindi, Gujarati, etc.), YOU MUST TRANSLITERATE it into Latin/English (e.g., "वसुधा" -> "Vasudha").
+   - 'name_native': The original verbatim script name (e.g., "वसुधा"). 
+   - 'company': ALWAYS English/Latin script. Transliterate if necessary.
+   - 'company_native': Original verbatim script company.
+   - 'title': ALWAYS English/Latin script. Transliterate if necessary.
+   - 'title_native': Original verbatim script title.
+2. **Contact Info**:
+   - Clean all phone numbers to international format (e.g., +123456789).
+   - Normalize emails to lowercase.
+3. **LinkedIn Strategy**: 
+   - If a LinkedIn URL/handle isn't on the card, predict the most likely URL based on 'name' and 'company'.
+4. **Insights**:
+   - 'inferred_industry': Analyze the logo, company name, and title to provide a specific industry.
+   - 'inferred_seniority': Analyze the job title (e.g., Director = VP / Director).
+5. **Rejection**:
+   - If the image is NOT a business card or contact card, return {"rejected": true, "reason": "Not a valid contact card"}.
+6. **Group Strategy**:
+   - If multiple cards are in one photo, detect ALL of them and return an array under the "cards" key. 
+
+### OUTPUT FORMAT (JSON ONLY):
 {
   "cards": [
     {
-      "name": "Full Name",
-      "company": "Company Name",
-      "title": "Job Title",
-      "email": "email address",
-      "phone": "standardized phone",
+      "name": "full name",
+      "name_native": "original script name",
+      "company": "company name",
+      "company_native": "original script company",
+      "title": "job title",
+      "title_native": "original script title",
+      "email": "email",
+      "phone": "phone",
       "website": "url",
-      "address": "physical address",
+      "address": "full address",
+      "inferred_industry": "Industry",
+      "inferred_seniority": "Seniority",
+      "linkedin_url": "predicted url",
       "confidence": 95
     }
   ]
@@ -225,6 +253,20 @@ JSON FORMAT ONLY:
     const contactNames = [];
     const locationStr = [FromCity, FromState, FromCountry].filter(Boolean).join(', ') || 'WhatsApp';
 
+    // 🚀 NEW: Upload the image to ImgBB for permanent storage in the dashboard
+    let permanentImageUrl = null;
+    try {
+      if (imageBase64) {
+        console.log(`[WhatsApp] Uploading to ImgBB for permanent storage...`);
+        permanentImageUrl = await uploadToImgbb(imageBase64);
+        console.log(`[WhatsApp] Permanent Image URL: ${permanentImageUrl}`);
+      }
+    } catch (uploadErr) {
+      console.error(`[WhatsApp] ImgBB Upload failed:`, uploadErr.message);
+      // Fallback to Twilio URL if upload fails (though Twilio URLs expire)
+      permanentImageUrl = mediaUrl;
+    }
+
     for (let i = 0; i < cards.length; i++) {
       const cardData = cards[i];
       const normalized = normalizeExtractedCard(cardData, { fallbackConfidence: 75 });
@@ -241,12 +283,12 @@ JSON FORMAT ONLY:
       
       if (existing) {
         // Update Existing (Duplicate handling - update date and location)
-        await dbRunAsync('UPDATE contacts SET scan_date = NOW(), location_context = ?, notes = ? WHERE id = ?', 
-          [locationStr, `Re-scanned via WhatsApp. Previous: ${existing.notes || ''}`, existing.id]);
+        await dbRunAsync('UPDATE contacts SET scan_date = NOW(), location_context = ?, notes = ?, image_url = ? WHERE id = ?', 
+          [locationStr, `Re-scanned via WhatsApp. Previous: ${existing.notes || ''}`, permanentImageUrl, existing.id]);
         duplicateCount++;
       } else {
-        // Save New with Location
-        const contactId = await saveContact(user.id, normalized, `Scanned via WhatsApp`, locationStr);
+        // Save New with Location and Permanent Image
+        const contactId = await saveContact(user.id, normalized, `Scanned via WhatsApp`, locationStr, permanentImageUrl);
         savedCount++;
 
         // 📧 Auto-Followup Trigger (If Email exists)
@@ -466,20 +508,21 @@ async function downloadImageAsBase64(url) {
 /**
  * Internal helper to save the contact to DB
  */
-async function saveContact(userId, card, customNotes = '', locationContext = '') {
+async function saveContact(userId, card, customNotes = '', locationContext = '', imageUrl = null) {
   const result = await dbRunAsync(`
     INSERT INTO contacts (
       user_id, name, email, phone, company, job_title, confidence, 
       notes, engine_used, inferred_industry, inferred_seniority, location_context,
-      name_native, company_native, title_native
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      name_native, company_native, title_native, image_url
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `, [
     userId, card.name, card.email || '', card.phone || '', card.company || '', 
     card.title || '', card.confidence || 95, 
     customNotes || 'Scanned via WhatsApp', card.engine_used || 'WhatsApp AI Bot',
     card.inferred_industry || null, card.inferred_seniority || null,
     locationContext,
-    card.name_native || null, card.company_native || null, card.title_native || null
+    card.name_native || null, card.company_native || null, card.title_native || null,
+    imageUrl
   ]);
   return result.lastID;
 }

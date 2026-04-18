@@ -296,12 +296,21 @@ router.get('/settings', authenticateToken, async (req, res) => {
   }
 });
 
-router.post('/settings/smtp', authenticateToken, requireEnterpriseAdmin, async (req, res) => {
+router.post('/settings/smtp', authenticateToken, async (req, res) => {
   try {
     const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
     const { host, port, user, pass, from_email, from_name } = req.body;
 
-    const workspace = await dbGetAsync('SELECT * FROM workspaces WHERE id = ?', [scopeWorkspaceId]);
+    // ── AUTO-INIT: If this is a personal user without a workspace row, create it now
+    const workspace = await dbGetAsync('SELECT id FROM workspaces WHERE id = ?', [scopeWorkspaceId]);
+    
+    if (!workspace) {
+      console.log(`[Workspace] Initializing personal workspace for user ${req.user.id}`);
+      await dbRunAsync(
+        'INSERT INTO workspaces (id, name, owner_id, settings_json) VALUES (?, ?, ?, ?)',
+        [scopeWorkspaceId, `${req.user.name || 'Personal'} Workspace`, req.user.id, '{}']
+      );
+    }
     let settings = typeof workspace?.settings_json === 'string' 
       ? JSON.parse(workspace?.settings_json || '{}') 
       : (workspace?.settings_json || {});
@@ -332,7 +341,7 @@ router.post('/settings/smtp', authenticateToken, requireEnterpriseAdmin, async (
   }
 });
 
-router.post('/settings/smtp/test', authenticateToken, requireEnterpriseAdmin, async (req, res) => {
+router.post('/settings/smtp/test', authenticateToken, async (req, res) => {
   try {
     const { host, port, user, pass, from_email } = req.body;
     

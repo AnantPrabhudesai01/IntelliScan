@@ -42,15 +42,7 @@ router.get('/quota', authenticateToken, async (req, res) => {
     // Fetch fresh data after potential promotion in ensureQuotaRow
     const quota = await dbGetAsync('SELECT used_count, limit_amount, group_scans_used FROM user_quotas WHERE user_id = ?', [req.user.id]);
     
-    // Resolve the display tier based on actual limits in case of sync delays
-    let displayTier = currentTier;
-    if (quota?.limit_amount >= 100 && displayTier.toLowerCase() === 'personal') {
-      displayTier = 'pro';
-    } else if (quota?.limit_amount >= 99999) {
-      displayTier = 'enterprise';
-    }
-
-    const limits = resolveTierLimits(displayTier);
+    const limits = resolveTierLimits(currentTier);
 
     // Fetch the latest paid order to check auto-pay status
     const latestOrder = await dbGetAsync(
@@ -59,12 +51,12 @@ router.get('/quota', authenticateToken, async (req, res) => {
     );
 
     res.json({
-      tier: displayTier,
+      tier: currentTier,
       used: Number(quota?.used_count || 0),
       limit: Number(quota?.limit_amount || limits.single),
       group_scans_used: Number(quota?.group_scans_used || 0),
       group_scans_limit: Number(limits.group),
-      tierMatch: (req.user.tier || '').toLowerCase() === displayTier.toLowerCase(),
+      tierMatch: (req.user.tier || '').toLowerCase() === currentTier.toLowerCase(),
       auto_pay: !!latestOrder?.auto_pay
     });
   } catch (error) {

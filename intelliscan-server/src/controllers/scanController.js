@@ -1,8 +1,9 @@
-const { dbGetAsync, dbRunAsync } = require('../utils/db');
+const { dbGetAsync, dbRunAsync, isPostgres } = require('../utils/db');
 const { ensureQuotaRow, resolveTierLimits, incrementUsage } = require('../utils/quota');
 const { unifiedExtractionPipeline } = require('../services/aiService');
 const { hasMeaningfulContactData } = require('../utils/aiUtils');
 const { notifyUser } = require('../services/notificationService');
+const { uploadToImgbb } = require('../utils/imageUpload');
 const {
   shouldUseMockAiFallback,
   buildFallbackSingleCardResponse,
@@ -155,11 +156,25 @@ Accuracy is paramount. If you see a business card, extract every detail with hig
     // 3. Successful scan: Increment Quota (Unified Governance)
     await incrementUsage(req.user.id, 'single');
 
+    // 4. Persistence: Auto-Save to Contacts (User Feedback Priority)
+    let finalImageUrl = null;
+    try {
+      if (imageBase64) {
+        finalImageUrl = await uploadToImgbb(imageBase64);
+      }
+      await saveContact(req.user.id, normalizedCard, 'Scanned via Web App', 'Web Dashboard', finalImageUrl);
+      console.log(`[Auto-Save] Card saved for user ${req.user.id}`);
+    } catch (saveErr) {
+      console.error('[Auto-Save Error]', saveErr.message);
+      // Don't fail the request if saving fails, but log it
+    }
+
     res.json({
       rejected: false,
       is_self_scan: isSelfScan,
       enrichment_payload: enrichmentPayload,
       ...normalizedCard,
+      image_url: finalImageUrl,
       engine_used: scannedData.engine_used || 'Gemini 2.5 Flash Enterprise'
     });
   } catch (error) {
@@ -303,6 +318,21 @@ If you cannot detect any cards, return:
 
     await dbRunAsync('UPDATE user_quotas SET group_scans_used = group_scans_used + 1 WHERE user_id = ?', [req.user.id]);
 
+    // 4. Persistence: Auto-Save Group Cards
+    try {
+      let groupImageUrl = null;
+      if (imageBase64) {
+        groupImageUrl = await uploadToImgbb(imageBase64);
+      }
+      for (const card of cardsWithDupInfo) {
+        if (!card.is_duplicate) {
+          await saveContact(userId, card, 'Batch Scanned via Web', 'Web Group Scan', groupImageUrl);
+        }
+      }
+    } catch (saveErr) {
+      console.error('[Auto-Save Group Error]', saveErr.message);
+    }
+
     res.json({
       cards: cardsWithDupInfo,
       total_detected: cardsWithDupInfo.length,
@@ -320,3 +350,28 @@ If you cannot detect any cards, return:
     res.status(500).json({ error: 'Failed to process multi-card image', details: error.message });
   }
 };
+
+/**
+ * Internal helper to save the contact to DB
+ */
+async function saveContact(userId, card, customNotes = '', locationContext = '', imageUrl = null) {
+  try {
+    await dbRunAsync(`
+      INSERT INTO contacts (
+        user_id, name, email, phone, company, job_title, confidence, 
+        notes, engine_used, inferred_industry, inferred_seniority, location_context,
+        name_native, company_native, title_native, image_url
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      userId, card.name, card.email || '', card.phone || '', card.company || '', 
+      card.title || '', card.confidence || 95, 
+      customNotes, card.engine_used || 'IntelliScan AI',
+      card.inferred_industry || null, card.inferred_seniority || null,
+      locationContext,
+      card.name_native || null, card.company_native || null, card.title_native || null,
+      imageUrl
+    ]);
+  } catch (err) {
+    console.error('[saveContact helper error]', err.message);
+  }
+}

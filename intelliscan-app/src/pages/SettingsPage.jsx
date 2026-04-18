@@ -75,6 +75,7 @@ export default function SettingsPage() {
 
   // Policy Modal
   const [showPolicyModal, setShowPolicyModal] = useState(false);
+  const [showSmtpConfig, setShowSmtpConfig] = useState(false);
   const [pendingUploadFile, setPendingUploadFile] = useState(null);
   const [policyViolationError, setPolicyViolationError] = useState(null);
 
@@ -94,8 +95,6 @@ export default function SettingsPage() {
   }, [profile.tier]);
 
   const fetchWorkspaceSettings = async () => {
-    // Only Fetch if Pro or Enterprise
-    if (profile.tier !== 'enterprise' && profile.tier !== 'pro') return;
     try {
       const res = await apiClient.get('/workspace/settings');
       if (res.data && res.data.settings?.smtp) {
@@ -104,6 +103,33 @@ export default function SettingsPage() {
       }
     } catch (err) {
       console.error('Failed to fetch workspace settings:', err);
+    }
+  };
+
+  const handleSaveSmtp = async () => {
+    setIsSavingSmtp(true);
+    try {
+      await apiClient.post('/workspace/settings/smtp', smtpConfig);
+      showToast('SMTP configuration saved successfully!');
+      fetchWorkspaceSettings();
+    } catch (err) {
+      showToast('Failed to save SMTP settings: ' + (err.response?.data?.error || err.message), 'error');
+    } finally {
+      setIsSavingSmtp(false);
+    }
+  };
+
+  const handleTestSmtp = async () => {
+    setIsTestingSmtp(true);
+    try {
+      const res = await apiClient.post('/workspace/settings/smtp/test', smtpConfig);
+      showToast(res.data.message || 'Connection test successful!');
+      setSmtpVerified(true);
+    } catch (err) {
+      showToast('Connection failed: ' + (err.response?.data?.error || err.message), 'error');
+      setSmtpVerified(false);
+    } finally {
+      setIsTestingSmtp(false);
     }
   };
 
@@ -1358,17 +1384,105 @@ export default function SettingsPage() {
                      </div>
                   </div>
 
-                  {/* SMTP Panel Small */}
-                  <div className="bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-3xl p-8 text-white space-y-4 shadow-xl shadow-indigo-500/20">
-                     <div className="flex items-center gap-3">
-                        <RefreshCw size={24} />
-                        <h4 className="text-lg font-bold font-headline">SMTP Engine</h4>
+                  {/* SMTP Panel */}
+                  <div className={`bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-3xl p-8 text-white space-y-4 shadow-xl shadow-indigo-500/20 transition-all duration-500 ${showSmtpConfig ? 'lg:col-span-12' : ''}`}>
+                     <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                           <RefreshCw size={24} className={isTestingSmtp ? 'animate-spin' : ''} />
+                           <h4 className="text-lg font-bold font-headline">SMTP Engine</h4>
+                        </div>
+                        <button 
+                          onClick={() => setShowSmtpConfig(!showSmtpConfig)}
+                          className="px-4 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors"
+                        >
+                          {showSmtpConfig ? 'Close' : 'Configure'}
+                        </button>
                      </div>
                      <p className="text-xs opacity-80 leading-relaxed font-medium">Sync your professional email to send AI-drafted follow-ups instantly after a scan.</p>
-                     <div className="flex items-center justify-between bg-white/10 p-4 rounded-2xl border border-white/10">
-                        <span className="text-[10px] font-black uppercase tracking-widest opacity-80">Server Status</span>
-                        <span className="text-[10px] font-black">{smtpVerified ? 'VERIFIED' : 'UNCONFIGURED'}</span>
-                     </div>
+                     
+                     {!showSmtpConfig ? (
+                       <div className="flex items-center justify-between bg-white/10 p-4 rounded-2xl border border-white/10">
+                          <span className="text-[10px] font-black uppercase tracking-widest opacity-80">Server Status</span>
+                          <span className="text-[10px] font-black">{smtpVerified ? 'VERIFIED' : 'UNCONFIGURED'}</span>
+                       </div>
+                     ) : (
+                       <div className="space-y-4 pt-4 border-t border-white/10 animate-fade-in">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                             <div className="space-y-1.5">
+                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">SMTP Host</label>
+                                <input 
+                                  value={smtpConfig.host}
+                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, host: e.target.value })}
+                                  placeholder="smtp.gmail.com"
+                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
+                                />
+                             </div>
+                             <div className="space-y-1.5">
+                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Port</label>
+                                <input 
+                                  value={smtpConfig.port}
+                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, port: e.target.value })}
+                                  placeholder="587"
+                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
+                                />
+                             </div>
+                             <div className="space-y-1.5">
+                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Username (Email)</label>
+                                <input 
+                                  value={smtpConfig.user}
+                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, user: e.target.value })}
+                                  placeholder="you@company.com"
+                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
+                                />
+                             </div>
+                             <div className="space-y-1.5">
+                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Password / App Key</label>
+                                <input 
+                                  type="password"
+                                  value={smtpConfig.pass}
+                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, pass: e.target.value })}
+                                  placeholder="••••••••••••"
+                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
+                                />
+                             </div>
+                             <div className="space-y-1.5">
+                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Sender Name</label>
+                                <input 
+                                  value={smtpConfig.from_name}
+                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, from_name: e.target.value })}
+                                  placeholder="John Doe from IntelliScan"
+                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
+                                />
+                             </div>
+                             <div className="space-y-1.5">
+                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">From Email (Optional)</label>
+                                <input 
+                                  value={smtpConfig.from_email}
+                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, from_email: e.target.value })}
+                                  placeholder="you@company.com"
+                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
+                                />
+                             </div>
+                          </div>
+                          <div className="flex gap-3 pt-2">
+                             <button 
+                               onClick={handleTestSmtp}
+                               disabled={isTestingSmtp}
+                               className="flex-1 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                             >
+                               {isTestingSmtp ? <RefreshCw size={14} className="animate-spin" /> : <Lock size={14} />}
+                               Test Settings
+                             </button>
+                             <button 
+                               onClick={handleSaveSmtp}
+                               disabled={isSavingSmtp}
+                               className="flex-1 py-3 bg-white text-indigo-700 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:shadow-white/20 transition-all"
+                             >
+                               {isSavingSmtp ? 'Saving...' : 'Save Configuration'}
+                             </button>
+                          </div>
+                       </div>
+                     )}
                   </div>
                </div>
              </div>
