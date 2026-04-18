@@ -331,11 +331,11 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
         // IMPROVEMENT: If prompt indicates multiple cards, force a high-power model
         // Many 'Free' models on OpenRouter (like Nemotron-Nano) cannot handle whiteboards.
         const isMultiScan = prompt.toLowerCase().includes('every') || prompt.toLowerCase().includes('30 cards');
-        let orModel = process.env.OPENROUTER_MODEL || "google/gemini-1.5-flash";
+        let orModel = process.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-001";
         
-        if (isMultiScan && orModel.includes('free')) {
-          console.log('[AI Service] Dense scan detected. Upgrading to Gemini 1.5 Flash for accuracy.');
-          orModel = "google/gemini-flash-1.5"; // Industry standard for multi-card vision
+        if (isMultiScan && (orModel.includes('free') || orModel.includes('nano'))) {
+          console.log('[AI Service] Dense scan detected. Upgrading to Gemini 2.0 Flash for accuracy.');
+          orModel = "google/gemini-2.0-flash-001"; // High-power vision model with active endpoints
         }
 
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
