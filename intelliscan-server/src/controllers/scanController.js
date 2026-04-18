@@ -57,6 +57,11 @@ exports.scanSingleCard = async (req, res) => {
       });
     }
 
+    // 1. Start ImgBB upload concurrently with Gemini to save 2-3 seconds
+    const imageUploadPromise = imageBase64 
+      ? uploadToImgbb(imageBase64).catch(e => { console.error('[ImgBB Error]', e); return null; })
+      : Promise.resolve(null);
+
     const extractionResult = await unifiedExtractionPipeline({
       imageBase64,
       mimeType,
@@ -158,11 +163,8 @@ Accuracy is paramount. If you see a business card, extract every detail with hig
     await incrementUsage(req.user.id, 'single');
 
     // 4. Persistence: Auto-Save to Contacts (User Feedback Priority)
-    let finalImageUrl = null;
+    let finalImageUrl = await imageUploadPromise;
     try {
-      if (imageBase64) {
-        finalImageUrl = await uploadToImgbb(imageBase64);
-      }
       const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
       await saveContact(req.user.id, normalizedCard, 'Scanned via Web App', 'Web Dashboard', finalImageUrl, scopeWorkspaceId);
       console.log(`[Auto-Save] Card saved for user ${req.user.id} with scope ${scopeWorkspaceId}`);
@@ -220,6 +222,12 @@ exports.scanGroupCards = async (req, res) => {
       });
     }
 
+    // 1. Start ImgBB upload concurrently with Gemini to save 2-3 seconds
+    const imageUploadPromise = imageBase64 
+      ? uploadToImgbb(imageBase64).catch(e => { console.error('[ImgBB Error]', e); return null; })
+      : Promise.resolve(null);
+
+    // 2. Start AI Extraction
     const extractionResult = await unifiedExtractionPipeline({
       imageBase64,
       mimeType,
@@ -304,10 +312,7 @@ If no cards, return {"cards":[]}.`
 
     // 4. Persistence: Auto-Save Group Cards
     try {
-      let groupImageUrl = null;
-      if (imageBase64) {
-        groupImageUrl = await uploadToImgbb(imageBase64);
-      }
+      const groupImageUrl = await imageUploadPromise;
       const { scopeWorkspaceId } = await getScopeForUser(userId);
       for (const card of cardsWithDupInfo) {
         if (!card.is_duplicate) {
