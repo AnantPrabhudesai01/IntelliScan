@@ -174,6 +174,7 @@ exports.webhook = async (req, res) => {
     const aiStart = Date.now();
     
     let extractionResult;
+    try {
       extractionResult = await unifiedExtractionPipeline({
         imageBase64,
         mimeType: MediaContentType0 || 'image/jpeg',

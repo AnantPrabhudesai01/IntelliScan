@@ -66,6 +66,7 @@ configurePassport();
 // SERVERLESS SELF-HEALING BOOT (fixes Vercel missing tables)
 // ══════════════════════════════════════════════════════════════════
 const { bootstrap } = require('./boot');
+let bootPromise = null;
 let bootError = null;
 
 // Global trigger to start boot as soon as module loads
