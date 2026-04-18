@@ -92,7 +92,7 @@ export default function CommandPalette() {
         <div className="max-h-[60vh] overflow-y-auto font-body">
           {loading && (
             <div className="p-10 text-center space-y-4">
-              <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <div className="w-8 h-8 border-2 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
               <p className="text-gray-500 text-sm font-bold tracking-tight">Accessing Neural Database...</p>
             </div>
           )}
@@ -105,7 +105,7 @@ export default function CommandPalette() {
                   key={`${item.type}-${item.id}`}
                   onClick={() => handleSelect(item)}
                   className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all ${
-                    idx === activeIndex ? 'bg-indigo-600 text-white shadow-lg' : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
+                    idx === activeIndex ? 'bg-brand-600 text-white shadow-lg' : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
                   }`}
                   onMouseEnter={() => setActiveIndex(idx)}
                 >
@@ -117,7 +117,7 @@ export default function CommandPalette() {
                     </div>
                     <div>
                       <p className="font-bold tracking-tight">{item.title}</p>
-                      <p className={`text-xs ${idx === activeIndex ? 'text-indigo-100' : 'text-gray-400'}`}>{item.subtitle}</p>
+                      <p className={`text-xs ${idx === activeIndex ? 'text-brand-100' : 'text-gray-400'}`}>{item.subtitle}</p>
                     </div>
                   </div>
                   <ChevronRight size={18} className={idx === activeIndex ? 'opacity-100' : 'opacity-0'} />
@@ -138,7 +138,7 @@ export default function CommandPalette() {
 
           {query.length < 2 && (
             <div className="p-10 text-center">
-               <div className="flex justify-center gap-6 mb-8 text-indigo-500/20">
+               <div className="flex justify-center gap-6 mb-8 text-brand-500/20">
                   <User size={48} />
                   <Mail size={48} />
                   <Command size={48} />
@@ -149,7 +149,7 @@ export default function CommandPalette() {
                </p>
                <div className="mt-8 flex flex-wrap justify-center gap-3">
                   {['Recent Scans', 'Events', 'Campaigns', 'Personal Settings'].map(tag => (
-                    <button key={tag} className="px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-lg text-xs font-bold text-gray-400 hover:text-indigo-500 transition-colors">
+                    <button key={tag} className="px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-lg text-xs font-bold text-gray-400 hover:text-brand-500 transition-colors">
                       {tag}
                     </button>
                   ))}

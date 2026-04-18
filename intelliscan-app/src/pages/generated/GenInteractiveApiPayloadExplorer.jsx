@@ -72,7 +72,7 @@ export default function GenInteractiveApiPayloadExplorer() {
 <img className="w-full h-full object-cover opacity-90 grayscale" data-alt="Monochrome professional invoice document with clean typography and business letterhead details for data extraction visualization" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCd-1yxclL__qK2bPZoQDPZ4EBBNOvzXqgoQEaUnk2UQR1Dn9I_BBjuaArYDsABLxq-8D5rKLhKtXOrc_kuBWhq64Jy7yq-DSooALUZZsyUsXtBmvdx3EwPS8ZeWgMOqWMDrDLYrnnbKqnbv7977S7QNTDgsxef7kPawvZLmepIXL7TYp8eEbbCCUrs8x6iHGOpGhxYeioRzxepPe65G0yUmMlckmOYDnS3kvNlyc9Alt2M9OGAy2HAwJvrFuaYwjVT44ZwwfYfFPmK"/>
 
 <div className="absolute top-[45px] left-[12px] w-[108px] h-[15px] border-2 border-primary bg-primary/10 transition-all hover:bg-primary/30 cursor-pointer"></div>
-<div className="absolute top-[70px] left-[12px] w-[98px] h-[15px] border-2 border-indigo-400 bg-indigo-400/10 transition-all hover:bg-indigo-400/30 cursor-pointer"></div>
+<div className="absolute top-[70px] left-[12px] w-[98px] h-[15px] border-2 border-brand-400 bg-brand-400/10 transition-all hover:bg-brand-400/30 cursor-pointer"></div>
 <div className="absolute top-[45px] left-[300px] w-[150px] h-[15px] border-2 border-tertiary bg-tertiary/10 transition-all hover:bg-tertiary/30 cursor-pointer"></div>
 <div className="absolute bottom-[40px] right-[20px] w-[150px] h-[30px] border-2 border-primary bg-primary/10 transition-all hover:bg-primary/30 cursor-pointer animate-pulse"></div>
 <div className="absolute inset-0 bg-black/5 pointer-events-none"></div>
@@ -95,7 +95,7 @@ export default function GenInteractiveApiPayloadExplorer() {
 <section className="col-span-4 border-l border-outline-variant/10 bg-surface-container-low flex flex-col">
 <div className="p-4 border-b border-outline-variant/10 flex items-center justify-between">
 <div className="flex items-center gap-2">
-<span className="material-symbols-outlined text-indigo-500 text-sm">auto_awesome</span>
+<span className="material-symbols-outlined text-brand-500 text-sm">auto_awesome</span>
 <span className="text-xs font-bold uppercase tracking-widest text-on-surface">Structured (Gemini Pro)</span>
 </div>
 <span className="text-[10px] bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded font-mono">INTELLIGENCE-V4</span>

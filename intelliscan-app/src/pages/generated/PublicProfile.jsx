@@ -73,8 +73,8 @@ export default function PublicProfile() {
     return (
       <div className="min-h-screen bg-white dark:bg-[#0a0f18] flex items-center justify-center">
          <div className="relative">
-            <div className="w-16 h-16 rounded-full border-4 border-indigo-600/20 border-t-indigo-600 animate-spin"></div>
-            <Sparkles className="absolute inset-0 m-auto text-indigo-600 animate-pulse" size={24} />
+            <div className="w-16 h-16 rounded-full border-4 border-brand-600/20 border-t-brand-600 animate-spin"></div>
+            <Sparkles className="absolute inset-0 m-auto text-brand-600 animate-pulse" size={24} />
          </div>
       </div>
     );
@@ -122,7 +122,7 @@ export default function PublicProfile() {
       <div className="relative z-10 max-w-lg mx-auto px-6 pt-12 pb-24 flex flex-col items-center">
         
         {/* Main Glass Card */}
-        <div className="w-full glass-card premium-grain rounded-[4rem] overflow-hidden transition-all duration-700 hover:shadow-indigo-500/20 group">
+        <div className="w-full glass-card premium-grain rounded-[4rem] overflow-hidden transition-all duration-700 hover:shadow-brand-500/20 group">
           
           {/* Header Banner */}
           <div className="h-40 relative overflow-hidden">
@@ -145,7 +145,7 @@ export default function PublicProfile() {
              <div className="space-y-2 mb-8">
                 <h1 className="text-4xl font-['Outfit'] font-black text-[var(--text-main)] tracking-tighter">{profile.name}</h1>
                 <div className="flex items-center justify-center gap-2">
-                   <span className="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-widest">{profile.headline || 'Verified Professional'}</span>
+                   <span className="px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-[10px] font-black uppercase tracking-widest">{profile.headline || 'Verified Professional'}</span>
                    <span className="w-1 h-1 rounded-full bg-slate-700"></span>
                    <span className="text-[var(--text-muted)] text-xs font-bold">{profile.company || 'Enterprise Partner'}</span>
                 </div>
@@ -158,7 +158,7 @@ export default function PublicProfile() {
              <div className="grid grid-cols-1 gap-3 mb-10">
                 <button 
                   onClick={handleDownloadVCard}
-                  className="w-full py-5 bg-indigo-600 text-white rounded-[2rem] font-['Outfit'] font-black text-sm flex items-center justify-center gap-3 shadow-xl hover:bg-indigo-500 active:scale-95 transition-all"
+                  className="w-full py-5 bg-brand-600 text-white rounded-[2rem] font-['Outfit'] font-black text-sm flex items-center justify-center gap-3 shadow-xl hover:bg-brand-500 active:scale-95 transition-all"
                 >
                   <Download size={20} strokeWidth={3} /> SAVE TO CONTACTS
                 </button>
@@ -176,7 +176,7 @@ export default function PublicProfile() {
              {/* Connection Grid */}
              <div className="space-y-3">
                 {[
-                  { icon: Mail, label: profile.email, href: `mailto:${profile.email}`, color: 'text-indigo-400' },
+                  { icon: Mail, label: profile.email, href: `mailto:${profile.email}`, color: 'text-brand-400' },
                   { icon: Phone, label: profile.phone, href: `tel:${profile.phone}`, color: 'text-emerald-400' },
                   { icon: LinkedinIcon, label: 'LinkedIn Profile', href: '#', color: 'text-blue-400' }
                 ].map((item, idx) => (
@@ -192,7 +192,7 @@ export default function PublicProfile() {
           </div>
 
           <div className="p-6 bg-white/5 border-t border-white/5 flex items-center justify-center gap-2">
-             <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+             <div className="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></div>
              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Integrated Identity via <span className="text-white">IntelliScan</span></p>
           </div>
         </div>

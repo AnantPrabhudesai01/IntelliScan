@@ -69,7 +69,7 @@ export default function AnalyticsPage() {
       { name: 'Lisa Zhang', scans: 167, department: 'Field Sales', conversion: 76 },
     ],
     pipeline: [
-      { stage: 'Scanned', count: 42109, pct: 100, color: 'bg-indigo-500', icon_key: 'Users' },
+      { stage: 'Scanned', count: 42109, pct: 100, color: 'bg-brand-500', icon_key: 'Users' },
       { stage: 'Validated', count: 38901, pct: 92, color: 'bg-emerald-500', icon_key: 'Target' },
       { stage: 'MQL Ready', count: 18400, pct: 44, color: 'bg-blue-500', icon_key: 'Sparkles' },
       { stage: 'CRM Synced', count: 12400, pct: 30, color: 'bg-amber-500', icon_key: 'Database' },
@@ -118,7 +118,7 @@ export default function AnalyticsPage() {
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-gray-200 dark:border-gray-800">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-indigo-600 rounded-lg text-white">
+            <div className="p-2 bg-brand-600 rounded-lg text-white">
               <BarChart2 size={24} />
             </div>
             <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Intelligence Center</h1>
@@ -132,7 +132,7 @@ export default function AnalyticsPage() {
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
-                className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${timeRange === range ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+                className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${timeRange === range ? 'bg-brand-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
               >
                 {range}
               </button>
@@ -154,7 +154,7 @@ export default function AnalyticsPage() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${activeTab === tab.id ? 'bg-white dark:bg-gray-900 text-indigo-600 dark:text-indigo-400 shadow-xl' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${activeTab === tab.id ? 'bg-white dark:bg-gray-900 text-brand-600 dark:text-brand-400 shadow-xl' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
           >
             <tab.icon size={14} /> {tab.label}
           </button>
@@ -172,7 +172,7 @@ export default function AnalyticsPage() {
               { label: 'System Latency', value: `${(data.latency_ms / 1000).toFixed(1)}s`, change: '-12ms', color: 'amber', icon: Clock },
               { label: 'Inbound Leads', value: '14,204', change: '+8.2%', color: 'purple', icon: Target },
             ].map((kpi, i) => (
-              <div key={i} className="bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-800 p-6 rounded-2xl shadow-xl group hover:border-indigo-500/30 transition-all">
+              <div key={i} className="bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-800 p-6 rounded-2xl shadow-xl group hover:border-brand-500/30 transition-all">
                 <div className="flex justify-between items-start mb-4">
                   <div className={`p-2 bg-${kpi.color}-500/10 rounded-xl text-${kpi.color}-500`}>
                     <kpi.icon size={20} />
@@ -201,10 +201,10 @@ export default function AnalyticsPage() {
                 {data.scan_volume.map((v, i) => (
                   <div key={i} className="flex-1 group relative flex flex-col justify-end">
                     <div 
-                      className="w-full bg-indigo-600/10 group-hover:bg-indigo-600/30 rounded-t-lg transition-all cursor-pointer relative"
+                      className="w-full bg-brand-600/10 group-hover:bg-brand-600/30 rounded-t-lg transition-all cursor-pointer relative"
                       style={{ height: `${(v/maxVolume)*100}%` }}
                     >
-                      <div className="absolute top-0 left-0 w-full h-[2px] bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
+                      <div className="absolute top-0 left-0 w-full h-[2px] bg-brand-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
                       {/* Tooltip */}
                       <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-2 py-1 rounded text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
                         {MONTHS[i]}: {v.toLocaleString()}
@@ -230,16 +230,16 @@ export default function AnalyticsPage() {
                     </div>
                     <div className="w-full h-2 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
                       <div 
-                        className={`h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-1000`}
+                        className={`h-full bg-gradient-to-r from-brand-500 to-purple-500 rounded-full transition-all duration-1000`}
                         style={{ width: `${geo.pct}%` }}
                       />
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="mt-10 p-5 bg-indigo-600/5 rounded-2xl border border-indigo-500/10 flex items-center gap-4">
-                <Globe size={32} className="text-indigo-500/40" />
-                <p className="text-[10px] text-indigo-500/80 leading-relaxed font-bold italic">
+              <div className="mt-10 p-5 bg-brand-600/5 rounded-2xl border border-brand-500/10 flex items-center gap-4">
+                <Globe size={32} className="text-brand-500/40" />
+                <p className="text-[10px] text-brand-500/80 leading-relaxed font-bold italic">
                   "Most growth coming from North America this quarter. APAC following with 21% increase."
                 </p>
               </div>
@@ -338,7 +338,7 @@ export default function AnalyticsPage() {
                   <div key={i} className="flex items-center gap-6">
                     <div className="w-20 text-xs font-black text-gray-500 uppercase tracking-widest">{f.field}</div>
                     <div className="flex-1 h-3 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden flex">
-                      <div className="h-full bg-indigo-500 transition-all duration-1000 shadow-[0_0_12px_rgba(99,102,241,0.5)]" style={{ width: `${f.score}%` }} />
+                      <div className="h-full bg-brand-500 transition-all duration-1000 shadow-[0_0_12px_rgba(99,102,241,0.5)]" style={{ width: `${f.score}%` }} />
                     </div>
                     <div className="w-12 text-sm font-black text-gray-900 dark:text-white text-right">{f.score}%</div>
                   </div>
@@ -368,8 +368,8 @@ export default function AnalyticsPage() {
               </div>
               <div className="space-y-4">
                 {data.system_logs.map((log, i) => (
-                  <div key={i} className={`p-4 rounded-2xl border ${log.level === 'error' ? 'bg-red-500/5 border-red-500/20' : log.level === 'warning' ? 'bg-amber-500/5 border-amber-500/20' : 'bg-indigo-500/5 border-indigo-500/20'} flex gap-4`}>
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${log.level === 'error' ? 'bg-red-500/10 text-red-500' : log.level === 'warning' ? 'bg-amber-500/10 text-amber-500' : 'bg-indigo-500/10 text-indigo-500'}`}>
+                  <div key={i} className={`p-4 rounded-2xl border ${log.level === 'error' ? 'bg-red-500/5 border-red-500/20' : log.level === 'warning' ? 'bg-amber-500/5 border-amber-500/20' : 'bg-brand-500/5 border-brand-500/20'} flex gap-4`}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${log.level === 'error' ? 'bg-red-500/10 text-red-500' : log.level === 'warning' ? 'bg-amber-500/10 text-amber-500' : 'bg-brand-500/10 text-brand-500'}`}>
                       {log.level === 'error' ? <X size={20} /> : log.level === 'warning' ? <Settings size={20} /> : <Zap size={20} />}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -402,7 +402,7 @@ export default function AnalyticsPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-          <Shield size={12} className="text-indigo-500" />
+          <Shield size={12} className="text-brand-500" />
           GDPR Compliant Analytics · Enterprise Shield Active
         </div>
       </footer>

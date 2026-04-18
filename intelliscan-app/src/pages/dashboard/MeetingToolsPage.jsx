@@ -17,8 +17,8 @@ export default function MeetingToolsPage() {
   const profileUrl = `${window.location.origin}/u/${encodeURIComponent(profileSlug)}`;
 
   const backgrounds = [
-    { id: 'dark-modern', name: 'Dark Modern', color: 'bg-[#0e131f]', accent: 'bg-indigo-600' },
-    { id: 'glass-blur', name: 'Glass Blur', color: 'bg-gradient-to-br from-indigo-900 via-slate-900 to-black', accent: 'bg-white/10' },
+    { id: 'dark-modern', name: 'Dark Modern', color: 'bg-[#0e131f]', accent: 'bg-brand-600' },
+    { id: 'glass-blur', name: 'Glass Blur', color: 'bg-gradient-to-br from-brand-900 via-slate-900 to-black', accent: 'bg-white/10' },
     { id: 'minimal-white', name: 'Minimal White', color: 'bg-white', accent: 'bg-gray-100', text: 'text-gray-900' },
     { id: 'cyber-neon', name: 'Cyber Neon', color: 'bg-black', accent: 'bg-purple-600' }
   ];
@@ -53,7 +53,7 @@ export default function MeetingToolsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 pb-10 border-b border-gray-100 dark:border-gray-800">
         <div>
            <h2 className="text-4xl font-black tracking-tighter text-gray-900 dark:text-white flex items-center gap-4 italic uppercase">
-             <Video className="text-indigo-600 animate-pulse" size={40} />
+             <Video className="text-brand-600 animate-pulse" size={40} />
              Meeting Presence Tools
            </h2>
            <p className="text-lg text-gray-500 font-medium mt-2 max-w-2xl">
@@ -61,7 +61,7 @@ export default function MeetingToolsPage() {
            </p>
         </div>
         <div className="flex items-center gap-4">
-           <button onClick={handleDownload} className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:translate-y-[-2px] transition-all shadow-2xl shadow-indigo-600/30 active:scale-95">
+           <button onClick={handleDownload} className="px-8 py-4 bg-brand-600 text-white rounded-2xl font-black text-sm hover:translate-y-[-2px] transition-all shadow-2xl shadow-brand-600/30 active:scale-95">
              {isDownloading ? 'GENERATING HIGH-RES...' : 'DOWNLOAD ASSETS'}
            </button>
         </div>
@@ -72,14 +72,14 @@ export default function MeetingToolsPage() {
         <div className="space-y-10">
            <section className="space-y-6">
               <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                <Layout size={18} className="text-indigo-500" /> Choose Style Template
+                <Layout size={18} className="text-brand-500" /> Choose Style Template
               </h3>
               <div className="grid grid-cols-2 gap-4">
                  {backgrounds.map(bg => (
                    <button 
                      key={bg.id} 
                      onClick={() => setSelectedBg(bg.id)}
-                     className={`p-4 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 ${selectedBg === bg.id ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/10' : 'border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700'}`}
+                     className={`p-4 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 ${selectedBg === bg.id ? 'border-brand-600 bg-brand-50/50 dark:bg-brand-900/10' : 'border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700'}`}
                    >
                       <div className={`w-full h-16 rounded-xl ${bg.color} border border-black/5 shadow-inner`}></div>
                       <span className="text-xs font-black text-gray-600 dark:text-gray-300 uppercase italic leading-none">{bg.name}</span>
@@ -90,7 +90,7 @@ export default function MeetingToolsPage() {
 
            <section className="space-y-6">
               <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                <Monitor size={18} className="text-indigo-500" /> Platform Optimization
+                <Monitor size={18} className="text-brand-500" /> Platform Optimization
               </h3>
               <div className="space-y-3">
                  {[
@@ -101,7 +101,7 @@ export default function MeetingToolsPage() {
                     <button 
                       key={p.ratio} 
                       onClick={() => setAspectRatio(p.ratio)}
-                      className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${aspectRatio === p.ratio ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/10 text-indigo-600' : 'border-gray-100 dark:border-gray-800 text-gray-400 hover:border-gray-200 dark:hover:border-gray-700'}`}
+                      className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${aspectRatio === p.ratio ? 'border-brand-600 bg-brand-50/50 dark:bg-brand-900/10 text-brand-600' : 'border-gray-100 dark:border-gray-800 text-gray-400 hover:border-gray-200 dark:hover:border-gray-700'}`}
                     >
                        <span className="font-bold text-sm tracking-tight">{p.label}</span>
                        <CheckCircle size={16} className={aspectRatio === p.ratio ? 'opacity-100' : 'opacity-0'} />
@@ -121,7 +121,7 @@ export default function MeetingToolsPage() {
         {/* Middle/Right: Live Preview Area */}
         <div className="lg:col-span-2 space-y-8">
            <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-              <Video size={18} className="text-indigo-500" /> Multi-Layer Asset Preview
+              <Video size={18} className="text-brand-500" /> Multi-Layer Asset Preview
            </h3>
            
            <div className="relative group max-w-4xl mx-auto">
@@ -135,7 +135,7 @@ export default function MeetingToolsPage() {
               >
                  
                  {/* Decorative elements */}
-                 <div className="absolute top-0 right-0 w-1/3 h-full bg-indigo-600/10 skew-x-[-12deg] translate-x-1/2"></div>
+                 <div className="absolute top-0 right-0 w-1/3 h-full bg-brand-600/10 skew-x-[-12deg] translate-x-1/2"></div>
                  
                  {/* The Fake User Video Circle */}
                  <div className="absolute bottom-[-20%] left-[-10%] w-3/4 h-full bg-gray-200/20 backdrop-blur-md rounded-full shadow-2xl border-2 border-white/20"></div>
@@ -151,7 +151,7 @@ export default function MeetingToolsPage() {
                     </div>
                     <div>
                        <h4 className="text-2xl font-black text-white italic tracking-tighter mb-1 uppercase">{displayName}</h4>
-                       <p className="text-indigo-300 font-bold tracking-widest text-[10px] uppercase mb-4">Enterprise Consultant</p>
+                       <p className="text-brand-300 font-bold tracking-widest text-[10px] uppercase mb-4">Enterprise Consultant</p>
                        <p className="text-white/60 text-[10px] font-medium leading-normal italic px-1">
                           Scan to save my details & view my portfolio instantly from anywhere in the world.
                        </p>
@@ -165,7 +165,7 @@ export default function MeetingToolsPage() {
               </div>
 
               {/* Overlay Label */}
-              <div className="absolute -top-4 -right-4 bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl">
+              <div className="absolute -top-4 -right-4 bg-brand-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl">
                  LIVE ASSET GENERATOR v1
               </div>
            </div>
@@ -173,9 +173,9 @@ export default function MeetingToolsPage() {
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
               <div 
                 onClick={() => handleShare('linkedin')}
-                className="bg-white dark:bg-[#161c28] border border-gray-100 dark:border-gray-800 p-8 rounded-[2.5rem] flex items-center gap-6 group hover:border-indigo-500 transition-all cursor-pointer"
+                className="bg-white dark:bg-[#161c28] border border-gray-100 dark:border-gray-800 p-8 rounded-[2.5rem] flex items-center gap-6 group hover:border-brand-500 transition-all cursor-pointer"
               >
-                 <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
+                 <div className="w-16 h-16 bg-brand-50 dark:bg-brand-900/20 rounded-2xl flex items-center justify-center text-brand-600 group-hover:scale-110 transition-transform">
                     <Smartphone size={32} />
                  </div>
                  <div>
@@ -186,7 +186,7 @@ export default function MeetingToolsPage() {
 
               <div 
                 onClick={() => handleShare('profile')}
-                className="bg-white dark:bg-[#161c28] border border-gray-100 dark:border-gray-800 p-8 rounded-[2.5rem] flex items-center gap-6 group hover:border-indigo-500 transition-all cursor-pointer"
+                className="bg-white dark:bg-[#161c28] border border-gray-100 dark:border-gray-800 p-8 rounded-[2.5rem] flex items-center gap-6 group hover:border-brand-500 transition-all cursor-pointer"
               >
                  <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
                     <Share2 size={32} />

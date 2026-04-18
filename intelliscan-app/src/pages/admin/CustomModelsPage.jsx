@@ -89,7 +89,7 @@ export default function CustomModelsPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
+        <Loader2 className="w-10 h-10 text-brand-600 animate-spin" />
         <p className="text-gray-500 font-medium">Synchronizing Engine Cluster...</p>
       </div>
     );
@@ -103,7 +103,7 @@ export default function CustomModelsPage() {
           <div className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border ${
             notification.type === 'error' 
               ? 'bg-rose-50 border-rose-200 text-rose-800' 
-              : 'bg-indigo-50 border-indigo-200 text-indigo-800'
+              : 'bg-brand-50 border-brand-200 text-brand-800'
           }`}>
             {notification.type === 'error' ? <AlertCircle size={20} /> : <CheckCircle size={20} />}
             <span className="font-bold text-sm">{notification.message}</span>
@@ -123,7 +123,7 @@ export default function CustomModelsPage() {
         </div>
         <button 
           onClick={() => setDeployModalOpen(true)}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-sm active:scale-95"
+          className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-sm active:scale-95"
         >
           <Plus size={16} /> Deploy New Model
         </button>
@@ -181,10 +181,10 @@ export default function CustomModelsPage() {
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider
                       ${model.status === 'deployed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                        model.status === 'training' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 animate-pulse' :
+                        model.status === 'training' ? 'bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400 animate-pulse' :
                           'bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400'}`}>
                       {model.status === 'deployed' && <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>}
-                      {model.status === 'training' && <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>}
+                      {model.status === 'training' && <span className="w-1.5 h-1.5 rounded-full bg-brand-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>}
                       {model.status === 'paused' && <span className="w-1.5 h-1.5 rounded-full bg-gray-500"></span>}
                       {model.status}
                     </span>
@@ -238,7 +238,7 @@ export default function CustomModelsPage() {
                   value={newModel.name}
                   onChange={e => setNewModel({...newModel, name: e.target.value})}
                   placeholder="e.g. Finance Sector v2.1"
-                  className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                  className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-all"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -247,7 +247,7 @@ export default function CustomModelsPage() {
                   <select 
                     value={newModel.type}
                     onChange={e => setNewModel({...newModel, type: e.target.value})}
-                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-all"
                   >
                     <option value="gemini">Gemini Flash</option>
                     <option value="openai">GPT-4o Mini</option>
@@ -260,7 +260,7 @@ export default function CustomModelsPage() {
                     type="number" 
                     value={newModel.vram_gb}
                     onChange={e => setNewModel({...newModel, vram_gb: parseFloat(e.target.value)})}
-                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -274,7 +274,7 @@ export default function CustomModelsPage() {
                 </button>
                 <button 
                   type="submit"
-                  className="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-600/20 active:scale-95 transition-all"
+                  className="flex-1 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-600/20 active:scale-95 transition-all"
                 >
                   Initialize Training
                 </button>
@@ -289,14 +289,14 @@ export default function CustomModelsPage() {
 
 function StatCard({ icon, label, value, color }) {
   const colorMap = {
-    indigo: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400',
+    indigo: 'bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400',
     green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
     amber: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
     rose: 'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400'
   };
 
   return (
-    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm hover:border-indigo-500/30 transition-all group">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm hover:border-brand-500/30 transition-all group">
       <div className="flex items-center gap-3 mb-2">
         <div className={`${colorMap[color]} p-2 rounded-lg group-hover:scale-110 transition-transform`}>
           {icon}

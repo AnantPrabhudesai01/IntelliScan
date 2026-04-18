@@ -14,7 +14,7 @@ export default function ColorPicker({ value, onChange }) {
           type="button"
           onClick={() => onChange(color)}
           className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
-            value === color ? 'border-white ring-2 ring-indigo-500' : 'border-transparent'
+            value === color ? 'border-white ring-2 ring-brand-500' : 'border-transparent'
           }`}
           style={{ backgroundColor: color }}
         />

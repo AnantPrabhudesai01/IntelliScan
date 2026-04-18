@@ -8,7 +8,7 @@ const INITIAL_REQUESTS = [
 ];
 
 const DSR_LOG = [
-  { ts: '2023-11-24 14:22:01', subject: 'usr_0xf82a1...', type: 'Portability', origin: 'Web Portal (v3.2)', status: 'Completed', statusColor: 'text-emerald-400', badge: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/20' },
+  { ts: '2023-11-24 14:22:01', subject: 'usr_0xf82a1...', type: 'Portability', origin: 'Web Portal (v3.2)', status: 'Completed', statusColor: 'text-emerald-400', badge: 'bg-brand-500/20 text-brand-400 border-brand-500/20' },
   { ts: '2023-11-24 13:05:45', subject: 'usr_0x7b22c...', type: 'Rectification', origin: 'Legal API', status: 'Processing', statusColor: 'text-amber-400', badge: 'bg-red-500/20 text-red-400 border-red-500/20' },
   { ts: '2023-11-24 10:11:12', subject: 'usr_0xa910d...', type: 'Access', origin: 'Mobile App (iOS)', status: 'Pending', statusColor: 'text-gray-400', badge: 'bg-gray-500/20 text-gray-400 border-gray-500/20' },
   { ts: '2023-11-23 09:00:00', subject: 'usr_0xc334e...', type: 'Erasure', origin: 'Web Portal (v3.2)', status: 'Completed', statusColor: 'text-emerald-400', badge: 'bg-purple-500/20 text-purple-400 border-purple-500/20' },
@@ -46,26 +46,26 @@ function PolicyModal({ onClose, compliance }) {
               <input type="range" min={1} max={10} step={1} value={threshold}
                 onChange={e => setThreshold(Number(e.target.value))}
                 className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
-              <span className="text-xl font-bold text-indigo-400 w-8 text-center">{threshold}</span>
+              <span className="text-xl font-bold text-brand-400 w-8 text-center">{threshold}</span>
             </div>
             <p className="text-xs text-gray-500 mt-2">Currently: Standard {threshold}-Year Policy</p>
           </div>
           <div>
             <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Compliance Mode</label>
             <select value={region} onChange={e => setRegion(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+              className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
               {['GDPR - EU Standard', 'CCPA - California', 'PDPB - India', 'LGPD - Brazil', 'PIPL - China'].map(r => <option key={r} value={r}>{r}</option>)}
             </select>
           </div>
           <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
             <span className="text-sm text-gray-300">Current Compliance Score</span>
-            <span className="text-2xl font-black text-indigo-400">{compliance}%</span>
+            <span className="text-2xl font-black text-brand-400">{compliance}%</span>
           </div>
         </div>
         <div className="px-8 py-5 border-t border-white/10 flex justify-end gap-3">
           <button onClick={onClose} className="px-5 py-2 text-sm font-bold text-gray-300 bg-white/10 rounded-xl hover:bg-white/20 transition-all">Cancel</button>
           <button onClick={() => { setSaved(true); setTimeout(() => { setSaved(false); onClose(); }, 1200); }}
-            className={`px-6 py-2 text-sm font-bold text-white rounded-xl transition-all active:scale-95 flex items-center gap-2 ${saved ? 'bg-green-600' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
+            className={`px-6 py-2 text-sm font-bold text-white rounded-xl transition-all active:scale-95 flex items-center gap-2 ${saved ? 'bg-green-600' : 'bg-brand-600 hover:bg-brand-700'}`}>
             {saved ? <><Check size={15} /> Saved!</> : 'Apply Policy'}
           </button>
         </div>
@@ -169,7 +169,7 @@ export default function GenPrivacyGdprCommandCenter() {
                 purgeState === 'confirm' ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse' :
                 purgeState === 'purging' ? 'bg-orange-600 text-white cursor-wait' :
                 purgeState === 'done' ? 'bg-green-600 text-white' :
-                'bg-indigo-600 hover:bg-indigo-700 text-white'
+                'bg-brand-600 hover:bg-brand-700 text-white'
               }`}>
               {purgeState === 'idle' ? <><Trash2 size={16} /> Trigger Manual Purge</> :
                purgeState === 'confirm' ? <><AlertTriangle size={16} /> CONFIRM PURGE?</> :
@@ -181,9 +181,9 @@ export default function GenPrivacyGdprCommandCenter() {
 
         {/* Super Admin Badge */}
         {isSuperAdmin && (
-          <div className="flex items-center gap-3 p-4 bg-indigo-600/10 border border-indigo-500/30 rounded-xl">
-            <Shield size={20} className="text-indigo-400" />
-            <p className="text-sm text-indigo-300 font-bold">Super Admin Access — Full GDPR command center enabled including purge controls and policy adjustment.</p>
+          <div className="flex items-center gap-3 p-4 bg-brand-600/10 border border-brand-500/30 rounded-xl">
+            <Shield size={20} className="text-brand-400" />
+            <p className="text-sm text-brand-300 font-bold">Super Admin Access — Full GDPR command center enabled including purge controls and policy adjustment.</p>
           </div>
         )}
 
@@ -196,8 +196,8 @@ export default function GenPrivacyGdprCommandCenter() {
                 <h3 className="font-headline font-bold text-lg text-white">"Right to be Forgotten" Requests</h3>
                 <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Active Queue Monitoring</p>
               </div>
-              <div className="bg-indigo-500/10 text-indigo-400 px-3 py-1 rounded-full text-xs font-bold animate-pulse flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" /> Live Updates
+              <div className="bg-brand-500/10 text-brand-400 px-3 py-1 rounded-full text-xs font-bold animate-pulse flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-400" /> Live Updates
               </div>
             </div>
 
@@ -205,7 +205,7 @@ export default function GenPrivacyGdprCommandCenter() {
               {requests.map(req => (
                 <div key={req.id} className="flex items-center justify-between p-4 bg-[#1e2840] rounded-xl hover:bg-[#253060] transition-colors cursor-pointer group">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                    <div className="w-10 h-10 rounded-lg bg-brand-500/10 flex items-center justify-center text-brand-400">
                       <Trash2 size={18} />
                     </div>
                     <div>
@@ -216,11 +216,11 @@ export default function GenPrivacyGdprCommandCenter() {
                   <div className="flex items-center gap-6">
                     <div className="text-right">
                       <p className="text-xs uppercase font-bold text-gray-400">Confidence</p>
-                      <div className="text-indigo-400 font-black text-sm mt-1">{req.score.toFixed(1)}%</div>
+                      <div className="text-brand-400 font-black text-sm mt-1">{req.score.toFixed(1)}%</div>
                     </div>
                     <div className="w-24">
                       <div className="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-                        <div className={`h-full rounded-full transition-all duration-1000 ${req.status === 'Completed' ? 'bg-emerald-500' : 'bg-indigo-500'}`}
+                        <div className={`h-full rounded-full transition-all duration-1000 ${req.status === 'Completed' ? 'bg-emerald-500' : 'bg-brand-500'}`}
                           style={{ width: `${req.progress}%` }} />
                       </div>
                       <p className={`text-[10px] font-bold mt-1 ${req.status === 'Completed' ? 'text-emerald-400' : 'text-amber-400'}`}>{req.status}</p>
@@ -232,8 +232,8 @@ export default function GenPrivacyGdprCommandCenter() {
             </div>
 
             <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center">
-              <span className="text-xs font-mono text-indigo-300 bg-indigo-500/10 px-2 py-1 rounded">ENGINE: OCR-V2-PURGE</span>
-              <button className="text-sm text-indigo-400 font-semibold flex items-center gap-1 hover:text-indigo-300">
+              <span className="text-xs font-mono text-brand-300 bg-brand-500/10 px-2 py-1 rounded">ENGINE: OCR-V2-PURGE</span>
+              <button className="text-sm text-brand-400 font-semibold flex items-center gap-1 hover:text-brand-300">
                 View Full Queue <ArrowUpRight size={14} />
               </button>
             </div>
@@ -242,7 +242,7 @@ export default function GenPrivacyGdprCommandCenter() {
           {/* Retention Status */}
           <div className="md:col-span-4 bg-[#131929] rounded-xl p-6 flex flex-col border border-white/5">
             <h3 className="font-headline font-bold text-white flex items-center gap-2 mb-6">
-              <Clock size={18} className="text-indigo-400" /> Retention Status
+              <Clock size={18} className="text-brand-400" /> Retention Status
             </h3>
             <div className="flex flex-col items-center flex-1">
               <div className="relative w-36 h-36 flex items-center justify-center mb-4">
@@ -260,11 +260,11 @@ export default function GenPrivacyGdprCommandCenter() {
               </div>
               <p className="text-center text-sm text-gray-400 mb-6 leading-relaxed">
                 <span className="text-white font-bold">4.2 PB</span> of data managed under current{' '}
-                <span className="text-indigo-400 italic">Standard 7-Year</span> policy.
+                <span className="text-brand-400 italic">Standard 7-Year</span> policy.
               </p>
             </div>
             <button onClick={() => setShowPolicyModal(true)}
-              className="w-full py-2.5 bg-indigo-600/20 border border-indigo-500/30 rounded-lg text-sm font-bold text-indigo-400 hover:bg-indigo-600/30 transition-colors active:scale-95 flex items-center justify-center gap-2">
+              className="w-full py-2.5 bg-brand-600/20 border border-brand-500/30 rounded-lg text-sm font-bold text-brand-400 hover:bg-brand-600/30 transition-colors active:scale-95 flex items-center justify-center gap-2">
               <Settings2 size={15} /> Adjust Policy Params
             </button>
           </div>
@@ -296,11 +296,11 @@ export default function GenPrivacyGdprCommandCenter() {
               <div className="absolute inset-0 pointer-events-none">
                 {/* EU Pin */}
                 <div className="absolute group/pin" style={{ top: '25%', left: '25%' }}>
-                  <div className="w-4 h-4 bg-indigo-500 rounded-full animate-ping absolute opacity-75" />
-                  <div className="w-4 h-4 bg-indigo-500 rounded-full relative shadow-lg shadow-indigo-500/50" />
+                  <div className="w-4 h-4 bg-brand-500 rounded-full animate-ping absolute opacity-75" />
+                  <div className="w-4 h-4 bg-brand-500 rounded-full relative shadow-lg shadow-brand-500/50" />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-36 bg-gray-900 border border-white/10 rounded-lg p-2 opacity-0 group-hover/pin:opacity-100 transition-opacity pointer-events-auto">
                     <p className="text-[10px] font-bold text-white">Frankfurt (FRA-1)</p>
-                    <p className="text-[9px] text-indigo-300">Active Residency: GDPR v4</p>
+                    <p className="text-[9px] text-brand-300">Active Residency: GDPR v4</p>
                   </div>
                 </div>
                 {/* US Pin */}
@@ -313,7 +313,7 @@ export default function GenPrivacyGdprCommandCenter() {
                 </div>
                 {/* Legend */}
                 <div className="absolute bottom-4 right-4 bg-[#1e2840]/90 backdrop-blur-md border border-white/10 rounded-xl p-3">
-                  {[['bg-indigo-500', 'Strict Compliance'], ['bg-emerald-400', 'Standard Sync'], ['bg-amber-400', 'Review Required']].map(([color, label]) => (
+                  {[['bg-brand-500', 'Strict Compliance'], ['bg-emerald-400', 'Standard Sync'], ['bg-amber-400', 'Review Required']].map(([color, label]) => (
                     <div key={label} className="flex items-center gap-2 mb-1 last:mb-0">
                       <div className={`w-2 h-2 rounded-full ${color}`} />
                       <span className="text-[10px] text-white">{label}</span>
@@ -334,7 +334,7 @@ export default function GenPrivacyGdprCommandCenter() {
                   <input
                     value={dsrFilter}
                     onChange={e => setDsrFilter(e.target.value)}
-                    className="bg-[#1e2840] border border-white/10 rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500 w-56 placeholder:text-gray-500 outline-none"
+                    className="bg-[#1e2840] border border-white/10 rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:ring-1 focus:ring-brand-500 w-56 placeholder:text-gray-500 outline-none"
                     placeholder="Filter log entries..."
                     type="text"
                   />

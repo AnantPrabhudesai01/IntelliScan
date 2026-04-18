@@ -93,7 +93,7 @@ const apps = [
      name: 'Slack Alerts', 
      icon: MessageSquare, 
      category: 'Communication', 
-     color: 'text-indigo-400', 
+     color: 'text-brand-400', 
      tagline: 'Real-time networking intelligence in your team channels.',
      desc: 'Get direct messages or channel alerts whenever a VIP contact or specific industry lead is scanned.',
      longDesc: 'Stop waiting for EOD reports. Slack Alerts bring the conference floor to your team. Set up filters for "CXO" or "Fortune 500" leads and notify the right account managers on the fly.',
@@ -193,7 +193,7 @@ export default function MarketplaceDetailPage() {
     <div className="max-w-[1200px] mx-auto px-6 py-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">
-        <Link to="/marketplace" className="hover:text-indigo-500 transition-colors">Marketplace</Link>
+        <Link to="/marketplace" className="hover:text-brand-500 transition-colors">Marketplace</Link>
         <ChevronLeft size={12} className="rotate-180" />
         <span className="text-gray-900 dark:text-gray-100">{app.name}</span>
       </nav>
@@ -209,7 +209,7 @@ export default function MarketplaceDetailPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter uppercase italic">{app.name}</h1>
                 {app.verified && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100 dark:border-indigo-900/40">
+                  <div className="flex items-center gap-1.5 px-3 py-1 bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-brand-100 dark:border-brand-900/40">
                     <CheckCircle2 size={12} /> Verified
                   </div>
                 )}
@@ -222,7 +222,7 @@ export default function MarketplaceDetailPage() {
                   <span className="opacity-50">({app.reviews} reviews)</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500">
-                  <Users size={16} className="text-indigo-500" />
+                  <Users size={16} className="text-brand-500" />
                   <span className="text-gray-900 dark:text-white">10k+</span>
                   <span className="opacity-50">Installs</span>
                 </div>
@@ -244,10 +244,10 @@ export default function MarketplaceDetailPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 pb-4 text-xs font-black uppercase tracking-[0.2em] transition-all relative ${activeTab === tab.id ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-white'}`}
+                className={`flex items-center gap-2 pb-4 text-xs font-black uppercase tracking-[0.2em] transition-all relative ${activeTab === tab.id ? 'text-brand-600 dark:text-brand-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-white'}`}
               >
                 <tab.icon size={14} /> {tab.label}
-                {activeTab === tab.id && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 dark:bg-indigo-400 shadow-[0_-2px_8px_rgba(99,102,241,0.5)]" />}
+                {activeTab === tab.id && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-600 dark:bg-brand-400 shadow-[0_-2px_8px_rgba(99,102,241,0.5)]" />}
               </button>
             ))}
           </div>
@@ -262,7 +262,7 @@ export default function MarketplaceDetailPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {app.features.map(f => (
                     <div key={f} className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10">
-                      <div className="p-1.5 bg-indigo-500/10 text-indigo-500 rounded-lg">
+                      <div className="p-1.5 bg-brand-500/10 text-brand-500 rounded-lg">
                         <Check size={14} className="stroke-[3]" />
                       </div>
                       <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{f}</span>
@@ -280,7 +280,7 @@ export default function MarketplaceDetailPage() {
                 </div>
                 <div className="space-y-3">
                   {app.permissions.map(p => (
-                    <div key={p.id} className="p-5 bg-white dark:bg-[#161c28] border border-gray-200 dark:border-white/10 rounded-2xl flex items-start gap-4 hover:border-gray-300 dark:hover:border-indigo-500/30 transition-all">
+                    <div key={p.id} className="p-5 bg-white dark:bg-[#161c28] border border-gray-200 dark:border-white/10 rounded-2xl flex items-start gap-4 hover:border-gray-300 dark:hover:border-brand-500/30 transition-all">
                       <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-500">
                         <Lock size={18} />
                       </div>
@@ -304,14 +304,14 @@ export default function MarketplaceDetailPage() {
                         type={field.toLowerCase().includes('token') || field.toLowerCase().includes('key') ? 'password' : 'text'}
                         value={form[field] || ''}
                         onChange={e => setForm({...form, [field]: e.target.value})}
-                        className="w-full px-5 py-3.5 bg-gray-100 dark:bg-gray-900/50 border border-gray-200 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all lg:placeholder:uppercase lg:placeholder:text-[9px]"
+                        className="w-full px-5 py-3.5 bg-gray-100 dark:bg-gray-900/50 border border-gray-200 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none transition-all lg:placeholder:uppercase lg:placeholder:text-[9px]"
                         placeholder={`Enter your ${field.toLowerCase()}...`}
                       />
                     </div>
                   ))}
                 </div>
                 <p className="text-[10px] text-gray-400 font-medium flex items-center gap-1.5 bg-gray-50 dark:bg-white/5 p-4 rounded-xl italic">
-                   <Info size={14} className="text-indigo-400" />
+                   <Info size={14} className="text-brand-400" />
                    {app.id === 'googlesheets' 
                      ? 'Tip: Find your Spreadsheet ID in the URL: docs.google.com/spreadsheets/d/[ID_IS_HERE]/edit'
                      : `Tip: You can find your ${app.name} credentials in your ${app.name} admin settings under "Integrations".`}
@@ -324,7 +324,7 @@ export default function MarketplaceDetailPage() {
         {/* Right: Actions & Metadata Card */}
         <div className="space-y-6">
           <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-white/10 rounded-[40px] p-8 shadow-2xl relative overflow-hidden group">
-            <div className="absolute -top-12 -right-12 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
+            <div className="absolute -top-12 -right-12 w-32 h-32 bg-brand-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
             
             <div className="relative z-10 space-y-8">
               <div className="text-center space-y-2">
@@ -336,7 +336,7 @@ export default function MarketplaceDetailPage() {
                 <button 
                   onClick={handleToggle}
                   disabled={installing}
-                  className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3 ${isInstalled ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed' : installing ? 'bg-indigo-400 text-white cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/30'}`}
+                  className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3 ${isInstalled ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed' : installing ? 'bg-brand-400 text-white cursor-wait' : 'bg-brand-600 hover:bg-brand-700 text-white shadow-brand-500/30'}`}
                 >
                   {installing ? <RefreshCw size={18} className="animate-spin" /> : isInstalled ? <CheckCircle2 size={18} /> : <Zap size={18} />}
                   {isInstalled ? 'Connected' : installing ? 'Linking Account...' : 'Install Integration'}
@@ -364,7 +364,7 @@ export default function MarketplaceDetailPage() {
                 <div className="flex justify-between items-center text-[10px] font-black">
                   <span className="text-gray-400 uppercase tracking-widest">Compliance</span>
                   <div className="flex gap-1.5">
-                    <span className="bg-indigo-50 dark:bg-indigo-900/40 text-indigo-500 px-1.5 py-0.5 rounded text-[8px]">SOC2</span>
+                    <span className="bg-brand-50 dark:bg-brand-900/40 text-brand-500 px-1.5 py-0.5 rounded text-[8px]">SOC2</span>
                     <span className="bg-emerald-50 dark:bg-emerald-900/40 text-emerald-500 px-1.5 py-0.5 rounded text-[8px]">GDPR</span>
                   </div>
                 </div>
@@ -396,7 +396,7 @@ export default function MarketplaceDetailPage() {
             </div>
           )}
 
-          <div className="p-6 bg-indigo-600 rounded-3xl text-white relative overflow-hidden group cursor-pointer" onClick={() => navigate('/setup/whatsapp')}>
+          <div className="p-6 bg-brand-600 rounded-3xl text-white relative overflow-hidden group cursor-pointer" onClick={() => navigate('/setup/whatsapp')}>
              <Smartphone size={60} className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-125 transition-transform" />
              <h4 className="font-black text-sm mb-1">Need help setting up?</h4>
              <p className="text-[10px] font-medium opacity-80 leading-relaxed truncate">Read our full integration walkthrough guide.</p>

@@ -128,7 +128,7 @@ const RootRoute = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0e131f] text-[#dde2f3]">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-10 h-10 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-sm font-semibold tracking-wide">Syncing Session...</p>
         </div>
       </div>
@@ -159,7 +159,7 @@ export default function App() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0e131f] text-[#dde2f3]">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-10 h-10 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-sm font-semibold tracking-wide">Loading IntelliScan...</p>
         </div>
       </div>
@@ -169,7 +169,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <NotificationProvider>
-        <div className="min-h-screen selection:bg-indigo-600 selection:text-white transition-colors duration-300">
+        <div className="min-h-screen selection:bg-brand-600 selection:text-white transition-colors duration-300">
         <ActivityTracker />
         <CommandPalette />
         <ErrorBoundary>

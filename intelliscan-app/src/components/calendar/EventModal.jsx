@@ -120,7 +120,7 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
             
             <div className="w-full bg-gray-50 dark:bg-gray-900/50 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 space-y-2">
                <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest">{savedEvent.title}</p>
-               <p className="text-xs font-bold text-indigo-600">{format(new Date(savedEvent.start_datetime), 'EEEE, MMMM do · h:mm a')}</p>
+               <p className="text-xs font-bold text-brand-600">{format(new Date(savedEvent.start_datetime), 'EEEE, MMMM do · h:mm a')}</p>
             </div>
 
             <div className="flex flex-col w-full gap-3">
@@ -128,7 +128,7 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
                 href={generateGoogleCalendarLink(savedEvent)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-indigo-500/20 transition-all active:scale-[0.98]"
+                className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-black text-sm rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-brand-500/20 transition-all active:scale-[0.98]"
               >
                 <ExternalLink size={18} /> Add to Google Calendar
               </a>
@@ -145,7 +145,7 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
             {/* Header */}
             <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <div className="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
                   <CalendarIcon className="text-white" size={20} />
                 </div>
                 <div>
@@ -176,7 +176,7 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
                   <select 
                     value={formData.calendar_id}
                     onChange={(e) => setFormData({ ...formData, calendar_id: e.target.value })}
-                    className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-black px-3 py-1.5 rounded-xl border-none outline-none appearance-none cursor-pointer"
+                    className="bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs font-black px-3 py-1.5 rounded-xl border-none outline-none appearance-none cursor-pointer"
                   >
                     {calendars.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
@@ -189,7 +189,7 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
                 <div className="space-y-6">
                   <div className="space-y-3">
                     <label className="flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 tracking-widest">
-                      <Clock size={12} className="text-indigo-500" /> Timing
+                      <Clock size={12} className="text-brand-500" /> Timing
                     </label>
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
@@ -197,7 +197,7 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
                           type="datetime-local"
                           value={formData.start_datetime}
                           onChange={(e) => setFormData({ ...formData, start_datetime: e.target.value })}
-                          className="flex-1 px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none"
+                          className="flex-1 px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none"
                         />
                       </div>
                       <div className="flex items-center gap-2">
@@ -205,7 +205,7 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
                           type="datetime-local"
                           value={formData.end_datetime}
                           onChange={(e) => setFormData({ ...formData, end_datetime: e.target.value })}
-                          className="flex-1 px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none"
+                          className="flex-1 px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none"
                         />
                       </div>
                     </div>
@@ -213,7 +213,7 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
 
                   <div className="space-y-3">
                     <label className="flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 tracking-widest">
-                      <Repeat size={12} className="text-indigo-500" /> Recurrence
+                      <Repeat size={12} className="text-brand-500" /> Recurrence
                     </label>
                     <RecurrenceSelector 
                       value={formData.recurrence_rule} 
@@ -223,14 +223,14 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
 
                   <div className="space-y-3">
                     <label className="flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 tracking-widest">
-                      <MapPin size={12} className="text-indigo-500" /> Location / Link
+                      <MapPin size={12} className="text-brand-500" /> Location / Link
                     </label>
                     <input
                       type="text"
                       placeholder="Office, Room 4b, or Google Meet URL"
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none"
+                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none"
                     />
                   </div>
                 </div>
@@ -239,7 +239,7 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
                 <div className="space-y-6">
                   <div className="space-y-3">
                     <label className="flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 tracking-widest">
-                      <Users size={12} className="text-indigo-500" /> Guests
+                      <Users size={12} className="text-brand-500" /> Guests
                     </label>
                     <AttendeeInput 
                       attendees={formData.attendees} 
@@ -250,13 +250,13 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <label className="flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 tracking-widest">
-                        <AlignLeft size={12} className="text-indigo-500" /> Description
+                        <AlignLeft size={12} className="text-brand-500" /> Description
                       </label>
                       <button
                         type="button"
                         onClick={handleAiDescription}
                         disabled={aiLoading}
-                        className="flex items-center gap-1.5 text-[10px] font-black text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 transition-colors uppercase tracking-widest"
+                        className="flex items-center gap-1.5 text-[10px] font-black text-brand-600 dark:text-brand-400 hover:text-brand-500 transition-colors uppercase tracking-widest"
                       >
                         {aiLoading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
                         AI Ghostwriter
@@ -267,13 +267,13 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
                       rows={4}
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none resize-none placeholder:text-gray-400"
+                      className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500 outline-none resize-none placeholder:text-gray-400"
                     />
                   </div>
 
                   <div className="space-y-3">
                     <label className="flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 tracking-widest">
-                      <Bell size={12} className="text-indigo-500" /> Notifications
+                      <Bell size={12} className="text-brand-500" /> Notifications
                     </label>
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-bold text-gray-600 dark:text-gray-400">Remind me</span>
@@ -281,7 +281,7 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
                         type="number"
                         value={formData.reminders[0]?.minutes_before || 15}
                         onChange={(e) => setFormData({ ...formData, reminders: [{ ...formData.reminders[0], minutes_before: parseInt(e.target.value) }] })}
-                        className="w-16 px-2 py-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none"
+                        className="w-16 px-2 py-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none"
                       />
                       <span className="text-xs font-bold text-gray-600 dark:text-gray-400">mins before</span>
                     </div>
@@ -301,7 +301,7 @@ export default function EventModal({ event, calendars, isOpen, onClose, onSave }
               <button
                 disabled={isSaving}
                 onClick={handleSave}
-                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-indigo-500/20 active:scale-95 transition-all disabled:opacity-50"
+                className="px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-brand-500/20 active:scale-95 transition-all disabled:opacity-50"
               >
                 {isSaving ? 'Saving...' : 'Save Event'}
               </button>

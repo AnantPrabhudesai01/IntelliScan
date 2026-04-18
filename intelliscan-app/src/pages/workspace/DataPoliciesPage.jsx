@@ -91,7 +91,7 @@ export default function DataPoliciesPage() {
           onClick={handleSave}
           disabled={loading || saving}
           className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all 
-            ${saving ? 'bg-indigo-500' : 'bg-indigo-600 hover:bg-indigo-700 shadow-sm'} disabled:opacity-60 disabled:cursor-not-allowed`}
+            ${saving ? 'bg-brand-500' : 'bg-brand-600 hover:bg-brand-700 shadow-sm'} disabled:opacity-60 disabled:cursor-not-allowed`}
         >
           {saving ? <RefreshCw size={18} className="animate-spin" /> : banner.type === 'success' ? <Check size={18} /> : <Save size={18} />}
           {saving ? 'Saving...' : banner.type === 'success' ? 'Saved' : 'Save Policies'}
@@ -113,7 +113,7 @@ export default function DataPoliciesPage() {
       <div className="grid gap-6">
         {/* Data Retention */}
         <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row gap-8 shadow-sm">
-          <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+          <div className="w-12 h-12 bg-brand-50 dark:bg-brand-900/30 rounded-2xl flex items-center justify-center text-brand-600 dark:text-brand-400 shrink-0">
             <Clock size={24} />
           </div>
           <div className="flex-1">
@@ -126,7 +126,7 @@ export default function DataPoliciesPage() {
               <select 
                 value={retention} onChange={(e) => setRetention(e.target.value)}
                 disabled={loading}
-                className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none"
+                className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-500 outline-none"
               >
                 <option value="30">30 Days</option>
                 <option value="60">60 Days</option>
@@ -152,7 +152,7 @@ export default function DataPoliciesPage() {
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">PII Image Redaction</h2>
               <div 
-                className={`w-12 h-6 rounded-full transition-all relative cursor-pointer ${piiEnabled ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-700'}`}
+                className={`w-12 h-6 rounded-full transition-all relative cursor-pointer ${piiEnabled ? 'bg-brand-500' : 'bg-gray-300 dark:bg-gray-700'}`}
                 onClick={() => !loading && setPiiEnabled(!piiEnabled)}
               >
                 <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${piiEnabled ? 'left-7' : 'left-1'}`} />
@@ -173,7 +173,7 @@ export default function DataPoliciesPage() {
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">Strict Compliance Audit Storage</h2>
               <div 
-                className={`w-12 h-6 rounded-full transition-all relative cursor-pointer ${auditLogs ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-700'}`}
+                className={`w-12 h-6 rounded-full transition-all relative cursor-pointer ${auditLogs ? 'bg-brand-500' : 'bg-gray-300 dark:bg-gray-700'}`}
                 onClick={() => !loading && setAuditLogs(!auditLogs)}
               >
                 <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${auditLogs ? 'left-7' : 'left-1'}`} />

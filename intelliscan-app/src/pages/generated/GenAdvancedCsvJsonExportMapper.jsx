@@ -8,7 +8,7 @@ export default function GenAdvancedCsvJsonExportMapper() {
 
 <section className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
 <div className="space-y-2">
-<div className="flex items-center gap-2 text-indigo-400 text-sm font-medium">
+<div className="flex items-center gap-2 text-brand-400 text-sm font-medium">
 <span className="material-symbols-outlined text-base" data-icon="arrow_back">arrow_back</span>
                         Back to Workspace
                     </div>
@@ -27,9 +27,9 @@ export default function GenAdvancedCsvJsonExportMapper() {
 </div>
 </section>
 
-<div className="bg-surface-container-low rounded-2xl p-6 border-l-4 border-indigo-500 flex items-center justify-between">
+<div className="bg-surface-container-low rounded-2xl p-6 border-l-4 border-brand-500 flex items-center justify-between">
 <div className="flex gap-4 items-center">
-<div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+<div className="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center text-brand-500">
 <span className="material-symbols-outlined" data-icon="cloud_sync" data-weight="fill">cloud_sync</span>
 </div>
 <div>
@@ -43,7 +43,7 @@ export default function GenAdvancedCsvJsonExportMapper() {
 <span>Estimated: 4m 12s</span>
 </div>
 <div className="h-2 bg-surface-container-highest rounded-full overflow-hidden">
-<div className="h-full bg-indigo-500 rounded-full w-3/4"></div>
+<div className="h-full bg-brand-500 rounded-full w-3/4"></div>
 </div>
 </div>
 </div>
@@ -53,10 +53,10 @@ export default function GenAdvancedCsvJsonExportMapper() {
 <div className="bg-surface-container rounded-2xl p-6 shadow-xl">
 <div className="flex justify-between items-center mb-6">
 <h3 className="text-lg font-bold font-headline text-white flex items-center gap-2">
-<span className="material-symbols-outlined text-indigo-500" data-icon="account_tree">account_tree</span>
+<span className="material-symbols-outlined text-brand-500" data-icon="account_tree">account_tree</span>
                                 Field Translation Logic
                             </h3>
-<div className="bg-surface-container-high px-3 py-1 rounded-full text-[10px] font-black text-indigo-400">
+<div className="bg-surface-container-high px-3 py-1 rounded-full text-[10px] font-black text-brand-400">
                                 12 ACTIVE FIELDS
                             </div>
 </div>
@@ -66,7 +66,7 @@ export default function GenAdvancedCsvJsonExportMapper() {
 <div className="col-span-5">
 <label className="block text-[10px] font-bold text-on-surface-variant uppercase mb-2">IntelliScan Field</label>
 <div className="flex items-center gap-3 bg-surface-container-high px-3 py-2.5 rounded-xl">
-<span className="material-symbols-outlined text-indigo-400 text-sm" data-icon="person">person</span>
+<span className="material-symbols-outlined text-brand-400 text-sm" data-icon="person">person</span>
 <span className="text-sm font-semibold text-white">Full Name</span>
 </div>
 </div>
@@ -75,7 +75,7 @@ export default function GenAdvancedCsvJsonExportMapper() {
 </div>
 <div className="col-span-5">
 <label className="block text-[10px] font-bold text-on-surface-variant uppercase mb-2">Target Key (Salesforce)</label>
-<input className="w-full bg-surface-container-high border-none rounded-xl text-sm focus:ring-1 focus:ring-indigo-500 py-2.5 px-3" type="text" value="LastName"/>
+<input className="w-full bg-surface-container-high border-none rounded-xl text-sm focus:ring-1 focus:ring-brand-500 py-2.5 px-3" type="text" value="LastName"/>
 </div>
 </div>
 
@@ -83,7 +83,7 @@ export default function GenAdvancedCsvJsonExportMapper() {
 <div className="col-span-5">
 <label className="block text-[10px] font-bold text-on-surface-variant uppercase mb-2">IntelliScan Field</label>
 <div className="flex items-center gap-3 bg-surface-container-high px-3 py-2.5 rounded-xl">
-<span className="material-symbols-outlined text-indigo-400 text-sm" data-icon="mail">mail</span>
+<span className="material-symbols-outlined text-brand-400 text-sm" data-icon="mail">mail</span>
 <span className="text-sm font-semibold text-white">Email Address</span>
 </div>
 </div>
@@ -92,7 +92,7 @@ export default function GenAdvancedCsvJsonExportMapper() {
 </div>
 <div className="col-span-5">
 <label className="block text-[10px] font-bold text-on-surface-variant uppercase mb-2">Target Key (Salesforce)</label>
-<input className="w-full bg-surface-container-high border-none rounded-xl text-sm focus:ring-1 focus:ring-indigo-500 py-2.5 px-3" type="text" value="Email"/>
+<input className="w-full bg-surface-container-high border-none rounded-xl text-sm focus:ring-1 focus:ring-brand-500 py-2.5 px-3" type="text" value="Email"/>
 </div>
 </div>
 
@@ -100,7 +100,7 @@ export default function GenAdvancedCsvJsonExportMapper() {
 <div className="col-span-5">
 <label className="block text-[10px] font-bold text-on-surface-variant uppercase mb-2">IntelliScan Field</label>
 <div className="flex items-center gap-3 bg-surface-container-high px-3 py-2.5 rounded-xl">
-<span className="material-symbols-outlined text-indigo-400 text-sm" data-icon="fact_check">fact_check</span>
+<span className="material-symbols-outlined text-brand-400 text-sm" data-icon="fact_check">fact_check</span>
 <span className="text-sm font-semibold text-white">Confidence Score</span>
 </div>
 </div>
@@ -109,7 +109,7 @@ export default function GenAdvancedCsvJsonExportMapper() {
 </div>
 <div className="col-span-5">
 <label className="block text-[10px] font-bold text-on-surface-variant uppercase mb-2">Target Key (Salesforce)</label>
-<input className="w-full bg-surface-container-high border-none rounded-xl text-sm focus:ring-1 focus:ring-indigo-500 py-2.5 px-3" type="text" value="AI_Confidence_Index__c"/>
+<input className="w-full bg-surface-container-high border-none rounded-xl text-sm focus:ring-1 focus:ring-brand-500 py-2.5 px-3" type="text" value="AI_Confidence_Index__c"/>
 </div>
 </div>
 </div>
@@ -122,7 +122,7 @@ export default function GenAdvancedCsvJsonExportMapper() {
 <div className="bg-surface-container rounded-2xl overflow-hidden shadow-xl border border-outline-variant/5">
 <div className="p-6 flex justify-between items-center border-b border-outline-variant/10">
 <h3 className="text-lg font-bold font-headline text-white">Live Transformation Preview</h3>
-<button className="text-xs font-bold text-indigo-400 flex items-center gap-1 uppercase tracking-tighter">
+<button className="text-xs font-bold text-brand-400 flex items-center gap-1 uppercase tracking-tighter">
 <span className="material-symbols-outlined text-sm" data-icon="refresh">refresh</span>
                                 Refresh Sample
                             </button>
@@ -188,7 +188,7 @@ export default function GenAdvancedCsvJsonExportMapper() {
 <div>
 <label className="block text-xs font-semibold text-white mb-3">Format</label>
 <div className="grid grid-cols-2 gap-2">
-<button className="flex flex-col items-center justify-center p-4 bg-primary-container text-white rounded-xl ring-2 ring-indigo-400">
+<button className="flex flex-col items-center justify-center p-4 bg-primary-container text-white rounded-xl ring-2 ring-brand-400">
 <span className="material-symbols-outlined mb-2" data-icon="csv">csv</span>
 <span className="text-xs font-bold">CSV</span>
 </button>
@@ -210,32 +210,32 @@ export default function GenAdvancedCsvJsonExportMapper() {
 <label className="block text-xs font-semibold text-white mb-3">Post-Processing</label>
 <div className="space-y-3">
 <label className="flex items-center gap-3 cursor-pointer">
-<input checked="" className="w-4 h-4 bg-surface-container-high border-none rounded text-indigo-500 focus:ring-0" type="checkbox"/>
+<input checked="" className="w-4 h-4 bg-surface-container-high border-none rounded text-brand-500 focus:ring-0" type="checkbox"/>
 <span className="text-sm text-on-surface-variant">Deduplicate entries</span>
 </label>
 <label className="flex items-center gap-3 cursor-pointer">
-<input className="w-4 h-4 bg-surface-container-high border-none rounded text-indigo-500 focus:ring-0" type="checkbox"/>
+<input className="w-4 h-4 bg-surface-container-high border-none rounded text-brand-500 focus:ring-0" type="checkbox"/>
 <span className="text-sm text-on-surface-variant">Anonymize PII</span>
 </label>
 <label className="flex items-center gap-3 cursor-pointer">
-<input checked="" className="w-4 h-4 bg-surface-container-high border-none rounded text-indigo-500 focus:ring-0" type="checkbox"/>
+<input checked="" className="w-4 h-4 bg-surface-container-high border-none rounded text-brand-500 focus:ring-0" type="checkbox"/>
 <span className="text-sm text-on-surface-variant">Append engine metadata</span>
 </label>
 </div>
 </div>
 </div>
-<button className="w-full mt-8 bg-indigo-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 active:scale-[0.98] transition-all">
+<button className="w-full mt-8 bg-brand-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-brand-700 shadow-lg shadow-brand-600/20 active:scale-[0.98] transition-all">
 <span className="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
                             Execute Migration
                         </button>
 </div>
 
 <div className="bg-surface-container rounded-2xl p-6 glass-card border border-outline-variant/10 overflow-hidden relative">
-<div className="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl"></div>
-<h4 className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-4">Active Mapper Engine</h4>
+<div className="absolute -right-4 -top-4 w-24 h-24 bg-brand-500/10 rounded-full blur-2xl"></div>
+<h4 className="text-xs font-black text-brand-500 uppercase tracking-widest mb-4">Active Mapper Engine</h4>
 <div className="flex items-center gap-4">
-<div className="w-10 h-10 bg-indigo-600/20 rounded-lg flex items-center justify-center">
-<span className="material-symbols-outlined text-indigo-400" data-icon="hub">hub</span>
+<div className="w-10 h-10 bg-brand-600/20 rounded-lg flex items-center justify-center">
+<span className="material-symbols-outlined text-brand-400" data-icon="hub">hub</span>
 </div>
 <div>
 <p className="text-sm font-bold text-white">Transmutation-V4</p>

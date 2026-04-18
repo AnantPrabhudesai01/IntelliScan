@@ -29,7 +29,7 @@ export default function PublicLayout({ children, hideFooter = false }) {
     : '/';
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0e131f] text-gray-900 dark:text-[#dde2f3] flex flex-col selection:bg-indigo-600 selection:text-white transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-[#0e131f] text-gray-900 dark:text-[#dde2f3] flex flex-col selection:bg-brand-600 selection:text-white transition-colors duration-300">
 
       {/* Public Top Navbar — Odoo/Zoho Enterprise Style */}
       <header className="border-b border-gray-200 dark:border-white/10 bg-white dark:bg-[#0e131f] sticky top-0 z-50 shadow-sm transition-colors duration-300">

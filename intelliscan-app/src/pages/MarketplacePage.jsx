@@ -21,12 +21,12 @@ const apps = [
     rating: 4.8
   },
   {
-    id: 'slack', name: 'Slack Alerts', icon: MessageSquare, category: 'Communication', color: 'text-indigo-400', 
+    id: 'slack', name: 'Slack Alerts', icon: MessageSquare, category: 'Communication', color: 'text-brand-400', 
     desc: 'Get a direct message in Slack whenever a VIP contact is scanned at an event.',
     rating: 4.7
   },
   {
-    id: 'snowflake', name: 'Snowflake Sync', icon: Database, category: 'Data Warehouse', color: 'text-indigo-400', 
+    id: 'snowflake', name: 'Snowflake Sync', icon: Database, category: 'Data Warehouse', color: 'text-brand-400', 
     desc: 'Enterprise data warehouse pipeline. Requires business admin approval.',
     rating: 4.5
   },
@@ -95,7 +95,7 @@ export default function MarketplacePage() {
       {/* Hero Discovery Banner */}
       <div className="bg-gradient-to-br from-[#21132E] via-[#2A1B3D] to-[#3D2650] rounded-[40px] p-8 md:p-14 mb-12 text-white relative overflow-hidden shadow-[0_20px_60px_-15px_rgba(33,19,46,0.5)]">
         <div className="absolute top-0 right-0 w-full h-full">
-           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/10 rounded-full blur-[120px]" />
+           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-500/10 rounded-full blur-[120px]" />
            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-purple-500/10 rounded-full blur-[100px]" />
         </div>
         
@@ -106,12 +106,12 @@ export default function MarketplacePage() {
             </div>
             <h1 className="text-5xl md:text-7xl font-black font-headline tracking-tighter leading-[0.9] italic">
                The Data <br/>
-               <span className="text-indigo-400">Bridge</span> Hub
+               <span className="text-brand-400">Bridge</span> Hub
             </h1>
-            <p className="text-lg text-indigo-100/70 font-medium max-w-md leading-relaxed uppercase tracking-tight">
+            <p className="text-lg text-brand-100/70 font-medium max-w-md leading-relaxed uppercase tracking-tight">
                Build your enterprise lead-flow. Automatically route AI-extracted intelligence directly into your existing toolstack.
             </p>
-            <div className="flex bg-white/5 backdrop-blur-md rounded-2xl p-2 border border-white/10 w-full md:w-[450px] focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all shadow-inner">
+            <div className="flex bg-white/5 backdrop-blur-md rounded-2xl p-2 border border-white/10 w-full md:w-[450px] focus-within:ring-2 focus-within:ring-brand-500/50 transition-all shadow-inner">
                <Search className="text-white/20 ml-4 mr-3 my-auto" size={24} />
                <input
                  type="text"
@@ -125,7 +125,7 @@ export default function MarketplacePage() {
 
           {/* Featured Dynamic Card */}
           <div className="hidden lg:block relative group">
-             <div className="absolute inset-0 bg-indigo-600/20 blur-[60px] group-hover:bg-indigo-600/40 transition-all duration-1000" />
+             <div className="absolute inset-0 bg-brand-600/20 blur-[60px] group-hover:bg-brand-600/40 transition-all duration-1000" />
              <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[40px] shadow-2xl rotate-2 group-hover:rotate-0 transition-transform duration-700">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="p-4 bg-white/10 rounded-2xl">
@@ -137,7 +137,7 @@ export default function MarketplacePage() {
                   </div>
                 </div>
                 <p className="text-sm text-white/60 leading-relaxed mb-6 font-medium">Sync contacts instantly from business cards into Salesforce Leads. Automated field mapping and duplicate detection included.</p>
-                <Link to="/marketplace/salesforce" className="flex items-center justify-between p-4 bg-indigo-600 rounded-2xl font-black text-xs uppercase tracking-widest group/btn">
+                <Link to="/marketplace/salesforce" className="flex items-center justify-between p-4 bg-brand-600 rounded-2xl font-black text-xs uppercase tracking-widest group/btn">
                   View App Detail <ArrowRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
                 </Link>
              </div>
@@ -160,7 +160,7 @@ export default function MarketplacePage() {
                   onClick={() => setActiveCategory(cat)}
                   className={`w-full text-left px-5 py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all
                     ${activeCategory === cat
-                      ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20'
+                      ? 'bg-brand-600 text-white shadow-xl shadow-brand-500/20'
                       : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                 >
                   {cat}
@@ -169,11 +169,11 @@ export default function MarketplacePage() {
             </div>
           </section>
 
-          <section className="bg-indigo-600/5 dark:bg-indigo-500/5 border border-indigo-500/10 p-6 rounded-3xl relative overflow-hidden">
-             <Star size={60} className="absolute -right-4 -bottom-4 text-indigo-500/10" />
-             <h4 className="font-black text-sm text-indigo-600 dark:text-indigo-400 mb-2 uppercase tracking-tight italic">Built your own?</h4>
+          <section className="bg-brand-600/5 dark:bg-brand-500/5 border border-brand-500/10 p-6 rounded-3xl relative overflow-hidden">
+             <Star size={60} className="absolute -right-4 -bottom-4 text-brand-500/10" />
+             <h4 className="font-black text-sm text-brand-600 dark:text-brand-400 mb-2 uppercase tracking-tight italic">Built your own?</h4>
              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed mb-4">Integrate your bespoke tools using our Intelligence API.</p>
-             <Link to="/api-docs" className="inline-flex items-center gap-2 text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest hover:underline">
+             <Link to="/api-docs" className="inline-flex items-center gap-2 text-[10px] font-black text-brand-600 dark:text-brand-400 uppercase tracking-widest hover:underline">
                 Read API Specs <ArrowRight size={12} />
              </Link>
           </section>
@@ -186,7 +186,7 @@ export default function MarketplacePage() {
              </div>
              <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-indigo-600 transition-all duration-1000"
+                  className="h-full bg-brand-600 transition-all duration-1000"
                   style={{ width: `${(Object.keys(integrations).length / apps.length) * 100}%` }}
                 />
              </div>
@@ -210,7 +210,7 @@ export default function MarketplacePage() {
                  <Link 
                    key={app.id} 
                    to={`/marketplace/${app.id}`}
-                   className="group relative bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-[32px] p-8 hover:shadow-2xl hover:border-indigo-500/50 transition-all duration-500"
+                   className="group relative bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-[32px] p-8 hover:shadow-2xl hover:border-brand-500/50 transition-all duration-500"
                  >
                    {isInstalled && (
                      <div className="absolute top-4 right-4 flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full text-[8px] font-black uppercase tracking-widest animate-pulse">
@@ -240,7 +240,7 @@ export default function MarketplacePage() {
 
                    <div className="flex items-center justify-between pt-6 border-t border-gray-50 dark:border-white/5 mt-auto">
                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{isInstalled ? 'Configure Bridge' : 'Read Specs'}</span>
-                      <div className="w-10 h-10 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
+                      <div className="w-10 h-10 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-brand-600 group-hover:text-white transition-all duration-500">
                         <ArrowRight size={18} />
                       </div>
                    </div>
@@ -251,10 +251,10 @@ export default function MarketplacePage() {
              {/* Add Custom Trigger */}
              <div 
                onClick={() => navigate('/api-docs')}
-               className="group relative bg-dashed border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-[32px] p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 hover:border-indigo-400 transition-all duration-500 min-h-[260px]"
+               className="group relative bg-dashed border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-[32px] p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-brand-50/30 dark:hover:bg-brand-900/10 hover:border-brand-400 transition-all duration-500 min-h-[260px]"
              >
                 <div className="w-16 h-16 rounded-3xl bg-gray-100 dark:bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-white transition-all duration-500 shadow-inner">
-                   <Plus size={32} className="text-gray-400 group-hover:text-indigo-600 transition-colors" />
+                   <Plus size={32} className="text-gray-400 group-hover:text-brand-600 transition-colors" />
                 </div>
                 <h3 className="text-lg font-black text-gray-700 dark:text-gray-300 uppercase tracking-tight italic">Request Bridge</h3>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2 px-10">Use our Intelligence SDK to connect your bespoke workflow.</p>
@@ -266,7 +266,7 @@ export default function MarketplacePage() {
                 <Search size={48} className="text-gray-200 mb-4" />
                 <h3 className="text-lg font-black text-gray-900 dark:text-white italic">No bridges detected</h3>
                 <p className="text-xs text-gray-500 font-medium">Clear search terms to reveal all verified integrations.</p>
-                <button onClick={() => setSearch('')} className="mt-6 px-8 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-widest text-indigo-600 shadow-sm hover:shadow-md transition-all">Reset Discovery</button>
+                <button onClick={() => setSearch('')} className="mt-6 px-8 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-widest text-brand-600 shadow-sm hover:shadow-md transition-all">Reset Discovery</button>
              </div>
            )}
         </div>

@@ -6,7 +6,7 @@ const STATUS_STYLES = {
   succeeded: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
   failed: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
   retry_queued: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  processing: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
+  processing: 'bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300',
   queued: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
 };
 
@@ -82,7 +82,7 @@ export default function JobQueuesPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
-            <ServerCog size={24} className="text-indigo-500" />
+            <ServerCog size={24} className="text-brand-500" />
             Integration Health Dashboard
           </h1>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 max-w-2xl">
@@ -117,7 +117,7 @@ export default function JobQueuesPage() {
         </div>
         <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
           <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Success Rate</p>
-          <p className="text-2xl font-extrabold text-indigo-500 mt-1">{derived.successRate}%</p>
+          <p className="text-2xl font-extrabold text-brand-500 mt-1">{derived.successRate}%</p>
         </div>
       </div>
 
@@ -187,7 +187,7 @@ export default function JobQueuesPage() {
                       <button
                         onClick={() => retryJob(job.id)}
                         disabled={retryingId === job.id}
-                        className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold inline-flex items-center gap-1 disabled:opacity-60"
+                        className="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold inline-flex items-center gap-1 disabled:opacity-60"
                       >
                         <RotateCw size={12} className={retryingId === job.id ? 'animate-spin' : ''} />
                         Retry
@@ -211,7 +211,7 @@ export default function JobQueuesPage() {
                 <div key={row.provider} className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-bold text-gray-900 dark:text-white">{row.provider}</p>
-                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{row.success_rate}%</span>
+                    <span className="text-xs font-bold text-brand-600 dark:text-brand-400">{row.success_rate}%</span>
                   </div>
                   <div className="mt-2 text-[11px] text-gray-600 dark:text-gray-400 flex items-center justify-between">
                     <span>Jobs: {row.total}</span>
@@ -248,7 +248,7 @@ export default function JobQueuesPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white p-5 shadow-lg flex items-start gap-3">
+      <div className="rounded-2xl bg-gradient-to-r from-brand-600 to-cyan-600 text-white p-5 shadow-lg flex items-start gap-3">
         {(data?.summary?.failed_or_retry_queued || 0) > 0 ? (
           <AlertTriangle size={18} className="mt-0.5" />
         ) : (
@@ -258,7 +258,7 @@ export default function JobQueuesPage() {
           <p className="text-sm font-black uppercase tracking-widest">
             {(data?.summary?.failed_or_retry_queued || 0) > 0 ? 'Action Recommended' : 'All Clear'}
           </p>
-          <p className="text-xs text-indigo-50 mt-1">
+          <p className="text-xs text-brand-50 mt-1">
             {(data?.summary?.failed_or_retry_queued || 0) > 0
               ? `There are ${data.summary.failed_or_retry_queued} sync jobs waiting for operator retry.`
               : 'All current integration syncs are healthy and no retries are pending.'}

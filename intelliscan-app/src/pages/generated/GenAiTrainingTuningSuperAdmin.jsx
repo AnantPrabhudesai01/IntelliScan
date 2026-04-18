@@ -59,7 +59,7 @@ export default function GenAiTrainingTuningSuperAdmin() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f18] flex items-center justify-center">
-         <div className="w-10 h-10 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+         <div className="w-10 h-10 rounded-full border-4 border-brand-500 border-t-transparent animate-spin"></div>
       </div>
     );
   }
@@ -69,14 +69,14 @@ export default function GenAiTrainingTuningSuperAdmin() {
       
       {/* Background Gradients */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none opacity-20 -z-10">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/30 blur-[120px] rounded-full"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-500/30 blur-[120px] rounded-full"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/20 blur-[120px] rounded-full"></div>
       </div>
 
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
         <div className="space-y-2">
            <div className="flex items-center gap-3">
-             <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+             <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
                <Cpu className="text-white" size={20} />
              </div>
              <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase italic">Model Governance</h1>
@@ -87,7 +87,7 @@ export default function GenAiTrainingTuningSuperAdmin() {
         </div>
         
         <div className="flex items-center gap-4">
-           <button onClick={fetchModels} className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-300 hover:text-indigo-600 transition-all active:scale-95 shadow-sm">
+           <button onClick={fetchModels} className="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-300 hover:text-brand-600 transition-all active:scale-95 shadow-sm">
              <RefreshCw size={20} />
            </button>
            <div className="px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-xl">
@@ -127,11 +127,11 @@ export default function GenAiTrainingTuningSuperAdmin() {
         <div className="p-8 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/20">
            <div>
              <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
-               <Layers size={20} className="text-indigo-600" /> System Model Inventory
+               <Layers size={20} className="text-brand-600" /> System Model Inventory
              </h3>
              <p className="text-xs text-gray-500 font-medium mt-0.5">Manage the operational status of core Intelligence engines.</p>
            </div>
-           <button className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all">
+           <button className="px-5 py-2.5 bg-brand-600 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-brand-600/20 hover:scale-105 active:scale-95 transition-all">
               Initialize New Model
            </button>
         </div>
@@ -167,7 +167,7 @@ export default function GenAiTrainingTuningSuperAdmin() {
                     <td className="px-8 py-6">
                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
                          model.status === 'deployed' ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600' :
-                         model.status === 'training' ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600' :
+                         model.status === 'training' ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-600' :
                          'bg-gray-200 dark:bg-gray-800 text-gray-500'
                        }`}>
                          <span className={`w-1.5 h-1.5 rounded-full ${model.status === 'deployed' ? 'bg-emerald-500 animate-pulse' : 'bg-current'}`}></span>
@@ -177,7 +177,7 @@ export default function GenAiTrainingTuningSuperAdmin() {
                     <td className="px-8 py-6">
                        <div className="flex flex-col items-center gap-1">
                           <div className="w-24 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                             <div className="h-full bg-indigo-500" style={{ width: `${model.accuracy}%` }}></div>
+                             <div className="h-full bg-brand-500" style={{ width: `${model.accuracy}%` }}></div>
                           </div>
                           <span className="text-[10px] font-black text-gray-500">{model.accuracy}% Acc | {model.latency_ms}ms</span>
                        </div>
@@ -200,7 +200,7 @@ export default function GenAiTrainingTuningSuperAdmin() {
                           </button>
                           <button 
                             onClick={() => handleStatusUpdate(model.id, 'training')}
-                            className={`p-2 rounded-lg transition-all ${model.status === 'training' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-indigo-600 shadow-sm'}`}
+                            className={`p-2 rounded-lg transition-all ${model.status === 'training' ? 'bg-brand-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-brand-600 shadow-sm'}`}
                             title="Start Training"
                           >
                              <Power size={16} />
@@ -214,11 +214,11 @@ export default function GenAiTrainingTuningSuperAdmin() {
         </div>
       </div>
 
-      <div className="p-8 bg-indigo-50 dark:bg-indigo-950/30 rounded-[2.5rem] border border-indigo-200 dark:border-indigo-800/50 flex gap-4 items-start relative z-10 shadow-lg shadow-indigo-500/5">
-         <ShieldCheck size={28} className="text-indigo-500 shrink-0 mt-1" />
+      <div className="p-8 bg-brand-50 dark:bg-brand-950/30 rounded-[2.5rem] border border-brand-200 dark:border-brand-800/50 flex gap-4 items-start relative z-10 shadow-lg shadow-brand-500/5">
+         <ShieldCheck size={28} className="text-brand-500 shrink-0 mt-1" />
          <div>
-            <h4 className="font-black text-indigo-800 dark:text-indigo-400 text-sm italic uppercase tracking-tighter">Governance Protocol 04-A</h4>
-            <p className="text-xs text-indigo-700/80 dark:text-indigo-500 leading-relaxed mt-1">
+            <h4 className="font-black text-brand-800 dark:text-brand-400 text-sm italic uppercase tracking-tighter">Governance Protocol 04-A</h4>
+            <p className="text-xs text-brand-700/80 dark:text-brand-500 leading-relaxed mt-1">
               Any model with accuracy below <strong>90%</strong> should be set to <code>TRAINING</code> mode. Switching models in <code>PRODUCTION</code> environment will cause a 200ms latency spike globally for approximately 3 seconds while inference caches are invalidated.
             </p>
          </div>

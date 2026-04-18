@@ -7,16 +7,16 @@ export default function TemplateCard({ template, onSelect, onEdit, onDelete, onD
     'follow-up': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
     newsletter: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
     promotional: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-    general: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+    general: 'bg-brand-500/10 text-brand-400 border-brand-500/20'
   };
 
   const currentCategory = categoryColors[template.category] || categoryColors.general;
 
   return (
-    <div className="group relative bg-gray-900/40 border border-gray-800 rounded-2xl overflow-hidden hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300">
+    <div className="group relative bg-gray-900/40 border border-gray-800 rounded-2xl overflow-hidden hover:border-brand-500/50 hover:shadow-xl hover:shadow-brand-500/10 transition-all duration-300">
       {/* Thumbnail / Header */}
-      <div className="h-32 bg-gray-800/20 flex flex-col items-center justify-center border-b border-gray-800 group-hover:bg-indigo-500/5 transition-colors">
-        <Mail className="text-gray-700 group-hover:text-indigo-500/50 transition-colors" size={40} />
+      <div className="h-32 bg-gray-800/20 flex flex-col items-center justify-center border-b border-gray-800 group-hover:bg-brand-500/5 transition-colors">
+        <Mail className="text-gray-700 group-hover:text-brand-500/50 transition-colors" size={40} />
         {template.is_shared === 1 && (
           <span className="absolute top-3 right-3 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-violet-600/20 text-violet-400 border border-violet-500/20">System</span>
         )}
@@ -34,7 +34,7 @@ export default function TemplateCard({ template, onSelect, onEdit, onDelete, onD
         <div className="grid grid-cols-2 gap-2">
           <button 
             onClick={() => onSelect(template)} 
-            className="flex-1 py-1.5 bg-indigo-600 hover:bg-emerald-600 text-white text-[10px] font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-600/10"
+            className="flex-1 py-1.5 bg-brand-600 hover:bg-emerald-600 text-white text-[10px] font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-brand-600/10"
           >
             <ExternalLink size={12} /> Use
           </button>

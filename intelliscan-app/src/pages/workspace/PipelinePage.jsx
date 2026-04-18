@@ -115,7 +115,7 @@ export default function PipelinePage() {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-3 font-headline">
-            <Layers className="text-indigo-600" size={36} />
+            <Layers className="text-brand-600" size={36} />
             Sales Pipeline
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-2 font-medium">Manage your relationship funnel and revenue forecast.</p>
@@ -133,7 +133,7 @@ export default function PipelinePage() {
           </div>
           
           <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex items-center gap-4 min-w-[180px]">
-             <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center text-indigo-600">
+             <div className="w-10 h-10 bg-brand-100 dark:bg-brand-900/30 rounded-xl flex items-center justify-center text-brand-600">
                 <CheckCircle2 size={20} />
              </div>
              <div>
@@ -146,11 +146,11 @@ export default function PipelinePage() {
 
       <div className="flex flex-col sm:flex-row gap-4 items-center">
         <div className="relative flex-1 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-500 transition-colors" size={18} />
           <input 
             type="text" 
             placeholder="Search deals by name or company..."
-            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl py-3 pl-12 pr-4 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-sm"
+            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl py-3 pl-12 pr-4 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all font-medium text-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -175,16 +175,16 @@ export default function PipelinePage() {
             >
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full ${stage === 'Closed' ? 'bg-emerald-500' : 'bg-indigo-500'}`} />
+                  <span className={`w-2 h-2 rounded-full ${stage === 'Closed' ? 'bg-emerald-500' : 'bg-brand-500'}`} />
                   <h3 className="font-extrabold text-gray-900 dark:text-white uppercase tracking-tighter text-sm">{stage}</h3>
                   <span className="bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-[10px] font-black px-2 py-0.5 rounded-full">{stageContacts.length}</span>
                 </div>
-                <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400">${stageValue.toLocaleString()}</p>
+                <p className="text-[10px] font-black text-brand-600 dark:text-brand-400">${stageValue.toLocaleString()}</p>
               </div>
 
               <div className={`flex-1 rounded-3xl p-3 border border-dashed transition-all duration-300 space-y-4 ${
                 draggedOverStage === stage 
-                  ? 'bg-indigo-50/50 dark:bg-indigo-900/20 border-indigo-400 dark:border-indigo-500 shadow-inner' 
+                  ? 'bg-brand-50/50 dark:bg-brand-900/20 border-brand-400 dark:border-brand-500 shadow-inner' 
                   : 'bg-gray-50/50 dark:bg-gray-900/30 border-gray-100 dark:border-gray-800'
               }`}>
                 {stageContacts.map(contact => (
@@ -202,10 +202,10 @@ export default function PipelinePage() {
                         });
                         setIsUpdateModalOpen(true);
                     }}
-                    className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-all cursor-grab active:cursor-grabbing group"
+                    className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-brand-300 dark:hover:border-brand-500/50 transition-all cursor-grab active:cursor-grabbing group"
                   >
                     <div className="flex justify-between items-start mb-3">
-                       <div className="font-black text-sm text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate pr-2">{contact.name}</div>
+                       <div className="font-black text-sm text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors truncate pr-2">{contact.name}</div>
                        <div className="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-400">
                           <User size={14} />
                        </div>
@@ -214,7 +214,7 @@ export default function PipelinePage() {
                     <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 truncate mb-4">{contact.company || contact.title}</p>
                     
                     <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
-                       <div className="flex items-center gap-1 text-[10px] font-black text-indigo-600 dark:text-indigo-400">
+                       <div className="flex items-center gap-1 text-[10px] font-black text-brand-600 dark:text-brand-400">
                           <DollarSign size={10} />
                           {(contact.deal_value || 0).toLocaleString()}
                        </div>
@@ -245,7 +245,7 @@ export default function PipelinePage() {
               <header className="flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-black text-gray-900 dark:text-white font-headline">Manage Deal</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Updating opportunity for <span className="text-indigo-600 font-bold">{selectedContact?.name}</span></p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Updating opportunity for <span className="text-brand-600 font-bold">{selectedContact?.name}</span></p>
                 </div>
                 <button onClick={() => setIsUpdateModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-white">
                   <Plus size={24} className="rotate-45" />
@@ -258,7 +258,7 @@ export default function PipelinePage() {
                   <select 
                     value={dealForm.stage}
                     onChange={(e) => setDealForm({...dealForm, stage: e.target.value})}
-                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm font-bold outline-none ring-indigo-500/20 focus:ring-4"
+                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm font-bold outline-none ring-brand-500/20 focus:ring-4"
                   >
                     {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -271,7 +271,7 @@ export default function PipelinePage() {
                       type="number" 
                       value={dealForm.value}
                       onChange={(e) => setDealForm({...dealForm, value: Number(e.target.value)})}
-                      className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm font-bold outline-none ring-indigo-500/20 focus:ring-4"
+                      className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm font-bold outline-none ring-brand-500/20 focus:ring-4"
                     />
                   </div>
                   <div>
@@ -280,7 +280,7 @@ export default function PipelinePage() {
                       type="date" 
                       value={dealForm.expected_close}
                       onChange={(e) => setDealForm({...dealForm, expected_close: e.target.value})}
-                      className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm font-bold outline-none ring-indigo-500/20 focus:ring-4"
+                      className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm font-bold outline-none ring-brand-500/20 focus:ring-4"
                     />
                   </div>
                 </div>
@@ -291,7 +291,7 @@ export default function PipelinePage() {
                     value={dealForm.notes}
                     onChange={(e) => setDealForm({...dealForm, notes: e.target.value})}
                     rows={3}
-                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm font-bold outline-none ring-indigo-500/20 focus:ring-4 resize-none"
+                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm font-bold outline-none ring-brand-500/20 focus:ring-4 resize-none"
                     placeholder="Enter deal insights..."
                   />
                 </div>
@@ -300,7 +300,7 @@ export default function PipelinePage() {
               <div className="pt-4">
                 <button 
                   onClick={() => updateDeal(selectedContact.id, dealForm)}
-                  className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black shadow-xl shadow-indigo-500/20 transition-all active:scale-95"
+                  className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl font-black shadow-xl shadow-brand-500/20 transition-all active:scale-95"
                 >
                   Save Opportunity Details
                 </button>

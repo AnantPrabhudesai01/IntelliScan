@@ -36,7 +36,7 @@ export default function SsoCallback() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#0e131f] text-[#dde2f3]">
-      <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div className="w-12 h-12 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mb-4"></div>
       <p className="text-sm font-semibold tracking-wide">Finalizing Secure Session...</p>
     </div>
   );

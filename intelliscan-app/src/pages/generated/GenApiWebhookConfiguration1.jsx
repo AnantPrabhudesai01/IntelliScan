@@ -30,7 +30,7 @@ export default function GenApiWebhookConfiguration1() {
 <div className="lg:col-span-2 space-y-6">
 <section className="bg-surface-container-low rounded-xl p-8 shadow-sm">
 <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-<span className="material-symbols-outlined text-indigo-400">settings_ethernet</span>
+<span className="material-symbols-outlined text-brand-400">settings_ethernet</span>
                                 Endpoint Details
                             </h3>
 <div className="space-y-6">
@@ -64,7 +64,7 @@ export default function GenApiWebhookConfiguration1() {
 </section>
 <section className="bg-surface-container-low rounded-xl p-8 shadow-sm">
 <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-<span className="material-symbols-outlined text-indigo-400">checklist</span>
+<span className="material-symbols-outlined text-brand-400">checklist</span>
                                 Event Selection
                             </h3>
 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -140,7 +140,7 @@ export default function GenApiWebhookConfiguration1() {
 <div className="bg-surface-container-low/50 p-4 rounded-xl space-y-3">
 <div className="flex items-center gap-3">
 <div className="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center">
-<span className="material-symbols-outlined text-indigo-300 text-sm">info</span>
+<span className="material-symbols-outlined text-brand-300 text-sm">info</span>
 </div>
 <span className="text-[10px] text-on-surface-variant leading-tight">
                                     IntelliScan uses Ed25519 signatures for high-security payload verification.
@@ -189,7 +189,7 @@ export default function GenApiWebhookConfiguration1() {
 <span className="text-xs text-on-surface-variant">2023-11-24 14:02:11</span>
 </td>
 <td className="px-6 py-4 text-right">
-<span className="text-xs font-mono text-indigo-300">12ms</span>
+<span className="text-xs font-mono text-brand-300">12ms</span>
 </td>
 </tr>
 <tr className="hover:bg-surface-container/30 transition-colors cursor-pointer group">
@@ -209,7 +209,7 @@ export default function GenApiWebhookConfiguration1() {
 <span className="text-xs text-on-surface-variant">2023-11-24 13:58:04</span>
 </td>
 <td className="px-6 py-4 text-right">
-<span className="text-xs font-mono text-indigo-300">18ms</span>
+<span className="text-xs font-mono text-brand-300">18ms</span>
 </td>
 </tr>
 <tr className="hover:bg-surface-container/30 transition-colors cursor-pointer group">
@@ -249,7 +249,7 @@ export default function GenApiWebhookConfiguration1() {
 <span className="text-xs text-on-surface-variant">2023-11-24 13:22:15</span>
 </td>
 <td className="px-6 py-4 text-right">
-<span className="text-xs font-mono text-indigo-300">21ms</span>
+<span className="text-xs font-mono text-brand-300">21ms</span>
 </td>
 </tr>
 </tbody>

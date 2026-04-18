@@ -14,7 +14,7 @@ export default function GenWorkflowAutomationsBusinessAdmin() {
 <h2 className="text-3xl font-extrabold tracking-tight text-on-surface">Workflow Automation</h2>
 <p className="text-on-surface-variant body-sm">Orchestrate your document intelligence pipelines with precision.</p>
 </div>
-<button className="flex items-center gap-2 bg-primary-container text-on-primary-container px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-900/20 active:scale-95 transition-transform">
+<button className="flex items-center gap-2 bg-primary-container text-on-primary-container px-6 py-3 rounded-xl font-bold shadow-lg shadow-brand-900/20 active:scale-95 transition-transform">
 <span className="material-symbols-outlined">bolt</span>
                     Create New Automation
                 </button>
@@ -136,7 +136,7 @@ export default function GenWorkflowAutomationsBusinessAdmin() {
 <div className="space-y-3">
 <label className="block text-xs font-bold text-tertiary tracking-widest uppercase">Action</label>
 <div className="grid grid-cols-2 gap-3">
-<button className="bg-surface-container-high p-4 rounded-xl flex flex-col items-center gap-2 border-2 border-primary-container shadow-lg shadow-indigo-900/10">
+<button className="bg-surface-container-high p-4 rounded-xl flex flex-col items-center gap-2 border-2 border-primary-container shadow-lg shadow-brand-900/10">
 <span className="material-symbols-outlined text-primary" data-weight="fill">api</span>
 <span className="text-xs font-bold">API Hook</span>
 </button>

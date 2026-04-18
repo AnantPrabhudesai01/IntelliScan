@@ -245,7 +245,7 @@ export default function KioskMode() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-5xl mx-auto mb-8">
         <div>
           <h1 className="text-3xl font-black italic tracking-tighter text-white">EVENT KIOSK</h1>
-          <p className="text-indigo-400 font-bold tracking-widest text-[10px] uppercase">Automated Lead Capture System v3.0</p>
+          <p className="text-brand-400 font-bold tracking-widest text-[10px] uppercase">Automated Lead Capture System v3.0</p>
         </div>
       </div>
 
@@ -268,7 +268,7 @@ export default function KioskMode() {
             <canvas ref={canvasRef} className="hidden" />
 
             {isCameraActive ? (
-              <div className="relative w-full max-w-2xl mx-auto aspect-[4/3] rounded-[3rem] overflow-hidden border-4 border-indigo-500/50 shadow-2xl shadow-indigo-500/20 group">
+              <div className="relative w-full max-w-2xl mx-auto aspect-[4/3] rounded-[3rem] overflow-hidden border-4 border-brand-500/50 shadow-2xl shadow-brand-500/20 group">
                 <video 
                   ref={videoRef} 
                   autoPlay 
@@ -283,13 +283,13 @@ export default function KioskMode() {
                   <div className="absolute inset-0 border-[40px] border-black/20 backdrop-blur-[1px]"></div>
                   
                   {/* Animated Laser Line */}
-                  <div className="absolute left-0 right-0 h-1 bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.8)] animate-scanner-line top-0 z-20"></div>
+                  <div className="absolute left-0 right-0 h-1 bg-brand-500 shadow-[0_0_15px_rgba(99,102,241,0.8)] animate-scanner-line top-0 z-20"></div>
                   
                   {/* Corner Brackets */}
-                  <div className="absolute top-10 left-10 w-12 h-12 border-t-4 border-l-4 border-indigo-400 rounded-tl-lg"></div>
-                  <div className="absolute top-10 right-10 w-12 h-12 border-t-4 border-r-4 border-indigo-400 rounded-tr-lg"></div>
-                  <div className="absolute bottom-10 left-10 w-12 h-12 border-b-4 border-l-4 border-indigo-400 rounded-bl-lg"></div>
-                  <div className="absolute bottom-10 right-10 w-12 h-12 border-b-4 border-r-4 border-indigo-400 rounded-br-lg"></div>
+                  <div className="absolute top-10 left-10 w-12 h-12 border-t-4 border-l-4 border-brand-400 rounded-tl-lg"></div>
+                  <div className="absolute top-10 right-10 w-12 h-12 border-t-4 border-r-4 border-brand-400 rounded-tr-lg"></div>
+                  <div className="absolute bottom-10 left-10 w-12 h-12 border-b-4 border-l-4 border-brand-400 rounded-bl-lg"></div>
+                  <div className="absolute bottom-10 right-10 w-12 h-12 border-b-4 border-r-4 border-brand-400 rounded-br-lg"></div>
                   
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-80 h-48 border-2 border-dashed border-white/40 rounded-2xl flex items-center justify-center">
@@ -315,10 +315,10 @@ export default function KioskMode() {
                 className="relative inline-block mx-auto group cursor-pointer"
                 onClick={startCamera}
               >
-                <div className="absolute inset-0 bg-indigo-600/20 blur-[100px] group-hover:bg-indigo-600/40 transition-all"></div>
-                <div className="relative w-80 h-80 border-4 border-dashed border-indigo-500/30 rounded-[3rem] flex items-center justify-center bg-[#161c28]/80 backdrop-blur-xl group-hover:border-indigo-500 transition-colors overflow-hidden">
-                  <Camera size={120} className="text-indigo-500 animate-pulse group-hover:scale-110 transition-transform duration-300" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-indigo-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-brand-600/20 blur-[100px] group-hover:bg-brand-600/40 transition-all"></div>
+                <div className="relative w-80 h-80 border-4 border-dashed border-brand-500/30 rounded-[3rem] flex items-center justify-center bg-[#161c28]/80 backdrop-blur-xl group-hover:border-brand-500 transition-colors overflow-hidden">
+                  <Camera size={120} className="text-brand-500 animate-pulse group-hover:scale-110 transition-transform duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
               </div>
             )}
@@ -338,7 +338,7 @@ export default function KioskMode() {
               <button
                 onClick={isCameraActive ? captureAndScan : startCamera}
                 disabled={isScanning}
-                className={`w-full max-w-md ${isCameraActive ? 'bg-indigo-600 text-white' : 'bg-transparent border-2 border-indigo-500 text-indigo-400'} py-6 rounded-3xl font-black text-2xl hover:bg-indigo-500 hover:text-white transition-all shadow-2xl shadow-indigo-600/40 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4`}
+                className={`w-full max-w-md ${isCameraActive ? 'bg-brand-600 text-white' : 'bg-transparent border-2 border-brand-500 text-brand-400'} py-6 rounded-3xl font-black text-2xl hover:bg-brand-500 hover:text-white transition-all shadow-2xl shadow-brand-600/40 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4`}
               >
                 {isScanning ? (
                   <>
@@ -369,7 +369,7 @@ export default function KioskMode() {
                 <select
                   value={selectedEventId}
                   onChange={(event) => setSelectedEventId(event.target.value)}
-                  className="w-full bg-[#11182a] border border-white/15 rounded-2xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-indigo-500"
+                  className="w-full bg-[#11182a] border border-white/15 rounded-2xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-brand-500"
                 >
                   <option value="">No Event Assigned</option>
                   {events.map((event) => (
@@ -402,13 +402,13 @@ export default function KioskMode() {
                   <LayoutGrid size={160} />
                 </div>
                 <div className="relative z-10 flex flex-col items-center text-center">
-                  <div className="w-24 h-24 bg-indigo-600 rounded-[2rem] flex items-center justify-center text-3xl font-black text-white mb-6">
+                  <div className="w-24 h-24 bg-brand-600 rounded-[2rem] flex items-center justify-center text-3xl font-black text-white mb-6">
                     {(contactData.name || '?').charAt(0).toUpperCase()}
                   </div>
                   <h3 className="text-4xl font-black tracking-tighter text-white mb-2 uppercase italic">
                     {contactData.name || 'Unknown Contact'}
                   </h3>
-                  <p className="text-xl text-indigo-400 font-bold mb-1">{contactData.title || contactData.job_title || 'No title detected'}</p>
+                  <p className="text-xl text-brand-400 font-bold mb-1">{contactData.title || contactData.job_title || 'No title detected'}</p>
                   <p className="text-gray-400 font-medium">{contactData.company || 'No company detected'}</p>
                   <p className="text-gray-500 text-sm mt-2">{contactData.email || contactData.phone || 'No direct contact detected'}</p>
 
@@ -423,7 +423,7 @@ export default function KioskMode() {
                     </div>
                     <div className="text-center">
                       <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Intelligence</p>
-                      <span className="text-indigo-400 font-black italic text-[11px] whitespace-nowrap">{contactData.engine_used || 'Gemini AI'}</span>
+                      <span className="text-brand-400 font-black italic text-[11px] whitespace-nowrap">{contactData.engine_used || 'Gemini AI'}</span>
                     </div>
                   </div>
                 </div>
@@ -452,7 +452,7 @@ export default function KioskMode() {
                       <button
                         key={budget}
                         onClick={() => setQualification({ ...qualification, budget })}
-                        className={`py-4 rounded-2xl font-black text-sm border transition-all ${qualification.budget === budget ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}
+                        className={`py-4 rounded-2xl font-black text-sm border transition-all ${qualification.budget === budget ? 'bg-brand-600 border-brand-600 text-white shadow-lg' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}
                       >
                         {budget}
                       </button>
@@ -462,14 +462,14 @@ export default function KioskMode() {
 
                 <div className="space-y-4">
                   <label className="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                    <Calendar size={16} className="text-indigo-500" /> Implementation Timeline
+                    <Calendar size={16} className="text-brand-500" /> Implementation Timeline
                   </label>
                   <div className="grid grid-cols-2 gap-4">
                     {['ASAP', '1-3 Months', '6+ Months', 'Informational'].map((timeline) => (
                       <button
                         key={timeline}
                         onClick={() => setQualification({ ...qualification, timeline })}
-                        className={`py-4 rounded-2xl font-black text-sm border transition-all ${qualification.timeline === timeline ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}
+                        className={`py-4 rounded-2xl font-black text-sm border transition-all ${qualification.timeline === timeline ? 'bg-brand-600 border-brand-600 text-white shadow-lg' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}
                       >
                         {timeline}
                       </button>
@@ -484,7 +484,7 @@ export default function KioskMode() {
                       <button
                         key={role}
                         onClick={() => setQualification({ ...qualification, role })}
-                        className={`py-4 rounded-2xl font-black text-sm border transition-all ${qualification.role === role ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}
+                        className={`py-4 rounded-2xl font-black text-sm border transition-all ${qualification.role === role ? 'bg-brand-600 border-brand-600 text-white shadow-lg' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}
                       >
                         {role}
                       </button>

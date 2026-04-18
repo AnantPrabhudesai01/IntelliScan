@@ -24,7 +24,7 @@ export default function GenMarketplaceIntegrationsBusinessAdmin() {
 
 <section className="flex flex-wrap items-center gap-4">
 <div className="flex p-1 bg-surface-container-low rounded-xl">
-<button className="px-5 py-2 bg-primary-container text-on-primary-container rounded-lg text-sm font-semibold shadow-lg shadow-indigo-900/20">Available</button>
+<button className="px-5 py-2 bg-primary-container text-on-primary-container rounded-lg text-sm font-semibold shadow-lg shadow-brand-900/20">Available</button>
 <button className="px-5 py-2 text-on-surface-variant hover:text-white transition-colors text-sm font-semibold">Installed (12)</button>
 </div>
 <div className="h-6 w-px bg-outline-variant/20 mx-2 hidden sm:block"></div>
@@ -40,7 +40,7 @@ export default function GenMarketplaceIntegrationsBusinessAdmin() {
 
 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
-<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-900/10 flex flex-col">
+<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-900/10 flex flex-col">
 <div className="flex justify-between items-start mb-6">
 <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center overflow-hidden">
 <img className="w-8 h-8 object-contain" data-alt="Official Salesforce logo icon with its signature cloud shape in a clean minimalist style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOt4wPmEGD1HA4YmU3jRPhFI2o7hMhG3CCsJVOaY7yvd5NxCkwj5r1RT7twPCyYo0lcSuRuutSqM7fSzGUY2gbTNEh4wDpj3i2sWbkxZjydcYdHsmvU1fjb5nnFY1Fbw7BxcWMbmkLoWEpQoK1oC0hHXMul8--yq7nKrccuoAo4-I0cFwbOQLstWhboNHiJmJMTGLb5cO03fY77RlYGwajypmrjBWDg_Txs7RYFKS-8KQqOQNNq4cUfeta7h8VgVphbQPmKPzarbrG"/>
@@ -57,7 +57,7 @@ export default function GenMarketplaceIntegrationsBusinessAdmin() {
 </div>
 </div>
 
-<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-900/10 flex flex-col">
+<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-900/10 flex flex-col">
 <div className="flex justify-between items-start mb-6">
 <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center overflow-hidden">
 <img className="w-8 h-8 object-contain" data-alt="Official HubSpot logo icon with its distinct sprocket design in a professional digital workspace context" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBO4OX0mjAM9YLi3IFV8399LOBklWBRLzlLLKiHRG-ntriehcK5ZCTVKCSA9kMquc9loNbbgxZHHb1Gi1fuPFFQ_T4HcFN2WD05KS2o6ClMWOjxedejGpnJuFjmWr8N3ST8J4pbqRg6tocZjCA9OZG_VlFduv_ER0vmK0OYJCd8g3IH2dCuKeIylRzIFRBuhwh8lBojY_1XByqkb3fOZGo98WYV5CloVPFmsZsimp5faJudgN_PDDNj_K5Dz9USCtDXxzvvS9Vr5VbG"/>
@@ -74,7 +74,7 @@ export default function GenMarketplaceIntegrationsBusinessAdmin() {
 </div>
 </div>
 
-<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-900/10 flex flex-col">
+<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-900/10 flex flex-col">
 <div className="flex justify-between items-start mb-6">
 <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center overflow-hidden">
 <img className="w-8 h-8 object-contain" data-alt="Official Slack hashtag logo icon rendered in high-fidelity for a modern software marketplace" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAb6L9WeP38TQXa0XCNCDEghuGlU2_Ap_5uxbU41x3QgYmkjvWQ7Srqrs6ZpQd_wfSQRfV6xSFl4ESJcdVzoWytbJIeqIuJCQipqFBKhj5bNTLxVcGroYlsfYdNTeaQuw_tM-1cj61IaBc6W42FaLrWK7HMnwaLP-l7HFlRlSjqWgOq3xhvv5mErcWegB7e3pG9_qCv_HCw_W_2zQGdOhG6JSHodg38V_aDTj53Xl2rkwDri8Q1duMs0ugVWwgkGsfdNsA3gPrZ3C-u"/>
@@ -91,7 +91,7 @@ export default function GenMarketplaceIntegrationsBusinessAdmin() {
 </div>
 </div>
 
-<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-900/10 flex flex-col">
+<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-900/10 flex flex-col">
 <div className="flex justify-between items-start mb-6">
 <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center overflow-hidden">
 <img className="w-8 h-8 object-contain" data-alt="Official Zapier asterisk logo icon in orange and white for professional integration dashboard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAoR2PStDlXSt1mHrqu-8PHhv1YTzwWgXuiqtVHgR7vCdJURzqijr3uNibK_IDzsXdWxtfEGTDq13f08z7cwN29ovFQu1eILwKK5GDx5uWhz1joBRWpxHaKhH3FldncrOn3YLb-FJvvOvXQMTs8LIJxCa4SdXngDZXvtu_WE3CEdhL3qiUfZ-u8eiWjMu5DCg3d1lQGy_uMZwOGu9OfOhzKvmWnLN-GhDRQd8zhpuoIzIKkTutZfb7q9S_trYMkKpggLTwO7C8WGEt"/>
@@ -108,7 +108,7 @@ export default function GenMarketplaceIntegrationsBusinessAdmin() {
 </div>
 </div>
 
-<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-900/10 flex flex-col border-dashed">
+<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-900/10 flex flex-col border-dashed">
 <div className="flex justify-between items-start mb-6">
 <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center">
 <span className="material-symbols-outlined text-3xl text-primary">webhook</span>
@@ -125,7 +125,7 @@ export default function GenMarketplaceIntegrationsBusinessAdmin() {
 </div>
 </div>
 
-<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-900/10 flex flex-col opacity-75">
+<div className="group relative bg-surface-container-low rounded-xl p-6 border border-outline-variant/5 hover:border-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-900/10 flex flex-col opacity-75">
 <div className="flex justify-between items-start mb-6">
 <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center overflow-hidden">
 <img className="w-8 h-8 object-contain" data-alt="Microsoft Dynamics 365 logo icon representing enterprise resource planning and CRM software" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANK_dlxmm6U7bAgkBEhB_HDuiYFQ0wfQhoWYpsAcqcW3rLIObTuG9v9mRH1SXYaDVauSLu91we9eWd8AroptYxuLAoXteYcsY6DuqDUrBxaeph-QPLi7D-Bvaa9n6OE6WEOECJ2hAXYHpgtiZ8Qx8O-KvpFhkP_qsAaD6FA39QCAJYsCIXaPUb8-03cclBsqtg6-C2qSE3iPiOYclcP2tS0vdrPLG1fuAzU_DGOvm-wk4rwtmUGLe2MziIT0aT2Vo7b5OZadGXKFRt"/>

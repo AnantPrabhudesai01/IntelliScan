@@ -489,7 +489,7 @@ export default function ScanPage() {
           <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
             <button 
               onClick={() => { setScanMode('single'); setMultiResults(null); setScannedData(null); setSelectedImage(null); }}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${scanMode === 'single' ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${scanMode === 'single' ? 'bg-white dark:bg-gray-700 text-brand-600 dark:text-brand-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
             >
               <FileText size={14} /> Single Card
             </button>
@@ -505,7 +505,7 @@ export default function ScanPage() {
                     setScanMode('multi'); setScannedData(null); setMultiResults(null); setSelectedImage(null); 
                   }}
                   disabled={isLocked}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${scanMode === 'multi' ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${scanMode === 'multi' ? 'bg-white dark:bg-gray-700 text-brand-600 dark:text-brand-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
                   title={isLocked ? 'Free Plan: Group Photo limit reached (1/1)' : 'Extract multiple cards from a single photograph'}
                 >
                   <Layers size={14} /> Group Photo {isLocked ? '🔒' : ''}
@@ -514,7 +514,7 @@ export default function ScanPage() {
             })()}
             <button
               onClick={() => { setScanMode('batch'); setScannedData(null); setMultiResults(null); setSelectedImage(null); setBatchResults([]); }}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${scanMode === 'batch' ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${scanMode === 'batch' ? 'bg-white dark:bg-gray-700 text-brand-600 dark:text-brand-400 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
               title="Upload up to 20 card images at once for parallel AI processing"
             >
               <Zap size={14} /> Batch Upload
@@ -523,10 +523,10 @@ export default function ScanPage() {
 
           {/* Premium WhatsApp Quick-Sync Widget */}
           <div className="relative group/wsync">
-            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-indigo-500/20 rounded-3xl blur opacity-0 group-hover/wsync:opacity-100 transition duration-700"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-brand-500/20 rounded-3xl blur opacity-0 group-hover/wsync:opacity-100 transition duration-700"></div>
             <div className="relative flex items-center gap-4 bg-white dark:bg-[#121214] border border-gray-200 dark:border-white/5 px-6 py-4 rounded-[1.5rem] shadow-xl">
                <div className="flex -space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white border-2 border-white dark:border-[#121214] z-20 shadow-lg">
+                  <div className="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white border-2 border-white dark:border-[#121214] z-20 shadow-lg">
                     <Smartphone size={18} />
                   </div>
                   <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white border-2 border-white dark:border-[#121214] z-10 shadow-lg">
@@ -537,7 +537,7 @@ export default function ScanPage() {
                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">Mobile Sync Pool</p>
-                    <span className="text-[8px] font-black px-1.5 py-0.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded">V2 AI</span>
+                    <span className="text-[8px] font-black px-1.5 py-0.5 bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 rounded">V2 AI</span>
                   </div>
                   <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium truncate">Scan cards directly from your phone</p>
                </div>
@@ -556,7 +556,7 @@ export default function ScanPage() {
                     href={`https://wa.me/14155238886?text=${encodeURIComponent(discoveryCode || 'IS-SCAN')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-600/30 transition-all hover:-translate-y-0.5"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-brand-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-brand-700 shadow-lg shadow-brand-600/30 transition-all hover:-translate-y-0.5"
                   >
                     <Zap size={14} /> Link Now
                   </a>
@@ -577,14 +577,14 @@ export default function ScanPage() {
         <div className="space-y-6">
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-indigo-300 dark:border-indigo-700 rounded-2xl p-12 text-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all group"
+            className="border-2 border-dashed border-brand-300 dark:border-brand-700 rounded-2xl p-12 text-center cursor-pointer hover:border-brand-500 hover:bg-brand-50/30 dark:hover:bg-brand-900/10 transition-all group"
           >
-            <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-              <Zap size={28} className="text-indigo-600 dark:text-indigo-400" />
+            <div className="w-16 h-16 bg-brand-100 dark:bg-brand-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+              <Zap size={28} className="text-brand-600 dark:text-brand-400" />
             </div>
             <p className="font-extrabold text-gray-900 dark:text-white text-lg">Batch Upload Mode</p>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Select up to <strong>20 card images</strong> at once for parallel AI processing</p>
-            <p className="text-xs text-indigo-500 dark:text-indigo-400 mt-3 font-semibold">Click to select images or drag & drop</p>
+            <p className="text-xs text-brand-500 dark:text-brand-400 mt-3 font-semibold">Click to select images or drag & drop</p>
             <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
           </div>
 
@@ -593,10 +593,10 @@ export default function ScanPage() {
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
               <div className="flex justify-between items-center mb-3">
                 <p className="font-bold text-gray-900 dark:text-white text-sm">Processing {batchProgress.total} cards in parallel...</p>
-                <span className="text-indigo-600 dark:text-indigo-400 font-black">{batchProgress.done}/{batchProgress.total}</span>
+                <span className="text-brand-600 dark:text-brand-400 font-black">{batchProgress.done}/{batchProgress.total}</span>
               </div>
               <div className="w-full h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                <div className="h-full bg-indigo-500 rounded-full transition-all duration-300" style={{ width: `${batchProgress.total > 0 ? (batchProgress.done / batchProgress.total) * 100 : 0}%` }} />
+                <div className="h-full bg-brand-500 rounded-full transition-all duration-300" style={{ width: `${batchProgress.total > 0 ? (batchProgress.done / batchProgress.total) * 100 : 0}%` }} />
               </div>
             </div>
           )}
@@ -604,10 +604,10 @@ export default function ScanPage() {
           {/* Group Photo Results */}
           {multiResults && (
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm animate-fade-in group/multi">
-              <div className="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-indigo-50/30 dark:bg-indigo-900/10">
+              <div className="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-brand-50/30 dark:bg-brand-900/10">
                 <div>
                   <h3 className="font-extrabold text-gray-900 dark:text-white flex items-center gap-2 uppercase tracking-tight text-sm">
-                    <Sparkles size={16} className="text-indigo-500" />
+                    <Sparkles size={16} className="text-brand-500" />
                     Intelligent Group Capture
                   </h3>
                   <p className="text-xs text-gray-500 mt-0.5 font-medium">{multiResults.cards.length} distinct cards extracted from one image</p>
@@ -619,7 +619,7 @@ export default function ScanPage() {
                    >
                       Discard All
                    </button>
-                   <button onClick={saveAllBatch} className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20">
+                   <button onClick={saveAllBatch} className="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-black hover:bg-brand-700 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/20">
                       <Save size={14} /> Save All
                    </button>
                 </div>
@@ -633,9 +633,9 @@ export default function ScanPage() {
                       key={idx} 
                       onMouseEnter={() => setHoveredCardIdx(idx)}
                       onMouseLeave={() => setHoveredCardIdx(null)}
-                      className={`flex items-center gap-4 px-5 py-4 transition-colors ${hoveredCardIdx === idx ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''}`}
+                      className={`flex items-center gap-4 px-5 py-4 transition-colors ${hoveredCardIdx === idx ? 'bg-brand-50/50 dark:bg-brand-900/10' : ''}`}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[11px] font-black transition-all ${hoveredCardIdx === idx ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>{idx + 1}</div>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[11px] font-black transition-all ${hoveredCardIdx === idx ? 'bg-brand-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>{idx + 1}</div>
                       <div className="flex-1 min-w-0">
                         <p className="font-bold text-gray-900 dark:text-white text-sm truncate">{card.name || '—'}</p>
                         <p className="text-xs text-gray-500 truncate">{card.company || ''} {card.title ? `· ${card.title}` : ''}</p>
@@ -647,7 +647,7 @@ export default function ScanPage() {
                           <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">Duplicate</span>
                         ) : (
                           <button onClick={() => saveBatchCard(result, idx)} disabled={status === 'saving'}
-                            className="text-xs font-bold px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-60 flex items-center gap-1">
+                            className="text-xs font-bold px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-brand-600 hover:text-white transition-all disabled:opacity-60 flex items-center gap-1">
                             {status === 'saving' ? <><RefreshCw size={10} className="animate-spin" /> Saving</> : <><Save size={10} /> Save</>}
                           </button>
                         )}
@@ -667,7 +667,7 @@ export default function ScanPage() {
                   <h3 className="font-extrabold text-gray-900 dark:text-white">Batch Results</h3>
                   <p className="text-xs text-gray-500 mt-0.5">{batchResults.filter(r => r.status === 'ok').length} of {batchResults.length} cards extracted successfully</p>
                 </div>
-                <button onClick={saveAllBatch} className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-2">
+                <button onClick={saveAllBatch} className="px-4 py-2 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 active:scale-95 transition-all flex items-center gap-2">
                   <Save size={14} /> Save All
                 </button>
               </div>
@@ -676,7 +676,7 @@ export default function ScanPage() {
                   const status = batchSavedMap[result.idx];
                   return (
                     <div key={result.idx} className={`flex items-center gap-4 px-5 py-4 ${result.status === 'error' ? 'bg-red-50/30 dark:bg-red-900/5' : ''}`}>
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[11px] font-black bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400">{result.idx + 1}</div>
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[11px] font-black bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400">{result.idx + 1}</div>
                       <div className="flex-1 min-w-0">
                         {result.status === 'ok' ? (
                           <>
@@ -699,7 +699,7 @@ export default function ScanPage() {
                           <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">Duplicate</span>
                         ) : (
                           <button onClick={() => saveBatchCard(result, result.idx)} disabled={status === 'saving'}
-                            className="text-xs font-bold px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-60 flex items-center gap-1">
+                            className="text-xs font-bold px-3 py-1.5 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-60 flex items-center gap-1">
                             {status === 'saving' ? <><RefreshCw size={10} className="animate-spin" /> Saving</> : <><Save size={10} /> Save</>}
                           </button>
                         )}
@@ -739,7 +739,7 @@ export default function ScanPage() {
       )}
 
       {mutualInfo.count > 0 && (
-        <div className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 p-4 rounded-xl border border-indigo-200 dark:border-indigo-700 font-bold text-sm flex items-start gap-2">
+        <div className="bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 p-4 rounded-xl border border-brand-200 dark:border-brand-700 font-bold text-sm flex items-start gap-2">
           <Users size={16} className="mt-0.5 shrink-0" />
           <span>
             <strong>Shared Intelligence:</strong> {mutualInfo.count} teammate contact{mutualInfo.count !== 1 ? 's' : ''} found at {mutualInfo.company}.
@@ -751,7 +751,7 @@ export default function ScanPage() {
         {/* Left: Upload Area */}
         <div className="lg:col-span-5 space-y-6">
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl blur opacity-10 group-hover:opacity-30 transition duration-1000"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-purple-500 rounded-2xl blur opacity-10 group-hover:opacity-30 transition duration-1000"></div>
             
             <input 
               type="file" 
@@ -763,15 +763,15 @@ export default function ScanPage() {
             
             <div 
               onClick={() => !isScanning && fileInputRef.current.click()}
-              className={`relative bg-white dark:bg-gray-900 p-8 rounded-2xl border ${isScanning ? 'border-indigo-400 bg-indigo-50 dark:bg-gray-800' : 'border-gray-200/80 dark:border-gray-700 hover:border-indigo-400 hover:bg-gray-50/50 dark:hover:bg-gray-800'} flex flex-col items-center justify-center min-h-[300px] text-center transition-all cursor-pointer shadow-[var(--shadow-vibrant)] group-hover:shadow-xl`}
+              className={`relative bg-white dark:bg-gray-900 p-8 rounded-2xl border ${isScanning ? 'border-brand-400 bg-brand-50 dark:bg-gray-800' : 'border-gray-200/80 dark:border-gray-700 hover:border-brand-400 hover:bg-gray-50/50 dark:hover:bg-gray-800'} flex flex-col items-center justify-center min-h-[300px] text-center transition-all cursor-pointer shadow-[var(--shadow-vibrant)] group-hover:shadow-xl`}
             >
-              <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-500">
+              <div className="w-16 h-16 bg-brand-50 dark:bg-brand-900/30 rounded-full flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-500">
                 {isScanning ? (
-                  <RefreshCw className="text-indigo-600 dark:text-indigo-400 text-3xl animate-spin" size={32} />
+                  <RefreshCw className="text-brand-600 dark:text-brand-400 text-3xl animate-spin" size={32} />
                 ) : scanMode === 'single' ? (
-                  <Upload className="text-indigo-600 dark:text-indigo-400 text-3xl" size={32} />
+                  <Upload className="text-brand-600 dark:text-brand-400 text-3xl" size={32} />
                 ) : (
-                  <Layers className="text-indigo-600 dark:text-indigo-400 text-3xl" size={32} />
+                  <Layers className="text-brand-600 dark:text-brand-400 text-3xl" size={32} />
                 )}
               </div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 font-headline">
@@ -783,7 +783,7 @@ export default function ScanPage() {
               {selectedImage && !isScanning && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); processSingleImage(selectedImage, 'image/jpeg'); }}
-                  className="px-6 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-500/30"
+                  className="px-6 py-2 bg-brand-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-brand-500/30"
                 >
                   Re-scan Image
                 </button>
@@ -801,7 +801,7 @@ export default function ScanPage() {
             <button 
               onClick={checkAiHealth}
               disabled={isCheckingHealth}
-              className="mt-4 w-full py-2 px-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all flex items-center justify-center gap-2"
+              className="mt-4 w-full py-2 px-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all flex items-center justify-center gap-2"
             >
               {isCheckingHealth ? <RefreshCw size={12} className="animate-spin" /> : <Zap size={12} />}
               {isCheckingHealth ? 'Running Diagnostics...' : 'Check System & AI Health'}
@@ -823,7 +823,7 @@ export default function ScanPage() {
           
           {/* ────── MAGIC SYNC BANNER ────── */}
           {showEnrichmentBanner && scannedData && (
-            <div className="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl p-6 text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden animate-in slide-in-from-right-4 duration-500">
+            <div className="bg-gradient-to-r from-brand-600 to-violet-600 rounded-2xl p-6 text-white shadow-xl shadow-brand-500/20 relative overflow-hidden animate-in slide-in-from-right-4 duration-500">
                <div className="absolute top-0 right-0 p-4 opacity-20 rotate-12">
                   <Sparkles size={120} />
                </div>
@@ -849,7 +849,7 @@ export default function ScanPage() {
                      <button 
                         onClick={handleMagicSync}
                         disabled={isSyncingProfile}
-                        className="px-6 py-2 bg-white text-indigo-600 rounded-xl text-xs font-black shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+                        className="px-6 py-2 bg-white text-brand-600 rounded-xl text-xs font-black shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
                      >
                         {isSyncingProfile ? <RefreshCw className="animate-spin" size={14} /> : <Wand2 size={14} />}
                         Sync with Profile
@@ -864,15 +864,15 @@ export default function ScanPage() {
             <div className="space-y-6 animate-in fade-in duration-500">
                <div className="flex items-center justify-between bg-white dark:bg-gray-900 p-5 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
-                       <Layers size={20} className="text-indigo-600 dark:text-indigo-400" />
+                    <div className="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center">
+                       <Layers size={20} className="text-brand-600 dark:text-brand-400" />
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-gray-900 dark:text-white">Group Detection Results</h3>
                       <p className="text-[10px] text-gray-500 dark:text-gray-400">{multiResults.cards.length} contacts identified</p>
                     </div>
                   </div>
-                  <button onClick={saveAllMulti} className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-xs font-bold hover:shadow-lg hover:shadow-indigo-500/20 transition-all active:scale-95">
+                  <button onClick={saveAllMulti} className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-brand-600 to-purple-600 text-white rounded-xl text-xs font-bold hover:shadow-lg hover:shadow-brand-500/20 transition-all active:scale-95">
                     <Zap size={14} /> Save All New
                   </button>
                </div>
@@ -896,14 +896,14 @@ export default function ScanPage() {
                            <tr key={idx} className={`transition-all hover:bg-gray-50 dark:hover:bg-gray-800/30 ${isDup ? 'bg-amber-50/20 dark:bg-amber-900/5' : ''}`}>
                              <td className="px-6 py-4">
                                <div className="flex items-center gap-3">
-                                 <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center font-bold text-indigo-600 dark:text-indigo-400">
+                                 <div className="w-10 h-10 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center font-bold text-brand-600 dark:text-brand-400">
                                    {card.name ? card.name.charAt(0).toUpperCase() : '?'}
                                  </div>
                                  <div>
                                    <div className="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-2">
                                      {card.name || 'Unknown'}
                                      {card.detected_language && (
-                                       <span className="text-[9px] font-black uppercase text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded border border-indigo-100 dark:border-indigo-800/40">
+                                       <span className="text-[9px] font-black uppercase text-brand-600 dark:text-brand-300 bg-brand-50 dark:bg-brand-900/30 px-1.5 py-0.5 rounded border border-brand-100 dark:border-brand-800/40">
                                          {card.detected_language}
                                        </span>
                                      )}
@@ -942,7 +942,7 @@ export default function ScanPage() {
                                  <button 
                                    onClick={() => saveMultiCard(card, idx)} 
                                    disabled={status === 'saving'}
-                                   className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
+                                   className="text-xs font-bold text-white bg-brand-600 hover:bg-brand-500 px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
                                  >
                                    {status === 'saving' ? 'Saving...' : 'Save Card'}
                                  </button>
@@ -966,7 +966,7 @@ export default function ScanPage() {
           {/* ────── SINGLE EXTRACTION VIEW ────── */}
           {scanMode === 'single' && (
             <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 rounded-2xl shadow-[var(--shadow-vibrant)] relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
               
               <div className="flex justify-between items-start mb-8 relative">
                 <div>
@@ -976,7 +976,7 @@ export default function ScanPage() {
                 <div className="flex flex-col items-end gap-2">
                   <div className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border flex items-center gap-2 shadow-sm ${
                     scannedData?.engine_used?.includes('Gemini') || scannedData?.engine_used?.includes('ChatGPT')
-                      ? 'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/40 dark:text-indigo-400 dark:border-indigo-800/40'
+                      ? 'bg-brand-50 text-brand-600 border-brand-100 dark:bg-brand-900/40 dark:text-brand-400 dark:border-brand-800/40'
                       : 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-400 dark:border-emerald-800/40'
                   }`}>
                     <Sparkles size={12} className={scannedData?.engine_used?.includes('Gemini') ? 'animate-pulse' : ''} />
@@ -1012,7 +1012,7 @@ export default function ScanPage() {
                           </span>
                         )}
                       </div>
-                      <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 group-focus-within:border-indigo-400 transition-colors">
+                      <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 group-focus-within:border-brand-400 transition-colors">
                         <input 
                           className="bg-transparent border-none p-0 w-full text-gray-900 dark:text-white font-semibold focus:ring-0 text-sm outline-none" 
                           type="text" 
@@ -1030,7 +1030,7 @@ export default function ScanPage() {
                   <div className="flex justify-between items-center mb-1.5">
                     <label className="text-[10px] font-black uppercase tracking-tighter text-gray-500 dark:text-gray-400">Physical Address</label>
                   </div>
-                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 group-focus-within:border-indigo-400 transition-colors">
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 group-focus-within:border-brand-400 transition-colors">
                     <textarea 
                       className="bg-transparent border-none p-0 w-full text-gray-900 dark:text-white font-semibold focus:ring-0 text-sm resize-none outline-none" 
                       rows={2} 
@@ -1042,11 +1042,11 @@ export default function ScanPage() {
 
                 {/* AI Summary / Bio */}
                 {scannedData?.bio && (
-                  <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-2xl">
-                     <label className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-2 block flex items-center gap-2">
+                  <div className="p-4 bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-800 rounded-2xl">
+                     <label className="text-[10px] font-black uppercase tracking-widest text-brand-600 dark:text-brand-400 mb-2 block flex items-center gap-2">
                         <Sparkles size={12} /> AI Relationship Insight
                      </label>
-                     <p className="text-xs text-indigo-700 dark:text-indigo-300 italic font-medium leading-relaxed">
+                     <p className="text-xs text-brand-700 dark:text-brand-300 italic font-medium leading-relaxed">
                         "{scannedData.bio}"
                      </p>
                   </div>
@@ -1057,7 +1057,7 @@ export default function ScanPage() {
                   <div className="flex gap-3">
                     <button 
                       onClick={handleSave}
-                      className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-xl shadow-indigo-500/20 flex items-center gap-2 active:scale-95 transition-all group"
+                      className="bg-brand-600 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-xl shadow-brand-500/20 flex items-center gap-2 active:scale-95 transition-all group"
                     >
                       <Save size={18} className="group-hover:-translate-y-0.5 transition-transform" /> 
                       Save Contact & Deduct Credit
@@ -1094,9 +1094,9 @@ export default function ScanPage() {
                 />
                 
                 {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-indigo-600/0 group-hover:bg-indigo-600/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <div className="absolute inset-0 bg-brand-600/0 group-hover:bg-brand-600/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <div className="bg-white/90 dark:bg-gray-900/90 p-3 rounded-2xl shadow-2xl backdrop-blur-md transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                    <ZoomIn className="text-indigo-600 dark:text-indigo-400" size={24} />
+                    <ZoomIn className="text-brand-600 dark:text-brand-400" size={24} />
                   </div>
                 </div>
                 
@@ -1166,7 +1166,7 @@ export default function ScanPage() {
             
             <div className="mb-6">
               <h3 className="text-xl font-bold font-headline dark:text-white flex items-center gap-2">
-                <Zap className="text-indigo-500" /> AI System Diagnostics
+                <Zap className="text-brand-500" /> AI System Diagnostics
               </h3>
               <p className="text-xs text-gray-500 mt-1">Real-time connectivity results for your configured engines.</p>
             </div>
@@ -1195,11 +1195,11 @@ export default function ScanPage() {
                         <div className="p-3 bg-white/50 dark:bg-black/20 rounded-lg border border-red-100 dark:border-red-900/30">
                           <p className="text-[10px] font-bold text-gray-700 dark:text-gray-300 uppercase mb-1">How to Fix:</p>
                           {status?.code === 429 ? (
-                            <a href="https://platform.openai.com/account/billing" target="_blank" rel="noreferrer" className="text-[10px] text-indigo-600 dark:text-indigo-400 flex items-center gap-1 hover:underline">
+                            <a href="https://platform.openai.com/account/billing" target="_blank" rel="noreferrer" className="text-[10px] text-brand-600 dark:text-brand-400 flex items-center gap-1 hover:underline">
                               <Layers size={10} /> Add Credits to OpenAI Dashboard →
                             </a>
                           ) : status?.code === 404 ? (
-                            <a href="https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com" target="_blank" rel="noreferrer" className="text-[10px] text-indigo-600 dark:text-indigo-400 flex items-center gap-1 hover:underline">
+                            <a href="https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com" target="_blank" rel="noreferrer" className="text-[10px] text-brand-600 dark:text-brand-400 flex items-center gap-1 hover:underline">
                               <Layers size={10} /> Enable Generative AI API in Google Console →
                             </a>
                           ) : (
@@ -1212,12 +1212,12 @@ export default function ScanPage() {
                 );
               })}
 
-              <div className="p-4 rounded-xl border bg-indigo-50/30 border-indigo-200 dark:border-indigo-800/50">
+              <div className="p-4 rounded-xl border bg-brand-50/30 border-brand-200 dark:border-brand-800/50">
                 <div className="flex justify-between items-center mb-2">
-                  <h4 className="font-black uppercase text-[11px] tracking-widest text-indigo-500">IntelliScan Local Engine</h4>
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-indigo-100 text-indigo-600">STABLE</span>
+                  <h4 className="font-black uppercase text-[11px] tracking-widest text-brand-500">IntelliScan Local Engine</h4>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-brand-100 text-brand-600">STABLE</span>
                 </div>
-                <p className="text-xs text-indigo-700 dark:text-indigo-400 flex items-center gap-2">
+                <p className="text-xs text-brand-700 dark:text-brand-400 flex items-center gap-2">
                   <CheckCircle2 size={14} /> Ready as high-accuracy fallback (Tesseract + Heuristics)
                 </p>
               </div>

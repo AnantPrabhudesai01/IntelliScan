@@ -8,7 +8,7 @@ const MODELS_HISTORY = [
     version: 'v1.2.0',
     hash: '7a92b11',
     badge: 'OCR-V3 PRO',
-    badgeColor: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+    badgeColor: 'text-brand-400 bg-brand-500/10 border-brand-500/20',
     deployedAt: 'Oct 24, 2023 14:20',
     accuracy: 98.4,
     latency: 142,
@@ -53,15 +53,15 @@ function ConfirmModal({ title, description, confirmLabel, onConfirm, onClose, da
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
       <div className="bg-[#1a2035] border border-white/10 rounded-2xl p-8 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 mx-auto ${danger ? 'bg-red-500/20' : 'bg-indigo-500/20'}`}>
-          {danger ? <AlertTriangle size={24} className="text-red-400" /> : <RotateCcw size={24} className="text-indigo-400" />}
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 mx-auto ${danger ? 'bg-red-500/20' : 'bg-brand-500/20'}`}>
+          {danger ? <AlertTriangle size={24} className="text-red-400" /> : <RotateCcw size={24} className="text-brand-400" />}
         </div>
         <h2 className="text-xl font-bold text-white text-center mb-2">{title}</h2>
         <p className="text-gray-400 text-sm text-center mb-8">{description}</p>
         <div className="flex gap-3">
           <button onClick={onClose} className="flex-1 py-3 rounded-xl font-bold text-sm text-gray-300 bg-white/5 hover:bg-white/10 transition-all border border-white/10">Cancel</button>
           <button onClick={onConfirm}
-            className={`flex-1 py-3 rounded-xl font-bold text-sm text-white transition-all active:scale-95 ${danger ? 'bg-red-600 hover:bg-red-700' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
+            className={`flex-1 py-3 rounded-xl font-bold text-sm text-white transition-all active:scale-95 ${danger ? 'bg-red-600 hover:bg-red-700' : 'bg-brand-600 hover:bg-brand-700'}`}>
             {confirmLabel}
           </button>
         </div>
@@ -131,7 +131,7 @@ export default function GenAiModelVersioningRollback() {
     <div className="w-full h-full animate-fade-in relative p-6">
       {/* Toast */}
       {toast && (
-        <div className="fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-2xl text-sm font-bold text-white bg-indigo-600 flex items-center gap-3 max-w-sm">
+        <div className="fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-2xl text-sm font-bold text-white bg-brand-600 flex items-center gap-3 max-w-sm">
           <Check size={16} /> {toast.msg}
         </div>
       )}
@@ -162,8 +162,8 @@ export default function GenAiModelVersioningRollback() {
         {/* Active Model Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Active Engine */}
-          <div className="lg:col-span-4 bg-[#161c28] border border-indigo-500/30 p-6 rounded-xl relative overflow-hidden shadow-lg shadow-indigo-500/5">
-            <div className="absolute -right-8 -top-8 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl" />
+          <div className="lg:col-span-4 bg-[#161c28] border border-brand-500/30 p-6 rounded-xl relative overflow-hidden shadow-lg shadow-brand-500/5">
+            <div className="absolute -right-8 -top-8 w-32 h-32 bg-brand-500/10 rounded-full blur-3xl" />
             <div className="flex justify-between items-start mb-6">
               <div>
                 <span className={`px-2 py-1 text-[10px] font-bold tracking-widest uppercase rounded-lg border ${activeModel.badgeColor}`}>{activeModel.badge}</span>
@@ -227,12 +227,12 @@ export default function GenAiModelVersioningRollback() {
           <div className="lg:col-span-4 bg-[#161c28] border border-white/5 p-6 rounded-xl flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Zap size={18} className="text-indigo-400" />
+                <Zap size={18} className="text-brand-400" />
                 <h3 className="font-bold text-white">Stability Score</h3>
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-5xl font-extrabold tracking-tighter text-white">99.98</span>
-                <span className="text-indigo-400 text-xl font-bold">%</span>
+                <span className="text-brand-400 text-xl font-bold">%</span>
               </div>
               <p className="text-gray-400 text-sm mt-2">Platform uptime and model inference reliability within SLA bounds.</p>
             </div>
@@ -268,16 +268,16 @@ export default function GenAiModelVersioningRollback() {
                   const isActive = m.id === activeModelId;
                   const Icon = m.icon;
                   return (
-                    <tr key={m.id} className={`transition-colors group ${isActive ? 'bg-indigo-600/5' : 'hover:bg-white/5'}`}>
+                    <tr key={m.id} className={`transition-colors group ${isActive ? 'bg-brand-600/5' : 'hover:bg-white/5'}`}>
                       <td className="px-8 py-5">
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isActive ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white/5 text-gray-500'}`}>
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isActive ? 'bg-brand-500/20 text-brand-400' : 'bg-white/5 text-gray-500'}`}>
                             <Icon size={18} />
                           </div>
                           <div>
                             <div className="text-white font-bold flex items-center gap-2 text-sm">
                               {m.label} {m.version}
-                              {isActive && <span className="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-400 text-[9px] rounded font-black uppercase border border-indigo-500/30">LIVE</span>}
+                              {isActive && <span className="px-1.5 py-0.5 bg-brand-500/20 text-brand-400 text-[9px] rounded font-black uppercase border border-brand-500/30">LIVE</span>}
                             </div>
                             <span className="text-[10px] text-gray-500 font-mono">HASH: {m.hash}..</span>
                           </div>
@@ -296,10 +296,10 @@ export default function GenAiModelVersioningRollback() {
                       </td>
                       <td className="px-8 py-5 text-right">
                         {isActive ? (
-                          <span className="text-indigo-400 font-bold text-xs uppercase tracking-widest">Live Now</span>
+                          <span className="text-brand-400 font-bold text-xs uppercase tracking-widest">Live Now</span>
                         ) : (
                           <button onClick={() => handleRevert(m)}
-                            className="text-xs font-bold text-gray-400 hover:text-white transition-all border border-white/10 hover:border-indigo-500/50 px-3 py-1.5 rounded-lg active:scale-95 hover:bg-indigo-600/10 flex items-center gap-1.5 ml-auto">
+                            className="text-xs font-bold text-gray-400 hover:text-white transition-all border border-white/10 hover:border-brand-500/50 px-3 py-1.5 rounded-lg active:scale-95 hover:bg-brand-600/10 flex items-center gap-1.5 ml-auto">
                             <RotateCcw size={12} /> Revert
                           </button>
                         )}
@@ -314,10 +314,10 @@ export default function GenAiModelVersioningRollback() {
 
         {/* Rollback Policy */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div className="bg-indigo-600/5 p-8 rounded-2xl border-l-4 border-indigo-500">
+          <div className="bg-brand-600/5 p-8 rounded-2xl border-l-4 border-brand-500">
             <h4 className="font-bold text-lg text-white mb-2">Automated Rollback Policy</h4>
             <p className="text-gray-400 text-sm leading-relaxed">
-              System auto-reverts if accuracy drops below <span className="text-indigo-400 font-bold">94.5%</span> or latency exceeds <span className="text-indigo-400 font-bold">600ms</span> for more than 5 minutes.
+              System auto-reverts if accuracy drops below <span className="text-brand-400 font-bold">94.5%</span> or latency exceeds <span className="text-brand-400 font-bold">600ms</span> for more than 5 minutes.
               Currently active: <span className="text-green-400 font-bold">{activeModel.label}</span>
             </p>
           </div>

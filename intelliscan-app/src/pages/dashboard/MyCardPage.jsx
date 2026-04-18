@@ -117,7 +117,7 @@ export default function MyCardPage() {
       {/* Dynamic Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/5 backdrop-blur-3xl border border-white/10 p-8 rounded-[3rem] shadow-xl">
         <div className="flex items-center gap-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+          <div className="w-16 h-16 bg-gradient-to-br from-brand-500 to-violet-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
             <Zap size={28} />
           </div>
           <div>
@@ -183,7 +183,7 @@ export default function MyCardPage() {
                          {me.name.charAt(0)}
                       </div>
                       <h2 className="text-2xl font-['Outfit'] font-black text-white tracking-tighter">{me.name}</h2>
-                      <p className="text-indigo-400 text-[10px] font-black uppercase tracking-widest mt-1">{cardData.headline}</p>
+                      <p className="text-brand-400 text-[10px] font-black uppercase tracking-widest mt-1">{cardData.headline}</p>
                       
                       <p className="text-slate-400 text-[11px] leading-relaxed mt-6 line-clamp-3 italic">
                         "{cardData.bio}"
@@ -206,7 +206,7 @@ export default function MyCardPage() {
                       <div className="mt-8 space-y-2 text-left">
                          {cardData.contact_email && (
                             <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
-                               <Mail size={14} className="text-indigo-400" />
+                               <Mail size={14} className="text-brand-400" />
                                <span className="text-[10px] text-slate-300 font-bold truncate">{cardData.contact_email}</span>
                             </div>
                          )}
@@ -251,11 +251,11 @@ export default function MyCardPage() {
           {/* AI Specification */}
           <div className="bg-white/5 backdrop-blur-3xl rounded-[3rem] p-10 border border-white/10 shadow-2xl relative overflow-hidden">
              <div className="absolute top-0 right-0 p-10 flex gap-2">
-                <div className="w-3 h-3 rounded-full bg-indigo-500 animate-pulse"></div>
-                <div className="w-3 h-3 rounded-full bg-indigo-500 delay-100 animate-pulse"></div>
+                <div className="w-3 h-3 rounded-full bg-brand-500 animate-pulse"></div>
+                <div className="w-3 h-3 rounded-full bg-brand-500 delay-100 animate-pulse"></div>
              </div>
              <h3 className="text-2xl font-['Outfit'] font-black text-white mb-8 flex items-center gap-3 uppercase tracking-tighter italic">
-                <Sparkles size={24} className="text-indigo-400" /> Identity Intelligence
+                <Sparkles size={24} className="text-brand-400" /> Identity Intelligence
              </h3>
              <div className="grid grid-cols-2 gap-10">
                 <div className="space-y-2">
@@ -275,7 +275,7 @@ export default function MyCardPage() {
                 </div>
                 <div className="space-y-2">
                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Identity Index (Slug)</p>
-                   <p className="text-xl font-mono font-black text-indigo-400 tracking-tighter">{cardData.url_slug || 'auto-assigned'}</p>
+                   <p className="text-xl font-mono font-black text-brand-400 tracking-tighter">{cardData.url_slug || 'auto-assigned'}</p>
                 </div>
              </div>
           </div>
@@ -302,7 +302,7 @@ export default function MyCardPage() {
                       value={cardData[field.key] || ''} 
                       onChange={(e) => setCardData({ ...cardData, [field.key]: e.target.value })}
                       placeholder={field.placeholder}
-                      className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-white text-xs font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all placeholder:text-white/10"
+                      className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-white text-xs font-bold focus:ring-2 focus:ring-brand-500 outline-none transition-all placeholder:text-white/10"
                     />
                   </div>
                 ))}
@@ -311,14 +311,14 @@ export default function MyCardPage() {
 
           <div className="bg-white/5 backdrop-blur-3xl rounded-[3rem] p-10 border border-white/10 shadow-2xl">
             <h3 className="text-xl font-['Outfit'] font-black text-white mb-8 uppercase tracking-tighter flex items-center gap-3 italic">
-               <TrendingUp size={24} className="text-indigo-400" /> World-Density Analytics
+               <TrendingUp size={24} className="text-brand-400" /> World-Density Analytics
             </h3>
             
             <div className="space-y-6">
               <div className="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/10 group transition-all hover:bg-white/10">
                 <div className="flex flex-col">
                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1">Public Connection Portal</span>
-                  <span className="text-sm font-mono text-indigo-400 font-black truncate max-w-[300px] tracking-tighter">{cardUrl}</span>
+                  <span className="text-sm font-mono text-brand-400 font-black truncate max-w-[300px] tracking-tighter">{cardUrl}</span>
                 </div>
                 <button 
                   onClick={handleCopy}
@@ -330,13 +330,13 @@ export default function MyCardPage() {
 
               <div className="grid grid-cols-2 gap-8">
                 <div className="bg-[#0a0a0a] p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
-                   <div className="absolute -top-4 -right-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl"></div>
+                   <div className="absolute -top-4 -right-4 w-24 h-24 bg-brand-500/10 rounded-full blur-2xl"></div>
                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                      <Users size={12} className="text-indigo-400" /> Network Reach
+                      <Users size={12} className="text-brand-400" /> Network Reach
                    </p>
                    <div className="flex items-end gap-3">
                      <p className="text-6xl font-['Outfit'] font-black text-white tracking-tighter">{cardData.views.toLocaleString()}</p>
-                     <span className="text-[10px] font-black text-indigo-400 mb-2 uppercase tracking-widest font-mono">Organic</span>
+                     <span className="text-[10px] font-black text-brand-400 mb-2 uppercase tracking-widest font-mono">Organic</span>
                    </div>
                 </div>
                 <div className="bg-[#0a0a0a] p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
@@ -353,7 +353,7 @@ export default function MyCardPage() {
             </div>
           </div>
           
-          <div className="px-10 py-8 bg-indigo-600/10 rounded-[3rem] border border-indigo-500/20 flex gap-6 items-center">
+          <div className="px-10 py-8 bg-brand-600/10 rounded-[3rem] border border-brand-500/20 flex gap-6 items-center">
              <div className="w-12 h-12 bg-white text-black rounded-2xl flex items-center justify-center shrink-0">
                 <Sparkles size={24} />
              </div>

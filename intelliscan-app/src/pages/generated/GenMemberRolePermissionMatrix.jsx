@@ -36,7 +36,7 @@ export default function GenMemberRolePermissionMatrix() {
 
 <th className="p-6 text-center">
 <div className="flex flex-col items-center gap-2">
-<div className="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+<div className="w-10 h-10 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center">
 <span className="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
 </div>
 <span className="font-headline font-bold text-on-surface">Admin</span>
@@ -76,7 +76,7 @@ export default function GenMemberRolePermissionMatrix() {
 
 <tr className="bg-surface-container-lowest/50">
 <td className="px-6 py-3" colspan="5">
-<span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">Workspace Management</span>
+<span className="text-[10px] font-black text-brand-500 uppercase tracking-[0.2em]">Workspace Management</span>
 </td>
 </tr>
 <tr className="hover:bg-surface-container-high/30 transition-colors">
@@ -86,10 +86,10 @@ export default function GenMemberRolePermissionMatrix() {
 <span className="text-xs text-on-surface-variant">Modify global environment settings and aliases</span>
 </div>
 </td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
 </tr>
 <tr className="hover:bg-surface-container-high/30 transition-colors">
 <td className="p-6">
@@ -98,15 +98,15 @@ export default function GenMemberRolePermissionMatrix() {
 <span className="text-xs text-on-surface-variant">Access invoices and update payment methods</span>
 </div>
 </td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
 </tr>
 
 <tr className="bg-surface-container-lowest/50">
 <td className="px-6 py-3" colspan="5">
-<span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">Security &amp; Infrastructure</span>
+<span className="text-[10px] font-black text-brand-500 uppercase tracking-[0.2em]">Security &amp; Infrastructure</span>
 </td>
 </tr>
 <tr className="hover:bg-surface-container-high/30 transition-colors">
@@ -116,10 +116,10 @@ export default function GenMemberRolePermissionMatrix() {
 <span className="text-xs text-on-surface-variant">Reveal and rotate sensitive integration tokens</span>
 </div>
 </td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
 </tr>
 <tr className="hover:bg-surface-container-high/30 transition-colors">
 <td className="p-6">
@@ -128,15 +128,15 @@ export default function GenMemberRolePermissionMatrix() {
 <span className="text-xs text-on-surface-variant">Download complete system event history</span>
 </div>
 </td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
 </tr>
 
 <tr className="bg-surface-container-lowest/50">
 <td className="px-6 py-3" colspan="5">
-<span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">Data Operations</span>
+<span className="text-[10px] font-black text-brand-500 uppercase tracking-[0.2em]">Data Operations</span>
 </td>
 </tr>
 <tr className="hover:bg-surface-container-high/30 transition-colors">
@@ -146,10 +146,10 @@ export default function GenMemberRolePermissionMatrix() {
 <span className="text-xs text-on-surface-variant">Permanently purge scanned entity data</span>
 </div>
 </td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
 </tr>
 <tr className="hover:bg-surface-container-high/30 transition-colors">
 <td className="p-6">
@@ -158,10 +158,10 @@ export default function GenMemberRolePermissionMatrix() {
 <span className="text-xs text-on-surface-variant">Bulk export results to CSV/JSON format</span>
 </div>
 </td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
-<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-indigo-500 focus:ring-indigo-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
+<td className="p-6 text-center"><input checked="" className="w-5 h-5 rounded bg-surface-container border-outline-variant text-brand-500 focus:ring-brand-500" type="checkbox"/></td>
 </tr>
 </tbody>
 </table>
@@ -171,7 +171,7 @@ export default function GenMemberRolePermissionMatrix() {
 <div className="mt-6 flex items-center justify-between text-on-surface-variant text-sm px-2">
 <div className="flex items-center gap-6">
 <div className="flex items-center gap-2">
-<div className="w-3 h-3 rounded-full bg-indigo-500"></div>
+<div className="w-3 h-3 rounded-full bg-brand-500"></div>
 <span>Active Permission</span>
 </div>
 <div className="flex items-center gap-2">
@@ -202,7 +202,7 @@ export default function GenMemberRolePermissionMatrix() {
 <button className="px-5 py-2.5 text-on-surface-variant font-semibold hover:text-on-surface transition-colors">
                             Discard
                         </button>
-<button className="px-8 py-2.5 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 hover:shadow-indigo-600/40 transition-all active:scale-95">
+<button className="px-8 py-2.5 bg-brand-600 text-white rounded-xl font-bold shadow-lg shadow-brand-600/20 hover:bg-brand-700 hover:shadow-brand-600/40 transition-all active:scale-95">
                             Save Workspace Rules
                         </button>
 </div>

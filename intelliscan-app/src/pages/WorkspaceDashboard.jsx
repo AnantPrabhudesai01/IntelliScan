@@ -79,7 +79,7 @@ export default function WorkspaceDashboard() {
           <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">Real-time intelligence from your scanning ecosystem.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={() => fetchData(true)} className="w-8 h-8 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-indigo-600 transition-colors">
+          <button onClick={() => fetchData(true)} className="w-8 h-8 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-brand-600 transition-colors">
             <RefreshCw size={16} className={refreshing ? 'animate-spin' : ''} />
           </button>
           <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 rounded-xl text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors shadow-sm">
@@ -97,8 +97,8 @@ export default function WorkspaceDashboard() {
       {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Total Scans', value: (data?.total_scans || 0).toLocaleString(), badge: data?.total_scans > 0 ? `+${data.growth_pct}% vs LY` : 'No scans yet', badgeColor: 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/30', icon: Zap, iconColor: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20' },
-          { label: 'Avg Confidence', value: data?.total_scans > 0 ? `${data.avg_confidence}%` : '—', badge: data?.total_scans > 0 ? 'Optimal' : 'No data', badgeColor: 'text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-900/30', icon: BarChart2, iconColor: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' },
+          { label: 'Total Scans', value: (data?.total_scans || 0).toLocaleString(), badge: data?.total_scans > 0 ? `+${data.growth_pct}% vs LY` : 'No scans yet', badgeColor: 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/30', icon: Zap, iconColor: 'text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20' },
+          { label: 'Avg Confidence', value: data?.total_scans > 0 ? `${data.avg_confidence}%` : '—', badge: data?.total_scans > 0 ? 'Optimal' : 'No data', badgeColor: 'text-brand-600 bg-brand-50 dark:text-brand-400 dark:bg-brand-900/30', icon: BarChart2, iconColor: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' },
           { label: 'Active Members', value: (data?.active_members || 1).toString(), badge: 'Full Team', badgeColor: 'text-gray-600 bg-gray-100 dark:text-gray-300 dark:bg-gray-800', icon: Users, iconColor: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20' },
           { label: 'Leads Generated', value: (data?.leads_generated || 0).toLocaleString(), badge: data?.leads_generated > 0 ? 'High ROI' : 'Scan cards', badgeColor: 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/30', icon: FileText, iconColor: 'text-orange-500 bg-orange-50 dark:bg-orange-900/20' },
         ].map((card) => (
@@ -124,7 +124,7 @@ export default function WorkspaceDashboard() {
               <p className="text-sm text-gray-500 dark:text-gray-400">Last 30 days performance</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-indigo-500" />
+              <span className="w-3 h-3 rounded-full bg-brand-500" />
               <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Intake Engine</span>
             </div>
           </div>
@@ -133,7 +133,7 @@ export default function WorkspaceDashboard() {
               <div
                 key={i}
                 title={`Day ${i + 1}: ${val} scans`}
-                className={`flex-1 rounded-t-sm transition-all duration-200 cursor-pointer group/bar ${val > 0 ? 'bg-indigo-500 hover:bg-indigo-400' : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                className={`flex-1 rounded-t-sm transition-all duration-200 cursor-pointer group/bar ${val > 0 ? 'bg-brand-500 hover:bg-brand-400' : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
                 style={{ height: `${Math.max((val / maxDay) * 100, val > 0 ? 8 : 3)}%` }}
               />
             ))}
@@ -158,7 +158,7 @@ export default function WorkspaceDashboard() {
                 </div>
                 <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full ${i === 0 ? 'bg-indigo-500' : i === 1 ? 'bg-amber-500' : 'bg-gray-400'}`}
+                    className={`h-full rounded-full ${i === 0 ? 'bg-brand-500' : i === 1 ? 'bg-amber-500' : 'bg-gray-400'}`}
                     style={{ width: `${engine.pct}%` }}
                   />
                 </div>
@@ -177,7 +177,7 @@ export default function WorkspaceDashboard() {
       <section>
         <div className="flex items-center justify-between mb-6 px-1">
           <h3 className="text-xl font-headline font-extrabold text-gray-900 dark:text-white">Live Activity Feed</h3>
-          <button onClick={() => navigate('/workspace/contacts')} className="flex items-center gap-1 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline transition-all">
+          <button onClick={() => navigate('/workspace/contacts')} className="flex items-center gap-1 text-sm font-bold text-brand-600 dark:text-brand-400 hover:underline transition-all">
             View All <ArrowUpRight size={16} />
           </button>
         </div>
@@ -186,7 +186,7 @@ export default function WorkspaceDashboard() {
               <div className="p-12 text-center">
                 <FileText size={40} className="mx-auto mb-4 text-gray-300 dark:text-gray-700" />
                 <p className="text-gray-500 dark:text-gray-400 font-semibold">No scans yet.</p>
-                <button onClick={() => navigate('/dashboard/scan')} className="mt-4 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors">Scan Your First Card</button>
+                <button onClick={() => navigate('/dashboard/scan')} className="mt-4 px-5 py-2 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 transition-colors">Scan Your First Card</button>
               </div>
           ) : (
             <div className="overflow-x-auto">
@@ -203,7 +203,7 @@ export default function WorkspaceDashboard() {
                     <tr key={contact.id} onClick={() => navigate('/workspace/contacts')} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 flex items-center justify-center text-[10px] font-black">
+                          <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400 flex items-center justify-center text-[10px] font-black">
                             {(contact.name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                           </div>
                           <div>

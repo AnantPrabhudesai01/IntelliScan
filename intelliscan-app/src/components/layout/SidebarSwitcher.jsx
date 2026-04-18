@@ -33,7 +33,7 @@ const SidebarSwitcher = ({ activeMode = 'personal', collapsed = false, isMobile 
         <div className="mt-3 px-3 py-2 bg-white/5 border border-white/5 rounded-xl flex items-center justify-between group cursor-default transition-all hover:border-white/10">
           <div className="flex flex-col">
             <div className="flex items-center gap-1">
-               <Globe size={8} className={isPersonal ? 'text-indigo-400' : 'text-blue-400'} />
+               <Globe size={8} className={isPersonal ? 'text-brand-400' : 'text-blue-400'} />
                <span className="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">{isPersonal ? 'Personal Area' : 'Workspace HQ'}</span>
             </div>
             <span className="text-[10px] font-bold text-white truncate max-w-[110px]">

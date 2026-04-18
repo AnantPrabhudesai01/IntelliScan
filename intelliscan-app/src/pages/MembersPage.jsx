@@ -121,7 +121,7 @@ export default function MembersPage() {
       <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-gray-200 dark:border-white/5 pb-8">
         <div className="space-y-2">
            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-indigo-600 rounded-2xl text-white shadow-lg shadow-indigo-500/20">
+              <div className="p-2.5 bg-brand-600 rounded-2xl text-white shadow-lg shadow-brand-500/20">
                 <Shield size={24} />
               </div>
               <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter italic uppercase">Workspace Command</h1>
@@ -136,7 +136,7 @@ export default function MembersPage() {
              {['Directory', 'Permissions', 'Audit Logs'].map((t, i) => (
                <button 
                  key={t}
-                 className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${i === 0 ? 'bg-white dark:bg-gray-900 text-indigo-600 shadow-xl' : 'text-gray-400 hover:text-gray-600 dark:hover:text-white'}`}
+                 className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${i === 0 ? 'bg-white dark:bg-gray-900 text-brand-600 shadow-xl' : 'text-gray-400 hover:text-gray-600 dark:hover:text-white'}`}
                >
                  {t}
                </button>
@@ -144,7 +144,7 @@ export default function MembersPage() {
            </div>
            <button 
              onClick={() => setIsInviteModalOpen(true)}
-             className="flex items-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-indigo-500/20 active:scale-95"
+             className="flex items-center gap-3 bg-brand-600 hover:bg-brand-700 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-brand-500/20 active:scale-95"
            >
              <Plus size={18} /> Provision Member
            </button>
@@ -167,10 +167,10 @@ export default function MembersPage() {
                   </thead>
                   <tbody className="divide-y divide-gray-50 dark:divide-white/5">
                      {members.map((member, i) => (
-                        <tr key={member.id} className="group hover:bg-indigo-600/[0.02] transition-colors">
+                        <tr key={member.id} className="group hover:bg-brand-600/[0.02] transition-colors">
                            <td className="px-8 py-6">
                               <div className="flex items-center gap-4">
-                                 <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-black text-lg group-hover:scale-110 transition-transform">
+                                 <div className="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-800 flex items-center justify-center text-brand-600 dark:text-brand-400 font-black text-lg group-hover:scale-110 transition-transform">
                                     {member.name?.charAt(0) || '?'}
                                  </div>
                                  <div className="space-y-0.5">
@@ -182,7 +182,7 @@ export default function MembersPage() {
                            <td className="px-8 py-6">
                               <div className="space-y-2">
                                  <div className="flex items-center gap-2">
-                                    <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${member.role.includes('admin') ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-500'}`}>
+                                    <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${member.role.includes('admin') ? 'bg-brand-600 text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-500'}`}>
                                        {member.role === 'business_admin' ? 'Enterprise Admin' : 'Workspace Member'}
                                     </span>
                                  </div>
@@ -194,14 +194,14 @@ export default function MembersPage() {
                            <td className="px-8 py-6">
                               <div className="flex items-end gap-1 h-8 w-24">
                                  {[30, 45, 25, 60, 40, 55, 70].map((h, j) => (
-                                    <div key={j} className={`flex-1 rounded-t-sm transition-all duration-700 ${j === 6 ? 'bg-indigo-500 animate-pulse' : 'bg-indigo-200 dark:bg-indigo-900/30'}`} style={{ height: `${h}%` }} />
+                                    <div key={j} className={`flex-1 rounded-t-sm transition-all duration-700 ${j === 6 ? 'bg-brand-500 animate-pulse' : 'bg-brand-200 dark:bg-brand-900/30'}`} style={{ height: `${h}%` }} />
                                  ))}
                               </div>
                               <p className="text-[9px] font-black text-gray-400 mt-2 uppercase tracking-widest">Active {member.last_active}</p>
                            </td>
                            <td className="px-8 py-6 text-right">
                               <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                 <button className="p-2.5 bg-gray-100 dark:bg-white/5 rounded-xl text-gray-500 hover:text-indigo-600 transition-colors">
+                                 <button className="p-2.5 bg-gray-100 dark:bg-white/5 rounded-xl text-gray-500 hover:text-brand-600 transition-colors">
                                     <Eye size={16} />
                                  </button>
                                  <button onClick={() => removeMember(member.id)} className="p-2.5 bg-red-500/10 rounded-xl text-red-500 hover:bg-red-500 transition-all active:scale-95">
@@ -242,9 +242,9 @@ export default function MembersPage() {
                   ))}
                </div>
 
-               <div className="p-6 bg-indigo-600/[0.03] border border-indigo-500/10 rounded-3xl space-y-4">
+               <div className="p-6 bg-brand-600/[0.03] border border-brand-500/10 rounded-3xl space-y-4">
                   <div className="flex items-center gap-3">
-                     <Lock size={20} className="text-indigo-500" />
+                     <Lock size={20} className="text-brand-500" />
                      <h5 className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest">Enterprise Shield</h5>
                   </div>
                   <p className="text-[10px] text-gray-500 leading-relaxed font-medium">
@@ -254,7 +254,7 @@ export default function MembersPage() {
             </div>
 
             {/* Achievement Card */}
-            <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-[40px] p-8 text-white relative overflow-hidden group">
+            <div className="bg-gradient-to-br from-brand-600 to-violet-700 rounded-[40px] p-8 text-white relative overflow-hidden group">
                <Award size={100} className="absolute -right-8 -bottom-8 opacity-10 group-hover:scale-125 transition-transform duration-1000" />
                <div className="relative z-10 space-y-6">
                   <div className="inline-flex p-3 bg-white/10 rounded-2xl backdrop-blur-md">
@@ -262,7 +262,7 @@ export default function MembersPage() {
                   </div>
                   <div className="space-y-1">
                      <h4 className="text-2xl font-black italic">Workspace MVP</h4>
-                     <p className="text-[10px] font-black uppercase text-indigo-100/70 tracking-widest">Highest Scanning Velocity</p>
+                     <p className="text-[10px] font-black uppercase text-brand-100/70 tracking-widest">Highest Scanning Velocity</p>
                   </div>
                   <div className="flex items-center gap-3 bg-white/10 p-4 rounded-2xl group-hover:bg-white/20 transition-all">
                      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-black">
@@ -292,18 +292,18 @@ export default function MembersPage() {
             <form onSubmit={handleInvite} className="p-10 space-y-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Full Identity Name</label>
-                <input required value={inviteData.name} onChange={e => setInviteData({...inviteData, name: e.target.value})} type="text" className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="e.g. Jordan Chen" />
+                <input required value={inviteData.name} onChange={e => setInviteData({...inviteData, name: e.target.value})} type="text" className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none transition-all" placeholder="e.g. Jordan Chen" />
               </div>
               
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Verified Email Domain</label>
-                <input required value={inviteData.email} onChange={e => setInviteData({...inviteData, email: e.target.value})} type="email" className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="name@company.com" />
+                <input required value={inviteData.email} onChange={e => setInviteData({...inviteData, email: e.target.value})} type="email" className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none transition-all" placeholder="name@company.com" />
               </div>
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Permissions Tier</label>
                 <select 
-                  className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none appearance-none transition-all"
+                  className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none appearance-none transition-all"
                   value={inviteData.role}
                   onChange={(e) => setInviteData({...inviteData, role: e.target.value})}
                 >
@@ -314,7 +314,7 @@ export default function MembersPage() {
 
               <div className="pt-6 flex gap-4">
                 <button type="button" onClick={() => setIsInviteModalOpen(false)} className="flex-1 py-4 bg-gray-100 dark:bg-white/5 rounded-2xl font-black text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-all">Discard</button>
-                <button type="submit" disabled={isInviting} className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95 flex items-center justify-center gap-2">
+                <button type="submit" disabled={isInviting} className="flex-1 py-4 bg-brand-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-brand-700 transition-all shadow-xl shadow-brand-500/20 active:scale-95 flex items-center justify-center gap-2">
                   {isInviting ? <Loader2 className="animate-spin" size={18} /> : <Plus size={18} />}
                   Launch Provision
                 </button>

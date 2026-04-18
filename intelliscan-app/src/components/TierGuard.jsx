@@ -55,7 +55,7 @@ export default function TierGuard({ children, minTier = 'personal', featureName 
         <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={() => navigate('/dashboard/billing')}
-            className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:brightness-110 transition-all"
+            className="px-6 py-3 rounded-xl bg-brand-600 text-white font-bold text-sm hover:brightness-110 transition-all"
           >
             View Plans
           </button>

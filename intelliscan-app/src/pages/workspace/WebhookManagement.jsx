@@ -81,7 +81,7 @@ export default function WebhookManagement() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f18] flex items-center justify-center">
-         <div className="w-10 h-10 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+         <div className="w-10 h-10 rounded-full border-4 border-brand-500 border-t-transparent animate-spin"></div>
       </div>
     );
   }
@@ -91,14 +91,14 @@ export default function WebhookManagement() {
       
       {/* Background Gradients */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none opacity-20 -z-10">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/30 blur-[120px] rounded-full"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-500/30 blur-[120px] rounded-full"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/20 blur-[120px] rounded-full"></div>
       </div>
 
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
         <div className="space-y-2">
            <div className="flex items-center gap-3">
-             <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+             <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
                <Share2 className="text-white" size={20} />
              </div>
              <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase italic">Integration Gateway</h1>
@@ -109,7 +109,7 @@ export default function WebhookManagement() {
         </div>
         
         <div className="flex items-center gap-4">
-           <div className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 border border-indigo-100 dark:border-indigo-800">
+           <div className="px-4 py-2.5 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 border border-brand-100 dark:border-brand-800">
              <ShieldCheck size={16} /> HMCA-SHA256 Signed
            </div>
         </div>
@@ -124,7 +124,7 @@ export default function WebhookManagement() {
                   value={newUrl}
                   onChange={(e) => setNewUrl(e.target.value)}
                   placeholder="https://your-api.com/webhooks/intelliscan"
-                  className="w-full bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl px-6 py-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
+                  className="w-full bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl px-6 py-4 text-sm font-medium focus:ring-2 focus:ring-brand-500 transition-all outline-none"
                   required
                />
                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -133,7 +133,7 @@ export default function WebhookManagement() {
             </div>
             <button 
               type="submit"
-              className="px-8 py-4 bg-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+              className="px-8 py-4 bg-brand-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-brand-600/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
             >
                <Plus size={18} /> Establish Integration
             </button>
@@ -148,7 +148,7 @@ export default function WebhookManagement() {
          
          <div className="lg:col-span-2 space-y-6">
             <h3 className="text-lg font-black text-gray-900 dark:text-white items-center gap-2 flex">
-               <Layers size={18} className="text-indigo-500" /> Active Integration Endpoints
+               <Layers size={18} className="text-brand-500" /> Active Integration Endpoints
             </h3>
             
             {webhooks.length === 0 ? (
@@ -173,7 +173,7 @@ export default function WebhookManagement() {
                                  </span>
                                  <button 
                                     onClick={() => copyToClipboard(hook.secret_key)}
-                                    className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-[9px] font-black uppercase tracking-widest text-indigo-600 flex items-center gap-1 hover:bg-indigo-100 transition-colors"
+                                    className="px-3 py-1 bg-brand-50 dark:bg-brand-900/20 rounded-lg text-[9px] font-black uppercase tracking-widest text-brand-600 flex items-center gap-1 hover:bg-brand-100 transition-colors"
                                  >
                                     <Key size={10} /> Reveal Secret Key
                                  </button>

@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function OpenRateBar({ label, rate, color = 'indigo' }) {
   const colorMap = {
-    indigo: 'bg-indigo-500 shadow-indigo-500/50',
+    indigo: 'bg-brand-500 shadow-brand-500/50',
     emerald: 'bg-emerald-500 shadow-emerald-500/50',
     blue: 'bg-blue-500 shadow-blue-500/50',
     rose: 'bg-rose-500 shadow-rose-500/50',

@@ -6,40 +6,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&display=swap');
 
 :root {
-  --brand: #6366f1;
-  --brand-light: #818cf8;
-  --brand-dark: #4f46e5;
+  --brand: #FFB800;
+  --brand-light: #FFD60A;
+  --brand-dark: #CC9200;
   
-  /* Midnight Sidebar (Unified across modes for professional contrast) */
-  --sidebar-bg: #0C0C0E;
-  --sidebar-hover: #16171D;
-  --sidebar-active: #1F1F28;
-  --sidebar-border: #1F1F28;
-  --sidebar-text: #8E8EA0;
-  --accent: #6366f1;
+  /* Abyss Sidebar (Mission-control style) */
+  --sidebar-bg: #050505;
+  --sidebar-hover: #0F0F11;
+  --sidebar-active: #141416;
+  --sidebar-border: #141416;
+  --sidebar-text: #A1A1AA;
+  --accent: #FFB800;
   
-  /* Warm Professional Light Mode */
-  --surface: #F9F9F8;
+  /* Crisp Professional Light Mode */
+  --surface: #FAFAF9;
   --surface-card: #FFFFFF;
-  --border-subtle: #EDEEF0;
-  --border-strong: #E2E4E9;
-  --text-main: #121212;
-  --text-muted: #646464;
+  --border-subtle: #E7E7E7;
+  --border-strong: #D1D1D1;
+  --text-main: #09090B;
+  --text-muted: #71717A;
   --shadow-vibrant: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 184, 0, 0.1); /* Gold-tinted glass */
 }
 
 .dark {
-  --surface: #080809;
-  --surface-card: #111113;
-  --border-subtle: #1C1C1F;
-  --border-strong: #242429;
-  --text-main: #FFFFFF;
-  --text-muted: #8E8EA0;
-  --shadow-vibrant: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-  --glass-bg: rgba(17, 17, 19, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.06);
+  --surface: #040405;
+  --surface-card: #09090B;
+  --border-subtle: #141416;
+  --border-strong: #1F1F23;
+  --text-main: #FAFAF9;
+  --text-muted: #A1A1AA;
+  --shadow-vibrant: 0 8px 30px rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(9, 9, 11, 0.8);
+  --glass-border: rgba(255, 184, 0, 0.08); /* Gold-tinted glass */
 }
 
 
@@ -132,11 +132,11 @@
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(187, 168, 200, 0.1);
+  background: rgba(255, 184, 0, 0.05);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(187, 168, 200, 0.3);
+  background: rgba(255, 184, 0, 0.2);
 }
 
 /* ── Enterprise Sidebar Scrollbar (Premium Finish) ── */

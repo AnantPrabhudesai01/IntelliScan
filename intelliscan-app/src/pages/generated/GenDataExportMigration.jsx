@@ -18,7 +18,7 @@ export default function GenDataExportMigration() {
 <span className="material-symbols-outlined text-primary" data-icon="database">database</span>
 </div>
 <div className="space-y-4">
-<label className="block p-4 rounded-xl border border-indigo-500/40 bg-indigo-600/10 cursor-pointer transition-all hover:border-indigo-500/60">
+<label className="block p-4 rounded-xl border border-brand-500/40 bg-brand-600/10 cursor-pointer transition-all hover:border-brand-500/60">
 <div className="flex items-center gap-4">
 <div className="w-10 h-10 rounded-lg bg-[#00A1E0]/20 flex items-center justify-center text-[#00A1E0]">
 <span className="material-symbols-outlined" data-icon="cloud">cloud</span>
@@ -27,7 +27,7 @@ export default function GenDataExportMigration() {
 <p className="font-bold text-white leading-none">Salesforce</p>
 <p className="text-xs text-on-surface-variant mt-1">Enterprise Connector</p>
 </div>
-<span className="material-symbols-outlined text-indigo-400" data-icon="check_circle" data-weight="fill">check_circle</span>
+<span className="material-symbols-outlined text-brand-400" data-icon="check_circle" data-weight="fill">check_circle</span>
 </div>
 </label>
 <label className="block p-4 rounded-xl border border-outline-variant/15 bg-surface-container cursor-pointer transition-all hover:bg-surface-container-high">
@@ -92,11 +92,11 @@ export default function GenDataExportMigration() {
 
 <div className="space-y-3">
 <div className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-2">Salesforce (Target)</div>
-<div className="flex items-center justify-between p-3 bg-indigo-600/10 border border-indigo-500/20 rounded-lg">
+<div className="flex items-center justify-between p-3 bg-brand-600/10 border border-brand-500/20 rounded-lg">
 <span className="text-sm font-medium text-primary">Name (Text)</span>
 <span className="material-symbols-outlined text-sm text-primary" data-icon="arrow_right_alt">arrow_right_alt</span>
 </div>
-<div className="flex items-center justify-between p-3 bg-indigo-600/10 border border-indigo-500/20 rounded-lg">
+<div className="flex items-center justify-between p-3 bg-brand-600/10 border border-brand-500/20 rounded-lg">
 <span className="text-sm font-medium text-primary">Email (Email)</span>
 <span className="material-symbols-outlined text-sm text-primary" data-icon="arrow_right_alt">arrow_right_alt</span>
 </div>
@@ -183,13 +183,13 @@ export default function GenDataExportMigration() {
 <td className="px-6 py-5">
 <div className="flex items-center gap-2">
 <div className="w-16 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
-<div className="h-full bg-indigo-500 w-[100%]"></div>
+<div className="h-full bg-brand-500 w-[100%]"></div>
 </div>
-<span className="text-xs font-bold text-indigo-400">100%</span>
+<span className="text-xs font-bold text-brand-400">100%</span>
 </div>
 </td>
 <td className="px-6 py-5">
-<span className="text-[10px] font-bold px-2 py-1 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">COMPLETED</span>
+<span className="text-[10px] font-bold px-2 py-1 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20">COMPLETED</span>
 </td>
 <td className="px-6 py-5 text-xs text-on-surface-variant">Oct 20, 18:45</td>
 </tr>
@@ -208,7 +208,7 @@ export default function GenDataExportMigration() {
 <div className="space-y-4">
 <div>
 <label className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold block mb-2">Sync Frequency</label>
-<select className="w-full bg-surface-container-low border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm focus:border-indigo-500/50 focus:ring-0 outline-none transition-all">
+<select className="w-full bg-surface-container-low border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm focus:border-brand-500/50 focus:ring-0 outline-none transition-all">
 <option>Daily at 00:00 UTC</option>
 <option>Weekly (Mondays)</option>
 <option>Real-time (Webhooks)</option>
@@ -224,7 +224,7 @@ export default function GenDataExportMigration() {
 </div>
 </div>
 <div className="mt-8 pt-6 border-t border-outline-variant/10">
-<button className="w-full bg-surface-bright text-white font-bold py-3 rounded-xl hover:bg-indigo-600 transition-all flex items-center justify-center gap-2 group">
+<button className="w-full bg-surface-bright text-white font-bold py-3 rounded-xl hover:bg-brand-600 transition-all flex items-center justify-center gap-2 group">
                                 Save Automation
                                 <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
 </button>

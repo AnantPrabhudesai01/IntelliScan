@@ -29,20 +29,20 @@ export default function GenAiMaintenanceRetrainingLogs() {
 <div className="border-b border-outline-variant/10 w-full"></div>
 </div>
 
-<div className="flex-1 bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors rounded-t-sm h-[85%] relative group/bar">
+<div className="flex-1 bg-brand-500/20 hover:bg-brand-500/40 transition-colors rounded-t-sm h-[85%] relative group/bar">
 <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest px-2 py-1 rounded text-[10px] opacity-0 group-hover/bar:opacity-100 transition-opacity">98.2%</div>
 </div>
-<div className="flex-1 bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors rounded-t-sm h-[82%]"></div>
-<div className="flex-1 bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors rounded-t-sm h-[88%]"></div>
-<div className="flex-1 bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors rounded-t-sm h-[79%]"></div>
-<div className="flex-1 bg-indigo-500/40 hover:bg-indigo-500/60 transition-colors rounded-t-sm h-[92%] border-t-2 border-indigo-400"></div>
-<div className="flex-1 bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors rounded-t-sm h-[84%]"></div>
-<div className="flex-1 bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors rounded-t-sm h-[81%]"></div>
-<div className="flex-1 bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors rounded-t-sm h-[75%] border-t-2 border-error/50"></div>
-<div className="flex-1 bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors rounded-t-sm h-[78%]"></div>
-<div className="flex-1 bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors rounded-t-sm h-[82%]"></div>
-<div className="flex-1 bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors rounded-t-sm h-[85%]"></div>
-<div className="flex-1 bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors rounded-t-sm h-[80%]"></div>
+<div className="flex-1 bg-brand-500/20 hover:bg-brand-500/40 transition-colors rounded-t-sm h-[82%]"></div>
+<div className="flex-1 bg-brand-500/20 hover:bg-brand-500/40 transition-colors rounded-t-sm h-[88%]"></div>
+<div className="flex-1 bg-brand-500/20 hover:bg-brand-500/40 transition-colors rounded-t-sm h-[79%]"></div>
+<div className="flex-1 bg-brand-500/40 hover:bg-brand-500/60 transition-colors rounded-t-sm h-[92%] border-t-2 border-brand-400"></div>
+<div className="flex-1 bg-brand-500/20 hover:bg-brand-500/40 transition-colors rounded-t-sm h-[84%]"></div>
+<div className="flex-1 bg-brand-500/20 hover:bg-brand-500/40 transition-colors rounded-t-sm h-[81%]"></div>
+<div className="flex-1 bg-brand-500/20 hover:bg-brand-500/40 transition-colors rounded-t-sm h-[75%] border-t-2 border-error/50"></div>
+<div className="flex-1 bg-brand-500/20 hover:bg-brand-500/40 transition-colors rounded-t-sm h-[78%]"></div>
+<div className="flex-1 bg-brand-500/20 hover:bg-brand-500/40 transition-colors rounded-t-sm h-[82%]"></div>
+<div className="flex-1 bg-brand-500/20 hover:bg-brand-500/40 transition-colors rounded-t-sm h-[85%]"></div>
+<div className="flex-1 bg-brand-500/20 hover:bg-brand-500/40 transition-colors rounded-t-sm h-[80%]"></div>
 </div>
 <div className="flex justify-between mt-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest px-2">
 <span>Aug 01</span>
@@ -122,7 +122,7 @@ export default function GenAiMaintenanceRetrainingLogs() {
 <td className="px-8 py-5">
 <div className="flex items-center gap-3">
 <span className="font-headline font-bold text-white">v2.4.1</span>
-<span className="text-[10px] px-1.5 py-0.5 bg-indigo-500/10 text-indigo-400 rounded border border-indigo-500/20">Active</span>
+<span className="text-[10px] px-1.5 py-0.5 bg-brand-500/10 text-brand-400 rounded border border-brand-500/20">Active</span>
 </div>
 </td>
 <td className="px-6 py-5">
@@ -137,7 +137,7 @@ export default function GenAiMaintenanceRetrainingLogs() {
 <td className="px-6 py-5 text-right font-mono text-xs text-on-surface-variant">-0.02%</td>
 <td className="px-6 py-5 text-right font-mono text-xs text-on-surface">2023-11-20 04:12</td>
 <td className="px-8 py-5 text-right">
-<button className="text-indigo-400 hover:text-indigo-300 text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-end gap-2 ml-auto group-hover:translate-x-[-4px] duration-300">
+<button className="text-brand-400 hover:text-brand-300 text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-end gap-2 ml-auto group-hover:translate-x-[-4px] duration-300">
                                     Trigger
                                     <span className="material-symbols-outlined text-[16px]">bolt</span>
 </button>
@@ -201,7 +201,7 @@ export default function GenAiMaintenanceRetrainingLogs() {
 <h2 className="text-xl font-bold font-headline text-white">System Performance Logs</h2>
 </div>
 <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant">
-<span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Engine Events</span>
+<span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-brand-500"></span> Engine Events</span>
 <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-error"></span> Errors</span>
 </div>
 </div>
@@ -209,12 +209,12 @@ export default function GenAiMaintenanceRetrainingLogs() {
 <div className="space-y-2">
 <div className="flex gap-4 group">
 <span className="text-on-surface-variant shrink-0">14:22:01.044</span>
-<span className="text-indigo-400 font-bold shrink-0">[INFO]</span>
+<span className="text-brand-400 font-bold shrink-0">[INFO]</span>
 <span className="text-[#c7c4d8]">Initialized retraining cycle for <span className="text-white">Gemini-v2.4.2-beta</span>. Dataset: "Legal_Extract_Batch_92"</span>
 </div>
 <div className="flex gap-4 group">
 <span className="text-on-surface-variant shrink-0">14:22:15.821</span>
-<span className="text-indigo-400 font-bold shrink-0">[INFO]</span>
+<span className="text-brand-400 font-bold shrink-0">[INFO]</span>
 <span className="text-[#c7c4d8]">Resource allocation successful. Hyperparameters locked: lr=0.0001, batch_size=64.</span>
 </div>
 <div className="flex gap-4 group">
@@ -224,12 +224,12 @@ export default function GenAiMaintenanceRetrainingLogs() {
 </div>
 <div className="flex gap-4 group">
 <span className="text-on-surface-variant shrink-0">14:25:00.001</span>
-<span className="text-indigo-400 font-bold shrink-0">[INFO]</span>
+<span className="text-brand-400 font-bold shrink-0">[INFO]</span>
 <span className="text-[#c7c4d8]">Validation score at Epoch 12: <span className="text-emerald-400">0.9822</span>. Improvement detected from baseline.</span>
 </div>
 <div className="flex gap-4 group">
 <span className="text-on-surface-variant shrink-0">14:28:12.993</span>
-<span className="text-indigo-400 font-bold shrink-0">[INFO]</span>
+<span className="text-brand-400 font-bold shrink-0">[INFO]</span>
 <span className="text-[#c7c4d8]">API Gateway redirection synced. Fallback engine (Tesseract) healthy and on standby.</span>
 </div>
 <div className="flex gap-4 group">
@@ -240,7 +240,7 @@ export default function GenAiMaintenanceRetrainingLogs() {
 
 <div className="flex gap-4">
 <span className="text-on-surface-variant shrink-0">14:31:00.000</span>
-<span className="text-indigo-400 animate-pulse font-bold">_</span>
+<span className="text-brand-400 animate-pulse font-bold">_</span>
 </div>
 </div>
 </div>

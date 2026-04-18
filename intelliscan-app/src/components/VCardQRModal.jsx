@@ -38,7 +38,7 @@ export default function VCardQRModal({ contact, onClose }) {
         {/* Header */}
         <div className="px-8 pt-8 pb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-2xl bg-indigo-600/10 text-indigo-600 flex items-center justify-center">
+             <div className="w-10 h-10 rounded-2xl bg-brand-600/10 text-brand-600 flex items-center justify-center">
                 <Share2 size={20} />
              </div>
              <div>
@@ -53,7 +53,7 @@ export default function VCardQRModal({ contact, onClose }) {
 
         {/* QR Code Section */}
         <div className="px-8 py-6 flex flex-col items-center">
-           <div className="p-6 bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] mb-6 border-4 border-indigo-50">
+           <div className="p-6 bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] mb-6 border-4 border-brand-50">
               <QRCodeSVG 
                 value={vCardString} 
                 size={200}
@@ -69,7 +69,7 @@ export default function VCardQRModal({ contact, onClose }) {
 
            <button 
              onClick={downloadVCard}
-             className="w-full py-4 rounded-2xl bg-indigo-600 text-white font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-indigo-700 hover:scale-[1.02] shadow-xl shadow-indigo-500/20 active:scale-95 transition-all"
+             className="w-full py-4 rounded-2xl bg-brand-600 text-white font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-brand-700 hover:scale-[1.02] shadow-xl shadow-brand-500/20 active:scale-95 transition-all"
            >
              <Download size={16} />
              Download vCard (.vcf)

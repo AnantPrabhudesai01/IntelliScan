@@ -16,7 +16,7 @@ export default function GenReferralLoyaltyDashboard() {
 <div className="relative z-10">
 <div className="flex items-center justify-between mb-8">
 <div className="flex items-center gap-4">
-<div className="h-12 w-12 bg-primary-container text-white rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+<div className="h-12 w-12 bg-primary-container text-white rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/30">
 <span className="material-symbols-outlined" data-icon="link">link</span>
 </div>
 <div>
@@ -183,14 +183,14 @@ export default function GenReferralLoyaltyDashboard() {
 </div>
 </div>
 
-<div className="lg:col-span-3 mt-12 bg-gradient-to-r from-indigo-900/40 to-surface-container-low rounded-2xl p-10 border border-indigo-500/20 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+<div className="lg:col-span-3 mt-12 bg-gradient-to-r from-brand-900/40 to-surface-container-low rounded-2xl p-10 border border-brand-500/20 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
 <div className="absolute inset-0 opacity-10" style={{}}></div>
 <div className="relative z-10 max-w-xl">
 <h2 className="text-3xl font-bold text-white mb-4">Empower Your Network</h2>
 <p className="text-on-surface-variant text-lg">Did you know that teams referred by industry leaders see a 40% higher efficiency gain in their first 30 days? Be the spark that scales their growth.</p>
 </div>
 <div className="relative z-10 shrink-0">
-<button className="bg-primary text-on-primary-fixed font-black px-8 py-4 rounded-xl shadow-2xl shadow-indigo-500/40 hover:scale-105 active:scale-95 transition-all text-lg flex items-center gap-3">
+<button className="bg-primary text-on-primary-fixed font-black px-8 py-4 rounded-xl shadow-2xl shadow-brand-500/40 hover:scale-105 active:scale-95 transition-all text-lg flex items-center gap-3">
 <span className="material-symbols-outlined" data-icon="card_giftcard" data-weight="fill" style={{}}>card_giftcard</span>
                             Invite Colleagues Now
                         </button>

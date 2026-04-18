@@ -51,13 +51,13 @@ export default function EmailPreview({ html, subject, previewText }) {
       <div className="absolute top-4 right-4 z-10 flex bg-white/5 backdrop-blur-md rounded-2xl p-1.5 border border-white/10 shadow-xl">
         <button 
           onClick={() => setDevice('mobile')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${device === 'mobile' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'text-gray-400 hover:text-white'}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${device === 'mobile' ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/30' : 'text-gray-400 hover:text-white'}`}
         >
           <Smartphone size={14} /> Mobile
         </button>
         <button 
           onClick={() => setDevice('desktop')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${device === 'desktop' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'text-gray-400 hover:text-white'}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${device === 'desktop' ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/30' : 'text-gray-400 hover:text-white'}`}
         >
           <Monitor size={14} /> Desktop
         </button>
@@ -66,7 +66,7 @@ export default function EmailPreview({ html, subject, previewText }) {
       {/* Inbox Simulation UI */}
       <div className="px-8 py-6 bg-white/5 border-b border-white/10">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+          <div className="w-10 h-10 rounded-full bg-brand-600/20 border border-brand-500/30 flex items-center justify-center text-brand-400">
              <Mail size={20} />
           </div>
           <div className="flex-1 min-w-0">

@@ -33,21 +33,21 @@ function AddOrgModal({ onClose, onAdd }) {
           <div>
             <label className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 block">Organization Name *</label>
             <input autoFocus required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               placeholder="e.g. Acme Corp" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 block">Region</label>
               <select value={form.region} onChange={e => setForm(f => ({ ...f, region: e.target.value }))}
-                className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                 {REGIONS.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
             <div>
               <label className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 block">Industry</label>
               <select value={form.industry} onChange={e => setForm(f => ({ ...f, industry: e.target.value }))}
-                className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                 {INDUSTRIES.map(i => <option key={i}>{i}</option>)}
               </select>
             </div>
@@ -57,13 +57,13 @@ function AddOrgModal({ onClose, onAdd }) {
             <div className="grid grid-cols-3 gap-2">
               {PLAN_TIERS.map(t => (
                 <button key={t} type="button" onClick={() => setForm(f => ({ ...f, tier: t }))}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${form.tier === t ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-[#0d1117] border-white/10 text-gray-300 hover:border-indigo-500/50'}`}>
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${form.tier === t ? 'bg-brand-600 border-brand-500 text-white' : 'bg-[#0d1117] border-white/10 text-gray-300 hover:border-brand-500/50'}`}>
                   {t}
                 </button>
               ))}
             </div>
           </div>
-          <button type="submit" className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
+          <button type="submit" className="w-full mt-2 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
             <Check size={18} /> Create Organization
           </button>
         </form>
@@ -115,7 +115,7 @@ export default function GenWorkspacesOrganizationsSuperAdmin() {
 
   const tierBadge = (tier) => {
     if (tier === 'Enterprise') return <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 rounded-full text-[10px] font-black uppercase border border-amber-500/20"><Crown size={10} /> Enterprise</span>;
-    if (tier === 'Professional') return <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-[10px] font-black uppercase border border-indigo-500/20">Professional</span>;
+    if (tier === 'Professional') return <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-500/10 text-brand-400 rounded-full text-[10px] font-black uppercase border border-brand-500/20">Professional</span>;
     return <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 text-gray-400 rounded-full text-[10px] font-black uppercase border border-white/10">Free Tier</span>;
   };
 
@@ -126,7 +126,7 @@ export default function GenWorkspacesOrganizationsSuperAdmin() {
   };
 
   const stats = [
-    { label: 'Total Organizations', value: totalOrgs.toLocaleString(), badge: 'GLOBAL', icon: Building2, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
+    { label: 'Total Organizations', value: totalOrgs.toLocaleString(), badge: 'GLOBAL', icon: Building2, color: 'text-brand-400', bg: 'bg-brand-500/10' },
     { label: 'Enterprise Tiers', value: enterpriseTiers, badge: 'PREMIUM', icon: Crown, color: 'text-amber-400', bg: 'bg-amber-500/10' },
     { label: 'Monthly Scan Volume', value: formatScans(monthlyScans), badge: 'TRAFFIC', icon: Activity, color: 'text-green-400', bg: 'bg-green-500/10' },
     { label: 'Avg. Seat Utilization', value: `${avgSeatUtil}%`, badge: 'USAGE', icon: Users, color: 'text-purple-400', bg: 'bg-purple-500/10' },
@@ -169,14 +169,14 @@ export default function GenWorkspacesOrganizationsSuperAdmin() {
               <div className="bg-[#0d1117] p-1 rounded-xl flex">
                 {['All Entities', 'Delinquent', 'Trialing'].map(f => (
                   <button key={f} onClick={() => setFilter(f)}
-                    className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${filter === f ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'}`}>
+                    className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${filter === f ? 'bg-brand-600 text-white' : 'text-gray-400 hover:text-white'}`}>
                     {f}
                   </button>
                 ))}
               </div>
             </div>
             <button onClick={() => setShowModal(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all active:scale-95 shadow-lg">
+              className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all active:scale-95 shadow-lg">
               <Plus size={18} /> Add Organization
             </button>
           </div>
@@ -198,7 +198,7 @@ export default function GenWorkspacesOrganizationsSuperAdmin() {
                   <tr key={org.id} className="hover:bg-white/5 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-indigo-600/20 flex items-center justify-center font-bold text-indigo-400 text-sm">{org.name[0]}</div>
+                        <div className="w-10 h-10 rounded-lg bg-brand-600/20 flex items-center justify-center font-bold text-brand-400 text-sm">{org.name[0]}</div>
                         <div>
                           <p className="font-bold text-white text-sm">{org.name}</p>
                           <p className="text-[10px] text-gray-500">{org.region} • {org.industry}</p>
@@ -209,7 +209,7 @@ export default function GenWorkspacesOrganizationsSuperAdmin() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="flex-1 h-1.5 bg-white/10 rounded-full max-w-[80px] overflow-hidden">
-                          <div className="h-full bg-indigo-500 rounded-full transition-all duration-300"
+                          <div className="h-full bg-brand-500 rounded-full transition-all duration-300"
                             style={{ width: `${org.maxSeats > 0 ? (org.usedSeats / org.maxSeats) * 100 : 0}%` }} />
                         </div>
                         <span className="text-xs font-mono text-white">{org.usedSeats}/{org.maxSeats}</span>
@@ -260,19 +260,19 @@ export default function GenWorkspacesOrganizationsSuperAdmin() {
                 <p className="text-[10px] uppercase tracking-widest font-black text-gray-500 mb-1">Delinquent Risk</p>
                 <p className="text-2xl font-black text-red-400">${(orgs.filter(o => o.status === 'Delinquent').length * 299).toLocaleString()}</p>
               </div>
-              <div className="bg-[#0d1117] p-4 rounded-xl flex-1 border border-indigo-500/20">
-                <p className="text-[10px] uppercase tracking-widest font-black text-indigo-400 mb-1">Churn Potential</p>
+              <div className="bg-[#0d1117] p-4 rounded-xl flex-1 border border-brand-500/20">
+                <p className="text-[10px] uppercase tracking-widest font-black text-brand-400 mb-1">Churn Potential</p>
                 <p className="text-2xl font-black text-white">
                   {totalOrgs > 0 ? ((orgs.filter(o => o.status === 'Delinquent').length / totalOrgs) * 100).toFixed(1) : 0}%
                 </p>
               </div>
             </div>
           </div>
-          <div className="md:col-span-4 bg-gradient-to-br from-indigo-600 to-indigo-900 p-6 rounded-2xl flex flex-col justify-between">
+          <div className="md:col-span-4 bg-gradient-to-br from-brand-600 to-brand-900 p-6 rounded-2xl flex flex-col justify-between">
             <div>
               <Crown size={32} className="text-white/50 mb-4" />
               <h4 className="text-xl font-black text-white leading-tight">AI Deployment Insights</h4>
-              <p className="text-sm text-indigo-200 mt-2">
+              <p className="text-sm text-brand-200 mt-2">
                 {enterpriseTiers} enterprise orgs across {new Set(orgs.map(o => o.region)).size} regions. 
                 {avgSeatUtil > 80 ? ' Capacity expansion recommended.' : ' Capacity is healthy.'}
               </p>

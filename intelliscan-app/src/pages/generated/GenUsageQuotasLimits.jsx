@@ -22,7 +22,7 @@ export default function GenUsageQuotasLimits() {
 <button className="bg-surface-container px-6 py-3 rounded-xl text-on-surface font-semibold hover:bg-surface-container-high transition-all flex items-center gap-2">
 <span className="material-symbols-outlined" data-icon="download">download</span> Export Report
                 </button>
-<button className="bg-primary-container px-8 py-3 rounded-xl text-white font-bold shadow-lg shadow-indigo-950/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+<button className="bg-primary-container px-8 py-3 rounded-xl text-white font-bold shadow-lg shadow-brand-950/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
 <span className="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span> Purchase More
                 </button>
 </div>

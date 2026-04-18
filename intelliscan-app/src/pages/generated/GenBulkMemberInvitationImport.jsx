@@ -24,7 +24,7 @@ export default function GenBulkMemberInvitationImport() {
 </div>
 <div className="flex items-center gap-3">
 <button className="px-6 py-2.5 rounded-xl bg-surface-container-high text-on-surface font-semibold text-sm hover:brightness-125 transition-all">Download Template</button>
-<button className="px-6 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-bold text-sm shadow-lg shadow-indigo-600/20 flex items-center gap-2 active:scale-95 transition-all">
+<button className="px-6 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-bold text-sm shadow-lg shadow-brand-600/20 flex items-center gap-2 active:scale-95 transition-all">
 <span className="material-symbols-outlined text-sm">send</span> 
                         Send All Invitations
                     </button>
@@ -34,9 +34,9 @@ export default function GenBulkMemberInvitationImport() {
 <div className="grid grid-cols-12 gap-6">
 
 <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
-<section className="bg-surface-container-low rounded-xl p-8 border border-white/5 flex flex-col items-center justify-center text-center min-h-[340px] group cursor-pointer hover:border-indigo-500/30 transition-all duration-300">
-<div className="w-20 h-20 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-<span className="material-symbols-outlined text-indigo-400 text-4xl">upload_file</span>
+<section className="bg-surface-container-low rounded-xl p-8 border border-white/5 flex flex-col items-center justify-center text-center min-h-[340px] group cursor-pointer hover:border-brand-500/30 transition-all duration-300">
+<div className="w-20 h-20 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span className="material-symbols-outlined text-brand-400 text-4xl">upload_file</span>
 </div>
 <h3 className="text-xl font-bold font-headline text-white mb-2">Upload Data Source</h3>
 <p className="text-on-surface-variant text-sm mb-6 px-10">Drag and drop your .csv or .xlsx file here to begin the mapping process.</p>
@@ -61,7 +61,7 @@ export default function GenBulkMemberInvitationImport() {
 <span className="text-sm font-semibold">Full Name</span>
 </div>
 <span className="material-symbols-outlined text-on-surface-variant opacity-30">east</span>
-<select className="bg-surface-container-high border-none text-xs rounded-lg py-1.5 px-3 focus:ring-1 focus:ring-indigo-500 min-w-[140px]">
+<select className="bg-surface-container-high border-none text-xs rounded-lg py-1.5 px-3 focus:ring-1 focus:ring-brand-500 min-w-[140px]">
 <option>Column: name</option>
 <option>Column: user_id</option>
 </select>
@@ -73,13 +73,13 @@ export default function GenBulkMemberInvitationImport() {
 <span className="text-sm font-semibold">Email Address</span>
 </div>
 <span className="material-symbols-outlined text-on-surface-variant opacity-30">east</span>
-<select className="bg-surface-container-high border-none text-xs rounded-lg py-1.5 px-3 focus:ring-1 focus:ring-indigo-500 min-w-[140px]">
+<select className="bg-surface-container-high border-none text-xs rounded-lg py-1.5 px-3 focus:ring-1 focus:ring-brand-500 min-w-[140px]">
 <option>Column: email</option>
 <option>Column: contact</option>
 </select>
 </div>
 
-<div className="flex items-center justify-between p-4 bg-surface-container rounded-xl border-l-4 border-indigo-500">
+<div className="flex items-center justify-between p-4 bg-surface-container rounded-xl border-l-4 border-brand-500">
 <div className="flex items-center gap-3">
 <span className="material-symbols-outlined text-on-surface-variant text-base">manage_accounts</span>
 <span className="text-sm font-semibold">System Role</span>
@@ -87,7 +87,7 @@ export default function GenBulkMemberInvitationImport() {
 <span className="material-symbols-outlined text-on-surface-variant opacity-30">east</span>
 <div className="flex items-center gap-2">
 <span className="text-[10px] text-on-surface-variant font-medium">Default:</span>
-<select className="bg-indigo-500/10 text-indigo-400 border-none text-xs font-bold rounded-lg py-1.5 px-3 focus:ring-1 focus:ring-indigo-500">
+<select className="bg-brand-500/10 text-brand-400 border-none text-xs font-bold rounded-lg py-1.5 px-3 focus:ring-1 focus:ring-brand-500">
 <option>Member</option>
 <option>Admin</option>
 <option>Viewer</option>
@@ -103,7 +103,7 @@ export default function GenBulkMemberInvitationImport() {
 <div className="p-6 flex items-center justify-between border-b border-white/5">
 <div>
 <h3 className="font-headline font-bold text-lg text-white">Import Preview</h3>
-<p className="text-xs text-on-surface-variant mt-1">Reviewing 128 pending invitations from <span className="text-indigo-400 font-mono">roster_q4.xlsx</span></p>
+<p className="text-xs text-on-surface-variant mt-1">Reviewing 128 pending invitations from <span className="text-brand-400 font-mono">roster_q4.xlsx</span></p>
 </div>
 <div className="flex items-center gap-2 bg-surface-container px-4 py-2 rounded-xl">
 <span className="material-symbols-outlined text-sm text-on-surface-variant">search</span>
@@ -125,7 +125,7 @@ export default function GenBulkMemberInvitationImport() {
 <tr className="hover:bg-white/5 transition-colors group">
 <td className="px-6 py-4">
 <div className="flex items-center gap-3">
-<div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs font-bold">JD</div>
+<div className="w-8 h-8 rounded-lg bg-brand-500/20 flex items-center justify-center text-brand-400 text-xs font-bold">JD</div>
 <span className="text-sm font-medium text-white">Julianne Devis</span>
 </div>
 </td>
@@ -173,7 +173,7 @@ export default function GenBulkMemberInvitationImport() {
 <tr className="hover:bg-white/5 transition-colors group">
 <td className="px-6 py-4">
 <div className="flex items-center gap-3">
-<div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs font-bold">SL</div>
+<div className="w-8 h-8 rounded-lg bg-brand-500/20 flex items-center justify-center text-brand-400 text-xs font-bold">SL</div>
 <span className="text-sm font-medium text-white">Sarah Lohan</span>
 </div>
 </td>
@@ -189,7 +189,7 @@ export default function GenBulkMemberInvitationImport() {
 <tr className="hover:bg-white/5 transition-colors group">
 <td className="px-6 py-4">
 <div className="flex items-center gap-3">
-<div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs font-bold">BT</div>
+<div className="w-8 h-8 rounded-lg bg-brand-500/20 flex items-center justify-center text-brand-400 text-xs font-bold">BT</div>
 <span className="text-sm font-medium text-white">Bryan Tims</span>
 </div>
 </td>
@@ -205,7 +205,7 @@ export default function GenBulkMemberInvitationImport() {
 <tr className="hover:bg-white/5 transition-colors group">
 <td className="px-6 py-4">
 <div className="flex items-center gap-3">
-<div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs font-bold">HP</div>
+<div className="w-8 h-8 rounded-lg bg-brand-500/20 flex items-center justify-center text-brand-400 text-xs font-bold">HP</div>
 <span className="text-sm font-medium text-white">Helen Park</span>
 </div>
 </td>
@@ -236,7 +236,7 @@ export default function GenBulkMemberInvitationImport() {
 </div>
 
 <div className="mt-10 grid grid-cols-1 md:grid-cols-4 gap-6">
-<div className="bg-surface-container p-6 rounded-xl border-l-4 border-indigo-500">
+<div className="bg-surface-container p-6 rounded-xl border-l-4 border-brand-500">
 <p className="text-[10px] uppercase font-bold tracking-widest text-on-surface-variant">Total Records</p>
 <p className="text-2xl font-black font-headline text-white mt-1">128</p>
 </div>

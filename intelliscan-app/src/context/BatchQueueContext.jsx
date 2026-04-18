@@ -170,9 +170,9 @@ export function BatchQueueProvider({ children }) {
       {/* Global Background Processing Indicator */}
       {showFloatingProgress && (
         <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 p-4 pl-5 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] flex items-center gap-4 group cursor-default transition-all hover:scale-[1.02]">
-          <div className="relative w-10 h-10 flex items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-900/40">
-            <Loader2 size={20} className="text-indigo-600 dark:text-indigo-400 animate-spin" />
-            <div className="absolute inset-0 rounded-full border border-indigo-200 dark:border-indigo-800" />
+          <div className="relative w-10 h-10 flex items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/40">
+            <Loader2 size={20} className="text-brand-600 dark:text-brand-400 animate-spin" />
+            <div className="absolute inset-0 rounded-full border border-brand-200 dark:border-brand-800" />
           </div>
           <div className="flex-1 pr-2">
             <p className="text-sm font-bold text-gray-900 dark:text-white">AI Engine Processing</p>

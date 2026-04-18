@@ -38,7 +38,7 @@ export default function AISchedulingPanel({ title, onSelectTime }) {
     <div className="flex flex-col h-full bg-white dark:bg-gray-950 border-l border-gray-200 dark:border-gray-800 w-80 animate-in slide-in-from-right duration-300">
       <div className="p-6 border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
             <Sparkles className="text-white" size={16} />
           </div>
           <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">AI Scheduler</h2>
@@ -54,7 +54,7 @@ export default function AISchedulingPanel({ title, onSelectTime }) {
                   key={d}
                   onClick={() => setDuration(d)}
                   className={`py-2 px-1 rounded-xl text-xs font-bold transition-all ${
-                    duration === d ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    duration === d ? 'bg-brand-600 text-white shadow-md' : 'bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
                   {d}m
@@ -69,14 +69,14 @@ export default function AISchedulingPanel({ title, onSelectTime }) {
               type="date"
               value={preferredDate}
               onChange={(e) => setPreferredDate(e.target.value)}
-              className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none"
             />
           </div>
 
           <button
             onClick={getSuggestions}
             disabled={loading}
-            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50"
+            className="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-brand-500/20 transition-all active:scale-95 disabled:opacity-50"
           >
             {loading ? <Loader2 className="animate-spin" size={18} /> : <Wand2 size={18} />}
             {loading ? 'Analyzing...' : 'Find Best Slots'}
@@ -89,7 +89,7 @@ export default function AISchedulingPanel({ title, onSelectTime }) {
           suggestions.map((s, i) => (
             <div
               key={i}
-              className="w-full p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-left hover:border-indigo-500 hover:shadow-lg transition-all group"
+              className="w-full p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-left hover:border-brand-500 hover:shadow-lg transition-all group"
             >
               <div className="flex justify-between items-start mb-2">
                 <span className="text-sm font-black text-gray-900 dark:text-white">
@@ -102,7 +102,7 @@ export default function AISchedulingPanel({ title, onSelectTime }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="p-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-indigo-600 hover:text-white rounded-lg text-gray-400 transition-all shadow-sm"
+                      className="p-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-brand-600 hover:text-white rounded-lg text-gray-400 transition-all shadow-sm"
                       title="Add to Google Calendar"
                     >
                       <ExternalLink size={14} />
@@ -110,7 +110,7 @@ export default function AISchedulingPanel({ title, onSelectTime }) {
                   )}
                   <button 
                     onClick={() => onSelectTime(s)}
-                    className="p-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-indigo-600 hover:text-white rounded-lg text-gray-400 transition-all shadow-sm"
+                    className="p-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-brand-600 hover:text-white rounded-lg text-gray-400 transition-all shadow-sm"
                   >
                     <CheckCircle2 size={14} />
                   </button>

@@ -204,7 +204,7 @@ export default function CalendarPage() {
       <header className="flex items-center justify-between p-6 bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-gray-800 shrink-0">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+             <div className="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
                <CalendarIcon className="text-white" size={20} />
              </div>
              <div>
@@ -244,20 +244,20 @@ export default function CalendarPage() {
 
         <div className="flex items-center gap-3">
           <div className="flex bg-gray-50 dark:bg-gray-900 p-1 rounded-2xl border border-gray-100 dark:border-gray-800">
-             <button onClick={() => setView('day')} className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${view === 'day' ? 'bg-white dark:bg-gray-800 text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-700'}`}>Day</button>
-             <button onClick={() => setView('week')} className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${view === 'week' ? 'bg-white dark:bg-gray-800 text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-700'}`}>Week</button>
+             <button onClick={() => setView('day')} className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${view === 'day' ? 'bg-white dark:bg-gray-800 text-brand-600 shadow-sm' : 'text-gray-400 hover:text-gray-700'}`}>Day</button>
+             <button onClick={() => setView('week')} className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${view === 'week' ? 'bg-white dark:bg-gray-800 text-brand-600 shadow-sm' : 'text-gray-400 hover:text-gray-700'}`}>Week</button>
           </div>
 
           <button 
             onClick={() => setShowAiPanel(!showAiPanel)}
-            className={`p-3 rounded-2xl transition-all ${showAiPanel ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-xl shadow-indigo-500/30' : 'bg-white dark:bg-gray-900 text-indigo-600 border border-indigo-100 dark:border-indigo-900/50 hover:shadow-lg'}`}
+            className={`p-3 rounded-2xl transition-all ${showAiPanel ? 'bg-gradient-to-r from-brand-600 to-violet-600 text-white shadow-xl shadow-brand-500/30' : 'bg-white dark:bg-gray-900 text-brand-600 border border-brand-100 dark:border-brand-900/50 hover:shadow-lg'}`}
           >
             <Sparkles size={18} />
           </button>
 
           <button 
             onClick={() => { setSelectedEvent(null); setIsModalOpen(true); }}
-            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-indigo-500/20 active:scale-95 transition-all"
+            className="flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-brand-500/20 active:scale-95 transition-all"
           >
             <PlusCircle size={18} /> Create Event
           </button>
@@ -280,7 +280,7 @@ export default function CalendarPage() {
           <div className="space-y-4">
             <h3 className="text-[10px] font-black uppercase text-gray-400 tracking-widest flex items-center justify-between">
               My Calendars
-              <Settings size={12} className="cursor-pointer hover:text-indigo-600 transition-colors" onClick={() => setShowCalSettings(true)} />
+              <Settings size={12} className="cursor-pointer hover:text-brand-600 transition-colors" onClick={() => setShowCalSettings(true)} />
             </h3>
             <div className="space-y-2">
               {calendars.map(cal => (
@@ -289,7 +289,7 @@ export default function CalendarPage() {
                     type="checkbox" 
                     checked={selectedCalendarIds.includes(cal.id.toString())}
                     onChange={() => toggleCalendar(cal.id)}
-                    className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    className="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                   />
                   <div 
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditingCal({ id: cal.id, name: cal.name, color: cal.color || '#7b2fff' }); setShowCalSettings(true); }}
@@ -297,29 +297,29 @@ export default function CalendarPage() {
                     style={{ backgroundColor: cal.color }}
                     title="Change calendar color"
                   ></div>
-                  <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 font-body">{cal.name}</span>
+                  <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-brand-600 font-body">{cal.name}</span>
                 </label>
               ))}
             </div>
             <button 
               onClick={() => setShowCalSettings(true)}
-              className="w-full flex items-center justify-center gap-2 py-3 border border-dashed border-gray-200 dark:border-gray-800 text-gray-400 hover:text-indigo-600 hover:border-indigo-300 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 border border-dashed border-gray-200 dark:border-gray-800 text-gray-400 hover:text-brand-600 hover:border-brand-300 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
             >
               <Plus size={14} /> Add Calendar
             </button>
           </div>
 
           <div className="mt-auto space-y-4 pt-10 border-t border-gray-50 dark:border-gray-900">
-             <div className="p-4 bg-indigo-50 dark:bg-indigo-900/40 rounded-3xl border border-indigo-100 dark:border-indigo-800">
-               <h4 className="text-xs font-black text-indigo-700 dark:text-indigo-300 uppercase tracking-widest mb-2 flex items-center gap-2">
+             <div className="p-4 bg-brand-50 dark:bg-brand-900/40 rounded-3xl border border-brand-100 dark:border-brand-800">
+               <h4 className="text-xs font-black text-brand-700 dark:text-brand-300 uppercase tracking-widest mb-2 flex items-center gap-2">
                  <ShieldCheck size={14} /> Sharing Center
                </h4>
-               <p className="text-[10px] font-bold text-indigo-600/70 dark:text-indigo-400/70 mb-4 leading-relaxed">
+               <p className="text-[10px] font-bold text-brand-600/70 dark:text-brand-400/70 mb-4 leading-relaxed">
                  Public booking links and team visibility controls are fully active.
                </p>
                <div className="flex gap-2">
-                  <a href="/dashboard/calendar/availability" className="flex-1 py-2 text-center bg-white dark:bg-gray-800 rounded-xl text-[9px] font-black text-indigo-600 uppercase tracking-widest border border-indigo-100 dark:border-indigo-700">Availability</a>
-                  <a href="/dashboard/calendar/booking-links" className="flex-1 py-2 text-center bg-white dark:bg-gray-800 rounded-xl text-[9px] font-black text-indigo-600 uppercase tracking-widest border border-indigo-100 dark:border-indigo-700">Links</a>
+                  <a href="/dashboard/calendar/availability" className="flex-1 py-2 text-center bg-white dark:bg-gray-800 rounded-xl text-[9px] font-black text-brand-600 uppercase tracking-widest border border-brand-100 dark:border-brand-700">Availability</a>
+                  <a href="/dashboard/calendar/booking-links" className="flex-1 py-2 text-center bg-white dark:bg-gray-800 rounded-xl text-[9px] font-black text-brand-600 uppercase tracking-widest border border-brand-100 dark:border-brand-700">Links</a>
                </div>
              </div>
           </div>
@@ -330,8 +330,8 @@ export default function CalendarPage() {
           {loading ? (
             <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm z-30">
               <div className="flex flex-col items-center gap-4">
-                <Loader2 className="animate-spin text-indigo-600" size={40} />
-                <span className="text-xs font-black text-indigo-600 uppercase tracking-widest">Syncing Schedule...</span>
+                <Loader2 className="animate-spin text-brand-600" size={40} />
+                <span className="text-xs font-black text-brand-600 uppercase tracking-widest">Syncing Schedule...</span>
               </div>
             </div>
           ) : null}
@@ -429,7 +429,7 @@ export default function CalendarPage() {
                       <div className="flex gap-1 flex-wrap">
                         {PRESET_COLORS.map(c => (
                           <button key={c} onClick={() => setEditingCal(prev => ({ ...prev, color: c }))}
-                            className={`w-5 h-5 rounded-full border-2 transition-all ${editingCal.color === c ? 'border-white dark:border-gray-300 ring-2 ring-indigo-500 scale-110' : 'border-transparent hover:scale-110'}`}
+                            className={`w-5 h-5 rounded-full border-2 transition-all ${editingCal.color === c ? 'border-white dark:border-gray-300 ring-2 ring-brand-500 scale-110' : 'border-transparent hover:scale-110'}`}
                             style={{ backgroundColor: c }}
                           />
                         ))}
@@ -437,11 +437,11 @@ export default function CalendarPage() {
                       <input
                         value={editingCal.name}
                         onChange={e => setEditingCal(prev => ({ ...prev, name: e.target.value }))}
-                        className="flex-1 text-sm font-bold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                        className="flex-1 text-sm font-bold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none"
                         autoFocus
                       />
                       <button onClick={saveCalendarEdit} disabled={calSaving}
-                        className="px-3 py-2 rounded-xl text-xs font-black bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60 transition-all uppercase tracking-wider">
+                        className="px-3 py-2 rounded-xl text-xs font-black bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-60 transition-all uppercase tracking-wider">
                         {calSaving ? '...' : 'Save'}
                       </button>
                       <button onClick={() => setEditingCal(null)}
@@ -459,7 +459,7 @@ export default function CalendarPage() {
                       ></div>
                       <span className="flex-1 text-sm font-bold text-gray-800 dark:text-gray-200">{cal.name}</span>
                       {cal.is_primary ? (
-                        <span className="text-[9px] font-black uppercase tracking-widest text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-lg">Primary</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-brand-500 bg-brand-50 dark:bg-brand-900/30 px-2 py-1 rounded-lg">Primary</span>
                       ) : null}
                       <button onClick={() => setEditingCal({ id: cal.id, name: cal.name, color: cal.color || '#7b2fff' })}
                         className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-all opacity-0 group-hover:opacity-100">
@@ -484,7 +484,7 @@ export default function CalendarPage() {
                     value={newCalName}
                     onChange={e => setNewCalName(e.target.value)}
                     placeholder="Calendar name..."
-                    className="flex-1 text-sm font-bold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="flex-1 text-sm font-bold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-brand-500 outline-none"
                     onKeyDown={e => e.key === 'Enter' && createNewCalendar()}
                   />
                   <input
@@ -496,13 +496,13 @@ export default function CalendarPage() {
                 <div className="flex gap-1 flex-wrap">
                   {PRESET_COLORS.map(c => (
                     <button key={c} onClick={() => setNewCalColor(c)}
-                      className={`w-6 h-6 rounded-full border-2 transition-all ${newCalColor === c ? 'border-white dark:border-gray-300 ring-2 ring-indigo-500 scale-110' : 'border-transparent hover:scale-110'}`}
+                      className={`w-6 h-6 rounded-full border-2 transition-all ${newCalColor === c ? 'border-white dark:border-gray-300 ring-2 ring-brand-500 scale-110' : 'border-transparent hover:scale-110'}`}
                       style={{ backgroundColor: c }}
                     />
                   ))}
                 </div>
                 <button onClick={createNewCalendar} disabled={addingCal || !newCalName.trim()}
-                  className="w-full py-3 rounded-2xl text-xs font-black uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 shadow-lg shadow-indigo-500/20 active:scale-95 transition-all flex items-center justify-center gap-2">
+                  className="w-full py-3 rounded-2xl text-xs font-black uppercase tracking-widest text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-40 shadow-lg shadow-brand-500/20 active:scale-95 transition-all flex items-center justify-center gap-2">
                   <Plus size={14} /> {addingCal ? 'Creating...' : 'Create Calendar'}
                 </button>
               </div>
@@ -516,6 +516,6 @@ export default function CalendarPage() {
 }
 
 function Loader2({ size, className }) {
-  return <div className={`border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin h-${size/4} w-${size/4} ${className}`}></div>;
+  return <div className={`border-2 border-brand-200 border-t-brand-600 rounded-full animate-spin h-${size/4} w-${size/4} ${className}`}></div>;
 }
 import { Loader2 as Loader2Orig } from 'lucide-react';

@@ -21,14 +21,14 @@ text,invoice_number,vendor,date,total
 - Supported domains: Legal, Medical, Financial, General`;
 
 const DOMAIN_MODULES_INITIAL = [
-  { id: 1, name: 'Legal Lexicon',       status: 'Active',  terms: 12000, color: 'text-indigo-500',  bg: 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-800/30' },
+  { id: 1, name: 'Legal Lexicon',       status: 'Active',  terms: 12000, color: 'text-brand-500',  bg: 'bg-brand-50 dark:bg-brand-900/20 border-brand-100 dark:border-brand-800/30' },
   { id: 2, name: 'Medical Coding',       status: 'Standby', terms: 45000, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800/30' },
   { id: 3, name: 'Financial Standards',  status: 'Active',  terms: 8000,  color: 'text-amber-500',   bg: 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800/30' },
 ];
 
 const LOG_LINES = [
   { type: 'INFO',   color: 'text-emerald-500', messages: ['Epoch completed with loss: 0.0024', 'Validation accuracy: 98.1%', 'Checkpoint saved to cluster-node-alpha', 'Warmup scheduler stepped'] },
-  { type: 'TASK',   color: 'text-indigo-400',  messages: ['Initializing validation on Legal_Dataset_V2...', 'Loading Medical_Corpus_v3...', 'Tokenizing batch 1/42...'] },
+  { type: 'TASK',   color: 'text-brand-400',  messages: ['Initializing validation on Legal_Dataset_V2...', 'Loading Medical_Corpus_v3...', 'Tokenizing batch 1/42...'] },
   { type: 'WARN',   color: 'text-amber-500',   messages: ['Low gradient detected in attention_head_2', 'Learning rate may need adjustment', 'Memory usage at 78%'] },
   { type: 'SYSTEM', color: 'text-blue-400',    messages: ['Checkpoint saved to cluster-node-alpha-4', 'Auto-save triggered', 'Backup sync complete'] },
 ];
@@ -45,7 +45,7 @@ export default function AiTrainingTuningSuperAdmin() {
   const [config, setConfig] = useState({ ocr_threshold: 88, denoising_sensitivity: 42, active_engine: 'gemini' });
   const [logs, setLogs] = useState([
     { time: '14:22:01', type: 'INFO',   msg: 'Epoch 41 completed with loss: 0.0024',                          color: 'text-emerald-500' },
-    { time: '14:22:04', type: 'TASK',   msg: 'Initializing validation on Legal_Dataset_V2...',                color: 'text-indigo-400' },
+    { time: '14:22:04', type: 'TASK',   msg: 'Initializing validation on Legal_Dataset_V2...',                color: 'text-brand-400' },
     { time: '14:23:10', type: 'WARN',   msg: 'Low gradient detected in layer 4 (attention_head_2)',           color: 'text-amber-500' },
     { time: '14:24:15', type: 'INFO',   msg: 'Starting Optimizer: AdamW (lr=2e-5, weight_decay=0.01)',       color: 'text-emerald-500' },
     { time: '14:25:30', type: 'SYSTEM', msg: 'Checkpoint saved to cluster-node-alpha-4',                     color: 'text-blue-400' },
@@ -174,16 +174,16 @@ export default function AiTrainingTuningSuperAdmin() {
           <div className="bg-white dark:bg-[#161c28] rounded-xl p-8 shadow-sm border border-gray-200 dark:border-gray-800">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 pb-6 border-b border-gray-100 dark:border-gray-800/60 gap-4">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400"><Brain size={24} /></div>
+                <div className="p-2.5 bg-brand-50 dark:bg-brand-900/30 rounded-lg text-brand-600 dark:text-brand-400"><Brain size={24} /></div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white font-headline">Neural Thresholds</h2>
-                  <p className="text-[11px] text-gray-500 uppercase tracking-widest font-bold mt-1">Global Config{isSaving && <span className="ml-2 text-indigo-400 animate-pulse">Saving...</span>}</p>
+                  <p className="text-[11px] text-gray-500 uppercase tracking-widest font-bold mt-1">Global Config{isSaving && <span className="ml-2 text-brand-400 animate-pulse">Saving...</span>}</p>
                 </div>
               </div>
               <div className="flex p-1 bg-gray-100 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
                 {['gemini','tesseract'].map(eng => (
                   <button key={eng} onClick={() => updateConfig('active_engine', eng)}
-                    className={`px-5 py-2 text-xs font-bold rounded-md transition-all ${config.active_engine === eng ? 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 shadow-sm border border-gray-200 dark:border-gray-700' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}>
+                    className={`px-5 py-2 text-xs font-bold rounded-md transition-all ${config.active_engine === eng ? 'bg-white dark:bg-gray-800 text-brand-600 dark:text-brand-400 shadow-sm border border-gray-200 dark:border-gray-700' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}>
                     {eng === 'gemini' ? 'Gemini Vision' : 'Tesseract V5'}
                   </button>
                 ))}
@@ -196,19 +196,19 @@ export default function AiTrainingTuningSuperAdmin() {
                 <div className="flex justify-between items-end">
                   <div>
                     <label className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-1">
-                      <ShieldCheck size={16} className="text-indigo-500" /> OCR Confidence Threshold
+                      <ShieldCheck size={16} className="text-brand-500" /> OCR Confidence Threshold
                     </label>
                     <p className="text-[11px] text-gray-500 max-w-sm leading-relaxed">Sets the minimum confidence score required for automatic field population without manual review flag.</p>
                   </div>
-                  <div className="px-4 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg border border-indigo-100 dark:border-indigo-800/40 font-mono text-sm font-bold shadow-sm">
+                  <div className="px-4 py-1.5 bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-lg border border-brand-100 dark:border-brand-800/40 font-mono text-sm font-bold shadow-sm">
                     {config.ocr_threshold}%
                   </div>
                 </div>
                 <div className="relative pt-2">
                   <input type="range" min="0" max="100" step="1" value={config.ocr_threshold}
                     onChange={e => updateConfig('ocr_threshold', parseInt(e.target.value))}
-                    className="w-full h-2 bg-gray-200 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-indigo-600 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white" />
-                  <div className="absolute top-2 left-0 h-2 bg-indigo-500 rounded-l-lg pointer-events-none transition-all" style={{ width: `${config.ocr_threshold}%` }} />
+                    className="w-full h-2 bg-gray-200 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-brand-600 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white" />
+                  <div className="absolute top-2 left-0 h-2 bg-brand-500 rounded-l-lg pointer-events-none transition-all" style={{ width: `${config.ocr_threshold}%` }} />
                 </div>
                 <div className="flex justify-between text-[10px] text-gray-400 font-mono">
                   <span>0% (Accept All)</span>
@@ -250,33 +250,33 @@ export default function AiTrainingTuningSuperAdmin() {
           </div>
 
           {/* Upload Training Corpus */}
-          <div className="bg-gradient-to-br from-indigo-900 to-indigo-800 rounded-xl p-8 border border-indigo-700/50 relative overflow-hidden shadow-lg">
+          <div className="bg-gradient-to-br from-brand-900 to-brand-800 rounded-xl p-8 border border-brand-700/50 relative overflow-hidden shadow-lg">
             <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
               <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20 shadow-inner backdrop-blur-sm cursor-pointer hover:bg-white/20 transition-all" onClick={() => fileInputRef.current?.click()}>
-                <CloudUpload size={36} className="text-indigo-200" />
+                <CloudUpload size={36} className="text-brand-200" />
                 <input ref={fileInputRef} type="file" multiple accept=".jsonl,.csv,.json" className="hidden" onChange={handleFileSelect} />
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h3 className="text-xl font-bold text-white mb-2 font-headline">Upload Training Corpus</h3>
-                <p className="text-sm text-indigo-200 mb-4 max-w-md">Feed the engine with JSONL or CSV datasets to improve domain-specific extraction accuracy.</p>
+                <p className="text-sm text-brand-200 mb-4 max-w-md">Feed the engine with JSONL or CSV datasets to improve domain-specific extraction accuracy.</p>
                 {uploadedFiles.length > 0 && (
                   <div className="mb-4 space-y-1 max-h-24 overflow-y-auto">
                     {uploadedFiles.map((f, i) => (
-                      <div key={i} className="flex items-center gap-2 text-xs text-indigo-200">
+                      <div key={i} className="flex items-center gap-2 text-xs text-brand-200">
                         <span className={f.status === 'Uploaded ✓' ? 'text-green-400' : 'text-amber-400'}>{f.status}</span>
                         <span className="truncate">{f.name}</span>
-                        <span className="text-indigo-400">({(f.size / 1024).toFixed(1)} KB)</span>
+                        <span className="text-brand-400">({(f.size / 1024).toFixed(1)} KB)</span>
                       </div>
                     ))}
                   </div>
                 )}
                 <div className="flex flex-wrap justify-center md:justify-start gap-4">
                   <button onClick={() => fileInputRef.current?.click()}
-                    className="px-6 py-2.5 bg-white text-indigo-900 text-sm font-bold rounded-xl hover:bg-indigo-50 active:scale-95 transition-all shadow-md">
+                    className="px-6 py-2.5 bg-white text-brand-900 text-sm font-bold rounded-xl hover:bg-brand-50 active:scale-95 transition-all shadow-md">
                     Select Files
                   </button>
                   <button onClick={() => setShowSchema(true)}
-                    className="px-6 py-2.5 bg-indigo-800 text-indigo-100 text-sm font-bold rounded-xl hover:bg-indigo-700 border border-indigo-600 transition-colors">
+                    className="px-6 py-2.5 bg-brand-800 text-brand-100 text-sm font-bold rounded-xl hover:bg-brand-700 border border-brand-600 transition-colors">
                     Schema Guide
                   </button>
                 </div>
@@ -306,14 +306,14 @@ export default function AiTrainingTuningSuperAdmin() {
                   <span className="text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded">{Math.round(progress)}%</span>
                 </div>
                 <div className="w-full bg-gray-100 dark:bg-gray-800 h-2 rounded-full overflow-hidden">
-                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full relative transition-all duration-300" style={{ width: `${progress}%` }}>
+                  <div className="bg-gradient-to-r from-blue-500 to-brand-500 h-full rounded-full relative transition-all duration-300" style={{ width: `${progress}%` }}>
                     <div className="absolute inset-0 bg-white/20 animate-pulse" />
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
                 <div className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                  <Activity size={20} className="text-indigo-500" />
+                  <Activity size={20} className="text-brand-500" />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-gray-900 dark:text-white">Epoch {epoch} / 60</p>

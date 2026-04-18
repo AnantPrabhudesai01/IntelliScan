@@ -16,7 +16,7 @@ export default function WorkspaceContacts() {
           <button className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl transition-colors text-sm font-semibold shadow-sm">
             <Download size={16} /> Export to CSV
           </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl transition-all hover:bg-indigo-700 text-sm font-semibold shadow-sm active:scale-95">
+          <button className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 text-white rounded-xl transition-all hover:bg-brand-700 text-sm font-semibold shadow-sm active:scale-95">
             <CloudSync size={16} /> Push to CRM
           </button>
         </div>
@@ -25,22 +25,22 @@ export default function WorkspaceContacts() {
       {/* Search & Filter */}
       <section className="mb-8 grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div className="lg:col-span-6 relative group">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-500 transition-colors" />
           <input 
-            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl py-3 pl-12 pr-4 text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500/40 transition-all outline-none" 
+            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl py-3 pl-12 pr-4 text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-brand-500/40 transition-all outline-none" 
             placeholder="Search by name, company, or email..." 
             type="text"
           />
         </div>
         <div className="lg:col-span-3">
-          <select className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl py-3 px-4 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 appearance-none outline-none">
+          <select className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl py-3 px-4 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500/40 appearance-none outline-none">
             <option>All Engines</option>
             <option>Gemini Vision Pro</option>
             <option>IntelliScan OCR-v2</option>
           </select>
         </div>
         <div className="lg:col-span-3">
-          <select className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl py-3 px-4 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 appearance-none outline-none">
+          <select className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl py-3 px-4 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500/40 appearance-none outline-none">
             <option>All Confidence Levels</option>
             <option>95%+ High Precision</option>
             <option>80%+ Reliable</option>
@@ -56,7 +56,7 @@ export default function WorkspaceContacts() {
             <thead>
               <tr className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800">
                 <th className="p-4 w-12 text-center">
-                  <input className="rounded bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer" type="checkbox" />
+                  <input className="rounded bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-brand-600 focus:ring-brand-500 cursor-pointer" type="checkbox" />
                 </th>
                 <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Contact Details</th>
                 <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Email Address</th>
@@ -70,11 +70,11 @@ export default function WorkspaceContacts() {
               {contacts.map((contact, index) => (
                 <tr key={contact.id} className="group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   <td className="p-4 text-center">
-                    <input className="rounded bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500 cursor-pointer" type="checkbox" />
+                    <input className="rounded bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-brand-600 focus:ring-brand-500 cursor-pointer" type="checkbox" />
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 flex items-center justify-center font-bold text-sm uppercase">
+                      <div className="h-10 w-10 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400 flex items-center justify-center font-bold text-sm uppercase">
                         {contact.name.charAt(0)}
                       </div>
                       <div>
@@ -119,7 +119,7 @@ export default function WorkspaceContacts() {
             <button className="p-1.5 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 transition-colors disabled:opacity-50">
               <ChevronLeft size={16} />
             </button>
-            <button className="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">1</button>
+            <button className="px-3 py-1 rounded-lg bg-brand-600 text-white text-xs font-bold">1</button>
             <button className="px-3 py-1 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 text-xs font-medium hover:text-gray-900 dark:hover:text-white">2</button>
             <button className="px-3 py-1 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 text-xs font-medium hover:text-gray-900 dark:hover:text-white">3</button>
             <button className="p-1.5 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 transition-colors">

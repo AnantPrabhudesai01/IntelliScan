@@ -98,7 +98,7 @@ export default function DataQualityCenterPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
-            <Sparkles size={24} className="text-indigo-500" />
+            <Sparkles size={24} className="text-brand-500" />
             Data Quality Center
           </h1>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 max-w-2xl">
@@ -129,7 +129,7 @@ export default function DataQualityCenterPage() {
         </div>
         <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
           <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Impacted Contacts</p>
-          <p className="text-2xl font-extrabold text-indigo-500 mt-1">{impactedContacts}</p>
+          <p className="text-2xl font-extrabold text-brand-500 mt-1">{impactedContacts}</p>
         </div>
       </div>
 
@@ -181,7 +181,7 @@ export default function DataQualityCenterPage() {
                     <button
                       disabled={busyId === `merge-${item.id}` || busyId === `dismiss-${item.id}`}
                       onClick={() => mergeSuggestion(item)}
-                      className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 inline-flex items-center gap-1 disabled:opacity-60"
+                      className="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-bold hover:bg-brand-700 inline-flex items-center gap-1 disabled:opacity-60"
                     >
                       <GitMerge size={12} />
                       Merge
@@ -238,7 +238,7 @@ export default function DataQualityCenterPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-5 shadow-lg flex items-start gap-3">
+      <div className="rounded-2xl bg-gradient-to-r from-brand-600 to-violet-600 text-white p-5 shadow-lg flex items-start gap-3">
         {summary.pending > 0 ? (
           <AlertTriangle size={18} className="mt-0.5" />
         ) : (
@@ -248,7 +248,7 @@ export default function DataQualityCenterPage() {
           <p className="text-sm font-black uppercase tracking-widest">
             {summary.pending > 0 ? 'Review Required' : 'Quality Stable'}
           </p>
-          <p className="text-xs text-indigo-50 mt-1">
+          <p className="text-xs text-brand-50 mt-1">
             {summary.pending > 0
               ? `${summary.pending} duplicate suggestions are ready for review and merge.`
               : 'No active dedupe actions are required right now.'}

@@ -658,7 +658,7 @@ export default function ContactsPage() {
       );
     }
     return (
-      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg uppercase flex-shrink-0 shadow-sm">
+      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg uppercase flex-shrink-0 shadow-sm">
         {contact.name ? contact.name.charAt(0) : '?'}
       </div>
     );
@@ -681,14 +681,14 @@ export default function ContactsPage() {
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="relative group overflow-hidden bg-white/40 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 p-6 rounded-2xl shadow-xl transition-all hover:scale-[1.02]">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-              <UserPlus size={48} className="text-indigo-600 dark:text-indigo-400" />
+              <UserPlus size={48} className="text-brand-600 dark:text-brand-400" />
             </div>
             <p className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-[2px] mb-2">{activeTab === 'active' ? 'Active Leads' : 'In Recycle Bin'}</p>
             <div className="flex items-baseline gap-2">
               <p className="text-4xl font-headline font-black text-gray-900 dark:text-white">{filteredContacts.length}</p>
               <span className="text-xs font-bold text-emerald-500">+12% this week</span>
             </div>
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-50"></div>
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 to-purple-600 opacity-50"></div>
           </div>
 
           <div className="relative group overflow-hidden bg-white/40 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 p-6 rounded-2xl shadow-xl transition-all hover:scale-[1.02]">
@@ -736,9 +736,9 @@ export default function ContactsPage() {
 
         <div className="flex-1 max-w-2xl flex flex-wrap items-center gap-3">
           <div className="flex-1 min-w-[300px] relative group">
-            <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors" />
+            <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors" />
             <input
-              className={`w-full pl-12 pr-4 py-3.5 bg-white/50 dark:bg-white/5 backdrop-blur-md border rounded-2xl focus:ring-4 focus:ring-indigo-500/20 text-gray-900 dark:text-white placeholder:text-gray-400 transition-all font-body text-sm outline-none shadow-sm ${isSmartSearch ? 'border-indigo-400 ring-4 ring-indigo-500/20 shadow-indigo-500/10' : 'border-gray-200 dark:border-white/10'}`}
+              className={`w-full pl-12 pr-4 py-3.5 bg-white/50 dark:bg-white/5 backdrop-blur-md border rounded-2xl focus:ring-4 focus:ring-brand-500/20 text-gray-900 dark:text-white placeholder:text-gray-400 transition-all font-body text-sm outline-none shadow-sm ${isSmartSearch ? 'border-brand-400 ring-4 ring-brand-500/20 shadow-brand-500/10' : 'border-gray-200 dark:border-white/10'}`}
               placeholder={isSmartSearch ? "Describe who you're looking for..." : "Search by name, email, or company..."}
               type="text"
               value={search}
@@ -746,7 +746,7 @@ export default function ContactsPage() {
             />
             {isSearching && (
               <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                <RefreshCw size={14} className="text-indigo-500 animate-spin" />
+                <RefreshCw size={14} className="text-brand-500 animate-spin" />
               </div>
             )}
           </div>
@@ -754,8 +754,8 @@ export default function ContactsPage() {
             onClick={() => setIsSmartSearch(!isSmartSearch)}
             className={`flex items-center gap-1.5 px-4 py-3 rounded-xl font-bold text-xs transition-all border ${
               isSmartSearch 
-                ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-500/40 translate-y-[-1px]' 
-                : 'bg-white dark:bg-[#161c28] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-800 hover:border-indigo-300'
+                ? 'bg-brand-600 text-white border-brand-500 shadow-md shadow-brand-500/40 translate-y-[-1px]' 
+                : 'bg-white dark:bg-[#161c28] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-800 hover:border-brand-300'
             }`}
           >
             <Sparkles size={14} /> Smart Search
@@ -778,11 +778,11 @@ export default function ContactsPage() {
           <div 
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-500 ${
               backendSyncing 
-                ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400' 
+                ? 'bg-brand-50 dark:bg-brand-900/30 border-brand-200 dark:border-brand-800 text-brand-600 dark:text-brand-400' 
                 : 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30 text-emerald-600 dark:text-emerald-400'
             }`}
           >
-            <div className={`w-1.5 h-1.5 rounded-full ${backendSyncing ? 'bg-indigo-500 animate-pulse' : 'bg-emerald-500'} shadow-[0_0_8px_rgba(var(--sync-color))]`} />
+            <div className={`w-1.5 h-1.5 rounded-full ${backendSyncing ? 'bg-brand-500 animate-pulse' : 'bg-emerald-500'} shadow-[0_0_8px_rgba(var(--sync-color))]`} />
             <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
               <Zap size={10} className={backendSyncing ? 'animate-bounce' : ''} />
               Live Sync
@@ -794,7 +794,7 @@ export default function ContactsPage() {
         <div className="relative p-1 bg-gray-100/80 dark:bg-white/5 backdrop-blur-md rounded-2xl flex border border-white/10">
           <button 
             onClick={() => setActiveTab('active')}
-            className={`relative z-10 px-8 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'active' ? 'text-indigo-600 bg-white dark:bg-gray-900 shadow-xl' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`relative z-10 px-8 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'active' ? 'text-brand-600 bg-white dark:bg-gray-900 shadow-xl' : 'text-gray-500 hover:text-gray-700'}`}
           >
             <UserPlus size={14} /> Active Leads
           </button>
@@ -809,20 +809,20 @@ export default function ContactsPage() {
         <div className="flex items-center gap-3 flex-wrap">
           {/* Filters */}
           <div className="flex items-center gap-1 bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 p-1 rounded-xl shadow-sm">
-            <button onClick={() => setFilterConfidence(!filterConfidence)} className={`px-3 py-2 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${filterConfidence ? 'bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+            <button onClick={() => setFilterConfidence(!filterConfidence)} className={`px-3 py-2 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${filterConfidence ? 'bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
               <Filter size={14} /> &gt;90%
             </button>
-            <button onClick={() => setFilterEngine(filterEngine ? '' : 'Gemini 2.5')} className={`px-3 py-2 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${filterEngine ? 'bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+            <button onClick={() => setFilterEngine(filterEngine ? '' : 'Gemini 2.5')} className={`px-3 py-2 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${filterEngine ? 'bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
               <Cpu size={14} /> Gemini
             </button>
           </div>
 
           {/* Grid / List Toggle */}
           <div className="flex items-center bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 p-1 rounded-xl shadow-sm">
-            <button onClick={() => setViewMode('grid')} title="Grid View" className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
+            <button onClick={() => setViewMode('grid')} title="Grid View" className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-brand-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
               <LayoutGrid size={16} />
             </button>
-            <button onClick={() => setViewMode('list')} title="List View" className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
+            <button onClick={() => setViewMode('list')} title="List View" className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-brand-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
               <List size={16} />
             </button>
           </div>
@@ -830,21 +830,21 @@ export default function ContactsPage() {
           <div className="flex gap-2">
             <button
               onClick={handleExportVCard}
-              className="bg-white dark:bg-[#161c28] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800 px-4 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2 hover:border-indigo-400 dark:hover:border-indigo-500 transition-all shadow-sm"
+              className="bg-white dark:bg-[#161c28] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800 px-4 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2 hover:border-brand-400 dark:hover:border-brand-500 transition-all shadow-sm"
               title="Export as universal vCard format"
             >
               <Download size={16} /> vCard
             </button>
             <button
               onClick={handleExportCSV}
-              className="bg-indigo-600 text-white px-4 py-2.5 rounded-l-xl font-semibold text-sm flex items-center gap-2 hover:bg-indigo-700 active:scale-95 transition-all shadow-md focus:ring-4 focus:ring-indigo-500/30 border-r border-indigo-500"
+              className="bg-brand-600 text-white px-4 py-2.5 rounded-l-xl font-semibold text-sm flex items-center gap-2 hover:bg-brand-700 active:scale-95 transition-all shadow-md focus:ring-4 focus:ring-brand-500/30 border-r border-brand-500"
             >
               <Download size={16} /> CSV
             </button>
             <div className="relative">
               <button
                 onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
-                className="bg-indigo-600 text-white px-2 py-2.5 rounded-r-xl font-semibold text-sm flex items-center hover:bg-indigo-700 active:scale-95 transition-all shadow-md focus:ring-4 focus:ring-indigo-500/30 h-full"
+                className="bg-brand-600 text-white px-2 py-2.5 rounded-r-xl font-semibold text-sm flex items-center hover:bg-brand-700 active:scale-95 transition-all shadow-md focus:ring-4 focus:ring-brand-500/30 h-full"
                 title="Direct CRM Integrations"
               >
                 <ChevronDown size={16} />
@@ -852,7 +852,7 @@ export default function ContactsPage() {
               {exportDropdownOpen && (
                 <div className="absolute right-0 top-[110%] w-48 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 origin-top-right">
                   <div className="px-3 pb-2 mb-2 border-b border-gray-100 dark:border-gray-800 flex items-center gap-1.5">
-                    <Globe size={13} className="text-indigo-500" />
+                    <Globe size={13} className="text-brand-500" />
                     <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Enterprise Sync</span>
                   </div>
                   <button onClick={() => handleExportCRM('salesforce')} className="w-full text-left px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-between">
@@ -898,19 +898,19 @@ export default function ContactsPage() {
                   className="relative group cursor-pointer overflow-hidden rounded-2xl border border-white/20 dark:border-white/10 animate-fade-in aspect-square flex flex-col items-center justify-center"
                 >
                   {/* ... (Existing Scan CTA Code) ... */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/5 to-transparent group-hover:opacity-100 transition-opacity"></div>
-                  <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-indigo-500/10 rounded-full blur-[100px] group-hover:translate-x-12 group-hover:translate-y-12 transition-transform duration-1000"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-purple-600/5 to-transparent group-hover:opacity-100 transition-opacity"></div>
+                  <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-brand-500/10 rounded-full blur-[100px] group-hover:translate-x-12 group-hover:translate-y-12 transition-transform duration-1000"></div>
                   
                   <div className="relative z-10 flex flex-col items-center p-8">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center mb-6 shadow-2xl shadow-indigo-500/40 group-hover:scale-110 transition-all duration-500 group-hover:rotate-6">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-600 to-purple-600 flex items-center justify-center mb-6 shadow-2xl shadow-brand-500/40 group-hover:scale-110 transition-all duration-500 group-hover:rotate-6">
                       <Plus size={40} className="text-white drop-shadow-md" />
                     </div>
                     <h3 className="text-xl font-headline font-black text-gray-900 dark:text-white mb-2 tracking-tight">Scan New Contact</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[200px] text-center leading-relaxed">
-                      Transform a business card into a <span className="text-indigo-500 font-bold">Smart Lead</span> in seconds.
+                      Transform a business card into a <span className="text-brand-500 font-bold">Smart Lead</span> in seconds.
                     </p>
                     
-                    <div className="mt-6 flex items-center gap-2 text-indigo-600 dark:text-indigo-400 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                    <div className="mt-6 flex items-center gap-2 text-brand-600 dark:text-brand-400 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
                       Get Started <ArrowRight size={14} />
                     </div>
                   </div>
@@ -924,8 +924,8 @@ export default function ContactsPage() {
                     className={`p-6 rounded-2xl border backdrop-blur-md transition-all cursor-pointer group relative overflow-hidden shadow-xl hover:shadow-2xl h-full ${
                       activeTab === 'trash' 
                         ? 'bg-gray-100/50 dark:bg-white/5 border-gray-200 dark:border-gray-800 opacity-80' 
-                        : 'bg-white/70 dark:bg-white/5 border-white/20 dark:border-white/10 hover:border-indigo-500/50 hover:-translate-y-1'
-                    } ${selectedIds.includes(contact.id) ? 'ring-2 ring-indigo-600 border-indigo-600' : ''}`}
+                        : 'bg-white/70 dark:bg-white/5 border-white/20 dark:border-white/10 hover:border-brand-500/50 hover:-translate-y-1'
+                    } ${selectedIds.includes(contact.id) ? 'ring-2 ring-brand-600 border-brand-600' : ''}`}
                   >
               {activeTab === 'trash' && (
                 <div className="absolute top-0 right-10 bg-red-600 text-white text-[8px] font-black px-2 py-1 rounded-b-lg uppercase tracking-widest z-10 shadow-lg">
@@ -934,7 +934,7 @@ export default function ContactsPage() {
               )}
               {/* Checkbox overlay for grid view */}
               <div 
-                className={`absolute top-4 left-4 z-20 w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${selectedIds.includes(contact.id) ? 'bg-indigo-600 border-indigo-600 scale-110 shadow-lg' : 'bg-white/80 dark:bg-gray-800/80 border-gray-300 dark:border-gray-600 opacity-0 group-hover:opacity-100 hover:border-indigo-400'}`}
+                className={`absolute top-4 left-4 z-20 w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${selectedIds.includes(contact.id) ? 'bg-brand-600 border-brand-600 scale-110 shadow-lg' : 'bg-white/80 dark:bg-gray-800/80 border-gray-300 dark:border-gray-600 opacity-0 group-hover:opacity-100 hover:border-brand-400'}`}
                 onClick={(e) => { e.stopPropagation(); toggleSelect(contact.id); }}
               >
                 {selectedIds.includes(contact.id) && <RefreshCw size={12} className="text-white fill-current" />}
@@ -954,7 +954,7 @@ export default function ContactsPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                   {isEnglishMode ? (contact.job_title || contact.title || contact.title_native || 'No Title') : (contact.title_native || contact.job_title || contact.title || 'No Title')}
                 </p>
-                <p className="text-xs text-indigo-600 dark:text-indigo-400 font-bold truncate">
+                <p className="text-xs text-brand-600 dark:text-brand-400 font-bold truncate">
                   {isEnglishMode ? (contact.company || contact.company_native || 'Unknown Company') : (contact.company_native || contact.company || 'Unknown Company')}
                 </p>
               </div>
@@ -963,7 +963,7 @@ export default function ContactsPage() {
               {(contact.inferred_industry || contact.inferred_seniority) && (
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {contact.inferred_industry && (
-                    <span className="px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[9px] font-black uppercase tracking-widest border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
+                    <span className="px-2 py-0.5 rounded-lg bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 text-[9px] font-black uppercase tracking-widest border border-brand-100 dark:border-brand-900/40 shadow-sm">
                       {contact.inferred_industry}
                     </span>
                   )}
@@ -1002,7 +1002,7 @@ export default function ContactsPage() {
                       <button 
                         onClick={(e) => { e.stopPropagation(); setQrContact(contact); }} 
                         title="Identity vCard / QR"
-                        className="w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-indigo-600 dark:text-indigo-400"
+                        className="w-7 h-7 rounded-full bg-brand-50 dark:bg-brand-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-brand-600 dark:text-brand-400"
                       >
                         <Share2 size={12} />
                       </button>
@@ -1035,7 +1035,7 @@ export default function ContactsPage() {
                       onClick={(e) => { e.stopPropagation(); handleEnrich(contact.id); }} 
                       disabled={enrichingId === contact.id}
                       title="✦ AI Data Enrichment"
-                      className="w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-indigo-600 dark:text-indigo-400 disabled:opacity-50"
+                      className="w-7 h-7 rounded-full bg-brand-50 dark:bg-brand-900/30 border-2 border-white dark:border-[#161c28] flex items-center justify-center shadow-sm hover:z-20 hover:scale-110 transition-all text-brand-600 dark:text-brand-400 disabled:opacity-50"
                     >
                       {enrichingId === contact.id ? <RefreshCw size={10} className="animate-spin" /> : <RefreshCw size={10} />}
                     </button>
@@ -1055,7 +1055,7 @@ export default function ContactsPage() {
                             <button 
                               key={seq.id} 
                               onClick={(e) => { e.stopPropagation(); handleEnrollSequence(contact.id, seq.id); }}
-                              className="w-full text-left px-3 py-1.5 text-[11px] font-bold text-white hover:bg-indigo-600 rounded-lg transition-colors flex items-center justify-between"
+                              className="w-full text-left px-3 py-1.5 text-[11px] font-bold text-white hover:bg-brand-600 rounded-lg transition-colors flex items-center justify-between"
                             >
                                 {seq.name} <ArrowRight size={10} />
                             </button>
@@ -1066,7 +1066,7 @@ export default function ContactsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button onClick={(e) => { e.stopPropagation(); deleteContact(contact.id); }} className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"><Trash2 size={14} /></button>
-                    <ChevronRight size={18} className="text-gray-300 dark:text-gray-600 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors group-hover:translate-x-1" />
+                    <ChevronRight size={18} className="text-gray-300 dark:text-gray-600 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors group-hover:translate-x-1" />
                   </div>
                 </>
               ) : (
@@ -1125,7 +1125,7 @@ export default function ContactsPage() {
           {/* Header row */}
           <div className="grid grid-cols-[40px_2fr_2fr_1.5fr_1fr_auto] gap-4 px-5 py-3 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-800 text-[10px] font-bold uppercase tracking-widest text-gray-500">
             <div className="flex items-center justify-center">
-               <input type="checkbox" checked={selectedIds.length === filteredContacts.length && filteredContacts.length > 0} onChange={toggleSelectAll} className="w-4 h-4 rounded-md border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+               <input type="checkbox" checked={selectedIds.length === filteredContacts.length && filteredContacts.length > 0} onChange={toggleSelectAll} className="w-4 h-4 rounded-md border-gray-300 text-brand-600 focus:ring-brand-500" />
             </div>
             <span>Contact</span>
             <span>Company / Role</span>
@@ -1153,7 +1153,7 @@ export default function ContactsPage() {
                   <SortableItem key={contact.id} id={contact.id} disabled={activeTab !== 'active' || search || filterConfidence || filterEngine || isSmartSearch}>
                     <div
                       onClick={() => openContactDetail(contact)}
-                      className={`grid grid-cols-[40px_2fr_2fr_1.5fr_1fr_auto] gap-4 px-5 py-4 items-center group transition-colors cursor-pointer ${selectedIds.includes(contact.id) ? 'bg-indigo-50 dark:bg-indigo-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-900/40'} ${idx !== filteredContacts.length - 1 ? 'border-b border-gray-100 dark:border-gray-800/60' : ''}`}
+                      className={`grid grid-cols-[40px_2fr_2fr_1.5fr_1fr_auto] gap-4 px-5 py-4 items-center group transition-colors cursor-pointer ${selectedIds.includes(contact.id) ? 'bg-brand-50 dark:bg-brand-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-900/40'} ${idx !== filteredContacts.length - 1 ? 'border-b border-gray-100 dark:border-gray-800/60' : ''}`}
                     >
                 <div className="flex items-center justify-center">
                   <input 
@@ -1161,7 +1161,7 @@ export default function ContactsPage() {
                     checked={selectedIds.includes(contact.id)} 
                     onChange={(e) => { e.stopPropagation(); toggleSelect(contact.id); }}
                     onClick={(e) => e.stopPropagation()}
-                    className="w-4 h-4 rounded-md border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    className="w-4 h-4 rounded-md border-gray-300 text-brand-600 focus:ring-brand-500"
                   />
                 </div>
 
@@ -1185,7 +1185,7 @@ export default function ContactsPage() {
                       {isEnglishMode ? (contact.job_title || contact.title || contact.title_native || 'No Title') : (contact.title_native || contact.job_title || contact.title || 'No Title')}
                     </span>
                     {contact.inferred_industry && (
-                      <span className="px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[8px] font-black uppercase tracking-tighter border border-indigo-100 dark:border-indigo-900/40">
+                      <span className="px-1.5 py-0.5 rounded-md bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 text-[8px] font-black uppercase tracking-tighter border border-brand-100 dark:border-brand-900/40">
                         {contact.inferred_industry}
                       </span>
                     )}
@@ -1211,7 +1211,7 @@ export default function ContactsPage() {
                       <button onClick={(e) => { e.stopPropagation(); handleTruecallerSearch(contact.phone); }} title="Search Truecaller" className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all">
                         <span className="text-[10px] font-black">TC</span>
                       </button>
-                      <button onClick={(e) => { e.stopPropagation(); setQrContact(contact); }} title="Share QR/vCard" className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all"><Share2 size={14} /></button>
+                      <button onClick={(e) => { e.stopPropagation(); setQrContact(contact); }} title="Share QR/vCard" className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all"><Share2 size={14} /></button>
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleManualFollowup(contact); }} 
                         disabled={isSendingFollowup === contact.id}
@@ -1225,7 +1225,7 @@ export default function ContactsPage() {
                         <button 
                           onClick={(e) => { e.stopPropagation(); }} 
                           title="Enroll in AI Sequence" 
-                          className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all"
+                          className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all"
                         >
                           <Zap size={14} />
                         </button>
@@ -1236,7 +1236,7 @@ export default function ContactsPage() {
                               <button 
                                 key={s.id}
                                 onClick={(e) => { e.stopPropagation(); handleEnrollSequence(contact.id, s.id); }}
-                                className="w-full text-left px-2 py-1.5 rounded-lg text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 hover:text-indigo-600 transition-colors flex items-center gap-2"
+                                className="w-full text-left px-2 py-1.5 rounded-lg text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-brand-50 dark:hover:bg-brand-900/40 hover:text-brand-600 transition-colors flex items-center gap-2"
                               >
                                 <Zap size={10} /> {s.name}
                               </button>
@@ -1266,7 +1266,7 @@ export default function ContactsPage() {
                       </button>
                     </>
                   )}
-                      <ChevronRight size={16} className="text-gray-300 dark:text-gray-600 group-hover:text-indigo-500 transition-all group-hover:translate-x-0.5" />
+                      <ChevronRight size={16} className="text-gray-300 dark:text-gray-600 group-hover:text-brand-500 transition-all group-hover:translate-x-0.5" />
                     </div>
                   </div>
                 </SortableItem>
@@ -1279,7 +1279,7 @@ export default function ContactsPage() {
 
        {/* Mass Action Bar (floating) */}
        {selectedIds.length > 0 && (
-         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-4 rounded-3xl shadow-[0_20px_50px_rgba(79,70,229,0.4)] flex items-center gap-6 animate-in slide-in-from-bottom-8 duration-500 ease-out">
+         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] bg-brand-600 dark:bg-brand-500 text-white px-6 py-4 rounded-3xl shadow-[0_20px_50px_rgba(79,70,229,0.4)] flex items-center gap-6 animate-in slide-in-from-bottom-8 duration-500 ease-out">
             <div className="flex items-center gap-3 pr-6 border-r border-white/20">
                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-black text-xs">
                  {selectedIds.length}
@@ -1295,7 +1295,7 @@ export default function ContactsPage() {
                {activeTab === 'active' ? (
                  <button 
                   onClick={() => setShowBulkConfirm(true)}
-                  className="bg-white text-indigo-600 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 hover:bg-red-50 hover:text-red-600 transition-all shadow-lg active:scale-95"
+                  className="bg-white text-brand-600 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 hover:bg-red-50 hover:text-red-600 transition-all shadow-lg active:scale-95"
                  >
                    <Trash2 size={14} /> Delete 
                  </button>
@@ -1332,13 +1332,13 @@ export default function ContactsPage() {
             {/* Modal Header */}
             <div className="px-8 py-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50 dark:bg-gray-900/40">
               <div className="flex items-center gap-4 min-w-0">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black text-2xl shadow-xl shadow-indigo-500/20">
+                <div className="w-14 h-14 rounded-2xl bg-brand-600 text-white flex items-center justify-center font-black text-2xl shadow-xl shadow-brand-500/20">
                   {(editForm.name || detailContact.name || '?').charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
                   {isEditing ? (
                     <input 
-                      className="text-xl font-black text-gray-900 dark:text-white bg-white dark:bg-gray-900 border border-indigo-400 rounded-lg px-2 py-0.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none"
+                      className="text-xl font-black text-gray-900 dark:text-white bg-white dark:bg-gray-900 border border-brand-400 rounded-lg px-2 py-0.5 w-full focus:ring-2 focus:ring-brand-500 outline-none"
                       value={editForm.name}
                       onChange={e => setEditForm({...editForm, name: e.target.value})}
                     />
@@ -1389,7 +1389,7 @@ export default function ContactsPage() {
                     </label>
                     {isEditing ? (
                       <input 
-                        className="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                        className="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all outline-none"
                         value={editForm[field.key]}
                         onChange={e => setEditForm({...editForm, [field.key]: e.target.value})}
                       />
@@ -1401,17 +1401,17 @@ export default function ContactsPage() {
               </div>
 
               {/* AI & Intelligence Section */}
-              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 border border-indigo-100 dark:border-indigo-900/40 rounded-3xl p-6 relative overflow-hidden group">
+              <div className="bg-gradient-to-br from-brand-50 to-purple-50 dark:from-brand-950/20 dark:to-purple-950/20 border border-brand-100 dark:border-brand-900/40 rounded-3xl p-6 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                  <Sparkles size={48} className="text-indigo-600 dark:text-indigo-400" />
+                  <Sparkles size={48} className="text-brand-600 dark:text-brand-400" />
                 </div>
                 
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-6">
                   <div>
-                    <h4 className="text-sm font-black text-indigo-900 dark:text-indigo-300 uppercase tracking-widest flex items-center gap-2">
+                    <h4 className="text-sm font-black text-brand-900 dark:text-brand-300 uppercase tracking-widest flex items-center gap-2">
                        <Cpu size={14} /> AI Context Engine
                     </h4>
-                    <p className="text-xs text-indigo-600/60 dark:text-indigo-400/60 font-medium">Automatic enrichment from public profile data.</p>
+                    <p className="text-xs text-brand-600/60 dark:text-brand-400/60 font-medium">Automatic enrichment from public profile data.</p>
                   </div>
                   {!isEditing && (
                     <button
@@ -1434,7 +1434,7 @@ export default function ContactsPage() {
                           setDetailEnriching(false);
                         }
                       }}
-                      className="px-5 py-2.5 rounded-xl text-xs font-black bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-60 flex items-center gap-2 active:scale-95"
+                      className="px-5 py-2.5 rounded-xl text-xs font-black bg-brand-600 text-white hover:bg-brand-700 shadow-lg shadow-brand-600/30 transition-all disabled:opacity-60 flex items-center gap-2 active:scale-95"
                       disabled={detailEnriching}
                     >
                       {detailEnriching ? <RefreshCw size={14} className="animate-spin" /> : <Sparkles size={14} />}
@@ -1446,24 +1446,24 @@ export default function ContactsPage() {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400/80">Inferred Industry</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-brand-400/80">Inferred Industry</p>
                       {isEditing ? (
-                        <input className="w-full bg-white/50 dark:bg-white/5 border border-indigo-200 dark:border-indigo-800 rounded-lg px-3 py-2 text-xs font-bold" value={editForm.inferred_industry} onChange={e => setEditForm({...editForm, inferred_industry: e.target.value})} />
+                        <input className="w-full bg-white/50 dark:bg-white/5 border border-brand-200 dark:border-brand-800 rounded-lg px-3 py-2 text-xs font-bold" value={editForm.inferred_industry} onChange={e => setEditForm({...editForm, inferred_industry: e.target.value})} />
                       ) : (
-                        <p className="text-sm font-bold text-indigo-900 dark:text-indigo-200">{detailContact.inferred_industry || 'Pending Enrichment'}</p>
+                        <p className="text-sm font-bold text-brand-900 dark:text-brand-200">{detailContact.inferred_industry || 'Pending Enrichment'}</p>
                       )}
                     </div>
                     <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400/80">Seniority Tier</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-brand-400/80">Seniority Tier</p>
                       {isEditing ? (
-                        <input className="w-full bg-white/50 dark:bg-white/5 border border-indigo-200 dark:border-indigo-800 rounded-lg px-3 py-2 text-xs font-bold" value={editForm.inferred_seniority} onChange={e => setEditForm({...editForm, inferred_seniority: e.target.value})} />
+                        <input className="w-full bg-white/50 dark:bg-white/5 border border-brand-200 dark:border-brand-800 rounded-lg px-3 py-2 text-xs font-bold" value={editForm.inferred_seniority} onChange={e => setEditForm({...editForm, inferred_seniority: e.target.value})} />
                       ) : (
-                        <p className="text-sm font-bold text-indigo-900 dark:text-indigo-200">{detailContact.inferred_seniority || 'Pending Enrichment'}</p>
+                        <p className="text-sm font-bold text-brand-900 dark:text-brand-200">{detailContact.inferred_seniority || 'Pending Enrichment'}</p>
                       )}
                     </div>
                   </div>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400/80 mb-1.5 flex items-center gap-1.5">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-brand-400/80 mb-1.5 flex items-center gap-1.5">
                       <Wand2 size={12} /> Personality Analysis & Bio
                     </p>
                     <p className={`text-sm leading-relaxed ${detailContact.linkedin_bio ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 italic'}`}>
@@ -1475,7 +1475,7 @@ export default function ContactsPage() {
                 {/* Sequence Activity Section */}
                 <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-3xl p-6">
                   <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest flex items-center gap-2 mb-4">
-                     <Clock size={16} className="text-indigo-500" /> Active Automations
+                     <Clock size={16} className="text-brand-500" /> Active Automations
                   </h4>
                   <div className="flex items-center justify-between">
                     <div>
@@ -1484,7 +1484,7 @@ export default function ContactsPage() {
                     </div>
                     <div className="flex gap-2">
                        <select 
-                         className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-indigo-500"
+                         className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-brand-500"
                          onChange={(e) => handleEnrollSequence(detailContact.id, e.target.value)}
                          defaultValue=""
                        >
@@ -1503,7 +1503,7 @@ export default function ContactsPage() {
                 </label>
                 {isEditing ? (
                   <textarea 
-                    className="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 text-sm text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none min-h-[120px] resize-none"
+                    className="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl px-5 py-4 text-sm text-gray-900 dark:text-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all outline-none min-h-[120px] resize-none"
                     value={editForm.notes}
                     onChange={e => setEditForm({...editForm, notes: e.target.value})}
                     placeholder="Enter specific meeting context, follow-up goals, or tags..."
@@ -1524,7 +1524,7 @@ export default function ContactsPage() {
                     <button 
                       onClick={handleManualSave}
                       disabled={isSaving}
-                      className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-sm font-black hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                      className="px-6 py-3 rounded-xl bg-brand-600 text-white text-sm font-black hover:bg-brand-700 transition-all shadow-lg shadow-brand-600/20 active:scale-95 disabled:opacity-50 flex items-center gap-2"
                     >
                       {isSaving ? <RefreshCw size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
                       {isSaving ? 'Saving...' : 'Save Changes'}
@@ -1577,9 +1577,9 @@ export default function ContactsPage() {
           <div className="relative bg-white dark:bg-gray-950 w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] border border-gray-200 dark:border-gray-800">
 
             {/* ── HEADER ── */}
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gradient-to-r from-indigo-50 via-purple-50 to-amber-50 dark:from-indigo-950/30 dark:via-purple-950/30 dark:to-amber-950/30">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gradient-to-r from-brand-50 via-purple-50 to-amber-50 dark:from-brand-950/30 dark:via-purple-950/30 dark:to-amber-950/30">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg uppercase shadow-md">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg uppercase shadow-md">
                   {composerContact.name ? composerContact.name.charAt(0) : '?'}
                 </div>
                 <div>
@@ -1618,8 +1618,8 @@ export default function ContactsPage() {
                       onClick={() => setComposerTone(t.key)}
                       className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
                         composerTone === t.key
-                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/30'
-                          : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-indigo-400'
+                          ? 'bg-brand-600 text-white border-brand-600 shadow-md shadow-brand-500/30'
+                          : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-brand-400'
                       }`}
                     >
                       {t.label}
@@ -1632,7 +1632,7 @@ export default function ContactsPage() {
               {!generatedDraft && !isGenerating && (
                 <button
                   onClick={generateDraft}
-                  className="w-full py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-[200%_auto] animate-[gradient-shift_3s_ease-in-out_infinite] text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-indigo-500/30 transition-all active:scale-[0.98]"
+                  className="w-full py-4 bg-gradient-to-r from-brand-600 via-purple-600 to-brand-600 bg-[200%_auto] animate-[gradient-shift_3s_ease-in-out_infinite] text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-brand-500/30 transition-all active:scale-[0.98]"
                 >
                   <Wand2 size={18} /> Generate Follow-Up with Gemini ✦
                 </button>
@@ -1642,8 +1642,8 @@ export default function ContactsPage() {
               {isGenerating && (
                 <div className="space-y-4 animate-pulse">
                   <div className="flex items-center gap-3">
-                    <RefreshCw size={18} className="text-indigo-500 animate-spin" />
-                    <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">Gemini is crafting your email...</span>
+                    <RefreshCw size={18} className="text-brand-500 animate-spin" />
+                    <span className="text-sm font-bold text-brand-600 dark:text-brand-400">Gemini is crafting your email...</span>
                   </div>
                   <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded-full w-3/4" />
                   <div className="space-y-3 bg-gray-50 dark:bg-gray-900 rounded-xl p-4 border border-gray-100 dark:border-gray-800">
@@ -1675,7 +1675,7 @@ export default function ContactsPage() {
                       type="text"
                       value={generatedDraft.subject}
                       onChange={e => setGeneratedDraft({ ...generatedDraft, subject: e.target.value })}
-                      className="w-full mt-1 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/40 transition-shadow font-semibold"
+                      className="w-full mt-1 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500/40 transition-shadow font-semibold"
                     />
                   </div>
 
@@ -1686,14 +1686,14 @@ export default function ContactsPage() {
                       rows={8}
                       value={generatedDraft.body}
                       onChange={e => setGeneratedDraft({ ...generatedDraft, body: e.target.value })}
-                      className="w-full mt-1 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-3 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/40 transition-shadow resize-none font-serif leading-relaxed"
+                      className="w-full mt-1 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-3 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500/40 transition-shadow resize-none font-serif leading-relaxed"
                     />
                   </div>
 
                   {/* Regenerate */}
                   <button
                     onClick={generateDraft}
-                    className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 text-xs font-bold rounded-xl hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 text-xs font-bold rounded-xl hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
                   >
                     <RefreshCw size={14} /> Regenerate
                   </button>
@@ -1715,7 +1715,7 @@ export default function ContactsPage() {
                   <button
                     onClick={handleSendDraft}
                     disabled={isSendingDraft || !composerContact.email}
-                    className="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition-colors flex items-center gap-2 shadow-md shadow-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                    className="px-5 py-2.5 rounded-xl text-sm font-bold bg-brand-600 text-white hover:bg-brand-700 transition-colors flex items-center gap-2 shadow-md shadow-brand-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                   >
                     {isSendingDraft ? <RefreshCw size={14} className="animate-spin" /> : <Send size={14} />}
                     {isSendingDraft ? 'Sending...' : 'Send Now'}
@@ -1790,10 +1790,10 @@ export default function ContactsPage() {
       {/* ── CRM SYNC NOTIFICATION ── */}
       {(isSyncing || syncMessage) && (
         <div className="fixed top-4 right-4 z-[9999] animate-in slide-in-from-top-4 fade-in duration-300">
-          <div className="bg-white dark:bg-gray-900 border border-indigo-100 dark:border-indigo-900 shadow-xl rounded-2xl p-4 flex items-center gap-4 min-w-[300px]">
+          <div className="bg-white dark:bg-gray-900 border border-brand-100 dark:border-brand-900 shadow-xl rounded-2xl p-4 flex items-center gap-4 min-w-[300px]">
             {isSyncing ? (
               <>
-                <RefreshCw size={24} className="text-indigo-600 animate-spin flex-shrink-0" />
+                <RefreshCw size={24} className="text-brand-600 animate-spin flex-shrink-0" />
                 <div className="flex-1">
                   <p className="text-sm font-bold text-gray-900 dark:text-white">Authorizing CRM Link...</p>
                   <p className="text-xs text-gray-500">Injecting {filteredContacts.length} contacts.</p>
@@ -1817,7 +1817,7 @@ export default function ContactsPage() {
           <div className="bg-white dark:bg-[#161c28] w-full max-w-2xl rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col max-h-[90vh] overflow-hidden animate-scale-up">
             <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                <div className="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center text-brand-600 dark:text-brand-400">
                   <Cpu size={20} />
                 </div>
                 <div>
@@ -1856,10 +1856,10 @@ export default function ContactsPage() {
                   {duplicateGroups.map((group, idx) => (
                     <div key={group.fingerprint} className="border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
                       <div className="bg-gray-50 dark:bg-gray-800/50 px-5 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-brand-600 dark:text-brand-400 flex items-center gap-2">
                            Match Group #{idx + 1} • {group.reason}
                         </span>
-                        <span className="text-[9px] font-black uppercase px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded">
+                        <span className="text-[9px] font-black uppercase px-2 py-0.5 bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 rounded">
                            {group.confidence}% Match
                         </span>
                       </div>
@@ -1867,10 +1867,10 @@ export default function ContactsPage() {
                       <div className="p-5 space-y-4">
                         <div className="flex items-center gap-4">
                           <div className="relative shrink-0">
-                            <div className="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-lg font-black italic">
+                            <div className="w-12 h-12 rounded-xl bg-brand-600 flex items-center justify-center text-white text-lg font-black italic">
                               {group.primary_contact.name?.[0] || 'U'}
                             </div>
-                            <div className="absolute -top-2 -right-2 bg-indigo-600 text-white p-1 rounded-full border-2 border-white dark:border-[#161c28]">
+                            <div className="absolute -top-2 -right-2 bg-brand-600 text-white p-1 rounded-full border-2 border-white dark:border-[#161c28]">
                                <Zap size={10} strokeWidth={3} />
                             </div>
                           </div>
@@ -1901,7 +1901,7 @@ export default function ContactsPage() {
                         <button 
                           onClick={() => handleMergeGroup(group)}
                           disabled={isMerging}
-                          className="w-full mt-2 py-3 bg-white dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border border-indigo-600 dark:border-indigo-400 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 dark:hover:text-white transition-all flex items-center justify-center gap-2 group shadow-lg shadow-indigo-600/5"
+                          className="w-full mt-2 py-3 bg-white dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 border border-brand-600 dark:border-brand-400 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-brand-600 hover:text-white dark:hover:bg-brand-600 dark:hover:text-white transition-all flex items-center justify-center gap-2 group shadow-lg shadow-brand-600/5"
                         >
                           {isMerging ? <RefreshCw className="animate-spin" size={14} /> : <Wand2 size={14} className="group-hover:rotate-12 transition-transform" />}
                           Resolve Duplicate Group

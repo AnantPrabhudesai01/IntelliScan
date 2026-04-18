@@ -45,9 +45,9 @@ export default function MiniCalendar({ currentMonth, selectedDate, onDateClick, 
               className={`
                 h-8 w-8 flex items-center justify-center rounded-xl text-xs font-bold transition-all
                 ${isSelected 
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-110' 
+                  ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20 scale-110' 
                   : isToday
-                  ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800'
+                  ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 border border-brand-100 dark:border-brand-800'
                   : isCurrentMonth
                   ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   : 'text-gray-300 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/50'

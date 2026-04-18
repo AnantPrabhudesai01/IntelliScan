@@ -68,7 +68,7 @@ export default function BookingLinksPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-[400px]">
-      <Loader2 className="animate-spin text-indigo-600" size={32} />
+      <Loader2 className="animate-spin text-brand-600" size={32} />
     </div>
   );
 
@@ -81,7 +81,7 @@ export default function BookingLinksPage() {
         </div>
         <button
           onClick={() => setShowNewModal(true)}
-          className="flex items-center gap-2 px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-indigo-500/20 active:scale-95 transition-all"
+          className="flex items-center gap-2 px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-brand-500/20 active:scale-95 transition-all"
         >
           <Plus size={18} /> Create New Link
         </button>
@@ -89,12 +89,12 @@ export default function BookingLinksPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {links.map((link) => (
-          <div key={link.id} className="group bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-[2.5rem] shadow-lg hover:shadow-2xl hover:border-indigo-500/30 transition-all duration-300 overflow-hidden flex flex-col">
+          <div key={link.id} className="group bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-[2.5rem] shadow-lg hover:shadow-2xl hover:border-brand-500/30 transition-all duration-300 overflow-hidden flex flex-col">
             <div className="h-2" style={{ backgroundColor: link.color || '#7b2fff' }}></div>
             <div className="p-8 flex-1 flex flex-col">
               <div className="flex justify-between items-start mb-4">
                 <div className="w-12 h-12 rounded-2xl bg-gray-50 dark:bg-gray-900 flex items-center justify-center border border-gray-100 dark:border-gray-800">
-                  <Clock size={20} className="text-indigo-600" />
+                  <Clock size={20} className="text-brand-600" />
                 </div>
                 <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
                   link.is_active ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800' : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800'
@@ -135,8 +135,8 @@ export default function BookingLinksPage() {
 
         {links.length === 0 && (
           <div className="col-span-full py-20 bg-white dark:bg-gray-950 border border-dashed border-gray-200 dark:border-gray-800 rounded-[2.5rem] flex flex-col items-center text-center px-6">
-            <div className="w-16 h-16 rounded-full bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center mb-6">
-              <Globe size={32} className="text-indigo-600 dark:text-indigo-400" />
+            <div className="w-16 h-16 rounded-full bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center mb-6">
+              <Globe size={32} className="text-brand-600 dark:text-brand-400" />
             </div>
             <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-2">No Booking Links Yet</h3>
             <p className="text-gray-500 font-medium max-w-sm">Create a professional booking link to share with your contacts and automate your schedule.</p>
@@ -150,7 +150,7 @@ export default function BookingLinksPage() {
            <div className="w-full max-w-lg bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
              <div className="p-8 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
                <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center">
+                 <div className="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center">
                    <Plus className="text-white" size={20} />
                  </div>
                  <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight">New Booking Link</h2>
@@ -164,7 +164,7 @@ export default function BookingLinksPage() {
                    type="text"
                    value={formData.title}
                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                   className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none"
+                   className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none"
                  />
                </div>
                <div className="space-y-2">
@@ -175,7 +175,7 @@ export default function BookingLinksPage() {
                      type="text"
                      value={formData.slug}
                      onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                     className="flex-1 px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none"
+                     className="flex-1 px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none"
                    />
                  </div>
                </div>
@@ -186,7 +186,7 @@ export default function BookingLinksPage() {
                      type="number"
                      value={formData.duration_minutes}
                      onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) })}
-                     className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none"
+                     className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none"
                    />
                  </div>
                  <div className="space-y-2">
@@ -201,7 +201,7 @@ export default function BookingLinksPage() {
                </div>
                <button
                  type="submit"
-                 className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-indigo-500/20 transition-all"
+                 className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-brand-500/20 transition-all"
                >
                  Activate Booking Link
                </button>

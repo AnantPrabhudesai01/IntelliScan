@@ -141,14 +141,14 @@ export default function TemplateEditorPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowAiPanel(!showAiPanel)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 rounded-lg text-sm font-semibold transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/30 text-brand-400 rounded-lg text-sm font-semibold transition-all"
           >
             <Sparkles size={15} /> AI Generate
           </button>
           <button
             onClick={handleSave}
             disabled={saving || !name.trim()}
-            className="flex items-center gap-2 px-5 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-lg text-sm font-bold transition-all"
+            className="flex items-center gap-2 px-5 py-2 bg-brand-600 hover:bg-brand-500 disabled:opacity-40 text-white rounded-lg text-sm font-bold transition-all"
           >
             <Save size={15} /> {saving ? 'Saving...' : 'Save Template'}
           </button>
@@ -168,7 +168,7 @@ export default function TemplateEditorPage() {
                   onClick={() => loadStarter(key)}
                   className={`p-2 rounded-lg border text-[10px] font-bold uppercase transition-all ${
                     starter === key
-                      ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400'
+                      ? 'border-brand-500 bg-brand-500/10 text-brand-400'
                       : 'border-gray-700 text-gray-500 hover:border-gray-600'
                   }`}
                 >
@@ -186,7 +186,7 @@ export default function TemplateEditorPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Welcome Email"
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 transition-colors"
             />
           </div>
 
@@ -198,7 +198,7 @@ export default function TemplateEditorPage() {
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="e.g. Welcome to IntelliScan!"
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 transition-colors"
             />
           </div>
 
@@ -208,7 +208,7 @@ export default function TemplateEditorPage() {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500"
             >
               {['general', 'welcome', 'follow-up', 'newsletter', 'promotional'].map(c => (
                 <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
@@ -221,7 +221,7 @@ export default function TemplateEditorPage() {
             <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Available Variables</p>
             <div className="space-y-1">
               {['{{name}}', '{{first_name}}', '{{company}}', '{{email}}', '{{dashboard_url}}', '{{sender_name}}'].map(v => (
-                <code key={v} className="block text-[10px] text-indigo-400 font-mono">{v}</code>
+                <code key={v} className="block text-[10px] text-brand-400 font-mono">{v}</code>
               ))}
             </div>
           </div>
@@ -229,22 +229,22 @@ export default function TemplateEditorPage() {
 
         {/* AI Prompt Panel */}
         {showAiPanel && (
-          <div className="absolute top-[61px] left-72 right-0 z-20 bg-[#0d1117]/95 backdrop-blur-sm border-b border-indigo-500/20 p-5">
+          <div className="absolute top-[61px] left-72 right-0 z-20 bg-[#0d1117]/95 backdrop-blur-sm border-b border-brand-500/20 p-5">
             <div className="max-w-2xl mx-auto flex gap-3 items-center">
-              <Sparkles size={18} className="text-indigo-400 flex-shrink-0" />
+              <Sparkles size={18} className="text-brand-400 flex-shrink-0" />
               <input
                 type="text"
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && generateAI()}
                 placeholder='Describe the email... e.g. "A follow-up email for a SaaS product demo request"'
-                className="flex-1 bg-gray-900 border border-indigo-500/30 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500"
+                className="flex-1 bg-gray-900 border border-brand-500/30 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
                 autoFocus
               />
               <button
                 onClick={generateAI}
                 disabled={aiLoading || !aiPrompt.trim()}
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-lg text-sm font-bold transition-all flex-shrink-0"
+                className="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 disabled:opacity-40 text-white rounded-lg text-sm font-bold transition-all flex-shrink-0"
               >
                 {aiLoading ? 'Generating...' : 'Generate'}
               </button>
@@ -266,7 +266,7 @@ export default function TemplateEditorPage() {
                 onClick={() => setActiveTab(key)}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-t-lg text-xs font-bold transition-all ${
                   activeTab === key
-                    ? 'text-indigo-400 border-b-2 border-indigo-500 -mb-px'
+                    ? 'text-brand-400 border-b-2 border-brand-500 -mb-px'
                     : 'text-gray-500 hover:text-gray-300'
                 }`}
               >

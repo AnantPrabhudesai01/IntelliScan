@@ -53,7 +53,7 @@ export default function Leaderboard() {
     return () => { cancelled = true; };
   }, [activeTab]);
 
-  if (loading) return <div className="p-10 text-center animate-pulse text-indigo-600 font-black">Loading Champions...</div>;
+  if (loading) return <div className="p-10 text-center animate-pulse text-brand-600 font-black">Loading Champions...</div>;
 
   const topThree = rankings.slice(0, 3);
 
@@ -73,7 +73,7 @@ export default function Leaderboard() {
             <button 
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2 rounded-xl text-xs font-black transition-all ${activeTab === tab ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
+              className={`px-6 py-2 rounded-xl text-xs font-black transition-all ${activeTab === tab ? 'bg-white dark:bg-gray-700 text-brand-600 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
             >
               {tab}
             </button>
@@ -153,11 +153,11 @@ export default function Leaderboard() {
         <div className="p-8 border-b border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h2 className="text-xl font-headline font-black text-gray-900 dark:text-white tracking-tight">Team Rankings</h2>
           <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" size={16} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-500 transition-colors" size={16} />
             <input 
               type="text" 
               placeholder="Filter names..."
-              className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-2 pl-10 pr-4 text-xs font-bold outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
+              className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-2 pl-10 pr-4 text-xs font-bold outline-none focus:ring-4 focus:ring-brand-500/10 transition-all"
             />
           </div>
         </div>
@@ -178,7 +178,7 @@ export default function Leaderboard() {
               {rankings.map((user, index) => (
                 <tr key={index} className="group hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
                   <td className="px-8 py-6">
-                    <span className={`text-sm font-black ${index < 3 ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400'}`}>#{index + 1}</span>
+                    <span className={`text-sm font-black ${index < 3 ? 'text-brand-600 dark:text-brand-400' : 'text-gray-400'}`}>#{index + 1}</span>
                   </td>
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
@@ -217,7 +217,7 @@ export default function Leaderboard() {
                     </div>
                   </td>
                   <td className="px-8 py-6 text-right">
-                    <button className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-400 hover:text-indigo-600 transition-all">
+                    <button className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-400 hover:text-brand-600 transition-all">
                        <ArrowUpRight size={16} />
                     </button>
                   </td>

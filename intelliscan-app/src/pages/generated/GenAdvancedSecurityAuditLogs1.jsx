@@ -67,7 +67,7 @@ export default function GenAdvancedSecurityAuditLogs1() {
   if (loading) {
     return (
       <div className="w-full h-screen flex flex-col items-center justify-center gap-4 bg-gray-950">
-        <div className="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin"></div>
         <p className="text-gray-400 font-bold animate-pulse">Decrypting Security Ledger...</p>
       </div>
     );
@@ -81,7 +81,7 @@ export default function GenAdvancedSecurityAuditLogs1() {
         </div>
         <h2 className="text-2xl font-black text-white mb-2">Security Access Restricted</h2>
         <p className="text-gray-400 max-w-md mb-8">{error}</p>
-        <button onClick={() => window.location.reload()} className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all transform active:scale-95 shadow-xl shadow-indigo-500/20">
+        <button onClick={() => window.location.reload()} className="px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold transition-all transform active:scale-95 shadow-xl shadow-brand-500/20">
           Re-authenticate Session
         </button>
       </div>
@@ -90,13 +90,13 @@ export default function GenAdvancedSecurityAuditLogs1() {
 
   return (
     <div className="w-full h-full animate-fade-in relative pb-12">
-      <div className="absolute top-0 right-0 m-4 z-50 px-3 py-1 bg-indigo-500/20 text-indigo-400 text-[10px] font-bold uppercase rounded-full border border-indigo-500/20 backdrop-blur-md italic tracking-widest">Production Enforced</div>
+      <div className="absolute top-0 right-0 m-4 z-50 px-3 py-1 bg-brand-500/20 text-brand-400 text-[10px] font-bold uppercase rounded-full border border-brand-500/20 backdrop-blur-md italic tracking-widest">Production Enforced</div>
       
       <div className="max-w-7xl mx-auto flex flex-col gap-8 p-6 md:p-10">
         <section className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">V3 Immutable</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase bg-brand-500/10 text-brand-400 border border-brand-500/20">V3 Immutable</span>
               <span className="w-1 h-1 rounded-full bg-gray-700"></span>
               <span className="text-xs text-gray-400">Enterprise ledger active</span>
             </div>
@@ -105,8 +105,8 @@ export default function GenAdvancedSecurityAuditLogs1() {
           </div>
           <div className="flex gap-4">
             <div className="bg-gray-900/50 border border-gray-800 px-4 py-3 rounded-2xl flex items-center gap-4 backdrop-blur-sm">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-                <span className="material-symbols-outlined text-indigo-400">shield</span>
+              <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-brand-400">shield</span>
               </div>
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-gray-500 font-bold">Integrity</p>
@@ -120,11 +120,11 @@ export default function GenAdvancedSecurityAuditLogs1() {
           <div className="px-8 py-6 flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-800 gap-4">
             <div className="flex items-center gap-4 flex-1 max-w-md">
               <div className="relative w-full group">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-indigo-400 transition-colors">search</span>
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-brand-400 transition-colors">search</span>
                 <input 
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                  className="w-full bg-gray-950 border border-gray-800 rounded-2xl pl-12 pr-4 py-3 text-sm text-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all placeholder:text-gray-600 outline-none font-medium" 
+                  className="w-full bg-gray-950 border border-gray-800 rounded-2xl pl-12 pr-4 py-3 text-sm text-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all placeholder:text-gray-600 outline-none font-medium" 
                   placeholder="Filter by Actor, Category or IP..." 
                   type="text"
                 />
@@ -136,14 +136,14 @@ export default function GenAdvancedSecurityAuditLogs1() {
               </span>
               <button 
                 onClick={handleDownloadCSV} 
-                className="p-3 bg-gray-950 border border-gray-800 hover:border-indigo-500 rounded-2xl text-gray-400 hover:text-indigo-400 transition-all flex items-center justify-center" 
+                className="p-3 bg-gray-950 border border-gray-800 hover:border-brand-500 rounded-2xl text-gray-400 hover:text-brand-400 transition-all flex items-center justify-center" 
                 title="Export Ledger"
               >
                 <span className="material-symbols-outlined text-xl">download</span>
               </button>
               <button 
                 onClick={fetchLogs} 
-                className="p-3 bg-gray-950 border border-gray-800 hover:border-indigo-500 rounded-2xl text-gray-400 hover:text-indigo-400 transition-all flex items-center justify-center" 
+                className="p-3 bg-gray-950 border border-gray-800 hover:border-brand-500 rounded-2xl text-gray-400 hover:text-brand-400 transition-all flex items-center justify-center" 
                 title="Refresh Logs"
               >
                 <span className="material-symbols-outlined text-xl">refresh</span>
@@ -174,14 +174,14 @@ export default function GenAdvancedSecurityAuditLogs1() {
                   </tr>
                 ) : (
                   currentLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-indigo-500/5 transition-all group">
+                    <tr key={log.id} className="hover:bg-brand-500/5 transition-all group">
                       <td className="px-8 py-5 align-top">
                         <div className="text-sm text-gray-200 font-bold">{new Date(log.timestamp).toLocaleDateString()}</div>
                         <div className="text-[10px] text-gray-500 font-black mt-1">{new Date(log.timestamp).toLocaleTimeString()}</div>
                       </td>
                       <td className="px-8 py-5 align-top">
                         <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center text-[10px] font-black border transition-colors ${log.status === 'SUCCESS' ? 'bg-indigo-950/40 text-indigo-400 border-indigo-500/20' : 'bg-red-950/40 text-red-400 border-red-500/20'}`}>
+                          <div className={`w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center text-[10px] font-black border transition-colors ${log.status === 'SUCCESS' ? 'bg-brand-950/40 text-brand-400 border-brand-500/20' : 'bg-red-950/40 text-red-400 border-red-500/20'}`}>
                             {log.name ? log.name.substring(0,2).toUpperCase() : 'AI'}
                           </div>
                           <div>
@@ -236,7 +236,7 @@ export default function GenAdvancedSecurityAuditLogs1() {
                   <button 
                     key={i} 
                     onClick={() => { setPage(i + 1); window.scrollTo(0,0); }}
-                    className={`w-9 h-9 text-[10px] font-black rounded-xl transition-all ${page === i + 1 ? 'text-white bg-indigo-600 shadow-lg shadow-indigo-500/40' : 'text-gray-500 hover:text-white hover:bg-gray-900 border border-gray-800'}`}
+                    className={`w-9 h-9 text-[10px] font-black rounded-xl transition-all ${page === i + 1 ? 'text-white bg-brand-600 shadow-lg shadow-brand-500/40' : 'text-gray-500 hover:text-white hover:bg-gray-900 border border-gray-800'}`}
                   >
                     {i + 1}
                   </button>
@@ -269,10 +269,10 @@ export default function GenAdvancedSecurityAuditLogs1() {
           </div>
         </div>
 
-        <div className="flex items-start gap-3 p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-3xl">
-          <span className="material-symbols-outlined text-indigo-400 text-xl">verified_user</span>
+        <div className="flex items-start gap-3 p-6 bg-brand-500/5 border border-brand-500/10 rounded-3xl">
+          <span className="material-symbols-outlined text-brand-400 text-xl">verified_user</span>
           <p className="text-[11px] text-gray-400 leading-relaxed font-medium">
-            <strong className="text-indigo-400">Compliance Advisory:</strong> This audit trail is strictly restricted to workspace administrators. All active sessions, credit consumption events, and sensitive data exports are recorded with immutable timestamps. For complete forensic data including deep-packet inspection logs, please submit a request to the Security Operations Center (SOC).
+            <strong className="text-brand-400">Compliance Advisory:</strong> This audit trail is strictly restricted to workspace administrators. All active sessions, credit consumption events, and sensitive data exports are recorded with immutable timestamps. For complete forensic data including deep-packet inspection logs, please submit a request to the Security Operations Center (SOC).
           </p>
         </div>
       </div>

@@ -165,13 +165,13 @@ export default function CampaignBuilderPage() {
           {stepsList.map((s) => (
             <div key={s.id} className={`flex items-center gap-3 transition-all duration-500 ${step >= s.id ? 'opacity-100' : 'opacity-25 grayscale'}`}>
               <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-2 transition-all duration-500 ${
-                step === s.id ? 'bg-indigo-600 border-indigo-400 shadow-[0_0_25px_rgba(99,102,241,0.5)] text-white scale-110' : 
+                step === s.id ? 'bg-brand-600 border-brand-400 shadow-[0_0_25px_rgba(99,102,241,0.5)] text-white scale-110' : 
                 step > s.id ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400' : 'bg-white/5 border-white/10 text-gray-500'
               }`}>
                 {step > s.id ? <CheckCircle size={20} /> : s.icon}
               </div>
               <div className="hidden md:block">
-                <span className={`text-[9px] font-black uppercase tracking-[0.2em] block mb-0.5 ${step === s.id ? 'text-indigo-400' : 'text-gray-500'}`}>
+                <span className={`text-[9px] font-black uppercase tracking-[0.2em] block mb-0.5 ${step === s.id ? 'text-brand-400' : 'text-gray-500'}`}>
                   Step 0{s.id}
                 </span>
                 <span className={`text-xs font-black uppercase tracking-tight ${step === s.id ? 'text-white' : 'text-gray-600'}`}>
@@ -192,7 +192,7 @@ export default function CampaignBuilderPage() {
             <button 
               disabled={!canProceed()}
               onClick={() => setStep(step + 1)} 
-              className="px-8 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-20 disabled:cursor-not-allowed text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-3 shadow-xl shadow-indigo-600/20 active:scale-95 transition-all"
+              className="px-8 py-2.5 bg-brand-600 hover:bg-brand-500 disabled:opacity-20 disabled:cursor-not-allowed text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-3 shadow-xl shadow-brand-600/20 active:scale-95 transition-all"
             >
               Continue <ArrowRight size={16} />
             </button>
@@ -214,58 +214,58 @@ export default function CampaignBuilderPage() {
           {step === 1 && (
             <div className="space-y-10 animate-in slide-in-from-left duration-700">
               <div className="relative">
-                <div className="absolute -left-10 top-0 bottom-0 w-1 bg-indigo-600 rounded-full" />
-                <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Campaign <span className="text-indigo-500">Parameters</span></h2>
+                <div className="absolute -left-10 top-0 bottom-0 w-1 bg-brand-600 rounded-full" />
+                <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Campaign <span className="text-brand-500">Parameters</span></h2>
                 <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">Define the core identity of this outreach pulse.</p>
               </div>
               <div className="space-y-8">
                 <div className="group transition-all">
-                  <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-indigo-500 transition-colors">Campaign Internal Descriptor</label>
+                  <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-brand-500 transition-colors">Campaign Internal Descriptor</label>
                   <input 
                     type="text" 
                     value={campaign.name}
                     onChange={(e) => setCampaign({...campaign, name: e.target.value})}
                     placeholder="e.g. Q1 Global Tech Expansion - Phase 1"
-                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 font-bold tracking-tight transition-all placeholder:text-gray-700"
+                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white focus:outline-none focus:ring-2 focus:ring-brand-500/40 font-bold tracking-tight transition-all placeholder:text-gray-700"
                   />
                 </div>
                 <div className="group transition-all">
-                  <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-indigo-500 transition-colors">Recipient Subject Line</label>
+                  <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-brand-500 transition-colors">Recipient Subject Line</label>
                   <input 
                     type="text" 
                     value={campaign.subject}
                     onChange={(e) => setCampaign({...campaign, subject: e.target.value})}
                     placeholder="Enter an intriguing vector..."
-                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 font-bold tracking-tight transition-all placeholder:text-gray-700"
+                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white focus:outline-none focus:ring-2 focus:ring-brand-500/40 font-bold tracking-tight transition-all placeholder:text-gray-700"
                   />
                 </div>
                 <div className="group transition-all">
-                  <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-indigo-500 transition-colors">Inbox Preview Abstract</label>
+                  <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-brand-500 transition-colors">Inbox Preview Abstract</label>
                   <input 
                     type="text" 
                     value={campaign.preview_text}
                     onChange={(e) => setCampaign({...campaign, preview_text: e.target.value})}
                     placeholder="The secondary hook in the inbox..."
-                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 font-medium transition-all placeholder:text-gray-700"
+                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white focus:outline-none focus:ring-2 focus:ring-brand-500/40 font-medium transition-all placeholder:text-gray-700"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="group transition-all">
-                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-indigo-500 transition-colors">Sender Display Identity</label>
+                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-brand-500 transition-colors">Sender Display Identity</label>
                     <input 
                       type="text" 
                       value={campaign.from_name}
                       onChange={(e) => setCampaign({...campaign, from_name: e.target.value})}
-                      className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 font-bold transition-all"
+                      className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white focus:outline-none focus:ring-2 focus:ring-brand-500/40 font-bold transition-all"
                     />
                   </div>
                   <div className="group transition-all">
-                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-indigo-500 transition-colors">Return Logic (Reply-To)</label>
+                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-brand-500 transition-colors">Return Logic (Reply-To)</label>
                     <input 
                       type="email" 
                       value={campaign.reply_to}
                       onChange={(e) => setCampaign({...campaign, reply_to: e.target.value})}
-                      className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 font-mono text-xs transition-all"
+                      className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white focus:outline-none focus:ring-2 focus:ring-brand-500/40 font-mono text-xs transition-all"
                     />
                   </div>
                 </div>
@@ -276,8 +276,8 @@ export default function CampaignBuilderPage() {
           {step === 2 && (
             <div className="space-y-10 animate-in slide-in-from-left duration-700">
                <div className="relative">
-                <div className="absolute -left-10 top-0 bottom-0 w-1 bg-indigo-600 rounded-full" />
-                <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Audience <span className="text-indigo-500">Aggregation</span></h2>
+                <div className="absolute -left-10 top-0 bottom-0 w-1 bg-brand-600 rounded-full" />
+                <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Audience <span className="text-brand-500">Aggregation</span></h2>
                 <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">Deploy this vector to one or more intelligence segments.</p>
               </div>
               <div className="grid grid-cols-1 gap-5">
@@ -287,7 +287,7 @@ export default function CampaignBuilderPage() {
                       <Users size={32} />
                     </div>
                     <p className="text-gray-500 font-black text-xs uppercase tracking-widest">No intelligence segments found.</p>
-                    <Link to="/dashboard/email-marketing/lists" className="text-indigo-400 text-[10px] font-black uppercase mt-4 hover:text-indigo-300 underline decoration-indigo-500/30">Sync New Audience</Link>
+                    <Link to="/dashboard/email-marketing/lists" className="text-brand-400 text-[10px] font-black uppercase mt-4 hover:text-brand-300 underline decoration-brand-500/30">Sync New Audience</Link>
                   </div>
                 ) : (
                   lists.map(list => (
@@ -300,23 +300,23 @@ export default function CampaignBuilderPage() {
                         setCampaign({...campaign, list_ids: ids});
                       }}
                       className={`p-8 bg-black/40 border-2 rounded-[2rem] cursor-pointer transition-all duration-500 group ${
-                        campaign.list_ids.includes(list.id) ? 'border-indigo-600 shadow-2xl shadow-indigo-600/20 scale-[1.02]' : 'border-white/5 hover:border-white/10'
+                        campaign.list_ids.includes(list.id) ? 'border-brand-600 shadow-2xl shadow-brand-600/20 scale-[1.02]' : 'border-white/5 hover:border-white/10'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-6">
-                          <div className={`w-14 h-14 rounded-2xl border transition-all duration-500 flex items-center justify-center ${campaign.list_ids.includes(list.id) ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-white/5 text-gray-600 border-white/5'}`}>
+                          <div className={`w-14 h-14 rounded-2xl border transition-all duration-500 flex items-center justify-center ${campaign.list_ids.includes(list.id) ? 'bg-brand-600 border-brand-500 text-white' : 'bg-white/5 text-gray-600 border-white/5'}`}>
                             <Users size={24} />
                           </div>
                           <div>
-                            <h4 className="text-base font-black text-white uppercase tracking-tight mb-1 group-hover:text-indigo-400 transition-colors">{list.name}</h4>
+                            <h4 className="text-base font-black text-white uppercase tracking-tight mb-1 group-hover:text-brand-400 transition-colors">{list.name}</h4>
                             <div className="flex items-center gap-3">
                               <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-md">{list.contact_count} Profiles</span>
-                              <span className="text-[10px] text-indigo-500 font-black uppercase tracking-widest">Live Sync Agent Enabled</span>
+                              <span className="text-[10px] text-brand-500 font-black uppercase tracking-widest">Live Sync Agent Enabled</span>
                             </div>
                           </div>
                         </div>
-                        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${campaign.list_ids.includes(list.id) ? 'bg-indigo-600 border-indigo-400 text-white scale-110' : 'border-white/10 opacity-20'}`}>
+                        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${campaign.list_ids.includes(list.id) ? 'bg-brand-600 border-brand-400 text-white scale-110' : 'border-white/10 opacity-20'}`}>
                            <CheckCircle size={18} />
                         </div>
                       </div>
@@ -331,14 +331,14 @@ export default function CampaignBuilderPage() {
             <div className="space-y-10 animate-in slide-in-from-left duration-700">
               <div className="flex items-start justify-between">
                 <div className="relative">
-                  <div className="absolute -left-10 top-0 bottom-0 w-1 bg-indigo-600 rounded-full" />
-                  <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Creative <span className="text-indigo-500">Design</span></h2>
+                  <div className="absolute -left-10 top-0 bottom-0 w-1 bg-brand-600 rounded-full" />
+                  <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Creative <span className="text-brand-500">Design</span></h2>
                   <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">Architect your high-conversion intelligence vector.</p>
                 </div>
                 <button 
                   onClick={handleGenerateAI}
                   disabled={aiGenerating}
-                  className="px-6 py-3 bg-gradient-to-br from-indigo-600 via-violet-600 to-indigo-700 hover:shadow-2xl hover:shadow-indigo-600/40 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-3 transition-all active:scale-95 disabled:opacity-50 ring-2 ring-indigo-500/20"
+                  className="px-6 py-3 bg-gradient-to-br from-brand-600 via-violet-600 to-brand-700 hover:shadow-2xl hover:shadow-brand-600/40 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-3 transition-all active:scale-95 disabled:opacity-50 ring-2 ring-brand-500/20"
                 >
                   {aiGenerating ? <RefreshCw size={14} className="animate-spin" /> : <Sparkles size={14} />}
                   {aiGenerating ? 'AI Orchestrating...' : 'AI Vector Orchestrator'}
@@ -348,12 +348,12 @@ export default function CampaignBuilderPage() {
               <div className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="group">
-                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-indigo-500 transition-colors">Strategic Template Library</label>
+                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 px-1 group-focus-within:text-brand-500 transition-colors">Strategic Template Library</label>
                     <div className="relative">
                       <select
                         value={campaign.template_id ?? ''}
                         onChange={(e) => handleTemplateSelect(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 font-black text-xs uppercase tracking-tight appearance-none cursor-pointer"
+                        className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-brand-500/40 font-black text-xs uppercase tracking-tight appearance-none cursor-pointer"
                       >
                         <option value="">[ Manual Architecture ]</option>
                         {templates.map((t) => (
@@ -372,11 +372,11 @@ export default function CampaignBuilderPage() {
                       <Database size={60} />
                     </div>
                     <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-3">Injection Variables</p>
-                    <div className="flex flex-wrap gap-2 text-[10px] text-indigo-400 font-mono">
-                      <span className="bg-indigo-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-indigo-500/20 transition-colors">{'{{firstName}}'}</span>
-                      <span className="bg-indigo-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-indigo-500/20 transition-colors">{'{{company}}'}</span>
-                      <span className="bg-indigo-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-indigo-500/20 transition-colors">{'{{title}}'}</span>
-                      <span className="bg-indigo-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-indigo-500/20 transition-colors">{'{{unsubscribe_link}}'}</span>
+                    <div className="flex flex-wrap gap-2 text-[10px] text-brand-400 font-mono">
+                      <span className="bg-brand-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-brand-500/20 transition-colors">{'{{firstName}}'}</span>
+                      <span className="bg-brand-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-brand-500/20 transition-colors">{'{{company}}'}</span>
+                      <span className="bg-brand-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-brand-500/20 transition-colors">{'{{title}}'}</span>
+                      <span className="bg-brand-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-brand-500/20 transition-colors">{'{{unsubscribe_link}}'}</span>
                     </div>
                   </div>
                 </div>
@@ -387,7 +387,7 @@ export default function CampaignBuilderPage() {
                     value={campaign.html_body}
                     onChange={(e) => setCampaign({...campaign, html_body: e.target.value})}
                     placeholder="Drop your custom HTML blueprint or let the AI Architect build it for you..."
-                    className="w-full bg-black/50 border-2 border-white/5 rounded-[2rem] p-8 text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-mono text-[11px] leading-relaxed shadow-inner scrollbar-hide"
+                    className="w-full bg-black/50 border-2 border-white/5 rounded-[2rem] p-8 text-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 font-mono text-[11px] leading-relaxed shadow-inner scrollbar-hide"
                   />
                 </div>
               </div>
@@ -411,7 +411,7 @@ export default function CampaignBuilderPage() {
                     </div>
                     <div className="text-right">
                       <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-1">Est. Recipients</span>
-                      <span className="text-lg font-black text-indigo-400">~{totalAudience.toLocaleString()} Profiles</span>
+                      <span className="text-lg font-black text-brand-400">~{totalAudience.toLocaleString()} Profiles</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center pb-6 border-b border-white/5">
@@ -431,7 +431,7 @@ export default function CampaignBuilderPage() {
                         <ShieldCheck size={14} /> Global Anti-Spam Protocol Verified
                       </span>
                     </div>
-                    <button onClick={() => setStep(3)} className="text-[10px] font-black text-indigo-400 hover:text-indigo-300 uppercase tracking-widest">
+                    <button onClick={() => setStep(3)} className="text-[10px] font-black text-brand-400 hover:text-brand-300 uppercase tracking-widest">
                       Edit Creative
                     </button>
                   </div>
@@ -443,11 +443,11 @@ export default function CampaignBuilderPage() {
                     disabled={loading}
                     className="w-full p-6 bg-white/5 hover:bg-white/10 text-white rounded-3xl font-black text-[10px] uppercase tracking-widest transition-all border border-white/10 flex items-center justify-center gap-3 active:scale-95 shadow-xl"
                   >
-                    {loading ? <RefreshCw className="animate-spin" size={16} /> : <><Save size={20} className="text-indigo-500" /> Save as Mission Draft</>}
+                    {loading ? <RefreshCw className="animate-spin" size={16} /> : <><Save size={20} className="text-brand-500" /> Save as Mission Draft</>}
                   </button>
-                  <div className="bg-indigo-600/5 border border-indigo-500/20 p-8 rounded-[2rem] flex items-center justify-between group hover:bg-indigo-500/10 transition-all cursor-pointer">
+                  <div className="bg-brand-600/5 border border-brand-500/20 p-8 rounded-[2rem] flex items-center justify-between group hover:bg-brand-500/10 transition-all cursor-pointer">
                     <div className="flex items-center gap-5">
-                      <div className="w-12 h-12 bg-indigo-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+                      <div className="w-12 h-12 bg-brand-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-brand-600/20">
                         <Clock size={24} />
                       </div>
                       <div>
@@ -455,7 +455,7 @@ export default function CampaignBuilderPage() {
                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tight">Set a specific time for peak engagement.</p>
                       </div>
                     </div>
-                    <input type="datetime-local" className="bg-white/5 border border-white/10 text-[10px] font-black text-indigo-400 focus:ring-0 rounded-xl px-4 py-2" />
+                    <input type="datetime-local" className="bg-white/5 border border-white/10 text-[10px] font-black text-brand-400 focus:ring-0 rounded-xl px-4 py-2" />
                   </div>
                 </div>
               </div>

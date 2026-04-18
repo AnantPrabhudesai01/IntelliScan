@@ -23,7 +23,7 @@ export default function EventDetailPopover({ event, onClose, onEdit, onDelete })
           <div className="flex-1">
             <h3 className="text-xl font-black text-gray-900 dark:text-white leading-tight mb-1">{event.title}</h3>
             <div className="flex items-center gap-2 text-xs font-bold text-gray-500">
-              <Clock size={14} className="text-indigo-500" />
+              <Clock size={14} className="text-brand-500" />
               <span>{format(new Date(event.start_datetime), 'EEEE, MMM do')}</span>
             </div>
           </div>
@@ -51,10 +51,10 @@ export default function EventDetailPopover({ event, onClose, onEdit, onDelete })
 
           {event.conference_link && (
             <div className="flex items-center gap-3 text-sm font-bold">
-              <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 flex items-center justify-center">
-                <Video size={16} className="text-indigo-600 dark:text-indigo-400" />
+              <div className="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center">
+                <Video size={16} className="text-brand-600 dark:text-brand-400" />
               </div>
-              <a href={event.conference_link} target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+              <a href={event.conference_link} target="_blank" rel="noopener noreferrer" className="text-brand-600 dark:text-brand-400 hover:underline">
                 Join Online Meeting
               </a>
             </div>
@@ -73,7 +73,7 @@ export default function EventDetailPopover({ event, onClose, onEdit, onDelete })
               href={generateGoogleCalendarLink(event)}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-indigo-600/20 active:scale-[0.98]"
+              className="w-full flex items-center justify-center gap-2 py-3 bg-brand-600 hover:bg-brand-700 text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-brand-600/20 active:scale-[0.98]"
             >
               <ExternalLink size={14} /> Add to Google Calendar
             </a>

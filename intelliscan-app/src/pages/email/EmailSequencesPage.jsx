@@ -69,7 +69,7 @@ export default function EmailSequencesPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl font-black text-white tracking-tighter uppercase mb-2">
-            AI <span className="text-indigo-500">Outreach</span> Sequences
+            AI <span className="text-brand-500">Outreach</span> Sequences
           </h1>
           <p className="text-gray-400 font-medium tracking-tight">Automated multi-step networking loops powered by Gemini AI.</p>
         </div>
@@ -84,7 +84,7 @@ export default function EmailSequencesPage() {
           <button 
             onClick={handleCreateSequence}
             disabled={isCreating}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+            className="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-xs transition-all flex items-center gap-2 shadow-lg shadow-brand-600/20 disabled:opacity-50"
           >
             {isCreating ? 'Creating...' : <><Plus size={16} /> Create</>}
           </button>
@@ -111,10 +111,10 @@ export default function EmailSequencesPage() {
           </div>
         ) : (
           sequences.map((seq) => (
-            <div key={seq.id} className="bg-gray-900/40 border border-gray-800 p-6 rounded-2xl group hover:border-indigo-500/50 transition-all shadow-sm flex flex-col justify-between">
+            <div key={seq.id} className="bg-gray-900/40 border border-gray-800 p-6 rounded-2xl group hover:border-brand-500/50 transition-all shadow-sm flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center text-brand-400 group-hover:bg-brand-600 group-hover:text-white transition-all">
                     <Zap size={20} />
                   </div>
                   <div className="flex gap-2">
@@ -122,13 +122,13 @@ export default function EmailSequencesPage() {
                     <button className="p-1.5 text-gray-500 hover:text-red-400 transition-colors"><Trash2 size={16} /></button>
                   </div>
                 </div>
-                <h3 className="text-lg font-black text-white mb-1 group-hover:text-indigo-300 transition-colors">{seq.name}</h3>
+                <h3 className="text-lg font-black text-white mb-1 group-hover:text-brand-300 transition-colors">{seq.name}</h3>
                 <p className="text-[10px] text-gray-500 uppercase tracking-[2px] font-black mb-4">Multi-Step Lifecycle</p>
                 
                 <div className="space-y-3 relative">
                   <div className="absolute left-1.5 top-2 bottom-2 w-0.5 bg-gray-800" />
                   <div className="flex items-center gap-3 relative">
-                    <div className="w-3 h-3 rounded-full bg-indigo-500 border-2 border-gray-900 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
+                    <div className="w-3 h-3 rounded-full bg-brand-500 border-2 border-gray-900 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
                     <span className="text-[11px] font-bold text-gray-300">Step 1: Immediate Outreach</span>
                   </div>
                   <div className="flex items-center gap-3 relative">
@@ -142,7 +142,7 @@ export default function EmailSequencesPage() {
                 <span className="text-[10px] font-black text-emerald-500 uppercase flex items-center gap-1 bg-emerald-500/10 px-2 py-0.5 rounded">
                   <CheckCircle2 size={12} /> AI Active
                 </span>
-                <Link to={`/dashboard/email-marketing/automations/${seq.id}`} className="text-xs font-black text-indigo-400 hover:text-indigo-300 flex items-center gap-1 uppercase tracking-widest transition-all">
+                <Link to={`/dashboard/email-marketing/automations/${seq.id}`} className="text-xs font-black text-brand-400 hover:text-brand-300 flex items-center gap-1 uppercase tracking-widest transition-all">
                   View Detail <ArrowRight size={12} />
                 </Link>
               </div>
@@ -152,25 +152,25 @@ export default function EmailSequencesPage() {
       </div>
 
       {/* Pro Tips */}
-      <div className="bg-indigo-900/10 border border-indigo-500/20 p-6 rounded-3xl">
+      <div className="bg-brand-900/10 border border-brand-500/20 p-6 rounded-3xl">
         <h4 className="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-          <Sparkles size={18} className="text-indigo-400" /> Sequencing Best Practices
+          <Sparkles size={18} className="text-brand-400" /> Sequencing Best Practices
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="space-y-2">
-            <p className="text-xs font-bold text-indigo-400">Step 1: Relevancy</p>
+            <p className="text-xs font-bold text-brand-400">Step 1: Relevancy</p>
             <p className="text-[11px] text-gray-400 leading-relaxed font-medium">Use AI to reference a specific piece of news from their company to build trust immediately.</p>
           </div>
           <div className="space-y-2">
-            <p className="text-xs font-bold text-indigo-400">Step 2: Value-Add</p>
+            <p className="text-xs font-bold text-brand-400">Step 2: Value-Add</p>
             <p className="text-[11px] text-gray-400 leading-relaxed font-medium">Wait at least 3 days. Send a resource or insight related to their inferred industry.</p>
           </div>
           <div className="space-y-2">
-            <p className="text-xs font-bold text-indigo-400">Step 3: The Ask</p>
+            <p className="text-xs font-bold text-brand-400">Step 3: The Ask</p>
             <p className="text-[11px] text-gray-400 leading-relaxed font-medium">Keep the call-to-action low friction. Suggest a 15-minute quick sync rather than a long meeting.</p>
           </div>
           <div className="space-y-2">
-            <p className="text-xs font-bold text-indigo-400">Engagement</p>
+            <p className="text-xs font-bold text-brand-400">Engagement</p>
             <p className="text-[11px] text-gray-400 leading-relaxed font-medium">Sequences auto-stop if a contact responds, ensuring a human touch takes over.</p>
           </div>
         </div>

@@ -66,7 +66,7 @@ export default function PricingPage() {
               return (
                 <div key={p.id} className="bg-white/5 border border-white/10 rounded-[32px] p-8 flex flex-col group hover:bg-white/[0.07] transition-all duration-300">
                   <header className="mb-6">
-                    <p className="text-indigo-400 font-black text-xs uppercase tracking-widest mb-2">{p.badge || 'Plan'}</p>
+                    <p className="text-brand-400 font-black text-xs uppercase tracking-widest mb-2">{p.badge || 'Plan'}</p>
                     <h3 className="text-white font-black text-3xl italic tracking-tighter">{p.name}</h3>
                   </header>
                   
@@ -109,7 +109,7 @@ export default function PricingPage() {
                     ) : (
                       <Link
                         to={hasToken ? `/dashboard/checkout/${p.id}` : `/sign-up?plan=${p.id}`}
-                        className="w-full flex items-center justify-center px-6 py-4 rounded-2xl bg-indigo-600 text-white font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all active:scale-95 shadow-xl shadow-indigo-600/20"
+                        className="w-full flex items-center justify-center px-6 py-4 rounded-2xl bg-brand-600 text-white font-black text-xs uppercase tracking-widest hover:bg-brand-700 transition-all active:scale-95 shadow-xl shadow-brand-600/20"
                       >
                         {hasToken ? 'Upgrade Now' : `Start with ${p.name}`}
                       </Link>

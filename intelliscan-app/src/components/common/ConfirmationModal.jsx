@@ -16,14 +16,14 @@ export default function ConfirmationModal({
   const iconMap = {
     warning: <AlertTriangle className="text-amber-500" size={24} />,
     danger: <Trash2 className="text-red-500" size={24} />,
-    info: <Info className="text-indigo-500" size={24} />,
+    info: <Info className="text-brand-500" size={24} />,
     success: <CheckCircle className="text-emerald-500" size={24} />
   };
 
   const buttonColorMap = {
     warning: 'bg-amber-600 hover:bg-amber-700',
     danger: 'bg-red-600 hover:bg-red-700',
-    info: 'bg-indigo-600 hover:bg-indigo-700',
+    info: 'bg-brand-600 hover:bg-brand-700',
     success: 'bg-emerald-600 hover:bg-emerald-700'
   };
 

@@ -19,7 +19,7 @@ export default function GenBatchProcessingMonitorUserDashboard() {
 <span className="material-symbols-outlined text-sm">filter_list</span>
                         Filter
                     </button>
-<button className="bg-primary-container text-on-primary-container px-6 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-transform active:scale-95 shadow-lg shadow-indigo-900/20">
+<button className="bg-primary-container text-on-primary-container px-6 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-transform active:scale-95 shadow-lg shadow-brand-900/20">
 <span className="material-symbols-outlined text-sm">upload</span>
                         Bulk Upload
                     </button>

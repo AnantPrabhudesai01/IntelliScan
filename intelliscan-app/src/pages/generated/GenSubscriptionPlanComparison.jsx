@@ -50,19 +50,19 @@ function ContactSalesModal({ onClose }) {
           <div className="p-8 space-y-5">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Your Professional Name</label>
-              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="w-full px-5 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="John Doe" />
+              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="w-full px-5 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-all" placeholder="John Doe" />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Corporate Email</label>
-              <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} className="w-full px-5 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="john@enterprise.com" />
+              <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} className="w-full px-5 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-all" placeholder="john@enterprise.com" />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Project Requirements</label>
-              <textarea value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} rows={4} className="w-full px-5 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none" placeholder="How many cards do you process monthly?" />
+              <textarea value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} rows={4} className="w-full px-5 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-all resize-none" placeholder="How many cards do you process monthly?" />
             </div>
             <div className="pt-4 flex gap-3">
               <button onClick={onClose} className="flex-1 py-4 text-xs font-black uppercase text-gray-400 tracking-widest hover:text-white transition-colors">Dismiss</button>
-              <button onClick={handleSend} disabled={sending || !form.name || !form.email} className="flex-[2] py-4 bg-indigo-600 text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-indigo-700 shadow-xl shadow-indigo-500/20 disabled:opacity-50 flex items-center justify-center gap-2 group transition-all">
+              <button onClick={handleSend} disabled={sending || !form.name || !form.email} className="flex-[2] py-4 bg-brand-600 text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-brand-700 shadow-xl shadow-brand-500/20 disabled:opacity-50 flex items-center justify-center gap-2 group transition-all">
                 {sending ? <RefreshCw className="animate-spin" size={16} /> : <><Sparkles size={16} className="group-hover:rotate-12 transition-transform"/> Submit Proposal</>}
               </button>
             </div>
@@ -209,7 +209,7 @@ export default function GenSubscriptionPlanComparison() {
                       ${isPro ? 'text-white/70 bg-black/10' : 'text-[var(--text-muted)] bg-[var(--surface)]'}`}>
                       {p.badge || p.name.toUpperCase()}
                     </span>
-                    {isPro ? <Cpu size={20} className="text-indigo-200" /> : isEnt ? <Globe size={20} className="text-[var(--text-muted)]" /> : <Layers size={20} className="text-[var(--text-muted)]" />}
+                    {isPro ? <Cpu size={20} className="text-brand-200" /> : isEnt ? <Globe size={20} className="text-[var(--text-muted)]" /> : <Layers size={20} className="text-[var(--text-muted)]" />}
                   </div>
                   
                   <h3 className={`text-4xl font-headline font-black italic tracking-tighter mb-2 ${isPro ? 'text-white' : ''}`}>{p.name}</h3>
@@ -219,7 +219,7 @@ export default function GenSubscriptionPlanComparison() {
                     ) : (
                       <>
                         <span className={`text-3xl font-headline font-black ${isPro ? 'text-white' : 'text-[var(--text-main)]'}`}>₹{p.price.toLocaleString()}</span>
-                        <span className={`text-[10px] font-bold uppercase ${isPro ? 'text-indigo-200' : 'text-[var(--text-muted)]'} ml-2`}>/ cycle</span>
+                        <span className={`text-[10px] font-bold uppercase ${isPro ? 'text-brand-200' : 'text-[var(--text-muted)]'} ml-2`}>/ cycle</span>
                       </>
                     )}
                   </div>
@@ -231,7 +231,7 @@ export default function GenSubscriptionPlanComparison() {
                   <ul className="space-y-4 mb-12">
                     {p.features?.map((f, i) => (
                       <li key={i} className={`flex items-center gap-3 text-sm font-bold ${isPro ? 'text-white' : 'text-[var(--text-muted)]'}`}>
-                        <Check size={18} className={`${isPro ? 'text-indigo-200 bg-white/10 p-0.5 rounded-full' : 'text-[var(--brand)]'} stroke-[3px]`} /> {f}
+                        <Check size={18} className={`${isPro ? 'text-brand-200 bg-white/10 p-0.5 rounded-full' : 'text-[var(--brand)]'} stroke-[3px]`} /> {f}
                       </li>
                     ))}
                   </ul>

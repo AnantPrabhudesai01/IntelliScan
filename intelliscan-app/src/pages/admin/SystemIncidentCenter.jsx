@@ -10,7 +10,7 @@ const SEVERITY_STYLES = {
 
 const STATUS_STYLES = {
   open: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-  acknowledged: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
+  acknowledged: 'bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300',
   resolved: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
 };
 
@@ -139,7 +139,7 @@ export default function SystemIncidentCenter() {
         </div>
         <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
           <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Acknowledged</p>
-          <p className="text-2xl font-extrabold text-indigo-500 mt-1">{stats.acknowledged}</p>
+          <p className="text-2xl font-extrabold text-brand-500 mt-1">{stats.acknowledged}</p>
         </div>
         <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
           <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Resolved</p>
@@ -218,7 +218,7 @@ export default function SystemIncidentCenter() {
                         <button
                           disabled={busyId === incident.id}
                           onClick={() => doAction(incident.id, 'ack')}
-                          className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 disabled:opacity-60"
+                          className="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-bold hover:bg-brand-700 disabled:opacity-60"
                         >
                           Acknowledge
                         </button>
@@ -272,7 +272,7 @@ export default function SystemIncidentCenter() {
                   required
                   value={form.title}
                   onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
-                  className="mt-1 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/40"
+                  className="mt-1 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500/40"
                   placeholder="e.g. OCR queue backlog in US-East"
                 />
               </div>
@@ -297,7 +297,7 @@ export default function SystemIncidentCenter() {
                     required
                     value={form.service}
                     onChange={(e) => setForm(prev => ({ ...prev, service: e.target.value }))}
-                    className="mt-1 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/40"
+                    className="mt-1 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500/40"
                     placeholder="ocr-engine"
                   />
                 </div>
@@ -309,7 +309,7 @@ export default function SystemIncidentCenter() {
                   value={form.impact}
                   onChange={(e) => setForm(prev => ({ ...prev, impact: e.target.value }))}
                   rows={3}
-                  className="mt-1 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/40 resize-none"
+                  className="mt-1 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500/40 resize-none"
                   placeholder="Describe current user impact..."
                 />
               </div>

@@ -124,7 +124,7 @@ export default function EventsPage() {
       <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-gray-200 dark:border-white/5 pb-8">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-             <div className="p-2.5 bg-indigo-600 rounded-2xl text-white shadow-lg shadow-indigo-500/20">
+             <div className="p-2.5 bg-brand-600 rounded-2xl text-white shadow-lg shadow-brand-500/20">
                <Target size={24} />
              </div>
              <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter italic uppercase">Campaign Center</h1>
@@ -139,13 +139,13 @@ export default function EventsPage() {
            <div className="bg-gray-100 dark:bg-white/5 p-1 rounded-2xl border border-gray-200 dark:border-white/10 flex shadow-inner">
              <button 
                onClick={() => setViewMode('grid')}
-               className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-gray-900 text-indigo-600 shadow-xl' : 'text-gray-400 hover:text-gray-600 dark:hover:text-white'}`}
+               className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-gray-900 text-brand-600 shadow-xl' : 'text-gray-400 hover:text-gray-600 dark:hover:text-white'}`}
              >
                Explorer
              </button>
              <button 
                onClick={() => setViewMode('map')}
-               className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'map' ? 'bg-white dark:bg-gray-900 text-indigo-600 shadow-xl' : 'text-gray-400 hover:text-gray-600 dark:hover:text-white'}`}
+               className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'map' ? 'bg-white dark:bg-gray-900 text-brand-600 shadow-xl' : 'text-gray-400 hover:text-gray-600 dark:hover:text-white'}`}
              >
                Global Map
              </button>
@@ -153,7 +153,7 @@ export default function EventsPage() {
            
            <button 
              onClick={() => setIsModalOpen(true)}
-             className="flex items-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-indigo-500/20 active:scale-95"
+             className="flex items-center gap-3 bg-brand-600 hover:bg-brand-700 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-brand-500/20 active:scale-95"
            >
              <Plus size={18} /> Add Campaign
            </button>
@@ -188,7 +188,7 @@ export default function EventsPage() {
           {events.map((evt, idx) => {
             const progress = (evt.attendees_count / evt.target_leads) * 100;
             return (
-              <div key={idx} className="group relative bg-white dark:bg-[#161c28] border border-gray-100 dark:border-white/10 rounded-[40px] overflow-hidden shadow-sm hover:shadow-2xl hover:border-indigo-500/30 transition-all duration-500 flex flex-col">
+              <div key={idx} className="group relative bg-white dark:bg-[#161c28] border border-gray-100 dark:border-white/10 rounded-[40px] overflow-hidden shadow-sm hover:shadow-2xl hover:border-brand-500/30 transition-all duration-500 flex flex-col">
                 <div className="p-8 flex-1 space-y-6">
                   {/* Status & Menu */}
                   <div className="flex items-center justify-between">
@@ -198,7 +198,7 @@ export default function EventsPage() {
                     }`}>
                       {evt.status === 'active' ? '● System Active' : 'Completed'}
                     </div>
-                    <div className="flex items-center gap-1.5 text-xs font-black text-indigo-500">
+                    <div className="flex items-center gap-1.5 text-xs font-black text-brand-500">
                        <Clock size={14} /> {evt.date}
                     </div>
                   </div>
@@ -207,14 +207,14 @@ export default function EventsPage() {
                   <div>
                     <h3 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight uppercase italic truncate">{evt.name}</h3>
                     <div className="flex items-center gap-2 text-sm font-bold text-gray-500 mt-1">
-                      <MapPin size={16} className="text-indigo-400" /> {evt.location}
+                      <MapPin size={16} className="text-brand-400" /> {evt.location}
                     </div>
                   </div>
 
                   {/* Metadata Pills */}
                   <div className="flex flex-wrap gap-2">
                      {evt.top_industries.map(tag => (
-                       <span key={tag} className="px-3 py-1 bg-gray-100 dark:bg-white/5 text-[9px] font-black text-gray-500 uppercase rounded-lg border border-gray-200 dark:border-white/5 transition-colors group-hover:border-indigo-500/20 group-hover:text-indigo-400">
+                       <span key={tag} className="px-3 py-1 bg-gray-100 dark:bg-white/5 text-[9px] font-black text-gray-500 uppercase rounded-lg border border-gray-200 dark:border-white/5 transition-colors group-hover:border-brand-500/20 group-hover:text-brand-400">
                          {tag}
                        </span>
                      ))}
@@ -228,7 +228,7 @@ export default function EventsPage() {
                     </div>
                     <div className="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden shadow-inner p-0.5">
                        <div 
-                         className="h-full bg-gradient-to-r from-indigo-500 via-blue-500 to-emerald-500 rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(99,102,241,0.4)]"
+                         className="h-full bg-gradient-to-r from-brand-500 via-blue-500 to-emerald-500 rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(99,102,241,0.4)]"
                          style={{ width: `${Math.min(progress, 100)}%` }}
                        />
                     </div>
@@ -237,10 +237,10 @@ export default function EventsPage() {
                 
                 <Link 
                   to={`/dashboard/contacts?eventId=${evt.id}`} 
-                  className="mx-8 mb-8 mt-2 p-5 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5 flex items-center justify-between group/btn hover:bg-indigo-600 transition-all duration-500"
+                  className="mx-8 mb-8 mt-2 p-5 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5 flex items-center justify-between group/btn hover:bg-brand-600 transition-all duration-500"
                 >
                   <div className="flex items-center gap-4">
-                     <div className="p-3 bg-white dark:bg-gray-900 rounded-2xl shadow-sm text-indigo-600 group-hover/btn:bg-white/10 group-hover/btn:text-white transition-colors">
+                     <div className="p-3 bg-white dark:bg-gray-900 rounded-2xl shadow-sm text-brand-600 group-hover/btn:bg-white/10 group-hover/btn:text-white transition-colors">
                         <Users size={20} />
                      </div>
                      <div className="text-left">
@@ -257,9 +257,9 @@ export default function EventsPage() {
           {/* Add Empty State / CTA */}
           <div 
             onClick={() => setIsModalOpen(true)}
-            className="group relative bg-dashed border-2 border-dashed border-gray-200 dark:border-white/10 rounded-[40px] p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-indigo-600/[0.03] hover:border-indigo-500/50 transition-all duration-500 min-h-[400px]"
+            className="group relative bg-dashed border-2 border-dashed border-gray-200 dark:border-white/10 rounded-[40px] p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-brand-600/[0.03] hover:border-brand-500/50 transition-all duration-500 min-h-[400px]"
           >
-             <div className="w-20 h-20 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 shadow-inner">
+             <div className="w-20 h-20 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white transition-all duration-500 shadow-inner">
                 <Plus size={32} className="text-gray-400 group-hover:text-white transition-colors" />
              </div>
              <h3 className="text-xl font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight italic">Initiate Campaign</h3>
@@ -273,7 +273,7 @@ export default function EventsPage() {
               <Globe size={800} className="absolute -top-40 -left-40" />
            </div>
            
-           <Globe size={80} className="text-indigo-600 dark:text-indigo-400 mb-8 animate-pulse" />
+           <Globe size={80} className="text-brand-600 dark:text-brand-400 mb-8 animate-pulse" />
            <h2 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter uppercase italic">Global Expansion Explorer</h2>
            <p className="text-gray-500 dark:text-gray-400 font-medium max-w-lg mt-4 leading-relaxed">
              This interactive Map view is processing your <b>{events.reduce((a, b) => a + b.attendees_count, 0)}</b> worldwide leads. 
@@ -282,7 +282,7 @@ export default function EventsPage() {
            
            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 w-full max-w-4xl relative z-10">
               {[
-                { label: 'Europe Cluster', value: '4.2k Leads', color: 'bg-indigo-500' },
+                { label: 'Europe Cluster', value: '4.2k Leads', color: 'bg-brand-500' },
                 { label: 'NA Hubs', value: '8.9k Leads', color: 'bg-emerald-500' },
                 { label: 'APAC Velocity', value: '1.4k Leads', color: 'bg-amber-500' },
               ].map((m, i) => (
@@ -296,7 +296,7 @@ export default function EventsPage() {
 
            <button 
              onClick={() => setViewMode('grid')}
-             className="mt-12 px-8 py-3 bg-indigo-600 text-white font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95"
+             className="mt-12 px-8 py-3 bg-brand-600 text-white font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-brand-700 transition-all shadow-xl shadow-brand-500/20 active:scale-95"
            >
              Return to Explorer
            </button>
@@ -320,9 +320,9 @@ export default function EventsPage() {
             <form onSubmit={handleCreateEvent} className="p-10 space-y-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2 px-1">
-                   Campaign Identity <Sparkles size={12} className="text-indigo-400" />
+                   Campaign Identity <Sparkles size={12} className="text-brand-400" />
                 </label>
-                <input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} type="text" className="w-full px-6 py-4 border border-gray-100 dark:border-white/10 rounded-2xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="e.g. Q4 Global AI Summit" />
+                <input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} type="text" className="w-full px-6 py-4 border border-gray-100 dark:border-white/10 rounded-2xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none transition-all" placeholder="e.g. Q4 Global AI Summit" />
               </div>
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2 relative">
@@ -335,7 +335,7 @@ export default function EventsPage() {
                       onBlur={() => setTimeout(() => setShowLocationSugg(false), 200)}
                       onChange={e => setFormData({...formData, location: e.target.value})} 
                       type="text" 
-                      className="w-full px-6 py-4 border border-gray-100 dark:border-white/10 rounded-2xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all" 
+                      className="w-full px-6 py-4 border border-gray-100 dark:border-white/10 rounded-2xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none transition-all" 
                       placeholder="e.g. San Francisco" 
                     />
                     <MapPin size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -351,9 +351,9 @@ export default function EventsPage() {
                             setFormData({...formData, location: city});
                             setShowLocationSugg(false);
                           }}
-                          className="w-full px-6 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-white/5 transition-colors flex items-center gap-3"
+                          className="w-full px-6 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-brand-50 dark:hover:bg-white/5 transition-colors flex items-center gap-3"
                         >
-                          <Globe size={12} className="text-indigo-400" />
+                          <Globe size={12} className="text-brand-400" />
                           {city}
                         </button>
                       ))}
@@ -362,13 +362,13 @@ export default function EventsPage() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1 text-left block w-full">Campaign Slot</label>
-                  <input required value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} type="text" className="w-full px-6 py-4 border border-gray-100 dark:border-white/10 rounded-2xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Nov 12 - 14" />
+                  <input required value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} type="text" className="w-full px-6 py-4 border border-gray-100 dark:border-white/10 rounded-2xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none transition-all" placeholder="Nov 12 - 14" />
                 </div>
               </div>
               
               <div className="pt-6 flex gap-4">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-gray-500 bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 transition-all">Discard</button>
-                <button type="submit" disabled={isSubmitting} className="flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95 disabled:opacity-70">
+                <button type="submit" disabled={isSubmitting} className="flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white bg-brand-600 hover:bg-brand-700 transition-all shadow-xl shadow-brand-500/20 active:scale-95 disabled:opacity-70">
                   {isSubmitting ? 'Syncing...' : 'Live Launch'}
                 </button>
               </div>

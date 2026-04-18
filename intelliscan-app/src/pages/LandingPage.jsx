@@ -36,7 +36,7 @@ export default function LandingPage() {
 
   return (
     <PublicLayout>
-      <div className="selection:bg-indigo-600 selection:text-white">
+      <div className="selection:bg-brand-600 selection:text-white">
         <main>
           {/* Auth Error Notification */}
           {authError && (
@@ -198,8 +198,8 @@ export default function LandingPage() {
               </div>
               
               {/* Pro Plan */}
-              <div className="bg-[#1a202c] relative p-8 rounded-xl border-2 border-indigo-600 shadow-2xl flex flex-col justify-between transform scale-105 z-10 text-white">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-[#dad7ff] px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
+              <div className="bg-[#1a202c] relative p-8 rounded-xl border-2 border-brand-600 shadow-2xl flex flex-col justify-between transform scale-105 z-10 text-white">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand-600 text-[#dad7ff] px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
                   Most Popular
                 </div>
                 <div>
@@ -211,20 +211,20 @@ export default function LandingPage() {
                   </div>
                   <ul className="space-y-4 mb-8">
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle size={16} className="text-indigo-400" /> 100 scans per month
+                      <CheckCircle size={16} className="text-brand-400" /> 100 scans per month
                     </li>
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle size={16} className="text-indigo-400" /> AI Coach and Sequences
+                      <CheckCircle size={16} className="text-brand-400" /> AI Coach and Sequences
                     </li>
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle size={16} className="text-indigo-400" /> Digital card and batch upload
+                      <CheckCircle size={16} className="text-brand-400" /> Digital card and batch upload
                     </li>
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle size={16} className="text-indigo-400" /> Priority support
+                      <CheckCircle size={16} className="text-brand-400" /> Priority support
                     </li>
                   </ul>
                 </div>
-                <Link to="/sign-up" className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold hover:brightness-110 transition-all font-headline text-center">Go Pro</Link>
+                <Link to="/sign-up" className="w-full py-3 rounded-xl bg-brand-600 text-white font-bold hover:brightness-110 transition-all font-headline text-center">Go Pro</Link>
               </div>
               
               {/* Enterprise Plan */}
@@ -260,13 +260,13 @@ export default function LandingPage() {
         {/* CTA Section */}
         <section className="py-24">
           <div className="max-w-5xl mx-auto px-6 text-center">
-            <div className="bg-gradient-to-br from-indigo-600 to-[#3323cc] p-12 md:p-20 rounded-2xl relative overflow-hidden">
+            <div className="bg-gradient-to-br from-brand-600 to-[#3323cc] p-12 md:p-20 rounded-2xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)]"></div>
               <h2 className="text-4xl md:text-5xl font-black text-white mb-8 relative z-10 font-headline">Ready to modernize your networking?</h2>
               <p className="text-[#dad7ff] text-xl mb-12 max-w-2xl mx-auto relative z-10">Join 10k+ teams using IntelliScan to capture more leads and close deals faster.</p>
               <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
-                <Link to="/sign-up" className="bg-white text-indigo-600 px-10 py-4 rounded-xl font-black text-lg hover:bg-gray-100 transition-all font-headline">Start 14-Day Free Trial</Link>
-                <button className="bg-indigo-600/20 backdrop-blur-md text-white border border-white/20 px-10 py-4 rounded-xl font-bold text-lg hover:bg-white/10 transition-all font-headline">Book a Demo</button>
+                <Link to="/sign-up" className="bg-white text-brand-600 px-10 py-4 rounded-xl font-black text-lg hover:bg-gray-100 transition-all font-headline">Start 14-Day Free Trial</Link>
+                <button className="bg-brand-600/20 backdrop-blur-md text-white border border-white/20 px-10 py-4 rounded-xl font-bold text-lg hover:bg-white/10 transition-all font-headline">Book a Demo</button>
               </div>
             </div>
           </div>

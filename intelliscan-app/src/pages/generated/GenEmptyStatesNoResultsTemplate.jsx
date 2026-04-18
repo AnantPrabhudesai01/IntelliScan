@@ -64,7 +64,7 @@ export default function GenEmptyStatesNoResultsTemplate() {
 </div>
 
 <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
-<button className="group flex items-center gap-3 bg-primary-container hover:bg-primary-container/90 text-on-primary-container px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-indigo-500/20 transition-all active:scale-95">
+<button className="group flex items-center gap-3 bg-primary-container hover:bg-primary-container/90 text-on-primary-container px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-brand-500/20 transition-all active:scale-95">
 <span className="material-symbols-outlined" data-icon="add_a_photo" style={{}}>add_a_photo</span>
             Scan Your First Card
           </button>

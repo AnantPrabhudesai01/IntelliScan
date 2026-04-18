@@ -66,7 +66,7 @@ export default function OrgChartPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-gray-200 dark:border-gray-800">
           <div>
             <h2 className="text-3xl font-extrabold font-headline text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
-              <Layers className="text-indigo-600 dark:text-indigo-400" size={32} />
+              <Layers className="text-brand-600 dark:text-brand-400" size={32} />
               Organizational Intelligence
             </h2>
             <p className="text-gray-500 dark:text-gray-400 font-body mt-2">
@@ -85,7 +85,7 @@ export default function OrgChartPage() {
             <button 
               onClick={handleShare}
               disabled={sharing}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 transition-all shadow-lg shadow-brand-600/20 disabled:opacity-50"
             >
               <Share2 size={16} /> {sharing ? 'Copied!' : 'Share Map'}
             </button>
@@ -95,26 +95,26 @@ export default function OrgChartPage() {
         {/* Control Bar */}
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <form onSubmit={handleSearch} className="relative w-full md:w-96 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" size={20} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-500 transition-colors" size={20} />
             <input 
               type="text" 
               placeholder="Search team-scanned companies..." 
               value={companySearch}
               onChange={(e) => setCompanySearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium text-sm text-gray-900 dark:text-white"
+              className="w-full pl-12 pr-4 py-3 bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-2xl focus:ring-2 focus:ring-brand-500 outline-none transition-all font-medium text-sm text-gray-900 dark:text-white"
             />
           </form>
 
           <div className="flex items-center bg-gray-100 dark:bg-gray-900 p-1 rounded-xl border border-gray-200 dark:border-gray-800">
             <button 
               onClick={() => setViewMode('tree')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'tree' ? 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'tree' ? 'bg-white dark:bg-gray-800 text-brand-600 dark:text-brand-400 shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
             >
               <ListTree size={14} /> Tree View
             </button>
             <button 
               onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-gray-800 text-brand-600 dark:text-brand-400 shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
             >
               <LayoutGrid size={14} /> Grid View
             </button>
@@ -124,13 +124,13 @@ export default function OrgChartPage() {
         {/* Main Visualization Area */}
         {loading ? (
           <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
-            <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-brand-600 border-t-transparent rounded-full animate-spin"></div>
             <p className="text-gray-500 dark:text-gray-400 font-bold animate-pulse uppercase tracking-widest text-[10px]">Processing Multi-User Intelligence...</p>
           </div>
         ) : !chartData ? (
           <div className="min-h-[400px] rounded-[2rem] border-2 border-dashed border-gray-200 dark:border-gray-800 flex flex-col items-center justify-center text-center p-12 bg-gray-50/50 dark:bg-gray-900/20">
-            <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/20 rounded-3xl flex items-center justify-center mb-6">
-              <Building2 className="text-indigo-600 dark:text-indigo-400" size={40} />
+            <div className="w-20 h-20 bg-brand-50 dark:bg-brand-900/20 rounded-3xl flex items-center justify-center mb-6">
+              <Building2 className="text-brand-600 dark:text-brand-400" size={40} />
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Build Your First Org Chart</h3>
             <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8 text-sm">
@@ -138,7 +138,7 @@ export default function OrgChartPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               {['Apple', 'Google', 'Microsoft', 'Tesla'].map(c => (
-                <button key={c} onClick={() => setSelectedCompany(c)} className="px-5 py-2.5 bg-white dark:bg-gray-800 border-2 border-transparent hover:border-indigo-500 dark:hover:border-indigo-400 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm active:scale-95">
+                <button key={c} onClick={() => setSelectedCompany(c)} className="px-5 py-2.5 bg-white dark:bg-gray-800 border-2 border-transparent hover:border-brand-500 dark:hover:border-brand-400 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-all shadow-sm active:scale-95">
                   {c}
                 </button>
               ))}
@@ -148,10 +148,10 @@ export default function OrgChartPage() {
           <div className="space-y-12 animate-in zoom-in-95 duration-500">
             {/* Company Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-indigo-600 rounded-[2rem] p-8 text-white relative overflow-hidden group shadow-xl">
+              <div className="bg-brand-600 rounded-[2rem] p-8 text-white relative overflow-hidden group shadow-xl">
                 <Building2 className="absolute top-1/2 right-4 -translate-y-1/2 text-white/10 group-hover:scale-125 transition-transform duration-700" size={140} />
                 <div className="relative z-10">
-                  <p className="text-indigo-100 text-[10px] font-black uppercase tracking-widest mb-1">Company Entity</p>
+                  <p className="text-brand-100 text-[10px] font-black uppercase tracking-widest mb-1">Company Entity</p>
                   <h4 className="text-4xl font-black tracking-tighter mb-4">{chartData.company}</h4>
                   <div className="flex gap-4">
                     <div className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-xl text-center border border-white/10">
@@ -176,7 +176,7 @@ export default function OrgChartPage() {
                  <div className="text-center">
                     <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Mutual Contacts</p>
                     <div className="text-3xl font-black text-gray-900 dark:text-white">12</div>
-                    <div className="text-[10px] text-indigo-500 font-bold mt-1 uppercase">Workspace Shared</div>
+                    <div className="text-[10px] text-brand-500 font-bold mt-1 uppercase">Workspace Shared</div>
                  </div>
                  <div className="hidden md:block w-px h-16 bg-gray-100 dark:bg-gray-800"></div>
                  <div className="text-center">
@@ -193,7 +193,7 @@ export default function OrgChartPage() {
             <div className="space-y-16 py-8 relative">
               {/* Vertical Master Line for Tree View */}
               {viewMode === 'tree' && (
-                <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5 bg-gradient-to-b from-transparent via-indigo-500/20 to-transparent pointer-events-none"></div>
+                <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5 bg-gradient-to-b from-transparent via-brand-500/20 to-transparent pointer-events-none"></div>
               )}
 
               {['C-Suite', 'Management', 'Individual'].map((level) => {
@@ -205,7 +205,7 @@ export default function OrgChartPage() {
                     <div className="flex items-center gap-4 mb-8">
                       <div className={`px-5 py-2 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-sm border ${
                         level === 'C-Suite' ? 'bg-amber-100 text-amber-600 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800/40' :
-                        level === 'Management' ? 'bg-indigo-100 text-indigo-600 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800/40' :
+                        level === 'Management' ? 'bg-brand-100 text-brand-600 border-brand-200 dark:bg-brand-900/30 dark:text-brand-400 dark:border-brand-800/40' :
                         'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700'
                       }`}>
                         {level}
@@ -221,10 +221,10 @@ export default function OrgChartPage() {
                         <div 
                           key={node.id} 
                           onClick={() => setSelectedContact(node)}
-                          className={`bg-white dark:bg-[#111827] border border-gray-200 dark:border-gray-800 p-6 rounded-[2.5rem] hover:border-indigo-500/50 transition-all hover:shadow-[0_20px_50px_-15px_rgba(79,70,229,0.1)] group relative overflow-hidden cursor-pointer ${viewMode === 'tree' ? 'w-full md:w-[320px]' : ''}`}
+                          className={`bg-white dark:bg-[#111827] border border-gray-200 dark:border-gray-800 p-6 rounded-[2.5rem] hover:border-brand-500/50 transition-all hover:shadow-[0_20px_50px_-15px_rgba(79,70,229,0.1)] group relative overflow-hidden cursor-pointer ${viewMode === 'tree' ? 'w-full md:w-[320px]' : ''}`}
                         >
                           <div className="flex items-center gap-4 mb-4">
-                            <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/20 group-hover:text-indigo-600 transition-colors shadow-inner overflow-hidden">
+                            <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 group-hover:bg-brand-50 dark:group-hover:bg-brand-900/20 group-hover:text-brand-600 transition-colors shadow-inner overflow-hidden">
                               {node.profile_image ? (
                                 <img src={node.profile_image} className="w-full h-full object-cover" />
                               ) : (
@@ -233,7 +233,7 @@ export default function OrgChartPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                                <h5 className="font-black text-gray-900 dark:text-white uppercase tracking-tighter truncate">{node.name}</h5>
-                               <p className="text-[10px] text-indigo-500 font-bold uppercase tracking-widest truncate">{node.job_title}</p>
+                               <p className="text-[10px] text-brand-500 font-bold uppercase tracking-widest truncate">{node.job_title}</p>
                             </div>
                           </div>
                           
@@ -243,7 +243,7 @@ export default function OrgChartPage() {
                           </div>
 
                           <div className="absolute bottom-4 right-6 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all">
-                             <ArrowRightLeft size={16} className="text-indigo-500" />
+                             <ArrowRightLeft size={16} className="text-brand-500" />
                           </div>
                         </div>
                       ))}
@@ -263,7 +263,7 @@ export default function OrgChartPage() {
            <div className="relative w-full max-w-md bg-white dark:bg-[#0e131f] h-full shadow-2xl animate-in slide-in-from-right duration-500 border-l border-gray-200 dark:border-gray-800">
               <div className="p-8 h-full flex flex-col">
                  <div className="flex justify-between items-center mb-10">
-                    <span className="bg-indigo-600 text-[10px] text-white font-black px-2 py-0.5 rounded uppercase tracking-[0.2em]">Contact Deep-Dive</span>
+                    <span className="bg-brand-600 text-[10px] text-white font-black px-2 py-0.5 rounded uppercase tracking-[0.2em]">Contact Deep-Dive</span>
                     <button onClick={() => setSelectedContact(null)} className="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center transition-colors">
                        <X size={20} />
                     </button>
@@ -271,12 +271,12 @@ export default function OrgChartPage() {
 
                  <div className="space-y-8 flex-1 overflow-y-auto pr-4 scrollbar-hide">
                     <div className="flex items-center gap-6">
-                       <div className="w-24 h-24 rounded-3xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center shadow-xl border-4 border-white dark:border-gray-800">
-                          <UserIcon size={40} className="text-indigo-600" />
+                       <div className="w-24 h-24 rounded-3xl bg-brand-50 dark:bg-brand-900/20 flex items-center justify-center shadow-xl border-4 border-white dark:border-gray-800">
+                          <UserIcon size={40} className="text-brand-600" />
                        </div>
                        <div>
                           <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">{selectedContact.name}</h3>
-                          <p className="text-indigo-500 font-bold uppercase tracking-widest text-xs mt-1">{selectedContact.job_title}</p>
+                          <p className="text-brand-500 font-bold uppercase tracking-widest text-xs mt-1">{selectedContact.job_title}</p>
                           <div className="flex items-center gap-2 mt-3 p-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg w-fit">
                              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
                              <span className="text-[9px] font-black text-emerald-600 uppercase">Verified Identity</span>
@@ -291,7 +291,7 @@ export default function OrgChartPage() {
                              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Email Address</p>
                              <p className="text-sm font-bold truncate text-gray-900 dark:text-white">{selectedContact.email || 'N/A'}</p>
                           </div>
-                          <ExternalLink className="ml-auto text-indigo-500 cursor-pointer" size={14} />
+                          <ExternalLink className="ml-auto text-brand-500 cursor-pointer" size={14} />
                        </div>
                        <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center gap-4">
                           <Building2 className="text-gray-400" size={18} />
@@ -313,9 +313,9 @@ export default function OrgChartPage() {
                        <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 flex items-center gap-2">
                           <Activity size={14} /> Workspace Intelligence
                        </h4>
-                       <div className="bg-indigo-600 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
+                       <div className="bg-brand-600 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
                           <Zap className="absolute top-1/2 right-0 -translate-y-1/2 text-white/10 opacity-50" size={80} />
-                          <p className="text-[10px] font-black uppercase tracking-widest mb-3 text-indigo-100">AI Context</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest mb-3 text-brand-100">AI Context</p>
                           <p className="text-sm font-medium leading-relaxed italic">
                              "This contact is part of the decision-making cycle for your recently scanned event project. High intent detected based on career trajectory."
                           </p>
@@ -324,7 +324,7 @@ export default function OrgChartPage() {
                  </div>
 
                  <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800 flex gap-3">
-                    <button className="flex-1 py-4 bg-indigo-600 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-indigo-500/30 hover:bg-indigo-700 transition-all active:scale-95">
+                    <button className="flex-1 py-4 bg-brand-600 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-brand-500/30 hover:bg-brand-700 transition-all active:scale-95">
                        Sync to CRM
                     </button>
                     <button className="flex-1 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl hover:opacity-90 transition-all active:scale-95">

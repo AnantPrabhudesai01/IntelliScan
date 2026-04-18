@@ -29,7 +29,7 @@ function NewKeyModal({ onClose, onAdd }) {
       <div className="bg-[#1a2035] border border-white/10 rounded-2xl p-8 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-600/20 rounded-xl flex items-center justify-center"><Key size={18} className="text-indigo-400" /></div>
+            <div className="w-10 h-10 bg-brand-600/20 rounded-xl flex items-center justify-center"><Key size={18} className="text-brand-400" /></div>
             <h2 className="text-xl font-bold text-white">Generate New Key</h2>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-white"><X size={20} /></button>
@@ -38,7 +38,7 @@ function NewKeyModal({ onClose, onAdd }) {
           <div>
             <label className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 block">Key Name *</label>
             <input autoFocus required value={name} onChange={e => setName(e.target.value)}
-              className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               placeholder="e.g. Production_Node_02" />
           </div>
           <div>
@@ -46,7 +46,7 @@ function NewKeyModal({ onClose, onAdd }) {
             <div className="grid grid-cols-2 gap-3">
               {['live', 'test'].map(t => (
                 <button key={t} type="button" onClick={() => setType(t)}
-                  className={`py-3 rounded-xl text-sm font-bold border transition-all capitalize ${type === t ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-[#0d1117] border-white/10 text-gray-400 hover:border-indigo-500/50'}`}>
+                  className={`py-3 rounded-xl text-sm font-bold border transition-all capitalize ${type === t ? 'bg-brand-600 border-brand-500 text-white' : 'bg-[#0d1117] border-white/10 text-gray-400 hover:border-brand-500/50'}`}>
                   {t === 'live' ? '🟢 Live / Production' : '🔵 Test / Sandbox'}
                 </button>
               ))}
@@ -56,7 +56,7 @@ function NewKeyModal({ onClose, onAdd }) {
             <AlertTriangle size={16} className="text-amber-400 flex-shrink-0 mt-0.5" />
             <p className="text-xs text-amber-300">Your new key will only be shown once. Make sure to copy and store it securely immediately after creation.</p>
           </div>
-          <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
+          <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
             <Key size={18} /> Generate Key
           </button>
         </form>
@@ -127,7 +127,7 @@ export default function GenApiIntegrations() {
             <p className="text-gray-400 mt-2">Manage programmatic access to your IntelliScan node and configure webhooks.</p>
           </div>
           <button onClick={() => setShowModal(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all active:scale-95 shadow-lg shadow-indigo-600/20">
+            className="bg-brand-600 hover:bg-brand-700 text-white flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all active:scale-95 shadow-lg shadow-brand-600/20">
             <Plus size={18} /> Generate New Key
           </button>
         </div>
@@ -137,10 +137,10 @@ export default function GenApiIntegrations() {
           <div className="col-span-12 lg:col-span-8 bg-[#161c28] border border-white/5 rounded-xl p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <Key size={18} className="text-indigo-400" />
+                <Key size={18} className="text-brand-400" />
                 <h2 className="text-xl font-bold text-white">Active API Keys</h2>
               </div>
-              <span className="text-xs bg-indigo-500/10 text-indigo-400 px-3 py-1 rounded-full border border-indigo-500/20 font-bold">{apiKeys.length} Total</span>
+              <span className="text-xs bg-brand-500/10 text-brand-400 px-3 py-1 rounded-full border border-brand-500/20 font-bold">{apiKeys.length} Total</span>
             </div>
 
             {apiKeys.length === 0 ? (
@@ -174,7 +174,7 @@ export default function GenApiIntegrations() {
                           <div className="flex items-center gap-2">
                             <code className="text-gray-400 font-mono text-xs">{key.snippet}</code>
                             <button onClick={() => handleCopy(key.snippet, key.id)}
-                              className="opacity-0 group-hover:opacity-100 p-1 hover:text-indigo-400 text-gray-500 transition-all">
+                              className="opacity-0 group-hover:opacity-100 p-1 hover:text-brand-400 text-gray-500 transition-all">
                               {copied === key.id ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
                             </button>
                           </div>
@@ -212,7 +212,7 @@ export default function GenApiIntegrations() {
             {/* Developer SDKs */}
             <div className="bg-[#161c28] border border-white/5 rounded-xl p-6">
               <h3 className="font-bold text-lg text-white mb-4 flex items-center gap-2">
-                <Shield size={18} className="text-indigo-400" /> Developer SDKs
+                <Shield size={18} className="text-brand-400" /> Developer SDKs
               </h3>
               <div className="space-y-2">
                 {[
@@ -221,12 +221,12 @@ export default function GenApiIntegrations() {
                   { name: 'Postman Collection', icon: '🗂️', action: () => window.open('https://postman.com', '_blank') },
                 ].map(({ name, icon, action }) => (
                   <button key={name} onClick={action}
-                    className="flex items-center justify-between p-3 rounded-lg bg-[#0d1117] hover:bg-white/5 transition-all group w-full border border-white/5 hover:border-indigo-500/30">
+                    className="flex items-center justify-between p-3 rounded-lg bg-[#0d1117] hover:bg-white/5 transition-all group w-full border border-white/5 hover:border-brand-500/30">
                     <div className="flex items-center gap-3">
                       <span>{icon}</span>
                       <span className="text-sm font-medium text-gray-300">{name}</span>
                     </div>
-                    {name.includes('Postman') ? <ExternalLink size={14} className="text-gray-500 group-hover:text-indigo-400" /> : <Download size={14} className="text-gray-500 group-hover:text-indigo-400" />}
+                    {name.includes('Postman') ? <ExternalLink size={14} className="text-gray-500 group-hover:text-brand-400" /> : <Download size={14} className="text-gray-500 group-hover:text-brand-400" />}
                   </button>
                 ))}
               </div>
@@ -244,7 +244,7 @@ export default function GenApiIntegrations() {
                   <span className="text-sm font-bold text-white">99.98%</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-indigo-500 rounded-full" style={{ width: '99.9%' }} />
+                  <div className="h-full bg-brand-500 rounded-full" style={{ width: '99.9%' }} />
                 </div>
                 <div className="flex items-end justify-between">
                   <span className="text-xs text-gray-400">Avg. Latency</span>

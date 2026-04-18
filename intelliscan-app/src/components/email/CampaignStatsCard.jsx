@@ -20,7 +20,7 @@ export default function CampaignStatsCard({ label, value, percentage, trend = 'u
   }, [value]);
 
   const colorMap = {
-    indigo: 'from-indigo-500/10 to-indigo-600/5 text-indigo-400 border-indigo-500/30',
+    indigo: 'from-brand-500/10 to-brand-600/5 text-brand-400 border-brand-500/30',
     emerald: 'from-emerald-500/10 to-emerald-600/5 text-emerald-400 border-emerald-500/30',
     blue: 'from-blue-500/10 to-blue-600/5 text-blue-400 border-blue-500/30',
     rose: 'from-rose-500/10 to-rose-600/5 text-rose-400 border-rose-500/30'

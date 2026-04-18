@@ -41,10 +41,10 @@ export default function GenSystemNotificationCenterSuperAdmin() {
 <span className="text-on-surface-variant text-xs font-medium">Last: 2 days ago</span>
 </div>
 </div>
-<div className="bg-primary-container p-6 rounded-xl flex flex-col justify-center items-center text-center cursor-pointer hover:brightness-110 transition-all shadow-xl shadow-indigo-900/30">
+<div className="bg-primary-container p-6 rounded-xl flex flex-col justify-center items-center text-center cursor-pointer hover:brightness-110 transition-all shadow-xl shadow-brand-900/30">
 <span className="material-symbols-outlined text-4xl text-white mb-2" data-icon="add_circle">add_circle</span>
 <p className="text-white font-bold">Compose Global Alert</p>
-<p className="text-indigo-100 text-[10px] uppercase tracking-widest mt-1">Instant Push Delivery</p>
+<p className="text-brand-100 text-[10px] uppercase tracking-widest mt-1">Instant Push Delivery</p>
 </div>
 </div>
 
@@ -214,7 +214,7 @@ export default function GenSystemNotificationCenterSuperAdmin() {
 </div>
 <div className="p-6 bg-surface-container/50 flex justify-end gap-4 rounded-b-2xl">
 <button className="px-6 py-2.5 text-sm font-bold text-on-surface-variant hover:text-white transition-colors">Cancel</button>
-<button className="px-8 py-2.5 bg-primary-container text-on-primary-container rounded-xl text-sm font-bold shadow-lg shadow-indigo-900/40 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2">
+<button className="px-8 py-2.5 bg-primary-container text-on-primary-container rounded-xl text-sm font-bold shadow-lg shadow-brand-900/40 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2">
 <span className="material-symbols-outlined text-lg" data-icon="send">send</span>
                         Dispatch Now
                     </button>

@@ -98,12 +98,12 @@ export default function ContactListsPage() {
       />
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-4xl font-black text-white tracking-widest uppercase mb-2">Audience <span className="text-indigo-500">Segments</span></h1>
+          <h1 className="text-4xl font-black text-white tracking-widest uppercase mb-2">Audience <span className="text-brand-500">Segments</span></h1>
           <p className="text-gray-400 font-medium">Manage and segment your contact lists for targeted engagement.</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/20"
+          className="px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-brand-600/20"
         >
           <Plus size={18} /> Create New List
         </button>
@@ -111,13 +111,13 @@ export default function ContactListsPage() {
 
       {/* Search Bar */}
       <div className="relative group max-w-md">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-indigo-400 transition-colors" size={18} />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-brand-400 transition-colors" size={18} />
         <input 
           type="text"
           placeholder="Search segments..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-gray-900/40 border border-gray-800 rounded-2xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium backdrop-blur-sm"
+          className="w-full pl-12 pr-4 py-3 bg-gray-900/40 border border-gray-800 rounded-2xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition-all font-medium backdrop-blur-sm"
         />
       </div>
 
@@ -129,7 +129,7 @@ export default function ContactListsPage() {
           ))
         ) : filteredLists.length === 0 ? (
           <div className="col-span-full py-20 text-center border-2 border-dashed border-gray-800 rounded-3xl group">
-             <Users size={64} className="mx-auto text-gray-700 mb-6 group-hover:text-indigo-500/50 transition-colors" />
+             <Users size={64} className="mx-auto text-gray-700 mb-6 group-hover:text-brand-500/50 transition-colors" />
              <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Zero Segments Found</h3>
              <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto">Build your first segment to start sending personalized AI campaigns.</p>
              <button onClick={() => setShowModal(true)} className="px-5 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl font-bold text-xs uppercase tracking-widest border border-gray-700">Create Segment Now</button>
@@ -139,7 +139,7 @@ export default function ContactListsPage() {
             <div 
               key={list.id} 
               onClick={() => navigate(`/dashboard/email-marketing/lists/${list.id}`)}
-              className="group bg-gray-900/40 border border-gray-800 rounded-2xl p-6 hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/5 transition-all duration-300 cursor-pointer relative overflow-hidden"
+              className="group bg-gray-900/40 border border-gray-800 rounded-2xl p-6 hover:border-brand-500/50 hover:shadow-2xl hover:shadow-brand-500/5 transition-all duration-300 cursor-pointer relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-all -translate-y-4 group-hover:translate-y-0">
                 <button 
@@ -152,12 +152,12 @@ export default function ContactListsPage() {
 
               <div className="flex items-center gap-4 mb-6">
                 <div className={`p-3 rounded-xl border transition-all ${
-                  list.contact_count > 0 ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.1)]' : 'bg-gray-800 text-gray-600 border-gray-700'
+                  list.contact_count > 0 ? 'bg-brand-500/10 text-brand-400 border-brand-500/20 shadow-[0_0_15px_rgba(99,102,241,0.1)]' : 'bg-gray-800 text-gray-600 border-gray-700'
                 }`}>
                   <Users size={24} />
                 </div>
                 <div>
-                  <h3 className="text-white font-black uppercase text-sm tracking-tight group-hover:text-indigo-400 transition-colors">{list.name}</h3>
+                  <h3 className="text-white font-black uppercase text-sm tracking-tight group-hover:text-brand-400 transition-colors">{list.name}</h3>
                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_theme(colors.emerald.500)]" />
                     {list.type} Segment
@@ -181,8 +181,8 @@ export default function ContactListsPage() {
                 </div>
 
                 <div className="pt-4 border-t border-gray-800 flex items-center justify-between">
-                  <span className="text-[10px] font-black text-indigo-500/50 uppercase tracking-widest">Active Audience</span>
-                  <ArrowRight size={16} className="text-gray-700 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                  <span className="text-[10px] font-black text-brand-500/50 uppercase tracking-widest">Active Audience</span>
+                  <ArrowRight size={16} className="text-gray-700 group-hover:text-brand-400 group-hover:translate-x-1 transition-all" />
                 </div>
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function ContactListsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
           <div className="bg-gray-900 border border-gray-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl animate-in zoom-in-95 duration-200">
             <h2 className="text-2xl font-black text-white tracking-widest uppercase mb-6 flex items-center gap-3">
-              <Plus className="text-indigo-500" /> New Audience List
+              <Plus className="text-brand-500" /> New Audience List
             </h2>
             <form onSubmit={handleCreateList} className="space-y-6">
               <div>
@@ -207,7 +207,7 @@ export default function ContactListsPage() {
                   placeholder="e.g. Fintech Decision Makers"
                   value={newList.name}
                   onChange={(e) => setNewList({...newList, name: e.target.value})}
-                  className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-bold"
+                  className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 font-bold"
                 />
               </div>
               <div>
@@ -217,7 +217,7 @@ export default function ContactListsPage() {
                   placeholder="Internal notes about this segment..."
                   value={newList.description}
                   onChange={(e) => setNewList({...newList, description: e.target.value})}
-                  className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-medium"
+                  className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 font-medium"
                 />
               </div>
               <div className="flex gap-4 pt-4">
@@ -230,7 +230,7 @@ export default function ContactListsPage() {
                 </button>
                 <button 
                   type="submit"
-                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-600/20 transition-all"
+                  className="flex-1 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-brand-600/20 transition-all"
                 >
                   Create Segment
                 </button>

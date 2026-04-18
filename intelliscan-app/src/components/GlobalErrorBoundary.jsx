@@ -48,7 +48,7 @@ class GlobalErrorBoundary extends React.Component {
             <div className="pt-6 border-t border-slate-800 flex items-center justify-center space-x-4">
               <button 
                 onClick={this.handleReload}
-                className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                className="flex items-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
                >
                 <RefreshCw className="w-4 h-4" />
                 <span>Reload Application</span>

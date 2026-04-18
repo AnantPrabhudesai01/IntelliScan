@@ -12,56 +12,53 @@ export default {
         body: ['Inter', 'sans-serif'],
       },
       colors: {
-        // ── Odoo/Zoho Enterprise Palette ──
         brand: {
-          DEFAULT: '#714B67',     // Odoo signature purple
-          light: '#875A7B',       // Lighter hover state
-          dark: '#5B3D54',        // Pressed/active
-          50: '#F5EFF4',
-          100: '#EBDFE9',
-          200: '#D7BFD3',
-          300: '#C39FBD',
-          400: '#AF7FA7',
-          500: '#875A7B',
-          600: '#714B67',
-          700: '#5B3D54',
-          800: '#452E40',
-          900: '#2F1F2D',
-          950: '#1A1119',
+          DEFAULT: '#FFB800',     // Solar Gold
+          light: '#FFD60A',
+          dark: '#CC9200',
+          50: '#FFFBE6',
+          100: '#FFF1B8',
+          200: '#FFE58F',
+          300: '#FFD666',
+          400: '#FFC53D',
+          500: '#FFB800',
+          600: '#D48806',
+          700: '#AD6800',
+          800: '#874D00',
+          900: '#613400',
+          950: '#3D1C00',
         },
         sidebar: {
-          DEFAULT: '#21132E',     // Deep purple-navy sidebar bg
-          hover: '#2D1B3D',       // Hover state in sidebar
-          active: '#3A2450',      // Active item background
-          border: '#3D2650',      // Dividers inside sidebar
-          text: '#BBA8C8',        // Muted nav text
+          DEFAULT: '#050505',     // Abyssal Black
+          hover: '#0F0F11',
+          active: '#141416',
+          border: '#141416',
+          text: '#A1A1AA',
           'text-active': '#FFFFFF',
         },
         accent: {
-          DEFAULT: '#1890FF',     // Zoho blue for secondary actions
-          light: '#40A9FF',
-          dark: '#096DD9',
+          DEFAULT: '#FFB800',
+          light: '#FFD60A',
+          dark: '#CC9200',
         },
-        // Surface system (Odoo-style light grays)
         surface: {
-          DEFAULT: '#F0F0F0',
-          container: '#FFFFFF',
-          'container-low': '#E8E8E8',
-          'container-high': '#D5D5D5',
-          'container-highest': '#94A3B8',
+          DEFAULT: '#050505',
+          container: '#09090B',
+          'container-low': '#121214',
+          'container-high': '#1F1F23',
+          'container-highest': '#27272A',
         },
         'on-surface': {
-          DEFAULT: '#1A1A2E',
-          variant: '#555566',
+          DEFAULT: '#FAFAF9',
+          variant: '#A1A1AA',
         },
-        // Keep compatibility with existing pages
         primary: {
-          DEFAULT: '#714B67',
-          container: '#F5EFF4',
+          DEFAULT: '#FFB800',
+          container: '#FFFBE6',
         },
         'on-primary': {
-          DEFAULT: '#ffffff',
-          container: '#2F1F2D',
+          DEFAULT: '#000000',
+          container: '#613400',
         },
         secondary: {
           DEFAULT: '#1890FF',

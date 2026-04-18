@@ -8,7 +8,7 @@ import apiClient from '../api/client';
 // Frontend definitions for icons and local mapping only
 const PLAN_ICONS = {
   personal: { icon: Shield, color: 'text-gray-400', bg: 'bg-white/10' },
-  pro: { icon: Zap, color: 'text-indigo-400', bg: 'bg-indigo-500/20' },
+  pro: { icon: Zap, color: 'text-brand-400', bg: 'bg-brand-500/20' },
   enterprise: { icon: Crown, color: 'text-amber-400', bg: 'bg-amber-500/20' }
 };
 
@@ -256,10 +256,10 @@ export default function BillingPage() {
           <div>
             <h3 className="font-bold text-gray-900 dark:text-white">Current Usage</h3>
             <p className="text-xs text-gray-500 mt-0.5">
-              Plan: <span className="font-bold text-indigo-600 dark:text-indigo-400 uppercase">{currentTier}</span>
+              Plan: <span className="font-bold text-brand-600 dark:text-brand-400 uppercase">{currentTier}</span>
             </p>
           </div>
-          <button onClick={() => navigate('/dashboard/scan')} className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+          <button onClick={() => navigate('/dashboard/scan')} className="flex items-center gap-1.5 text-sm font-bold text-brand-600 dark:text-brand-400 hover:underline">
             Go Scan <ArrowUpRight size={16} />
           </button>
         </div>
@@ -269,7 +269,7 @@ export default function BillingPage() {
           <span className={`text-sm font-black ${usedPct >= 85 ? 'text-red-500' : 'text-gray-900 dark:text-white'}`}>{usedPct}%</span>
         </div>
         <div className="w-full h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-          <div className={`h-full rounded-full transition-all ${usedPct >= 85 ? 'bg-red-500' : usedPct >= 60 ? 'bg-amber-500' : 'bg-indigo-500'}`} style={{ width: `${usedPct}%` }} />
+          <div className={`h-full rounded-full transition-all ${usedPct >= 85 ? 'bg-red-500' : usedPct >= 60 ? 'bg-amber-500' : 'bg-brand-500'}`} style={{ width: `${usedPct}%` }} />
         </div>
         {usedPct >= 85 && <p className="text-xs text-red-500 mt-2 font-medium">⚠️ Approaching limit — upgrade to avoid disruption.</p>}
 
@@ -302,7 +302,7 @@ export default function BillingPage() {
                   }
                 }}
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 dark:peer-focus:ring-brand-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-brand-600"></div>
             </label>
           </div>
         )}
@@ -326,7 +326,7 @@ export default function BillingPage() {
             <h3 className="font-bold text-gray-900 dark:text-white">Payment Methods</h3>
             <button
               onClick={() => setShowAddMethod((v) => !v)}
-              className="text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-xs font-black uppercase tracking-widest text-brand-600 dark:text-brand-400 hover:underline"
             >
               {showAddMethod ? 'Cancel' : 'Add New'}
             </button>
@@ -338,26 +338,26 @@ export default function BillingPage() {
                 value={pmForm.holder_name}
                 onChange={(e) => setPmForm((p) => ({ ...p, holder_name: e.target.value }))}
                 placeholder="Cardholder name"
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500"
               />
               <input
                 value={pmForm.card_number}
                 onChange={(e) => setPmForm((p) => ({ ...p, card_number: e.target.value }))}
                 placeholder="Card number"
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500"
               />
               <div className="grid grid-cols-2 gap-3">
                 <input
                   value={pmForm.exp_month}
                   onChange={(e) => setPmForm((p) => ({ ...p, exp_month: e.target.value }))}
                   placeholder="Exp month (MM)"
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 <input
                   value={pmForm.exp_year}
                   onChange={(e) => setPmForm((p) => ({ ...p, exp_year: e.target.value }))}
                   placeholder="Exp year (YYYY)"
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
               <label className="flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400">
@@ -371,7 +371,7 @@ export default function BillingPage() {
               <button
                 onClick={handleAddPaymentMethod}
                 disabled={pmSaving}
-                className="w-full py-2.5 rounded-xl font-bold text-sm bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-60"
+                className="w-full py-2.5 rounded-xl font-bold text-sm bg-brand-600 hover:bg-brand-700 text-white disabled:opacity-60"
               >
                 {pmSaving ? 'Saving...' : 'Save Payment Method'}
               </button>
@@ -416,7 +416,7 @@ export default function BillingPage() {
             </div>
             <button
               onClick={downloadExportCsv}
-              className="text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-xs font-black uppercase tracking-widest text-brand-600 dark:text-brand-400 hover:underline"
             >
               Export CSV
             </button>
@@ -461,7 +461,7 @@ export default function BillingPage() {
                       <td className="px-6 py-4 text-right">
                         <button
                           onClick={() => downloadReceipt(inv.id, inv.invoice_number)}
-                          className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                          className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline"
                         >
                           Download
                         </button>
@@ -476,14 +476,14 @@ export default function BillingPage() {
       </div>
 
       {/* Pro tip — Razorpay keys */}
-      <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/50 rounded-2xl p-6 flex gap-4">
-        <Star size={20} className="text-indigo-500 shrink-0 mt-0.5" />
+      <div className="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800/50 rounded-2xl p-6 flex gap-4">
+        <Star size={20} className="text-brand-500 shrink-0 mt-0.5" />
         <div>
-          <p className="font-bold text-indigo-900 dark:text-indigo-200 text-sm mb-1">Enable Real Payments</p>
-          <p className="text-xs text-indigo-700 dark:text-indigo-400 leading-relaxed">
-            Add your Razorpay keys to <code className="bg-indigo-100 dark:bg-indigo-900 px-1.5 py-0.5 rounded font-mono">intelliscan-server/.env</code>:
-            {' '}<code className="bg-indigo-100 dark:bg-indigo-900 px-1.5 py-0.5 rounded font-mono">RAZORPAY_KEY_ID</code> and
-            {' '}<code className="bg-indigo-100 dark:bg-indigo-900 px-1.5 py-0.5 rounded font-mono">RAZORPAY_KEY_SECRET</code>.
+          <p className="font-bold text-brand-900 dark:text-brand-200 text-sm mb-1">Enable Real Payments</p>
+          <p className="text-xs text-brand-700 dark:text-brand-400 leading-relaxed">
+            Add your Razorpay keys to <code className="bg-brand-100 dark:bg-brand-900 px-1.5 py-0.5 rounded font-mono">intelliscan-server/.env</code>:
+            {' '}<code className="bg-brand-100 dark:bg-brand-900 px-1.5 py-0.5 rounded font-mono">RAZORPAY_KEY_ID</code> and
+            {' '}<code className="bg-brand-100 dark:bg-brand-900 px-1.5 py-0.5 rounded font-mono">RAZORPAY_KEY_SECRET</code>.
             Get them free from <a href="https://razorpay.com" target="_blank" rel="noopener noreferrer" className="underline font-bold">razorpay.com</a> → Settings → API Keys → Test Mode.
           </p>
         </div>

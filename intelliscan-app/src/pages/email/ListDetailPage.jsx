@@ -120,7 +120,7 @@ export default function ListDetailPage() {
         <div>
           <button 
             onClick={() => navigate('/dashboard/email-marketing/lists')}
-            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-indigo-400 mb-4 transition-colors"
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-brand-400 mb-4 transition-colors"
           >
             <ArrowLeft size={14} /> Back to Audiences
           </button>
@@ -129,7 +129,7 @@ export default function ListDetailPage() {
               {loading ? 'Loading...' : list?.name}
             </h1>
             {!loading && (
-              <span className="px-3 py-1 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 rounded-full text-[10px] font-bold uppercase tracking-tighter">
+              <span className="px-3 py-1 bg-brand-600/20 text-brand-400 border border-brand-500/30 rounded-full text-[10px] font-bold uppercase tracking-tighter">
                 {list?.contact_count} Active Contacts
               </span>
             )}
@@ -141,7 +141,7 @@ export default function ListDetailPage() {
               setShowImportModal(true);
               handleFetchMatchingContacts();
             }}
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/20"
+            className="px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-brand-600/20"
           >
             <Plus size={18} /> Add Contacts
           </button>
@@ -161,7 +161,7 @@ export default function ListDetailPage() {
               placeholder="Search segment contacts..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-medium"
+              className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all font-medium"
             />
           </div>
           <p className="text-[10px] font-black text-gray-500 uppercase flex items-center gap-2 px-2">
@@ -197,10 +197,10 @@ export default function ListDetailPage() {
                   <tr key={c.id} className="hover:bg-white/5 transition-colors group">
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-[10px] font-black text-white uppercase tracking-tighter shadow-lg shadow-indigo-600/20">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-violet-600 flex items-center justify-center text-[10px] font-black text-white uppercase tracking-tighter shadow-lg shadow-brand-600/20">
                           {c.first_name?.[0] || c.email?.[0]}
                         </div>
-                        <p className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors uppercase tracking-tight">
+                        <p className="text-sm font-bold text-white group-hover:text-brand-400 transition-colors uppercase tracking-tight">
                           {c.first_name ? `${c.first_name} ${c.last_name || ''}` : 'Unknown Ident'}
                         </p>
                       </div>
@@ -240,7 +240,7 @@ export default function ListDetailPage() {
            <div className="bg-gray-900 border border-gray-800 rounded-3xl p-8 max-w-4xl w-full max-h-[80vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-200">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-black text-white tracking-widest uppercase flex items-center gap-3">
-                  <Sparkles className="text-indigo-400" /> Intake Intelligence
+                  <Sparkles className="text-brand-400" /> Intake Intelligence
                 </h2>
                 <button onClick={() => setShowImportModal(false)} className="text-gray-500 hover:text-white transition-colors">Close</button>
               </div>
@@ -248,7 +248,7 @@ export default function ListDetailPage() {
               <div className="flex-1 overflow-auto bg-gray-800/30 border border-gray-800 rounded-2xl mb-6">
                 {importing ? (
                   <div className="flex flex-col items-center justify-center h-48 space-y-4">
-                    <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin" />
                     <p className="text-xs font-black text-gray-500 uppercase tracking-widest">Scoping CRM Data...</p>
                   </div>
                 ) : matchingContacts.length === 0 ? (
@@ -264,7 +264,7 @@ export default function ListDetailPage() {
                           <th className="px-4 py-3 text-center">
                             <input 
                               type="checkbox" 
-                              className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                              className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-brand-600 focus:ring-brand-500 cursor-pointer"
                               checked={matchingContacts.length > 0 && matchingContacts.every(c => c.selected)}
                               onChange={(e) => {
                                 const checked = e.target.checked;
@@ -283,7 +283,7 @@ export default function ListDetailPage() {
                                 <input 
                                   type="checkbox" 
                                   id={`mc-${mc.id}`} 
-                                  className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-indigo-600 focus:ring-indigo-500 cursor-pointer" 
+                                  className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-brand-600 focus:ring-brand-500 cursor-pointer" 
                                   checked={!!mc.selected}
                                   onChange={(e) => {
                                     const checked = e.target.checked;
@@ -308,7 +308,7 @@ export default function ListDetailPage() {
                  <button 
                   disabled={matchingContacts.filter(m => m.selected).length === 0 || isInjecting}
                   onClick={() => handleImport(matchingContacts.filter(m => m.selected))}
-                  className="flex-1 py-4 bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-2"
+                  className="flex-1 py-4 bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-brand-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-xl shadow-brand-600/20 flex items-center justify-center gap-2"
                  >
                    {isInjecting && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
                    {isInjecting ? 'Processing Architecture...' : `Inject ${matchingContacts.filter(m => m.selected).length} selected profiles`}

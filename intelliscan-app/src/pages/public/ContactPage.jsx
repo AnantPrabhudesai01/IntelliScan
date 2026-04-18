@@ -58,7 +58,7 @@ export default function ContactPage() {
               <input
                 value={form.name}
                 onChange={(e) => update('name', e.target.value)}
-                className="mt-2 w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                className="mt-2 w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-brand-500/40"
                 required
               />
             </div>
@@ -68,7 +68,7 @@ export default function ContactPage() {
                 type="email"
                 value={form.email}
                 onChange={(e) => update('email', e.target.value)}
-                className="mt-2 w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+                className="mt-2 w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-brand-500/40"
                 required
               />
             </div>
@@ -78,7 +78,7 @@ export default function ContactPage() {
             <input
               value={form.subject}
               onChange={(e) => update('subject', e.target.value)}
-              className="mt-2 w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
+              className="mt-2 w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-brand-500/40"
               required
             />
           </div>
@@ -87,7 +87,7 @@ export default function ContactPage() {
             <textarea
               value={form.message}
               onChange={(e) => update('message', e.target.value)}
-              className="mt-2 w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500/40 min-h-[140px] resize-y"
+              className="mt-2 w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-brand-500/40 min-h-[140px] resize-y"
               required
             />
           </div>

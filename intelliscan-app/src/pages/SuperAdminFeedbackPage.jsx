@@ -77,7 +77,7 @@ export default function SuperAdminFeedbackPage() {
       case 'bug': return <AlertCircle size={14} className="text-red-500" />;
       case 'feature': return <Lightbulb size={14} className="text-amber-500" />;
       case 'support': return <HelpCircle size={14} className="text-emerald-500" />;
-      default: return <MessageSquare size={14} className="text-indigo-500" />;
+      default: return <MessageSquare size={14} className="text-brand-500" />;
     }
   };
 
@@ -86,13 +86,13 @@ export default function SuperAdminFeedbackPage() {
       case 'bug': return 'bg-red-500/10 text-red-500 border-red-500/20';
       case 'feature': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
       case 'support': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
-      default: return 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20';
+      default: return 'bg-brand-500/10 text-brand-500 border-brand-500/20';
     }
   };
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'new': return <span className="px-2 py-1 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-max"><Clock size={12} /> New</span>;
+      case 'new': return <span className="px-2 py-1 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-max"><Clock size={12} /> New</span>;
       case 'reviewed': return <span className="px-2 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-max"><ArrowRight size={12} /> Reviewed</span>;
       case 'resolved': return <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-max"><CheckCircle2 size={12} /> Resolved</span>;
       default: return null;

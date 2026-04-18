@@ -20,7 +20,7 @@ export default function GenApiPerformanceWebhooks() {
 <span className="material-symbols-outlined text-[18px]" data-icon="refresh">refresh</span>
             Refresh Data
           </button>
-<button className="bg-primary-container text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-xl shadow-indigo-900/30 hover:scale-[1.02] active:scale-95 transition-all">
+<button className="bg-primary-container text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-xl shadow-brand-900/30 hover:scale-[1.02] active:scale-95 transition-all">
 <span className="material-symbols-outlined text-[18px]" data-icon="link">link</span>
             Test Webhook
           </button>

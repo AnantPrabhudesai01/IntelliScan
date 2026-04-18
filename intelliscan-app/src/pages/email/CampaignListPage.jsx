@@ -84,7 +84,7 @@ export default function CampaignListPage() {
         </div>
         <Link 
           to="/dashboard/email-marketing/campaigns/new"
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/20"
+          className="px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-brand-600/20"
         >
           <Plus size={18} /> New Campaign
         </Link>
@@ -99,7 +99,7 @@ export default function CampaignListPage() {
             placeholder="Search campaigns..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
+            className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition-all font-medium"
           />
         </div>
         <div className="flex gap-2">
@@ -109,7 +109,7 @@ export default function CampaignListPage() {
               onClick={() => setStatusFilter(status)}
               className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${
                 statusFilter === status 
-                  ? 'bg-indigo-600 border-indigo-500 text-white' 
+                  ? 'bg-brand-600 border-brand-500 text-white' 
                   : 'bg-gray-800/50 border-gray-700 text-gray-500 hover:text-gray-300'
               }`}
             >
@@ -133,7 +133,7 @@ export default function CampaignListPage() {
           </div>
         ) : (
           filteredCampaigns.map(c => (
-            <div key={c.id} className="group bg-gray-900/40 hover:bg-white/5 border border-gray-800 hover:border-indigo-500/50 rounded-2xl p-5 transition-all duration-300 flex items-center gap-6">
+            <div key={c.id} className="group bg-gray-900/40 hover:bg-white/5 border border-gray-800 hover:border-brand-500/50 rounded-2xl p-5 transition-all duration-300 flex items-center gap-6">
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${
                 c.status === 'sent' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
                 c.status === 'scheduled' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
@@ -144,7 +144,7 @@ export default function CampaignListPage() {
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-1">
-                  <h3 className="text-white font-bold truncate group-hover:text-indigo-400 transition-colors uppercase tracking-tight">{c.name}</h3>
+                  <h3 className="text-white font-bold truncate group-hover:text-brand-400 transition-colors uppercase tracking-tight">{c.name}</h3>
                   <EmailStatusBadge status={c.status} />
                 </div>
                 <div className="flex items-center gap-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">

@@ -215,9 +215,9 @@ export default function GenStrategicAccountReviews() {
 <img alt="Abstract tech background" className="h-full w-full object-cover" data-alt="Abstract 3D rendering of flowing data lines and glowing nodes in shades of deep indigo and electric purple" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5VZZdEj8lW_fiizbCkOgXK_GDPsROO_ysdgYlH5cHc99rJoJniHEzNmz_Pl0xk6LdBe2dGYhqyNY3KCp7GZs-VTYdoAzSxQtigHZk4BLWX7C1PYrWn5BuAUtnWfjDRDArybWuWAlziuqi5hJDKL16XwJd9s4mdoR0Ed6lbGsegNl8gZl0NsMQ3tddHEfBpcK7zFlNnG5jF8iRnw4Z0WOmhyQ5ujcel3-aFJsCdIM8HG7aQE4VjSniCQ91G5vqEn6Oc0iHzUvPvI3X"/>
 </div>
 </div>
-<div className="bg-indigo-950/20 border border-indigo-500/20 rounded-xl p-8 flex flex-col justify-center glass-card">
-<div className="w-12 h-12 bg-indigo-500/20 rounded-full flex items-center justify-center mb-4">
-<span className="material-symbols-outlined text-indigo-400" data-icon="shield_with_heart" data-weight="fill" style={{}}>shield_with_heart</span>
+<div className="bg-brand-950/20 border border-brand-500/20 rounded-xl p-8 flex flex-col justify-center glass-card">
+<div className="w-12 h-12 bg-brand-500/20 rounded-full flex items-center justify-center mb-4">
+<span className="material-symbols-outlined text-brand-400" data-icon="shield_with_heart" data-weight="fill" style={{}}>shield_with_heart</span>
 </div>
 <h4 className="text-lg font-bold text-white mb-2">Compliance Alert</h4>
 <p className="text-on-surface-variant text-xs leading-relaxed mb-4">3 accounts require updated SOC2 data processing addendums. Onboarding progress for "Global Nexus" is at 82%.</p>

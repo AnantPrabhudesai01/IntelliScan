@@ -43,7 +43,7 @@ export default function RecurrenceSelector({ value, onChange }) {
           type="button"
           onClick={() => handleFreqChange('none')}
           className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-            rule.freq === 'none' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700'
+            rule.freq === 'none' ? 'bg-brand-600 text-white shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700'
           }`}
         >
           One-time
@@ -54,7 +54,7 @@ export default function RecurrenceSelector({ value, onChange }) {
             type="button"
             onClick={() => handleFreqChange(f.value)}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              rule.freq === f.value ? 'bg-indigo-600 text-white shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700'
+              rule.freq === f.value ? 'bg-brand-600 text-white shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700'
             }`}
           >
             {f.label}
@@ -71,7 +71,7 @@ export default function RecurrenceSelector({ value, onChange }) {
               min="1"
               value={rule.interval || 1}
               onChange={(e) => onChange({ ...rule, interval: parseInt(e.target.value) })}
-              className="w-16 px-2 py-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-16 px-2 py-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-bold focus:ring-2 focus:ring-brand-500 outline-none"
             />
             <span className="text-xs font-bold text-gray-500">{rule.freq}(s)</span>
           </div>
@@ -85,7 +85,7 @@ export default function RecurrenceSelector({ value, onChange }) {
                   onClick={() => toggleDay(d.value)}
                   className={`w-8 h-8 rounded-full text-[10px] font-black transition-all ${
                     (rule.byDay || []).includes(d.value)
-                      ? 'bg-indigo-600 text-white shadow-md'
+                      ? 'bg-brand-600 text-white shadow-md'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-400'
                   }`}
                 >

@@ -74,7 +74,7 @@ export default function AvailabilityPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-[400px]">
-      <Loader2 className="animate-spin text-indigo-600" size={32} />
+      <Loader2 className="animate-spin text-brand-600" size={32} />
     </div>
   );
 
@@ -88,7 +88,7 @@ export default function AvailabilityPage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-indigo-500/20 active:scale-95 transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white font-black text-sm rounded-2xl shadow-xl shadow-brand-500/20 active:scale-95 transition-all disabled:opacity-50"
         >
           {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
           {saving ? 'Saving...' : 'Save Changes'}
@@ -118,7 +118,7 @@ export default function AvailabilityPage() {
                   <button
                     onClick={() => toggleDay(day.id)}
                     className={`w-12 h-6 rounded-full transition-all relative ${
-                      isActive ? 'bg-indigo-600' : 'bg-gray-300 dark:bg-gray-700'
+                      isActive ? 'bg-brand-600' : 'bg-gray-300 dark:bg-gray-700'
                     }`}
                   >
                     <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
@@ -136,7 +136,7 @@ export default function AvailabilityPage() {
                         type="time"
                         value={slot.start_time}
                         onChange={(e) => updateTime(day.id, 'start_time', e.target.value)}
-                        className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold focus:ring-2 focus:ring-indigo-500 outline-none tabular-nums"
+                        className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-500 outline-none tabular-nums"
                       />
                     </div>
                     <span className="text-xs font-black text-gray-400 uppercase tracking-widest">to</span>
@@ -145,7 +145,7 @@ export default function AvailabilityPage() {
                         type="time"
                         value={slot.end_time}
                         onChange={(e) => updateTime(day.id, 'end_time', e.target.value)}
-                        className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold focus:ring-2 focus:ring-indigo-500 outline-none tabular-nums"
+                        className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-500 outline-none tabular-nums"
                       />
                     </div>
                   </div>
@@ -158,10 +158,10 @@ export default function AvailabilityPage() {
         </div>
       </div>
 
-      <div className="p-8 bg-indigo-600 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-center gap-6 overflow-hidden relative">
+      <div className="p-8 bg-brand-600 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-center gap-6 overflow-hidden relative">
          <div className="flex-1 text-center md:text-left z-10">
            <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2">Connect Your Calendars</h3>
-           <p className="text-indigo-100 text-sm font-medium leading-relaxed max-w-lg">
+           <p className="text-brand-100 text-sm font-medium leading-relaxed max-w-lg">
              Ready to automate your scheduling? Go to your calendar and share links with clients.
            </p>
          </div>

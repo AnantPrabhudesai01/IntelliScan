@@ -81,16 +81,16 @@ export default function AdvancedApiExplorerSandbox() {
           </div>
           <div className="flex items-center gap-3">
             <div className="bg-gray-50 dark:bg-[#161c28] px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 flex items-center gap-3 shadow-sm">
-              <Key size={16} className="text-indigo-600 dark:text-indigo-400" />
+              <Key size={16} className="text-brand-600 dark:text-brand-400" />
               <code className="text-xs text-gray-600 dark:text-gray-400 font-mono tracking-wider font-bold">sk_prod_********8291</code>
-              <button className="text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" title="Copy Key">
+              <button className="text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors" title="Copy Key">
                 <Copy size={16} />
               </button>
             </div>
             <button 
               onClick={handleTestApi} 
               disabled={isLoading}
-              className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold font-headline flex items-center gap-2 hover:bg-indigo-700 active:scale-95 transition-all shadow-md shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="bg-brand-600 text-white px-6 py-2.5 rounded-xl font-bold font-headline flex items-center gap-2 hover:bg-brand-700 active:scale-95 transition-all shadow-md shadow-brand-600/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isLoading ? <Clock size={18} className="animate-spin" /> : <Play size={18} fill="currentColor" />}
               {isLoading ? 'Processing...' : 'Try it Out'}
@@ -103,11 +103,11 @@ export default function AdvancedApiExplorerSandbox() {
           <div className="col-span-12 lg:col-span-5 row-span-6 bg-white dark:bg-[#161c28] rounded-xl overflow-hidden flex flex-col shadow-sm border border-gray-200 dark:border-gray-800">
             <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 flex items-center justify-between border-b border-gray-100 dark:border-gray-800/60">
               <div className="flex items-center gap-2">
-                <Code size={18} className="text-indigo-600 dark:text-indigo-400" />
+                <Code size={18} className="text-brand-600 dark:text-brand-400" />
                 <span className="text-[11px] font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300">Request Payload</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded uppercase font-bold tracking-widest">POST</span>
+                <span className="text-[10px] bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400 px-2 py-0.5 rounded uppercase font-bold tracking-widest">POST</span>
                 <span className="text-xs font-mono text-gray-500 dark:text-gray-400">/v2/extract</span>
               </div>
             </div>
@@ -125,7 +125,7 @@ export default function AdvancedApiExplorerSandbox() {
           <div className="col-span-12 lg:col-span-7 row-span-4 bg-white dark:bg-[#161c28] rounded-xl overflow-hidden flex flex-col shadow-sm border border-gray-200 dark:border-gray-800">
             <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800/60 bg-gray-50 dark:bg-transparent">
               <div className="flex gap-6">
-                <button className="text-sm font-bold text-gray-900 dark:text-white border-b-2 border-indigo-600 pb-1">Response View</button>
+                <button className="text-sm font-bold text-gray-900 dark:text-white border-b-2 border-brand-600 pb-1">Response View</button>
                 <button className="text-sm font-medium text-gray-500 hover:text-gray-900 dark:hover:text-white transition-all pb-1">Visual Overlay</button>
               </div>
               {response && (
@@ -146,12 +146,12 @@ export default function AdvancedApiExplorerSandbox() {
                       <p className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-widest mb-2">Confidence Score</p>
                       <div className="flex items-center justify-between">
                         <span className="text-3xl font-black font-headline text-gray-900 dark:text-white">
-                          {(response.data?.meta?.confidence * 100).toFixed(1)}<span className="text-indigo-500">%</span>
+                          {(response.data?.meta?.confidence * 100).toFixed(1)}<span className="text-brand-500">%</span>
                         </span>
-                        <div className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-[10px] px-2 py-1 rounded w-fit font-bold uppercase tracking-widest">High Confidence</div>
+                        <div className="bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400 text-[10px] px-2 py-1 rounded w-fit font-bold uppercase tracking-widest">High Confidence</div>
                       </div>
                       <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full mt-4 overflow-hidden">
-                        <div className="h-full bg-indigo-500" style={{ width: `${response.data?.meta?.confidence * 100}%` }}></div>
+                        <div className="h-full bg-brand-500" style={{ width: `${response.data?.meta?.confidence * 100}%` }}></div>
                       </div>
                     </div>
                     <div className="space-y-3">
@@ -179,7 +179,7 @@ export default function AdvancedApiExplorerSandbox() {
               </div>
               <div className="bg-[#0d1117] dark:bg-black/40 p-6 font-mono text-xs overflow-auto hide-scrollbar custom-scrollbar">
                 {response ? (
-                  <pre className="text-indigo-300 leading-loose">
+                  <pre className="text-brand-300 leading-loose">
                     {JSON.stringify(response, null, 2)}
                   </pre>
                 ) : (
@@ -205,7 +205,7 @@ export default function AdvancedApiExplorerSandbox() {
                 <div key={log.id} className="flex gap-4 font-mono text-[11px] py-1">
                   <span className="text-gray-400">{(new Date(log.timestamp)).toLocaleTimeString()}</span>
                   <span className="text-emerald-500 font-bold">[{log.status_code}]</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 font-bold">[POST]</span>
+                  <span className="text-brand-600 dark:text-brand-400 font-bold">[POST]</span>
                   <span className="text-gray-600 dark:text-gray-300 flex-1 truncate">Routed to {log.engine}. Latency: {log.latency_ms}ms.</span>
                 </div>
               )) : (

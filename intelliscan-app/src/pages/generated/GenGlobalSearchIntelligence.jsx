@@ -50,7 +50,7 @@ export default function GenGlobalSearchIntelligence() {
 <span className="px-2 py-1 bg-tertiary-container text-on-tertiary-container rounded-lg text-[10px] font-bold">98% Match</span>
 </div>
 <div className="flex items-start gap-4 mb-6">
-<div className="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center border border-indigo-500/20">
+<div className="w-12 h-12 bg-brand-500/10 rounded-xl flex items-center justify-center border border-brand-500/20">
 <span className="material-symbols-outlined text-primary" data-icon="description">description</span>
 </div>
 <div>

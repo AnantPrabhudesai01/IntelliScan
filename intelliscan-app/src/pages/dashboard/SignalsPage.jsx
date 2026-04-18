@@ -21,15 +21,15 @@ export default function SignalsPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
-            Intelligence Center <span className="bg-indigo-600 text-[10px] font-black uppercase px-2 py-0.5 rounded text-white tracking-widest">Real-Time Signals</span>
+            Intelligence Center <span className="bg-brand-600 text-[10px] font-black uppercase px-2 py-0.5 rounded text-white tracking-widest">Real-Time Signals</span>
           </h1>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 max-w-2xl">
             Monitor your networking landscape. Our AI continuously analyzes your contacts for promotion alerts, job changes, and buying intent signals.
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/20 px-4 py-2 rounded-xl border border-indigo-100 dark:border-indigo-800">
-           <Shield size={16} className="text-indigo-600 dark:text-indigo-400" />
-           <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">Enterprise Monitoring Active</span>
+        <div className="flex items-center gap-2 bg-brand-50 dark:bg-brand-900/20 px-4 py-2 rounded-xl border border-brand-100 dark:border-brand-800">
+           <Shield size={16} className="text-brand-600 dark:text-brand-400" />
+           <span className="text-xs font-bold text-brand-600 dark:text-brand-400">Enterprise Monitoring Active</span>
         </div>
       </div>
 

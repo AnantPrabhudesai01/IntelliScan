@@ -49,7 +49,7 @@ export default function CampaignDetailPage() {
         <div>
           <button 
             onClick={() => navigate('/dashboard/email-marketing/campaigns')}
-            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-indigo-400 mb-4 transition-colors"
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-brand-400 mb-4 transition-colors"
           >
             <ArrowLeft size={14} /> Back to Missions
           </button>
@@ -63,7 +63,7 @@ export default function CampaignDetailPage() {
           <button className="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-xl font-bold text-sm transition-all border border-gray-700 flex items-center gap-2">
             <Calendar size={18} /> Schedule Follow-up
           </button>
-          <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/20">
+          <button className="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-brand-600/20">
             Export Intelligence
           </button>
         </div>
@@ -102,7 +102,7 @@ export default function CampaignDetailPage() {
            <div className="bg-gray-900/40 border border-gray-800 rounded-3xl p-8 backdrop-blur-sm">
              <div className="flex items-center justify-between mb-8">
                <h3 className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2">
-                 <Activity size={20} className="text-indigo-500" /> Vector Engagement
+                 <Activity size={20} className="text-brand-500" /> Vector Engagement
                </h3>
                <div className="flex gap-4">
                   <div className="flex items-center gap-1.5 grayscale opacity-50">
@@ -110,8 +110,8 @@ export default function CampaignDetailPage() {
                     <span className="text-[10px] font-bold text-white uppercase tracking-tighter">Mobile</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Monitor size={14} className="text-indigo-400" />
-                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-tighter underline decoration-indigo-500/50">Desktop</span>
+                    <Monitor size={14} className="text-brand-400" />
+                    <span className="text-[10px] font-bold text-brand-400 uppercase tracking-tighter underline decoration-brand-500/50">Desktop</span>
                   </div>
                </div>
              </div>
@@ -128,7 +128,7 @@ export default function CampaignDetailPage() {
                      {/* Pseudo chart bars */}
                      {[40, 65, 30, 85, 55, 95, 75, 45, 60, 80, 50, 90, 35, 70, 55, 75, 85, 45, 30, 20].map((h, i) => (
                        <div key={i} className="flex-1 bg-gray-800/50 rounded-full flex items-end overflow-hidden group">
-                         <div className="w-full bg-indigo-500/30 group-hover:bg-indigo-500 transition-all rounded-full" style={{ height: `${h}%` }} />
+                         <div className="w-full bg-brand-500/30 group-hover:bg-brand-500 transition-all rounded-full" style={{ height: `${h}%` }} />
                        </div>
                      ))}
                   </div>
@@ -147,7 +147,7 @@ export default function CampaignDetailPage() {
            <div className="bg-gray-900/40 border border-gray-800 rounded-3xl overflow-hidden backdrop-blur-sm">
              <div className="p-6 border-b border-gray-800 bg-gray-800/20 flex items-center justify-between">
                 <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
-                  <Globe size={18} className="text-indigo-500" /> Interaction Log
+                  <Globe size={18} className="text-brand-500" /> Interaction Log
                 </h3>
                 <div className="relative">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
@@ -173,7 +173,7 @@ export default function CampaignDetailPage() {
                       recent_activity.map((s, i) => (
                         <tr key={i} className="hover:bg-white/5 transition-colors group">
                           <td className="px-6 py-4">
-                            <p className="text-xs font-bold text-white group-hover:text-indigo-400 transition-colors uppercase tracking-tight">{s.first_name || 'Anonymous'}</p>
+                            <p className="text-xs font-bold text-white group-hover:text-brand-400 transition-colors uppercase tracking-tight">{s.first_name || 'Anonymous'}</p>
                             <p className="text-[10px] text-gray-500 font-mono italic">{s.email}</p>
                           </td>
                           <td className="px-6 py-4">
@@ -185,7 +185,7 @@ export default function CampaignDetailPage() {
                           </td>
                           <td className="px-6 py-4">
                              <div className="flex gap-2">
-                               {s.open_count > 0 && <span className="p-1 px-2 bg-indigo-500/10 text-indigo-400 rounded-md text-[9px] font-black uppercase tracking-tight border border-indigo-500/20">Opens: {s.open_count}</span>}
+                               {s.open_count > 0 && <span className="p-1 px-2 bg-brand-500/10 text-brand-400 rounded-md text-[9px] font-black uppercase tracking-tight border border-brand-500/20">Opens: {s.open_count}</span>}
                                {s.click_count > 0 && <span className="p-1 px-2 bg-blue-500/10 text-blue-400 rounded-md text-[9px] font-black uppercase tracking-tight border border-blue-500/20">Clicks: {s.click_count}</span>}
                              </div>
                           </td>
@@ -203,9 +203,9 @@ export default function CampaignDetailPage() {
 
         {/* Campaign Metrics & Summary */}
         <div className="space-y-6">
-           <div className="bg-gradient-to-br from-indigo-900/20 to-transparent border border-indigo-500/30 p-8 rounded-3xl shadow-xl space-y-8">
+           <div className="bg-gradient-to-br from-brand-900/20 to-transparent border border-brand-500/30 p-8 rounded-3xl shadow-xl space-y-8">
               <h3 className="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-                <BarChart3 size={18} className="text-indigo-400" /> Vector Parameters
+                <BarChart3 size={18} className="text-brand-400" /> Vector Parameters
               </h3>
               
               <div className="space-y-6">
@@ -228,7 +228,7 @@ export default function CampaignDetailPage() {
                 </div>
 
                 <div className="bg-white/5 p-4 rounded-xl space-y-3">
-                   <h4 className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Technical Signature</h4>
+                   <h4 className="text-[9px] font-black text-brand-400 uppercase tracking-widest">Technical Signature</h4>
                    <div className="flex justify-between text-[9px] font-black uppercase text-gray-500">
                      <span>Unsubscribe Integration</span>
                      <span className="text-emerald-400">Verified</span>

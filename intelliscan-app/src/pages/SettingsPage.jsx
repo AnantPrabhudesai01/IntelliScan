@@ -509,7 +509,7 @@ export default function SettingsPage() {
     return (
       <button 
         onClick={() => setActiveTab(name)}
-        className={`pb-4 tracking-wide whitespace-nowrap font-headline font-bold text-sm transition-colors ${isActive ? 'text-gray-900 border-b-2 border-indigo-600 dark:text-white' : 'text-gray-500 hover:text-gray-900 border-b-2 border-transparent dark:text-gray-400 dark:hover:text-white'}`}
+        className={`pb-4 tracking-wide whitespace-nowrap font-headline font-bold text-sm transition-colors ${isActive ? 'text-gray-900 border-b-2 border-brand-600 dark:text-white' : 'text-gray-500 hover:text-gray-900 border-b-2 border-transparent dark:text-gray-400 dark:hover:text-white'}`}
       >
         {name}
       </button>
@@ -547,7 +547,7 @@ export default function SettingsPage() {
 
       {/* Toast Notification */}
       {toast && (
-        <div className={`fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-2xl text-sm font-bold text-white flex items-center gap-3 animate-slide-in ${toast.type === 'error' ? 'bg-red-600' : 'bg-indigo-600'}`}>
+        <div className={`fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-2xl text-sm font-bold text-white flex items-center gap-3 animate-slide-in ${toast.type === 'error' ? 'bg-red-600' : 'bg-brand-600'}`}>
           {toast.type === 'error' ? <X size={16} /> : <Check size={16} />}
           {toast.msg}
         </div>
@@ -625,7 +625,7 @@ export default function SettingsPage() {
               <div className="space-y-4">
                 <p className="text-sm text-gray-500 mb-2 font-body">Step 1: Enter your new email address. We'll send an OTP to your registered phone number to verify this change.</p>
                 <input 
-                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white"
+                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-all dark:text-white"
                   type="email"
                   placeholder="new.email@example.com"
                   value={newEmail}
@@ -634,7 +634,7 @@ export default function SettingsPage() {
                 <button 
                   disabled={otpLoading || !newEmail}
                   onClick={requestEmailOTP}
-                  className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {otpLoading ? <RefreshCw className="animate-spin" size={18} /> : <PhoneIcon size={18} />}
                   Send OTP to Phone
@@ -649,7 +649,7 @@ export default function SettingsPage() {
                   </div>
                 )}
                 <input 
-                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-center text-2xl font-black tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white"
+                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-center text-2xl font-black tracking-widest focus:ring-2 focus:ring-brand-500 outline-none transition-all dark:text-white"
                   type="text"
                   maxLength={6}
                   placeholder="000000"
@@ -659,13 +659,13 @@ export default function SettingsPage() {
                 <button 
                   disabled={otpLoading || otpCode.length < 6}
                   onClick={verifyEmailOTP}
-                  className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                    {otpLoading ? <RefreshCw className="animate-spin" size={18} /> : <Check size={18} />}
                   Verify & Update
                 </button>
                 <div className="flex flex-col gap-2">
-                  <button onClick={() => setOtpSent(false)} className="w-full text-xs text-indigo-600 font-bold hover:underline">Change Email Address</button>
+                  <button onClick={() => setOtpSent(false)} className="w-full text-xs text-brand-600 font-bold hover:underline">Change Email Address</button>
                 </div>
               </div>
             )}
@@ -697,7 +697,7 @@ export default function SettingsPage() {
               )}
 
               <input 
-                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-center text-2xl font-black tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white"
+                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-center text-2xl font-black tracking-widest focus:ring-2 focus:ring-brand-500 outline-none transition-all dark:text-white"
                 type="text"
                 maxLength={6}
                 placeholder="000000"
@@ -709,7 +709,7 @@ export default function SettingsPage() {
                 <button 
                   disabled={otpLoading || otpCode.length < 6}
                   onClick={verifyPhoneOTP}
-                  className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                    {otpLoading ? <RefreshCw className="animate-spin" size={18} /> : <Check size={18} />}
                   Verify & Save Phone
@@ -719,7 +719,7 @@ export default function SettingsPage() {
                   type="button"
                   disabled={otpLoading}
                   onClick={phoneStatus === 'UNLOCKING' ? requestUnlockOTP : requestPhoneOTP}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline py-1"
+                  className="text-xs text-brand-600 dark:text-brand-400 font-bold hover:underline py-1"
                 >
                   Didn't get the code? Resend
                 </button>
@@ -751,7 +751,7 @@ export default function SettingsPage() {
             <button 
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-white dark:bg-gray-900 text-indigo-600 dark:text-indigo-400 shadow-xl' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-white dark:bg-gray-900 text-brand-600 dark:text-brand-400 shadow-xl' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
             >
               <Icon size={14} /> {tab.id}
             </button>
@@ -769,16 +769,16 @@ export default function SettingsPage() {
                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--brand)] via-purple-500 to-[var(--brand)] opacity-50"></div>
               
               <div className="relative group">
-                <div className="w-32 h-32 rounded-full overflow-hidden mb-6 ring-4 ring-indigo-100 dark:ring-indigo-900/30 group-hover:ring-indigo-200 dark:group-hover:ring-indigo-800/50 transition-all flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+                <div className="w-32 h-32 rounded-full overflow-hidden mb-6 ring-4 ring-brand-100 dark:ring-brand-900/30 group-hover:ring-brand-200 dark:group-hover:ring-brand-800/50 transition-all flex items-center justify-center bg-gray-100 dark:bg-gray-800">
                   {profile.avatar_url ? (
                     <img src={profile.avatar_url.startsWith('http') ? profile.avatar_url : `${import.meta.env.VITE_API_BASE_URL || ''}${profile.avatar_url}`} alt="Avatar" className="w-full h-full object-cover" />
 
                   ) : (
-                    <span className="text-4xl font-headline font-bold text-indigo-300 dark:text-indigo-700">{profile.name?.charAt(0).toUpperCase() || <User size={40}/>}</span>
+                    <span className="text-4xl font-headline font-bold text-brand-300 dark:text-brand-700">{profile.name?.charAt(0).toUpperCase() || <User size={40}/>}</span>
                   )}
-                  {isUploading && <div className="absolute inset-0 backdrop-blur-sm flex items-center justify-center"><RefreshCw className="animate-spin text-indigo-600" /></div>}
+                  {isUploading && <div className="absolute inset-0 backdrop-blur-sm flex items-center justify-center"><RefreshCw className="animate-spin text-brand-600" /></div>}
                 </div>
-                <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-6 right-0 bg-indigo-600 p-2.5 rounded-full text-white shadow-xl hover:scale-110 active:scale-95 transition-all border-2 border-white dark:border-[#161c28]">
+                <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-6 right-0 bg-brand-600 p-2.5 rounded-full text-white shadow-xl hover:scale-110 active:scale-95 transition-all border-2 border-white dark:border-[#161c28]">
                   <Camera size={16} />
                 </button>
                 <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
@@ -788,7 +788,7 @@ export default function SettingsPage() {
                 <h3 className="text-xl font-headline font-bold text-gray-900 dark:text-white mb-1">{profile.name}</h3>
                 <div className="flex items-center justify-center gap-2">
                   <p className="text-[10px] text-gray-500 dark:text-gray-400 font-body uppercase tracking-widest font-bold px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-lg">{profile.role}</p>
-                  <p className={`text-[10px] uppercase tracking-widest font-black px-2 py-0.5 rounded-lg ${profile.tier === 'enterprise' ? 'bg-indigo-600 text-white' : profile.tier === 'pro' ? 'bg-amber-500 text-white' : 'bg-emerald-500 text-white'}`}>
+                  <p className={`text-[10px] uppercase tracking-widest font-black px-2 py-0.5 rounded-lg ${profile.tier === 'enterprise' ? 'bg-brand-600 text-white' : profile.tier === 'pro' ? 'bg-amber-500 text-white' : 'bg-emerald-500 text-white'}`}>
                     {profile.tier}
                   </p>
                 </div>

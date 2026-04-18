@@ -21,7 +21,7 @@ export default function DevTools() {
     return (
       <button 
         onClick={() => setOpen(true)} 
-        className="fixed bottom-6 right-6 z-[9999] bg-indigo-600 text-white p-3 rounded-full shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:scale-110 active:scale-95 transition-transform"
+        className="fixed bottom-6 right-6 z-[9999] bg-brand-600 text-white p-3 rounded-full shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:scale-110 active:scale-95 transition-transform"
       >
         <Wrench size={24} />
       </button>
@@ -30,12 +30,12 @@ export default function DevTools() {
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999] w-80 max-h-[85vh] flex flex-col bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden font-body">
-      <div className="p-4 bg-indigo-600 text-white flex justify-between items-center shadow-md">
+      <div className="p-4 bg-brand-600 text-white flex justify-between items-center shadow-md">
         <div className="flex items-center gap-2">
            <Wrench size={18} />
            <h3 className="font-bold text-sm tracking-wide">Prototype DevTools</h3>
         </div>
-        <button onClick={() => setOpen(false)} className="text-indigo-200 hover:text-white font-bold text-xs uppercase px-2 py-1 bg-black/20 rounded">Close</button>
+        <button onClick={() => setOpen(false)} className="text-brand-200 hover:text-white font-bold text-xs uppercase px-2 py-1 bg-black/20 rounded">Close</button>
       </div>
       
       <div className="p-5 overflow-y-auto flex-1 text-sm space-y-6 text-gray-800 dark:text-gray-200">
@@ -44,7 +44,7 @@ export default function DevTools() {
           <select 
             value={role} 
             onChange={(e) => setRole(e.target.value)}
-            className="w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium focus:ring-2 focus:ring-brand-500 outline-none"
           >
             <option value="super_admin">Platform Admin</option>
             <option value="business_admin">Enterprise User</option>
@@ -65,7 +65,7 @@ export default function DevTools() {
                    else if (r.path.includes('/workspace')) setRole('business_admin');
                    navigate(r.path);
                  }} 
-                 className="block w-full text-left px-3 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 rounded-lg text-indigo-600 dark:text-indigo-400 font-bold transition-all"
+                 className="block w-full text-left px-3 py-2 hover:bg-brand-50 dark:hover:bg-brand-900/40 rounded-lg text-brand-600 dark:text-brand-400 font-bold transition-all"
                >
                  {r.name}
                </button>

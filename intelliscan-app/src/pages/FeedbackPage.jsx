@@ -33,7 +33,7 @@ export default function FeedbackPage() {
   const types = [
     { id: 'bug', label: 'Report a Problem', icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-500/10 border-red-500/20' },
     { id: 'feature', label: 'Feature Request', icon: Lightbulb, color: 'text-amber-500', bg: 'bg-amber-500/10 border-amber-500/20' },
-    { id: 'general', label: 'General Feedback', icon: MessageSquare, color: 'text-indigo-500', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+    { id: 'general', label: 'General Feedback', icon: MessageSquare, color: 'text-brand-500', bg: 'bg-brand-500/10 border-brand-500/20' },
     { id: 'support', label: 'Help & Support', icon: HelpCircle, color: 'text-emerald-500', bg: 'bg-emerald-500/10 border-emerald-500/20' },
   ];
 
@@ -87,7 +87,7 @@ export default function FeedbackPage() {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Brief summary of your feedback"
-                className="w-full bg-gray-50 dark:bg-[#0e131f] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-shadow"
+                className="w-full bg-gray-50 dark:bg-[#0e131f] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition-shadow"
               />
             </div>
 
@@ -103,7 +103,7 @@ export default function FeedbackPage() {
                   type === 'feature' ? "What new functionality would make your workflow easier?" :
                   "Tell us what's on your mind..."
                 }
-                className="w-full bg-gray-50 dark:bg-[#0e131f] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-shadow resize-y"
+                className="w-full bg-gray-50 dark:bg-[#0e131f] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition-shadow resize-y"
               />
             </div>
           </div>
@@ -112,7 +112,7 @@ export default function FeedbackPage() {
             <button
               type="submit"
               disabled={isSubmitting || !subject.trim() || !message.trim()}
-              className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-indigo-600/20"
+              className="flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:hover:bg-brand-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-brand-600/20"
             >
               {isSubmitting ? (
                 <>

@@ -98,7 +98,7 @@ export default function ScannerLinksPage() {
           <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight font-headline mb-2">Scanner Links</h2>
           <p className="text-gray-500 dark:text-gray-400 font-medium">Manage and monitor your active intelligent ingestion endpoints.</p>
         </div>
-        <button onClick={createLink} className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-indigo-700 active:scale-95 transition-all shadow-lg shadow-indigo-500/20">
+        <button onClick={createLink} className="bg-brand-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-brand-700 active:scale-95 transition-all shadow-lg shadow-brand-500/20">
           <Plus size={20} /> Generate New Link
         </button>
       </header>
@@ -129,16 +129,16 @@ export default function ScannerLinksPage() {
           {/* Aesthetic Bars */}
           <div className="flex gap-4 h-12 items-end">
             <div className="h-full w-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden flex items-end">
-              <div className="h-1/2 w-full bg-indigo-500 rounded-full"></div>
+              <div className="h-1/2 w-full bg-brand-500 rounded-full"></div>
             </div>
             <div className="h-full w-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden flex items-end">
-              <div className="h-3/4 w-full bg-indigo-500 rounded-full"></div>
+              <div className="h-3/4 w-full bg-brand-500 rounded-full"></div>
             </div>
             <div className="h-full w-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden flex items-end">
-              <div className="h-1/4 w-full bg-indigo-500 rounded-full"></div>
+              <div className="h-1/4 w-full bg-brand-500 rounded-full"></div>
             </div>
             <div className="h-full w-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden flex items-end">
-              <div className="h-full w-full bg-indigo-500 rounded-full"></div>
+              <div className="h-full w-full bg-brand-500 rounded-full"></div>
             </div>
           </div>
         </div>
@@ -149,9 +149,9 @@ export default function ScannerLinksPage() {
         <div className="px-6 md:px-8 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800">
           <h4 className="font-bold text-lg text-gray-900 dark:text-white font-headline">All Active Endpoints</h4>
           <div className="relative group w-full md:w-auto">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-500 transition-colors" size={18} />
             <input 
-              className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500/40 w-full md:w-64 text-gray-900 dark:text-white transition-all outline-none placeholder:text-gray-400" 
+              className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-brand-500/40 w-full md:w-64 text-gray-900 dark:text-white transition-all outline-none placeholder:text-gray-400" 
               placeholder="Search links..." 
               type="text"
               value={query}
@@ -191,7 +191,7 @@ export default function ScannerLinksPage() {
                 <tr key={link.id} className={`hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group ${status === 'Disabled' ? 'opacity-60 grayscale-[0.5]' : ''}`}>
                   <td className="px-6 md:px-8 py-6">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 flex items-center justify-center rounded-lg ${status === 'Active' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'}`}>
+                      <div className={`w-10 h-10 flex items-center justify-center rounded-lg ${status === 'Active' ? 'bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'}`}>
                          <LinkIcon size={20} />
                       </div>
                       <span className="font-semibold text-gray-900 dark:text-white">{link.name}</span>
@@ -199,7 +199,7 @@ export default function ScannerLinksPage() {
                   </td>
                   <td className="px-6 md:px-8 py-6">
                     <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-lg w-fit border border-gray-200 border-transparent group-hover:border-gray-200 dark:group-hover:border-gray-700 transition-colors">
-                      <code className={`text-xs tracking-tight ${status === 'Active' ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400'}`}>{url}</code>
+                      <code className={`text-xs tracking-tight ${status === 'Active' ? 'text-brand-600 dark:text-brand-400' : 'text-gray-500 dark:text-gray-400'}`}>{url}</code>
                       <button onClick={() => copyLink(link)} className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                         <Copy size={14} />
                       </button>
@@ -211,7 +211,7 @@ export default function ScannerLinksPage() {
                         <button
                           type="button"
                           onClick={() => toggleLink(link)}
-                          className={`w-10 h-5 rounded-full relative p-1 cursor-pointer transition-colors ${status === 'Active' ? 'bg-indigo-600' : 'bg-gray-300 dark:bg-gray-700'}`}
+                          className={`w-10 h-5 rounded-full relative p-1 cursor-pointer transition-colors ${status === 'Active' ? 'bg-brand-600' : 'bg-gray-300 dark:bg-gray-700'}`}
                           aria-label="Toggle scanner link"
                         >
                            <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-transform ${status === 'Active' ? 'right-1' : 'left-1 dark:bg-gray-400'}`}></div>
@@ -242,7 +242,7 @@ export default function ScannerLinksPage() {
           <div className="flex items-center gap-4">
             <button className="hover:text-gray-900 dark:hover:text-white transition-colors font-semibold flex items-center disabled:opacity-50" disabled><ChevronLeft size={16} /> Prev</button>
             <div className="flex gap-2">
-               <span className="w-6 h-6 flex items-center justify-center bg-indigo-600 text-white rounded font-bold shadow-sm">1</span>
+               <span className="w-6 h-6 flex items-center justify-center bg-brand-600 text-white rounded font-bold shadow-sm">1</span>
             </div>
             <button className="hover:text-gray-900 dark:hover:text-white transition-colors font-semibold flex items-center disabled:opacity-50" disabled>Next <ChevronRight size={16} /></button>
           </div>

@@ -146,7 +146,7 @@ export default function EnginePerformance() {
             {cacheCleared ? 'Cache Cleared!' : 'Force Cache Clear'}
           </button>
           <button onClick={handleExport}
-            className="bg-indigo-600 px-6 py-3 rounded-xl text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 active:scale-95 transition-all">
+            className="bg-brand-600 px-6 py-3 rounded-xl text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-brand-600/20 hover:bg-brand-700 active:scale-95 transition-all">
             <Download size={18} /> Export Log (JSON)
           </button>
         </div>
@@ -179,20 +179,20 @@ export default function EnginePerformance() {
           <div className="flex justify-between items-start mb-6">
             <div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 font-headline">
-                <BarChart2 className="text-indigo-600 dark:text-indigo-400" size={20} />
+                <BarChart2 className="text-brand-600 dark:text-brand-400" size={20} />
                 Global Extraction Latency (ms)
               </h3>
               <p className="text-xs text-gray-500 uppercase tracking-widest mt-1 font-bold">
-                Network Average: <span className="text-indigo-400">{stats.throughput_avg_ms || 420}ms</span> • Live updating every 1.5s
+                Network Average: <span className="text-brand-400">{stats.throughput_avg_ms || 420}ms</span> • Live updating every 1.5s
               </p>
             </div>
             <div className="flex gap-3">
               <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-900 rounded-full border border-gray-200 dark:border-gray-800">
-                <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
                 <span className="text-[10px] font-bold text-gray-700 dark:text-gray-300">Gemini ~{Math.round(avgGemini)}ms</span>
               </div>
               <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-900 rounded-full border border-gray-200 dark:border-gray-800">
-                <div className="w-2 h-2 rounded-full bg-indigo-300 dark:bg-indigo-400 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <div className="w-2 h-2 rounded-full bg-brand-300 dark:bg-brand-400 animate-pulse" style={{ animationDelay: '0.5s' }} />
                 <span className="text-[10px] font-bold text-gray-700 dark:text-gray-300">Tesseract ~{Math.round(avgTess)}ms</span>
               </div>
             </div>
@@ -227,8 +227,8 @@ export default function EnginePerformance() {
                     {/* Tooltip */}
                     {isHovered && (
                       <div className="absolute bottom-full mb-2 bg-gray-900 text-white text-[10px] font-mono rounded-lg px-2 py-1.5 z-50 pointer-events-none shadow-xl whitespace-nowrap" style={{ left: `${(i / chartData.length) * 100}%` }}>
-                        <div className="text-indigo-400">Gemini: {bar.gemini}ms</div>
-                        <div className="text-indigo-300">Tesseract: {bar.tesseract}ms</div>
+                        <div className="text-brand-400">Gemini: {bar.gemini}ms</div>
+                        <div className="text-brand-300">Tesseract: {bar.tesseract}ms</div>
                       </div>
                     )}
                     <div className="flex-1 rounded-t-sm transition-all duration-500"
@@ -259,10 +259,10 @@ export default function EnginePerformance() {
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-xs mt-6">
                   <span className="text-gray-500 font-medium tracking-wider">LEGACY FALLBACK</span>
-                  <span className="text-indigo-600 dark:text-indigo-400 font-bold">84.1%</span>
+                  <span className="text-brand-600 dark:text-brand-400 font-bold">84.1%</span>
                 </div>
                 <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-indigo-400 rounded-full transition-all duration-700" style={{ width: '84.1%' }} />
+                  <div className="h-full bg-brand-400 rounded-full transition-all duration-700" style={{ width: '84.1%' }} />
                 </div>
               </div>
             </div>

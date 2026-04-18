@@ -164,7 +164,7 @@ export default function GenUserFeedbackBugReporting() {
 <img alt="Technical editorial background" className="absolute inset-0 w-full h-full object-cover mix-blend-overlay group-hover:scale-110 transition-transform duration-700" data-alt="abstract tech circuitry pattern with glowing blue lines and deep indigo shadows in a macro shot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJjiedDQegBzxIg_33fD1j41DyAvrhLkgJ8-dc0eBkJ1ZHavfs64EUOCk_BObSxfpWlyAf4J7poT6ZL3x_BLai1QdrR6sTa-2rLNX1tIFdw_RzhBvNHlDGkcRITVIf_rDGF7mdJZ6Yw5aJbgDWcSt8VpJLgJjaqgSB_krk7J5Q1lZjVtad_aihcTY43NhiDh9B5dEoAHdtldtcDAkWjrqd40kWmh44arPT3j-AmI13ST8dsK4a1coFKYn4oQqnq2ikMvfBRVgiksBw"/>
 <div className="relative z-10">
 <h4 className="text-white font-bold text-lg mb-1">Enterprise Support</h4>
-<p className="text-indigo-100/70 text-xs mb-4">Dedicated account assistance available 24/7 for high-priority incidents.</p>
+<p className="text-brand-100/70 text-xs mb-4">Dedicated account assistance available 24/7 for high-priority incidents.</p>
 <button className="bg-white text-[#140f54] px-4 py-2 rounded-lg text-xs font-bold active:scale-95 transition-all">
                                 CHAT WITH AGENT
                             </button>

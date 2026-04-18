@@ -17,7 +17,7 @@ export default function GenAdvancedApiExplorerSandbox() {
 </div>
 <div className="flex items-center gap-3">
 <div className="bg-surface-container-low px-4 py-2 rounded-xl border border-outline-variant/10 flex items-center gap-3">
-<span className="material-symbols-outlined text-indigo-400 text-sm">key</span>
+<span className="material-symbols-outlined text-brand-400 text-sm">key</span>
 <code className="text-xs text-on-surface-variant font-mono">sk_prod_********8291</code>
 <button className="text-on-surface-variant hover:text-white transition-colors">
 <span className="material-symbols-outlined text-sm">content_copy</span>
@@ -35,7 +35,7 @@ export default function GenAdvancedApiExplorerSandbox() {
 <div className="col-span-12 lg:col-span-5 row-span-6 bg-surface-container-low rounded-xl overflow-hidden flex flex-col shadow-lg border border-outline-variant/5">
 <div className="px-6 py-4 bg-surface-container flex items-center justify-between">
 <div className="flex items-center gap-3">
-<span className="material-symbols-outlined text-indigo-400">code</span>
+<span className="material-symbols-outlined text-brand-400">code</span>
 <span className="text-sm font-bold uppercase tracking-widest text-on-surface">Request Payload</span>
 </div>
 <div className="flex items-center gap-2">
@@ -47,7 +47,7 @@ export default function GenAdvancedApiExplorerSandbox() {
 <div className="absolute left-0 top-0 w-12 h-full bg-surface-container-lowest flex flex-col items-center py-6 text-outline-variant/40 select-none text-[10px]">
 <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
 </div>
-<div className="ml-10 text-indigo-300">
+<div className="ml-10 text-brand-300">
 <pre className="whitespace-pre-wrap">{"{"}
   <span className="text-on-surface-variant">"engine"</span>: <span className="text-tertiary">"OCR-PRO-V3"</span>,
   <span className="text-on-surface-variant">"options"</span>: {"{"}
@@ -85,11 +85,11 @@ export default function GenAdvancedApiExplorerSandbox() {
 <div className="bg-surface-container-low p-4 rounded-xl">
 <p className="text-[10px] uppercase font-bold text-on-surface-variant tracking-widest mb-2">Confidence Score</p>
 <div className="flex items-center justify-between">
-<span className="text-2xl font-black font-headline text-white">98.4<span className="text-indigo-500">%</span></span>
+<span className="text-2xl font-black font-headline text-white">98.4<span className="text-brand-500">%</span></span>
 <div className="bg-tertiary-container text-on-tertiary-container text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">High Confidence</div>
 </div>
 <div className="w-full h-1 bg-surface-container-high rounded-full mt-3 overflow-hidden">
-<div className="w-[98.4%] h-full bg-indigo-500"></div>
+<div className="w-[98.4%] h-full bg-brand-500"></div>
 </div>
 </div>
 <div className="space-y-3">
@@ -99,14 +99,14 @@ export default function GenAdvancedApiExplorerSandbox() {
 <span className="text-xs text-on-surface-variant">Merchant Name</span>
 <span className="text-sm font-bold text-white">TECH-GLOBAL SOLUTIONS</span>
 </div>
-<span className="text-[10px] font-mono text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">0.99</span>
+<span className="text-[10px] font-mono text-brand-400 opacity-0 group-hover:opacity-100 transition-opacity">0.99</span>
 </div>
 <div className="flex justify-between items-center p-3 rounded-lg bg-surface-container-high/50 hover:bg-surface-container-high transition-all group">
 <div className="flex flex-col">
 <span className="text-xs text-on-surface-variant">Total Amount</span>
 <span className="text-sm font-bold text-white">$12,450.00</span>
 </div>
-<span className="text-[10px] font-mono text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">0.98</span>
+<span className="text-[10px] font-mono text-brand-400 opacity-0 group-hover:opacity-100 transition-opacity">0.98</span>
 </div>
 <div className="flex justify-between items-center p-3 rounded-lg bg-surface-container-high/50 hover:bg-surface-container-high transition-all group border-l-2 border-error">
 <div className="flex flex-col">
@@ -150,7 +150,7 @@ export default function GenAdvancedApiExplorerSandbox() {
 <span className="material-symbols-outlined text-sm text-on-surface-variant">list_alt</span>
 <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">System Execution Logs</span>
 </div>
-<button className="text-[10px] text-indigo-400 hover:underline">Clear Logs</button>
+<button className="text-[10px] text-brand-400 hover:underline">Clear Logs</button>
 </div>
 <div className="space-y-2 overflow-auto max-h-24 hide-scrollbar">
 <div className="flex gap-4 font-mono text-[11px]">
@@ -160,7 +160,7 @@ export default function GenAdvancedApiExplorerSandbox() {
 </div>
 <div className="flex gap-4 font-mono text-[11px]">
 <span className="text-outline-variant">14:20:01.421</span>
-<span className="text-indigo-400 font-bold">[POST]</span>
+<span className="text-brand-400 font-bold">[POST]</span>
 <span className="text-on-surface-variant">Request received by gateway. Routing to engine OCR-PRO-V3...</span>
 </div>
 <div className="flex gap-4 font-mono text-[11px]">

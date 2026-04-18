@@ -109,7 +109,7 @@ export default function SequenceDetailPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-[50vh]">
-      <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
@@ -117,7 +117,7 @@ export default function SequenceDetailPage() {
     <div className="p-8 max-w-5xl mx-auto space-y-8 animate-fade-in relative">
       {toast && (
         <div className={`fixed top-8 right-8 z-[100] px-6 py-3 rounded-2xl shadow-2xl border flex items-center gap-3 animate-slide-in ${
-          toast.type === 'error' ? 'bg-red-900/90 text-red-100 border-red-500/50' : 'bg-indigo-900/90 text-indigo-100 border-indigo-500/50 backdrop-blur-xl'
+          toast.type === 'error' ? 'bg-red-900/90 text-red-100 border-red-500/50' : 'bg-brand-900/90 text-brand-100 border-brand-500/50 backdrop-blur-xl'
         }`}>
           <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
           <span className="text-sm font-black uppercase tracking-widest">{toast.msg}</span>
@@ -135,7 +135,7 @@ export default function SequenceDetailPage() {
               type="text"
               value={sequence?.name || ''}
               onChange={(e) => setSequence({ ...sequence, name: e.target.value })}
-              className="text-3xl font-black text-white tracking-tighter uppercase leading-none bg-transparent border-none outline-none focus:text-indigo-400 transition-colors w-full"
+              className="text-3xl font-black text-white tracking-tighter uppercase leading-none bg-transparent border-none outline-none focus:text-brand-400 transition-colors w-full"
               placeholder="Sequence Name"
             />
             <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">AI Outreach Lifecycle</p>
@@ -144,7 +144,7 @@ export default function SequenceDetailPage() {
         <button 
           onClick={handleSave}
           disabled={isSaving}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+          className="px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2 shadow-lg shadow-brand-600/20 disabled:opacity-50"
         >
           {isSaving ? 'Saving...' : <><Save size={16} /> Save Changes</>}
         </button>
@@ -155,11 +155,11 @@ export default function SequenceDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-xl font-headline font-black text-white flex items-center gap-2">
-              <Zap size={20} className="text-indigo-400" /> Sequence Steps
+              <Zap size={20} className="text-brand-400" /> Sequence Steps
             </h2>
             <button 
               onClick={handleAddStep}
-              className="px-3 py-1.5 bg-gray-900 border border-gray-800 text-indigo-400 hover:text-white hover:border-indigo-500 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+              className="px-3 py-1.5 bg-gray-900 border border-gray-800 text-brand-400 hover:text-white hover:border-brand-500 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
             >
               Add Step
             </button>
@@ -171,7 +171,7 @@ export default function SequenceDetailPage() {
             {steps.map((step, idx) => (
               <div key={idx} className="relative pl-12 group">
                 {/* Step Pin */}
-                <div className="absolute left-0 top-0 w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-xs font-black text-gray-400 group-hover:border-indigo-500 transition-colors">
+                <div className="absolute left-0 top-0 w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-xs font-black text-gray-400 group-hover:border-brand-500 transition-colors">
                   {idx + 1}
                 </div>
                 
@@ -183,7 +183,7 @@ export default function SequenceDetailPage() {
                         type="text" 
                         value={step.subject}
                         onChange={(e) => handleUpdateStep(idx, 'subject', e.target.value)}
-                        className="w-full bg-gray-950/50 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-indigo-500 font-medium"
+                        className="w-full bg-gray-950/50 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-brand-500 font-medium"
                       />
                     </div>
                     <div>
@@ -194,7 +194,7 @@ export default function SequenceDetailPage() {
                           type="number" 
                           value={step.delay_days}
                           onChange={(e) => handleUpdateStep(idx, 'delay_days', parseInt(e.target.value))}
-                          className="bg-gray-950/50 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-indigo-500 w-24 font-bold"
+                          className="bg-gray-950/50 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-brand-500 w-24 font-bold"
                         />
                         <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Days after last</span>
                       </div>
@@ -203,14 +203,14 @@ export default function SequenceDetailPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                      <label className="text-[10px] font-black text-brand-400 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
                         <Sparkles size={12} /> AI Intent
                       </label>
                       <textarea 
                         placeholder="e.g., Congratulate them on meeting at the booth..."
                         value={step.ai_intent || ''}
                         onChange={(e) => handleUpdateStep(idx, 'ai_intent', e.target.value)}
-                        className="w-full bg-gray-950/50 border border-gray-800 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-indigo-500 h-20 resize-none font-medium leading-relaxed"
+                        className="w-full bg-gray-950/50 border border-gray-800 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-brand-500 h-20 resize-none font-medium leading-relaxed"
                       />
                     </div>
                     <div>
@@ -218,7 +218,7 @@ export default function SequenceDetailPage() {
                       <select 
                         value={step.ai_model || 'gemini'}
                         onChange={(e) => handleUpdateStep(idx, 'ai_model', e.target.value)}
-                        className="w-full bg-gray-950/50 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-indigo-500 font-bold appearance-none"
+                        className="w-full bg-gray-950/50 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-brand-500 font-bold appearance-none"
                       >
                         <option value="gemini">Gemini 3 Flash (Default)</option>
                         {availableModels.map(m => (
@@ -242,7 +242,7 @@ export default function SequenceDetailPage() {
                     <textarea 
                       value={step.html_body}
                       onChange={(e) => handleUpdateStep(idx, 'html_body', e.target.value)}
-                      className="w-full bg-gray-950/50 border border-gray-800 rounded-xl px-4 py-3 text-[13px] text-gray-400 outline-none focus:border-indigo-500 h-24 font-mono leading-relaxed"
+                      className="w-full bg-gray-950/50 border border-gray-800 rounded-xl px-4 py-3 text-[13px] text-gray-400 outline-none focus:border-brand-500 h-24 font-mono leading-relaxed"
                     />
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export default function SequenceDetailPage() {
           <div className="pt-4 flex justify-center">
             <button 
               onClick={handleAddStep}
-              className="flex items-center gap-2 text-gray-500 hover:text-indigo-400 text-xs font-black uppercase tracking-widest transition-all"
+              className="flex items-center gap-2 text-gray-500 hover:text-brand-400 text-xs font-black uppercase tracking-widest transition-all"
             >
               <Plus size={16} /> New Follow-up Step
             </button>
@@ -273,7 +273,7 @@ export default function SequenceDetailPage() {
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-800">
                 <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Automation Mode</span>
-                <span className="bg-indigo-500/10 text-indigo-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">AI Generative</span>
+                <span className="bg-brand-500/10 text-brand-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">AI Generative</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-800">
                 <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Status</span>
@@ -284,7 +284,7 @@ export default function SequenceDetailPage() {
 
           <div className="bg-gray-900/60 border border-gray-800 rounded-3xl p-6 flex flex-col h-[400px]">
             <h3 className="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-              <User size={18} className="text-indigo-400" /> Active Leads
+              <User size={18} className="text-brand-400" /> Active Leads
             </h3>
             <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar">
               {enrollments.length === 0 ? (
@@ -294,9 +294,9 @@ export default function SequenceDetailPage() {
                 </div>
               ) : (
                 enrollments.map((enr, i) => (
-                  <div key={i} className="flex items-center justify-between group bg-gray-950/30 p-2 rounded-xl hover:bg-indigo-500/5 transition-all">
+                  <div key={i} className="flex items-center justify-between group bg-gray-950/30 p-2 rounded-xl hover:bg-brand-500/5 transition-all">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-[10px] font-black text-indigo-400 border border-indigo-500/20">
+                      <div className="w-8 h-8 rounded-lg bg-brand-500/10 flex items-center justify-center text-[10px] font-black text-brand-400 border border-brand-500/20">
                         {enr.contact_name?.charAt(0) || '?'}
                       </div>
                       <div>

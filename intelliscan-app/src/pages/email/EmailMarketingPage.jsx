@@ -51,14 +51,14 @@ export default function EmailMarketingPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl font-black text-white tracking-tighter uppercase mb-2">
-            Intelligence <span className="text-indigo-500">Marketing</span>
+            Intelligence <span className="text-brand-500">Marketing</span>
           </h1>
           <p className="text-gray-400 font-medium">Enterprise email orchestration and AI-powered outreach.</p>
         </div>
         <div className="flex gap-3">
           <Link 
             to="/dashboard/email-marketing/campaigns/new"
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/20"
+            className="px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-brand-600/20"
           >
             <Plus size={18} /> New Campaign
           </Link>
@@ -103,9 +103,9 @@ export default function EmailMarketingPage() {
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <BarChart3 size={20} className="text-indigo-500" /> Recent Activity
+              <BarChart3 size={20} className="text-brand-500" /> Recent Activity
             </h3>
-            <Link to="/dashboard/email-marketing/campaigns" className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 uppercase tracking-widest">
+            <Link to="/dashboard/email-marketing/campaigns" className="text-xs font-bold text-brand-400 hover:text-brand-300 flex items-center gap-1 uppercase tracking-widest">
               View All <ArrowRight size={12} />
             </Link>
           </div>
@@ -136,7 +136,7 @@ export default function EmailMarketingPage() {
                   recentCampaigns.map((c) => (
                     <tr key={c.id} className="hover:bg-white/5 transition-colors group">
                       <td className="px-6 py-5">
-                        <p className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors">{c.name}</p>
+                        <p className="text-sm font-bold text-white group-hover:text-brand-400 transition-colors">{c.name}</p>
                         <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-tight truncate w-48 italic">"{c.subject}"</p>
                       </td>
                       <td className="px-6 py-5">
@@ -174,14 +174,14 @@ export default function EmailMarketingPage() {
 
         {/* Quick Actions & Tips */}
         <div className="space-y-6">
-          <div className="bg-gradient-to-br from-indigo-900/20 to-transparent border border-indigo-500/30 p-6 rounded-2xl shadow-xl">
+          <div className="bg-gradient-to-br from-brand-900/20 to-transparent border border-brand-500/30 p-6 rounded-2xl shadow-xl">
             <h3 className="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Zap size={16} className="text-indigo-400" /> Intelligent Core
+              <Zap size={16} className="text-brand-400" /> Intelligent Core
             </h3>
             <div className="space-y-4">
               <Link to="/dashboard/email-marketing/templates" className="flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all group">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                  <div className="w-8 h-8 rounded-lg bg-brand-500/20 flex items-center justify-center text-brand-400">
                     <FileText size={16} />
                   </div>
                   <span className="text-xs font-bold text-gray-200">Template Engine</span>
@@ -199,7 +199,7 @@ export default function EmailMarketingPage() {
               </Link>
               <button 
                 onClick={() => navigate('/dashboard/email-marketing/campaigns/new', { state: { useAI: true } })}
-                className="w-full mt-2 p-3 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-[10px] uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20"
+                className="w-full mt-2 p-3 bg-brand-600 hover:bg-brand-500 text-white font-black text-[10px] uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-600/20"
               >
                 AI Copywriter Active <ArrowRight size={12} />
               </button>

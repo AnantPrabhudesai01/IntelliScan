@@ -34,7 +34,7 @@ export default function TimeGrid({ view, date, events, onEventClick, onTimeSlotC
         {days.map((day, i) => (
           <div key={i} className="flex-1 py-4 text-center border-r last:border-0 border-gray-100 dark:border-gray-800">
             <div className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-widest mb-1">{format(day, 'EEE')}</div>
-            <div className={`text-xl font-black ${isSameDay(day, new Date()) ? 'text-indigo-600' : 'text-gray-900 dark:text-white'}`}>
+            <div className={`text-xl font-black ${isSameDay(day, new Date()) ? 'text-brand-600' : 'text-gray-900 dark:text-white'}`}>
               {format(day, 'd')}
             </div>
           </div>

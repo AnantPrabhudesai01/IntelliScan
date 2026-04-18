@@ -68,13 +68,13 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 pt-10 pb-12 bg-[#0e131f] font-body selection:bg-indigo-600 selection:text-white">
+    <div className="min-h-screen flex items-center justify-center px-6 pt-10 pb-12 bg-[#0e131f] font-body selection:bg-brand-600 selection:text-white">
       <div className="w-full max-w-2xl relative z-10">
         {/* Progress Bar */}
         <div className="flex items-center justify-center mb-12 gap-3">
           {[0, 1, 2].map(i => (
             <div key={i} className="flex items-center gap-3">
-              <div className={`h-1.5 w-16 rounded-full transition-all duration-500 ${i <= step ? 'bg-indigo-600' : 'bg-[#242a36]'
+              <div className={`h-1.5 w-16 rounded-full transition-all duration-500 ${i <= step ? 'bg-brand-600' : 'bg-[#242a36]'
                 }`}></div>
             </div>
           ))}
@@ -107,7 +107,7 @@ export default function OnboardingPage() {
                     <Briefcase size={20} />
                   </div>
                   <input
-                    className="block font-body w-full pl-12 pr-4 py-4 bg-[#1a202c] border-0 rounded-xl text-white placeholder:text-[#918fa1]/50 focus:ring-2 focus:ring-indigo-600/40 transition-all duration-200 outline-none"
+                    className="block font-body w-full pl-12 pr-4 py-4 bg-[#1a202c] border-0 rounded-xl text-white placeholder:text-[#918fa1]/50 focus:ring-2 focus:ring-brand-600/40 transition-all duration-200 outline-none"
                     id="job-title"
                     placeholder="e.g. Operations Manager"
                     type="text"
@@ -124,7 +124,7 @@ export default function OnboardingPage() {
                     <Building2 size={20} />
                   </div>
                   <input
-                    className="block font-body w-full pl-12 pr-4 py-4 bg-[#1a202c] border-0 rounded-xl text-white placeholder:text-[#918fa1]/50 focus:ring-2 focus:ring-indigo-600/40 transition-all duration-200 outline-none"
+                    className="block font-body w-full pl-12 pr-4 py-4 bg-[#1a202c] border-0 rounded-xl text-white placeholder:text-[#918fa1]/50 focus:ring-2 focus:ring-brand-600/40 transition-all duration-200 outline-none"
                     id="company-name"
                     placeholder="e.g. Acme Tech Solutions"
                     type="text"
@@ -135,11 +135,11 @@ export default function OnboardingPage() {
               </div>
 
               <div className="bg-[#1a202c] rounded-xl p-4 flex items-start gap-4 border border-[#464555]/30">
-                <div className="bg-indigo-600/20 p-2 rounded-lg"><Sparkles size={20} className="text-[#c3c0ff]" /></div>
+                <div className="bg-brand-600/20 p-2 rounded-lg"><Sparkles size={20} className="text-[#c3c0ff]" /></div>
                 <div>
                   <p className="text-xs font-bold text-[#c3c0ff] uppercase tracking-wider mb-1 font-headline">AI Personalization</p>
                   <p className="text-xs text-[#918fa1] leading-relaxed font-body">
-                    We use your industry data to optimize the <span className="bg-indigo-600/20 px-1 rounded text-[#c3c0ff] text-[10px] font-mono">OCR-V2</span> engine for your specific document types.
+                    We use your industry data to optimize the <span className="bg-brand-600/20 px-1 rounded text-[#c3c0ff] text-[10px] font-mono">OCR-V2</span> engine for your specific document types.
                   </p>
                 </div>
               </div>
@@ -160,11 +160,11 @@ export default function OnboardingPage() {
                         key={crm.id}
                         onClick={() => setFormData(prev => ({ ...prev, crm: crm.id }))}
                         className={`p-4 rounded-xl border text-left transition-all ${formData.crm === crm.id
-                            ? 'bg-indigo-600/10 border-indigo-500 ring-2 ring-indigo-500/30'
+                            ? 'bg-brand-600/10 border-brand-500 ring-2 ring-brand-500/30'
                             : 'bg-[#1a202c] border-[#464555]/30 hover:border-[#464555]'
                           }`}
                       >
-                        <Icon size={20} className={formData.crm === crm.id ? 'text-indigo-400 mb-2' : 'text-[#918fa1] mb-2'} />
+                        <Icon size={20} className={formData.crm === crm.id ? 'text-brand-400 mb-2' : 'text-[#918fa1] mb-2'} />
                         <p className="text-sm font-bold text-white">{crm.name}</p>
                         <p className="text-[10px] text-[#918fa1] mt-0.5">{crm.desc}</p>
                       </button>
@@ -182,7 +182,7 @@ export default function OnboardingPage() {
                       key={size.value}
                       onClick={() => setFormData(prev => ({ ...prev, teamSize: size.value }))}
                       className={`p-3 rounded-xl border text-center transition-all ${formData.teamSize === size.value
-                          ? 'bg-indigo-600/10 border-indigo-500 ring-2 ring-indigo-500/30'
+                          ? 'bg-brand-600/10 border-brand-500 ring-2 ring-brand-500/30'
                           : 'bg-[#1a202c] border-[#464555]/30 hover:border-[#464555]'
                         }`}
                     >
@@ -206,19 +206,19 @@ export default function OnboardingPage() {
                     key={uc.id}
                     onClick={() => toggleUseCase(uc.id)}
                     className={`w-full flex items-center gap-4 p-5 rounded-xl border text-left transition-all ${selected
-                        ? 'bg-indigo-600/10 border-indigo-500 ring-2 ring-indigo-500/30'
+                        ? 'bg-brand-600/10 border-brand-500 ring-2 ring-brand-500/30'
                         : 'bg-[#1a202c] border-[#464555]/30 hover:border-[#464555]'
                       }`}
                   >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${selected ? 'bg-indigo-600/20' : 'bg-[#242a36]'
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${selected ? 'bg-brand-600/20' : 'bg-[#242a36]'
                       }`}>
-                      {selected ? <Check size={20} className="text-indigo-400" /> : <Icon size={20} className="text-[#918fa1]" />}
+                      {selected ? <Check size={20} className="text-brand-400" /> : <Icon size={20} className="text-[#918fa1]" />}
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-bold text-white">{uc.label}</p>
                       <p className="text-xs text-[#918fa1] mt-0.5">{uc.desc}</p>
                     </div>
-                    <ChevronRight size={18} className={selected ? 'text-indigo-400' : 'text-[#464555]'} />
+                    <ChevronRight size={18} className={selected ? 'text-brand-400' : 'text-[#464555]'} />
                   </button>
                 );
               })}
@@ -238,7 +238,7 @@ export default function OnboardingPage() {
             <button
               onClick={() => step < totalSteps - 1 ? setStep(s => s + 1) : handleFinish()}
               disabled={!canProceed()}
-              className="flex-1 bg-indigo-600 text-white font-bold py-4 px-6 rounded-xl hover:bg-[#3323cc] active:scale-95 transition-all duration-200 shadow-lg flex items-center justify-center gap-2 font-headline disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-indigo-600"
+              className="flex-1 bg-brand-600 text-white font-bold py-4 px-6 rounded-xl hover:bg-[#3323cc] active:scale-95 transition-all duration-200 shadow-lg flex items-center justify-center gap-2 font-headline disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-brand-600"
             >
               {step < totalSteps - 1 ? (
                 <>Next Step <ArrowRight size={20} /></>

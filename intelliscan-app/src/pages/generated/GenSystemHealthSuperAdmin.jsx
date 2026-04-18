@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { AlertTriangle, Check, X, Plus, Activity, Shield, Server, Database, Zap, Download, RefreshCcw } from 'lucide-react';
 
 const LOG_POOL = [
-  { level: 'INFO',  color: 'text-indigo-400',  msgs: ['Auth provider handshake success (v2.1.0)', 'API mesh routing tables updated', 'Garbage collection cycle complete (12ms)', 'OCR engine heartbeats (64/64) confirmed', 'Backup sync completed across 3 datacenters', 'Certificate rotation scheduled for next cycle'] },
+  { level: 'INFO',  color: 'text-brand-400',  msgs: ['Auth provider handshake success (v2.1.0)', 'API mesh routing tables updated', 'Garbage collection cycle complete (12ms)', 'OCR engine heartbeats (64/64) confirmed', 'Backup sync completed across 3 datacenters', 'Certificate rotation scheduled for next cycle'] },
   { level: 'WARN',  color: 'text-amber-400',   msgs: ['Node EU-C-4 latency exceeded 150ms', 'High disk I/O on logging container', 'Memory threshold reached 78% on cluster-alpha', 'Retry storm detected on /api/v2/scan'] },
   { level: 'ERR',   color: 'text-red-500',     msgs: ['DB_REPL_TIMEOUT on AS-S-1 (Shards 12-14)', 'Socket hang up at node-ingress-7', 'TLS handshake failed for 3 endpoints'] },
   { level: 'SYS',   color: 'text-blue-400',    msgs: ['Scaling operation initiated: EU-Central', 'Node provisioned: EU-C-5', 'Failover complete: US-East-B', 'Load balancer weights redistributed'] },
@@ -17,14 +17,14 @@ function getLog() {
 }
 
 const INIT_LOGS = [
-  { time: '14:22:01', level: 'INFO', msg: 'Auth provider handshake success (v2.1.0)', color: 'text-indigo-400' },
+  { time: '14:22:01', level: 'INFO', msg: 'Auth provider handshake success (v2.1.0)', color: 'text-brand-400' },
   { time: '14:22:03', level: 'WARN', msg: 'Node EU-C-4 latency exceeded 150ms', color: 'text-amber-400' },
   { time: '14:22:05', level: 'ERR',  msg: 'DB_REPL_TIMEOUT on AS-S-1 (Shards 12-14)', color: 'text-red-500' },
-  { time: '14:22:08', level: 'INFO', msg: 'Scaling operation initiated: EU-Central', color: 'text-indigo-400' },
-  { time: '14:22:12', level: 'INFO', msg: 'OCR engine heartbeats (64/64) confirmed', color: 'text-indigo-400' },
+  { time: '14:22:08', level: 'INFO', msg: 'Scaling operation initiated: EU-Central', color: 'text-brand-400' },
+  { time: '14:22:12', level: 'INFO', msg: 'OCR engine heartbeats (64/64) confirmed', color: 'text-brand-400' },
   { time: '14:22:15', level: 'ERR',  msg: 'Socket hang up at node-ingress-7', color: 'text-red-500' },
-  { time: '14:22:18', level: 'INFO', msg: 'Garbage collection cycle complete (12ms)', color: 'text-indigo-400' },
-  { time: '14:22:21', level: 'INFO', msg: 'API mesh routing tables updated', color: 'text-indigo-400' },
+  { time: '14:22:18', level: 'INFO', msg: 'Garbage collection cycle complete (12ms)', color: 'text-brand-400' },
+  { time: '14:22:21', level: 'INFO', msg: 'API mesh routing tables updated', color: 'text-brand-400' },
   { time: '14:22:24', level: 'WARN', msg: 'High disk I/O on logging container', color: 'text-amber-400' },
 ];
 
@@ -154,7 +154,7 @@ export default function GenSystemHealthSuperAdmin() {
               {logs.map((l, i) => (
                 <div key={i} className="hover:bg-[var(--brand)]/5 px-4 py-2 rounded-xl transition-colors border border-transparent hover:border-[var(--brand)]/10">
                   <span className="text-[var(--brand)] opacity-40 mr-4">[{l.time}]</span>
-                  <span className={`font-black uppercase tracking-widest ${l.color === 'text-indigo-400' ? 'text-[var(--brand)]' : l.color} mr-4`}>{l.level}:</span>
+                  <span className={`font-black uppercase tracking-widest ${l.color === 'text-brand-400' ? 'text-[var(--brand)]' : l.color} mr-4`}>{l.level}:</span>
                   <span className="text-[var(--text-main)] opacity-80">{l.msg}</span>
                 </div>
               ))}
@@ -383,7 +383,7 @@ export default function GenSystemHealthSuperAdmin() {
               {(showFullLogs ? logs : logs.slice(0, 15)).map((l, i) => (
                 <div key={i} className="hover:bg-[var(--brand)]/5 px-3 py-2 rounded-xl transition-all border border-transparent hover:border-[var(--brand)]/10 group">
                   <span className="text-[var(--brand)] opacity-40 mr-3">[{l.time}]</span>
-                  <span className={`font-black uppercase tracking-widest ${l.color === 'text-indigo-400' ? 'text-[var(--brand)]' : l.color} mr-3`}>{l.level}:</span>
+                  <span className={`font-black uppercase tracking-widest ${l.color === 'text-brand-400' ? 'text-[var(--brand)]' : l.color} mr-3`}>{l.level}:</span>
                   <span className="text-[var(--text-main)] opacity-70 group-hover:opacity-100 transition-opacity">{l.msg}</span>
                 </div>
               ))}
