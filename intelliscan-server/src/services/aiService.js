@@ -268,7 +268,7 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
               parts: [{ text: prompt }, { inlineData: { data: base64Data, mimeType: effectiveMime } }] 
             }],
             generationConfig: {
-              maxOutputTokens: 16384,
+              maxOutputTokens: 8192,
               responseMimeType: "application/json"
             }
           })
@@ -285,6 +285,7 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
           data.engine_used = 'Gemini 3 Flash (Ultra-Fast)';
           return { data };
         }
+        console.error('Gemini REST API Rejected:', JSON.stringify(result));
         throw new Error(result.error?.message || 'Gemini REST API Error');
       }
     } catch (err) {
