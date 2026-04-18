@@ -327,7 +327,16 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
     try {
       const orKey = process.env.OPENROUTER_API_KEY;
       if (orKey) {
-        const orModel = process.env.OPENROUTER_MODEL || "google/gemini-1.5-flash";
+        // IMPROVEMENT: If prompt indicates multiple cards, force a high-power model
+        // Many 'Free' models on OpenRouter (like Nemotron-Nano) cannot handle whiteboards.
+        const isMultiScan = prompt.toLowerCase().includes('every') || prompt.toLowerCase().includes('30 cards');
+        let orModel = process.env.OPENROUTER_MODEL || "google/gemini-1.5-flash";
+        
+        if (isMultiScan && orModel.includes('free')) {
+          console.log('[AI Service] Dense scan detected. Upgrading to Gemini 1.5 Flash for accuracy.');
+          orModel = "google/gemini-1.5-flash"; // Industry standard for multi-card vision
+        }
+
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -346,18 +355,20 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
                   { type: "image_url", image_url: { url: `data:${effectiveMime};base64,${base64Data}` } }
                 ]
               }
-            ],
-            response_format: { type: "json_object" }
+            ]
+            // REMOVED response_format: { type: "json_object" } as it causes 400 errors for many vision providers on OpenRouter
           })
         });
 
         const result = await response.json();
         if (result.choices?.[0]?.message?.content) {
           let rawText = result.choices[0].message.content.trim();
-          if (rawText.startsWith('```json')) rawText = rawText.replace(/^```json/, '');
-          if (rawText.startsWith('```')) rawText = rawText.replace(/^```/, '');
-          if (rawText.endsWith('```')) rawText = rawText.replace(/```$/, '');
-          const data = JSON.parse(rawText.trim());
+          
+          // Use robust helper to find JSON block anywhere in the AI's response
+          const cleanedJson = extractJsonObjectFromText(rawText);
+          if (!cleanedJson) throw new Error("AI outputted text but no valid JSON block was found.");
+
+          const data = JSON.parse(cleanedJson);
           data.engine_used = `OpenRouter (${orModel})`;
           return { data };
         }

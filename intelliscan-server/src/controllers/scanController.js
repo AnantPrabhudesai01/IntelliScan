@@ -286,7 +286,16 @@ Return ONLY a valid JSON object in this exact format:
       .filter((card) => hasMeaningfulContactData(card));
 
     if (normalizedCards.length === 0) {
-      return res.status(422).json({ error: 'No business cards were confidently detected. Try placing all cards face-up.' });
+      const modelInfo = parsed.engine_used || 'Current AI Model';
+      const isFreeModel = modelInfo.toLowerCase().includes('free') || modelInfo.toLowerCase().includes('nano');
+      const errorMsg = isFreeModel 
+        ? `Model "${modelInfo}" is too weak to read this whiteboard. Please upgrade to a Pro model in Settings.`
+        : 'The AI could not confidently identify business cards in this photo. Try closer shots or better lighting.';
+      
+      return res.status(422).json({ 
+        error: errorMsg,
+        engine: modelInfo 
+      });
     }
 
     const userId = req.user.id;
