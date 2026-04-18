@@ -91,10 +91,7 @@ app.use(async (req, res, next) => {
   
   // If we're not a diagnostic route, wait for the boot to finish
   if (bootPromise) {
-    await Promise.race([
-      bootPromise,
-      new Promise(resolve => setTimeout(resolve, 15000)) // Increased to 15s for high-latency cold starts
-    ]);
+    await bootPromise;
   }
   next();
 });

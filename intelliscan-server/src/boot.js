@@ -392,27 +392,48 @@ async function bootstrap() {
       { table: 'calendars', column: 'type', type: 'TEXT' }
     ];
 
-    for (const patch of patches) {
-      const checkQuery = isPostgres 
-        ? `SELECT column_name FROM information_schema.columns WHERE table_name = '${patch.table}' AND column_name = '${patch.column}'`
-        : `PRAGMA table_info(${patch.table})`;
+    // 2.2 Bulk Column Metadata Fetch (Optimizes 30+ roundtrips into 1)
+    const existingColumns = new Map(); // table -> Set(columns)
+    try {
+      const colRows = await dbAllAsync(`
+        SELECT table_name, column_name 
+        FROM information_schema.columns 
+        WHERE table_schema = 'public'
+      `);
+      for (const row of colRows) {
+        if (!existingColumns.has(row.table_name)) existingColumns.set(row.table_name, new Set());
+        existingColumns.get(row.table_name).add(row.column_name);
+      }
+    } catch (metaErr) {
+      console.warn('[Boot] Failed to fetch bulk column metadata, falling back to sequential checks:', metaErr.message);
+    }
 
-      let needsPatch = false;
+    for (const patch of patches) {
       try {
-        if (isPostgres) {
-          const res = await pgPool.query(checkQuery);
-          needsPatch = res.rowCount === 0;
+        let columnExists = false;
+        if (existingColumns.has(patch.table)) {
+          columnExists = existingColumns.get(patch.table).has(patch.column);
         } else {
-          const columns = await dbAllAsync(checkQuery);
-          needsPatch = !columns.some(c => c.name === patch.column);
+          // Fallback if metadata fetch failed or table is new
+          const checkQuery = isPostgres 
+            ? `SELECT column_name FROM information_schema.columns WHERE table_name = '${patch.table}' AND column_name = '${patch.column}'`
+            : `PRAGMA table_info(${patch.table})`;
+          
+          if (isPostgres) {
+            const res = await pgPool.query(checkQuery);
+            columnExists = res.rowCount > 0;
+          } else {
+            const columns = await dbAllAsync(checkQuery);
+            columnExists = columns.some(c => c.name === patch.column);
+          }
         }
 
-        if (needsPatch) {
+        if (!columnExists) {
           console.log(`[Boot] Patching schema: adding missing "${patch.column}" column to ${patch.table} table.`);
           await dbRunAsync(`ALTER TABLE ${patch.table} ADD COLUMN ${patch.column} ${patch.type}`);
         }
       } catch (patchErr) {
-        console.warn(`[Boot] Patch check failed for ${patch.table}.${patch.column} (Table might not exist yet):`, patchErr.message);
+        console.warn(`[Boot] Patch check failed for ${patch.table}.${patch.column}:`, patchErr.message);
       }
     }
 
@@ -522,7 +543,7 @@ async function bootstrap() {
         device_info TEXT,
         ip_address TEXT,
         location TEXT,
-        is_active INTEGER DEFAULT 1,
+        is_active BOOLEAN DEFAULT TRUE,
         last_active ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
       );
 

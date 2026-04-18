@@ -377,7 +377,7 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
       const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
       await dbRunAsync(
-        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, true)',
+        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, TRUE)',
         [userId, token, deviceInfo, ipAddress, 'Unknown Location']
       );
     } catch (sessionErr) {

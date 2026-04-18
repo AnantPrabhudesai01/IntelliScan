@@ -18,8 +18,8 @@ try {
     ssl: { rejectUnauthorized: false }, 
     max: 3, 
     idleTimeoutMillis: 60000, 
-    connectionTimeoutMillis: 4000, 
-    query_timeout: 7000, 
+    connectionTimeoutMillis: 15000, 
+    query_timeout: 20000, 
   });
   
   // Early check to prevent silent constructor failures from hanging later
