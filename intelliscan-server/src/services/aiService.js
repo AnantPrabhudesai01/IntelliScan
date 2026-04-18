@@ -39,6 +39,10 @@ async function generateWithFallback(prompt) {
       }
       throw new Error(result.error?.message || 'Gemini API Error');
     } catch (err) {
+      console.warn('Gemini API Fallback Triggered:', err.message);
+    }
+  }
+
   // 2. Try OpenRouter (Multi-Model Pool)
   let orKey = process.env.OPENROUTER_API_KEY;
   if (orKey) {
