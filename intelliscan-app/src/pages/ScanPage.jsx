@@ -140,7 +140,32 @@ export default function ScanPage() {
   }, []);
 
 
-  const handleFileUpload = (e) => {
+  const compressImage = (file, maxWidth = 1920) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.8)); // 80% quality JPEG
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileUpload = async (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
     if (scanMode === 'batch') {
@@ -148,17 +173,17 @@ export default function ScanPage() {
       return;
     }
     const file = files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setSelectedImage(reader.result);
-      localStorage.setItem('intelliscan_cached_image', reader.result);
-      if (scanMode === 'single') {
-        processSingleImage(reader.result, file.type);
-      } else {
-        processMultiImage(reader.result, file.type);
-      }
-    };
-    reader.readAsDataURL(file);
+    // Compress image to drastically reduce payload size and AI wait time
+    const compressedBase64 = await compressImage(file, 1600); 
+    
+    setSelectedImage(compressedBase64);
+    localStorage.setItem('intelliscan_cached_image', compressedBase64);
+    
+    if (scanMode === 'single') {
+      processSingleImage(compressedBase64, 'image/jpeg');
+    } else {
+      processMultiImage(compressedBase64, 'image/jpeg');
+    }
   };
 
   const processBatchImages = async (files) => {
