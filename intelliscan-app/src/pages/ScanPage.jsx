@@ -140,7 +140,7 @@ export default function ScanPage() {
   }, []);
 
 
-  const compressImage = (file, maxWidth = 1920) => {
+  const compressImage = (file, maxWidth = 3000, quality = 0.85) => {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -157,7 +157,7 @@ export default function ScanPage() {
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', 0.8)); // 80% quality JPEG
+          resolve(canvas.toDataURL('image/jpeg', quality)); // Preserves OCR legibility while dropping payload mass
         };
         img.src = event.target.result;
       };
@@ -173,8 +173,10 @@ export default function ScanPage() {
       return;
     }
     const file = files[0];
-    // Compress image to drastically reduce payload size and AI wait time
-    const compressedBase64 = await compressImage(file, 1600); 
+    
+    // Compress at 4K native resolution (3000px) instead of 1080p (1600px) 
+    // to preserve legibility of 25+ cards, while keeping payload under 4MB limit
+    const compressedBase64 = await compressImage(file, 3000, 0.85); 
     
     setSelectedImage(compressedBase64);
     localStorage.setItem('intelliscan_cached_image', compressedBase64);
