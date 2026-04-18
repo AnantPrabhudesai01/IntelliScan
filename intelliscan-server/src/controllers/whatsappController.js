@@ -113,10 +113,15 @@ exports.webhook = async (req, res) => {
     }
 
     // 2. Check for Image
-    if (!MediaUrl0) {
+    const mediaUrl = MediaUrl0 || req.body.MediaUrl || req.body.MediaUrl1;
+    
+    if (!mediaUrl) {
+      console.log(`[WhatsApp] No media found. Body keys: ${Object.keys(req.body).join(', ')}`);
       return sendWhatsAppReply(From, `Hi ${firstNameFromFullName(user.name)}! I'm ready to scan. Just send me a photo of a business card (or a photo with multiple cards) and I'll do the rest! 📸\n\n💡 *Tip:* Type "export" anytime to receive your contacts as an Excel sheet!`);
     }
 
+    // Immediate confirmation so user knows we are working
+    await sendWhatsAppReply(From, `📥 *Image Received!* I'm starting the AI extraction now. Please wait a few seconds... ⏳`);
 
     // 3. Quota Enforcement
     const limits = resolveTierLimits(user.tier);
@@ -128,16 +133,16 @@ exports.webhook = async (req, res) => {
     }
 
     // 4. Download & AI Extraction (INTELLIGENT BATCH MODE)
-    console.log(`[WhatsApp] Processing request for ${user.email} | Phone: ${fromPhone}`);
+    console.log(`[WhatsApp] Processing request for ${user.email} | Media: ${mediaUrl}`);
     
     let imageBase64;
     try {
       console.log(`[WhatsApp] Downloading media from Twilio...`);
-      imageBase64 = await downloadImageAsBase64(MediaUrl0);
+      imageBase64 = await downloadImageAsBase64(mediaUrl);
       console.log(`[WhatsApp] Media download success (${Math.round(imageBase64.length / 1024)} KB)`);
     } catch (downErr) {
       console.error(`[WhatsApp] Media download failed:`, downErr.message);
-      return sendWhatsAppReply(From, `❌ I couldn't download the image from Twilio's servers. Please try sending it again in a moment!`);
+      return sendWhatsAppReply(From, `❌ I couldn't download the image from Twilio. Please try sending it again!`);
     }
     
     console.log(`[WhatsApp] Calling AI Engine (Gemini Flash)...`);
