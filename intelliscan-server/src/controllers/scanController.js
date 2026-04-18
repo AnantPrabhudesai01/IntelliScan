@@ -299,14 +299,16 @@ If no cards, return {"cards":[]}.`
     };
 
     const seenThisBatch = new Set();
-    const cardsWithDupInfo = await Promise.all(normalizedCards.map(async (card, idx) => {
+    const cardsWithDupInfo = [];
+    for (let idx = 0; idx < normalizedCards.length; idx++) {
+      const card = normalizedCards[idx];
       const keyBase = `${(card.email || '').toLowerCase()}|${(card.name || '').toLowerCase()}|${(card.phone || '').toLowerCase()}|${(card.company || '').toLowerCase()}`;
       const key = keyBase === '|||' ? `unknown-${idx}` : keyBase;
       const isIntraBatchDup = seenThisBatch.has(key);
       seenThisBatch.add(key);
       const isDbDup = await checkDuplicate(card.email, card.name);
-      return { ...card, is_duplicate: isDbDup || isIntraBatchDup };
-    }));
+      cardsWithDupInfo.push({ ...card, is_duplicate: isDbDup || isIntraBatchDup });
+    }
 
     await dbRunAsync('UPDATE user_quotas SET group_scans_used = group_scans_used + 1 WHERE user_id = ?', [req.user.id]);
 
