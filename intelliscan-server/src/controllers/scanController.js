@@ -226,39 +226,21 @@ exports.scanGroupCards = async (req, res) => {
       userId: req.user.id,
       tier,
       allowTesseract: false,
-      prompt: `You are a world-class Business Card Extraction Engine in EXHAUSTIVE SCAN MODE.
-The image contains up to 25 separate business cards. You MUST identify EVERY SINGLE card.
-Use a Scan-Line Strategy: Start at the Top-Left corner and move Left-to-Right, then Top-to-Bottom. Do not skip any card.
-
-Return ONLY a valid JSON object:
+      prompt: `Extract business cards. FAST SCAN MODE.
+Return ONLY valid JSON:
 {
-  "engine_used": "Gemini 3 Flash (Exhaustive)",
+  "engine_used": "Gemini 1.5 Flash (Speed)",
   "cards": [
     {
-      "box_2d": [ymin, xmin, ymax, xmax],
-      "name": "Person Name (ALWAYS English/Latin script, transliterate if needed)",
-      "name_native": "Original verbatim script (Hindi, etc.)",
-      "company": "Company Name (ALWAYS English/Latin script, transliterate if needed)",
-      "company_native": "Original verbatim script (Hindi, etc.)",
-      "title": "Job title (ALWAYS English/Latin script, transliterate if needed)",
-      "title_native": "Original verbatim script (Hindi, etc.)",
-      "email": "Email Address",
-      "phone": "Phone Number",
-      "website": "Website URL",
-      "address": "Full Physical Address",
-      "detected_language": "Primary detected language",
-      "inferred_industry": "Industry description",
-      "inferred_seniority": "Seniority level",
-      "deal_score": 80,
-      "linkedin_url": "URL",
-      "linkedin_bio": "one sentence bio",
-      "confidence": 95
+      "name": "Person Name",
+      "company": "Company",
+      "title": "Job Title",
+      "email": "Email",
+      "phone": "Phone"
     }
   ]
 }
-
-If you cannot detect any cards, return:
-{ "cards": [] }`
+If no cards, return {"cards":[]}.`
     });
     
     if (extractionResult.error) {
