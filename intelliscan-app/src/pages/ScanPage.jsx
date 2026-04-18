@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useContacts } from '../context/ContactContext';
-import { Upload, Camera, RefreshCw, Lightbulb, Sparkles, Save, Edit3, X, ZoomIn, FileText, Layers, CheckCircle2, Users, Zap, MessageCircle, Wand2 } from 'lucide-react';
+import { Upload, Camera, RefreshCw, Lightbulb, Sparkles, Save, Edit3, X, ZoomIn, FileText, Layers, CheckCircle2, Users, Zap, MessageCircle, Wand2, Smartphone } from 'lucide-react';
 import { getStoredToken } from '../utils/auth';
 import { useNotifications } from '../context/NotificationContext';
 import toast from 'react-hot-toast';

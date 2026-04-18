@@ -11,12 +11,12 @@ const BILLING_PLANS = [
     currency: 'INR',
     period: 'free',
     features: [
-      '10 Credit Points / month', 
+      '100 Credit Points / month', 
       'Gemini Flash OCR Engine',
       'Basic AI Follow-up Drafts',
       'Community Documentation'
     ],
-    limits: { single: 10, group: 1, ai_credits: 10 }
+    limits: { single: 100, group: 5, ai_credits: 100 }
   },
   {
     id: 'pro',

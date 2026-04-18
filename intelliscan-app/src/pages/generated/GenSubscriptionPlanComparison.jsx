@@ -94,7 +94,7 @@ export default function GenSubscriptionPlanComparison() {
       return;
     }
 
-    if (user?.tier === planId) {
+    if (tier === planId) {
       showToast('You are already on this plan!', 'info');
       return;
     }
@@ -163,6 +163,16 @@ export default function GenSubscriptionPlanComparison() {
         <p className="max-w-xl mx-auto text-gray-400 text-lg leading-relaxed font-medium">
           Unlock industrial-grade AI precision and real-time CRM synchronization with our project-tailored professional plans.
         </p>
+
+        {/* Current Plan Badge */}
+        {isLoggedIn && (
+          <div className="mt-8 inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl animate-in zoom-in-95">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+              Current Active Tier: <span className="text-white ml-1">{tier.toUpperCase()}</span>
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Pricing Grids */}
@@ -194,8 +204,11 @@ export default function GenSubscriptionPlanComparison() {
               ))}
             </ul>
           </div>
-          <button onClick={() => isLoggedIn ? navigate('/dashboard/scan') : navigate('/sign-up')} className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-black text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all active:scale-[0.98]">
-            {isLoggedIn ? 'Access Scanner' : 'Create Free Account'}
+          <button 
+            onClick={() => tier === 'personal' ? navigate('/dashboard/scan') : (isLoggedIn ? navigate('/dashboard/scan') : navigate('/sign-up'))} 
+            className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${tier === 'personal' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black'}`}
+          >
+            {tier === 'personal' ? <><Check size={16} strokeWidth={4} /> Current Plan</> : (isLoggedIn ? 'Access Scanner' : 'Create Free Account')}
           </button>
         </div>
 
@@ -260,8 +273,11 @@ export default function GenSubscriptionPlanComparison() {
               ))}
             </ul>
           </div>
-          <button onClick={() => setShowSalesModal(true)} className="w-full py-4 rounded-2xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 font-black text-xs uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all active:scale-[0.98] flex items-center justify-center gap-2">
-            <Mail size={16} /> TALK TO SALES
+          <button 
+            onClick={() => tier === 'enterprise' ? navigate('/workspace/dashboard') : setShowSalesModal(true)} 
+            className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${tier === 'enterprise' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-600 hover:text-white'}`}
+          >
+            {tier === 'enterprise' ? <><Check size={16} strokeWidth={4} /> Current Plan</> : <><Mail size={16} /> TALK TO SALES</>}
           </button>
         </div>
       </div>
@@ -286,10 +302,13 @@ export default function GenSubscriptionPlanComparison() {
             </thead>
             <tbody className="divide-y divide-white/5">
               {COMPARISON_DATA.map((row, i) => (
-                <tr key={i} className="hover:bg-white/5 transition-all">
-                  <td className="px-8 py-5 text-xs font-bold text-gray-400">{row.feature}</td>
+                <tr key={i} className="hover:bg-white/5 transition-all group">
+                  <td className="px-8 py-5 text-xs font-bold text-gray-400 group-hover:text-white transition-colors flex items-center gap-3">
+                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/40 group-hover:bg-indigo-500"></div>
+                    {row.feature}
+                  </td>
                   <td className="px-8 py-5 text-xs font-medium text-gray-500">{row.free}</td>
-                  <td className="px-8 py-5 text-xs font-black text-white italic">{row.pro}</td>
+                  <td className="px-8 py-5 text-xs font-black text-indigo-400 italic bg-indigo-500/[0.02] border-x border-white/5">{row.pro}</td>
                   <td className="px-8 py-5 text-xs font-medium text-white/50">{row.enterprise}</td>
                 </tr>
               ))}
