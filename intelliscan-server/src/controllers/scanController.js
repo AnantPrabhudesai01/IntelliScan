@@ -234,21 +234,23 @@ exports.scanGroupCards = async (req, res) => {
       userId: req.user.id,
       tier,
       allowTesseract: false,
-      prompt: `Extract business cards. FAST SCAN MODE.
-Return ONLY valid JSON:
+      prompt: `You are an expert OCR AI. 
+Extract EVERY business card you can find in this image. Do not miss any.
+There may be 5 to 30 cards. Read them all carefully.
+
+Return ONLY a valid JSON object in this exact format:
 {
-  "engine_used": "Gemini 1.5 Flash (Speed)",
+  "engine_used": "Gemini 1.5 Flash",
   "cards": [
     {
-      "name": "Person Name",
-      "company": "Company",
+      "name": "Full Name",
+      "company": "Company Name",
       "title": "Job Title",
-      "email": "Email",
-      "phone": "Phone"
+      "email": "Email Address",
+      "phone": "Phone Number"
     }
   ]
-}
-If no cards, return {"cards":[]}.`
+}`
     });
     
     if (extractionResult.error) {
