@@ -132,9 +132,9 @@ export default function CheckoutPage() {
 
   if (loading) {
     return (
-      <div className="p-8 max-w-3xl mx-auto animate-pulse flex flex-col items-center justify-center min-h-[50vh]">
-        <div className="w-16 h-16 bg-gray-200 dark:bg-gray-800 rounded-full mb-4"></div>
-        <div className="h-6 w-48 bg-gray-200 dark:bg-gray-800 rounded mb-2"></div>
+      <div className="p-8 max-w-3xl mx-auto flex flex-col items-center justify-center min-h-[50vh]">
+        <RefreshCw className="w-12 h-12 text-[var(--brand)] animate-spin mb-4" />
+        <div className="h-4 w-48 bg-[var(--surface)] rounded animate-pulse"></div>
       </div>
     );
   }
@@ -142,10 +142,10 @@ export default function CheckoutPage() {
   if (!planDetails) {
     return (
       <div className="p-8 max-w-3xl mx-auto flex flex-col items-center justify-center min-h-[50vh] text-center">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Plan Details Unavailable</h2>
-        <p className="text-gray-500 mb-6">{message || "We couldn't load the plan you selected."}</p>
-        <button onClick={() => navigate('/dashboard/billing')} className="px-6 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-xl font-bold text-sm transition-colors">
-          Return to Billing
+        <h2 className="text-2xl font-headline font-black italic tracking-tighter text-[var(--text-main)] mb-4 uppercase">Node Unavailable</h2>
+        <p className="text-[var(--text-muted)] mb-8 font-medium">{message || "We couldn't load the plan you selected."}</p>
+        <button onClick={() => navigate('/dashboard/billing')} className="px-10 py-4 bg-[var(--surface)] hover:bg-[var(--surface-card)] text-[var(--text-main)] border border-[var(--border-subtle)] rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all shadow-sm">
+          Return to Infrastructure
         </button>
       </div>
     );
@@ -153,42 +153,58 @@ export default function CheckoutPage() {
 
   // Ensure vibrant UI styling matches the rest of the application
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-8">
+    <div className="max-w-5xl mx-auto p-6 md:p-12 animate-fade-in">
       <button 
         onClick={() => navigate('/dashboard/billing')}
-        className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors mb-8"
+        className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] hover:text-[var(--brand)] transition-all mb-12 group"
       >
-        <ArrowLeft size={16} /> Back to Plans
+        <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to Matrix
       </button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-stretch">
         {/* Left Column: Order Summary */}
-        <div>
-          <h1 className="text-3xl font-headline font-extrabold text-gray-900 dark:text-white mb-2">Checkout</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">You are upgrading your workspace to the {planDetails.name} tier.</p>
+        <div className="space-y-10">
+          <div className="space-y-4">
+            <h1 className="text-5xl font-headline font-black italic text-[var(--text-main)] tracking-tighter uppercase leading-tight">Architecture <br/>Commit</h1>
+            <p className="text-[var(--text-muted)] text-sm font-medium leading-relaxed max-w-md">Finalizing the deployment of your <strong>{planDetails.name}</strong> workspace node.</p>
+          </div>
 
-          <div className="bg-[var(--surface-color)] border border-[var(--border-color)] p-6 rounded-3xl shadow-[var(--shadow-vibrant)] mb-6">
-            <h3 className="font-headline text-xl font-bold text-gray-900 dark:text-white mb-4">Order Summary</h3>
-            <div className="flex justify-between items-center py-4 border-b border-gray-100 dark:border-gray-800">
-              <span className="text-gray-600 dark:text-gray-300 font-medium">IntelliScan {planDetails.name} Subscription</span>
-              <span className="font-bold text-gray-900 dark:text-white">₹{planDetails.price.toLocaleString()}</span>
+          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden group premium-grain">
+            <div className="absolute top-0 right-0 p-10 opacity-[0.03] pointer-events-none group-hover:opacity-[0.05] transition-opacity">
+              <CreditCard size={140} />
             </div>
-            <div className="flex justify-between items-center py-4 text-sm">
-              <span className="text-gray-500">Taxes & Fees</span>
-              <span className="text-gray-500">Included</span>
-            </div>
-            <div className="flex justify-between items-center pt-4 mt-2 border-t border-gray-100 dark:border-gray-800">
-              <span className="text-lg font-bold text-gray-900 dark:text-white">Total Due Today</span>
-              <span className="text-3xl font-black text-indigo-600 dark:text-indigo-400">₹{planDetails.price.toLocaleString()}</span>
+            
+            <h3 className="font-headline text-xl font-black italic tracking-tighter text-[var(--text-main)] mb-8 uppercase">Order Manifest</h3>
+            
+            <div className="space-y-6 relative z-10">
+              <div className="flex justify-between items-center py-4 border-b border-[var(--border-subtle)]">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-[var(--brand)] uppercase tracking-widest">Master Pipeline</p>
+                  <p className="text-sm font-black italic tracking-tight text-[var(--text-main)] uppercase font-headline">IntelliScan {planDetails.name}</p>
+                </div>
+                <span className="font-headline font-black text-lg text-[var(--text-main)]">₹{planDetails.price.toLocaleString()}</span>
+              </div>
+              
+              <div className="flex justify-between items-center py-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">
+                <span>Infrastructure Tax</span>
+                <span>Included</span>
+              </div>
+              
+              <div className="pt-8 mt-2 border-t border-[var(--border-strong)] flex justify-between items-end">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)] pb-1">Atomic Total</span>
+                <span className="text-4xl font-headline font-black italic text-[var(--brand)] tracking-tighter">₹{planDetails.price.toLocaleString()}</span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-start gap-4 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30">
-            <ShieldCheck className="text-emerald-500 shrink-0 mt-0.5" size={24} />
-            <div>
-              <p className="text-sm font-bold text-emerald-900 dark:text-emerald-300 mb-1">Secure Transaction</p>
-              <p className="text-xs text-emerald-700 dark:text-emerald-400/80 leading-relaxed">
-                Your payment is processed securely via Razorpay with 256-bit AES encryption. We do not store your full card details.
+          <div className="flex items-start gap-5 p-6 rounded-3xl bg-emerald-500/5 border border-emerald-500/20">
+            <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-500 shrink-0">
+              <ShieldCheck size={24} />
+            </div>
+            <div className="space-y-1">
+              <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest font-label">Vault Secured</p>
+              <p className="text-[11px] text-emerald-500/70 leading-relaxed font-medium">
+                End-to-end 256-bit AES encryption via Razorpay Gateway. Personal data is never stored on persistent nodes.
               </p>
             </div>
           </div>
@@ -196,52 +212,59 @@ export default function CheckoutPage() {
 
         {/* Right Column: Payment Form Panel */}
         <div className="flex flex-col">
-          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-8 shadow-xl flex-1 flex flex-col">
-            <div className="mb-8 hidden md:flex items-center gap-3">
-              <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center">
-                <CreditCard className="text-indigo-600 dark:text-indigo-400" size={24} />
+          <div className="bg-[var(--surface-card)] rounded-[2.5rem] border border-[var(--border-subtle)] p-10 md:p-14 shadow-2xl flex-1 flex flex-col relative overflow-hidden premium-grain">
+             {/* Subtle Glow */}
+             <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-[var(--brand)]/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+            <div className="mb-12 hidden md:flex items-center gap-5 relative z-10">
+              <div className="w-16 h-16 bg-[var(--brand)]/10 rounded-[1.25rem] flex items-center justify-center text-[var(--brand)] shadow-inner">
+                <CreditCard size={32} />
               </div>
               <div>
-                <h3 className="font-bold text-gray-900 dark:text-white">Payment Method</h3>
-                <p className="text-xs text-gray-500">Cards, UPI & Net Banking</p>
+                <h3 className="font-headline font-black italic text-xl text-[var(--text-main)] uppercase tracking-tight">Payment Access</h3>
+                <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Card, UPI & Digital Wallets</p>
               </div>
             </div>
 
             {message && (
-              <div className="mb-6 px-4 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm font-bold border border-red-200 dark:border-red-800 rounded-xl">
+              <div className="mb-8 px-6 py-4 bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest border border-red-500/20 rounded-2xl animate-shake relative z-10">
                 {message}
               </div>
             )}
 
-            <div className="space-y-4 mb-8 flex-1">
-               <ul className="space-y-4">
-                  <li className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 font-medium bg-gray-50 dark:bg-gray-950 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
-                    <Check size={16} className="text-emerald-500" /> Instant account upgrade
-                  </li>
-                  <li className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 font-medium bg-gray-50 dark:bg-gray-950 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
-                    <Check size={16} className="text-emerald-500" /> Automated billing invoice emailed
-                  </li>
-                  <li className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 font-medium bg-gray-50 dark:bg-gray-950 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
-                    <Check size={16} className="text-emerald-500" /> Unlock all {planDetails.name} features instantly
-                  </li>
+            <div className="space-y-4 mb-12 flex-1 relative z-10">
+               <ul className="space-y-3">
+                  {[
+                    `Instant ${planDetails.name} authorization`,
+                    "Commence AI follow-up workflows",
+                    "Automated tax manifest emailed",
+                    "Infinite OCR pipeline active"
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] bg-[var(--surface)]/50 p-4 rounded-2xl border border-[var(--border-subtle)] hover:bg-[var(--surface)] transition-all group">
+                      <div className="p-1 bg-emerald-500 rounded-full group-hover:scale-125 transition-transform"><Check size={10} className="text-white" strokeWidth={4} /></div>
+                      {item}
+                    </li>
+                  ))}
                </ul>
             </div>
 
             <button 
               onClick={handlePayment} 
               disabled={processing}
-              className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black shadow-xl shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-75 disabled:scale-100 active:scale-95"
+              className="w-full py-6 bg-[var(--brand)] text-white text-xs font-black uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-[var(--brand)]/20 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 relative z-10 flex items-center justify-center gap-3 italic"
             >
               {processing ? (
-                <><RefreshCw size={18} className="animate-spin" /> Processing Securely...</>
+                <><RefreshCw size={20} className="animate-spin" /> Committing Architecture...</>
               ) : (
-                <>Pay ₹{planDetails.price.toLocaleString()} via Razorpay</>
+                <>Deploy Infrastructure ₹{planDetails.price.toLocaleString()}</>
               )}
             </button>
-            <p className="text-center text-[11px] text-gray-400 mt-4">By proceeding to payment, you agree to our Terms of Service.</p>
+            <p className="text-center text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] mt-6 relative z-10 opacity-50">Handcrafted Protocol • Subject to Terms</p>
           </div>
         </div>
       </div>
     </div>
+  );
+}
   );
 }

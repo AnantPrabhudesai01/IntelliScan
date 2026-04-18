@@ -118,20 +118,30 @@ export default function SuperAdminFeedbackPage() {
   const filteredData = filter === 'all' ? feedback : feedback.filter(f => f.status === filter);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 font-body">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-extrabold font-headline text-gray-900 dark:text-white mb-2">User Feedback Inbox</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Review, categorize, and respond to user submissions across the platform.</p>
+    <div className="max-w-7xl mx-auto space-y-10 animate-fade-in pb-20">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+             <div className="p-3 bg-[var(--brand)]/10 rounded-2xl border border-[var(--brand)]/20 shadow-inner">
+               <MessageSquare size={24} className="text-[var(--brand)]" />
+             </div>
+             <div>
+               <h1 className="text-4xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase leading-tight">Neural <br/>Feedback</h1>
+               <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">User Ingestion Stream</p>
+             </div>
+          </div>
+          <p className="text-[11px] text-[var(--text-muted)] font-medium leading-relaxed max-w-xl">
+             Review, categorize, and archive atomic user submissions across the global node infrastructure. Precision response active.
+          </p>
         </div>
-        <div className="flex bg-gray-100 dark:bg-[#1a2035] p-1 rounded-xl border border-gray-200 dark:border-white/5">
+        <div className="flex bg-[var(--surface-card)] p-1.5 rounded-2xl border border-[var(--border-subtle)] shadow-inner">
           {['all', 'new', 'reviewed', 'resolved'].map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-lg text-xs font-bold capitalize transition-all ${filter === f ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+              className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-[var(--brand)] text-white shadow-lg shadow-[var(--brand)]/20 italic font-headline' : 'text-[var(--text-muted)] hover:text-[var(--text-main)] underline-offset-4 hover:underline'}`}
             >
-              {f} {f === 'new' && feedback.filter(x => x.status === 'new').length > 0 && <span className="ml-1 bg-indigo-500 text-white px-1.5 py-0.5 rounded-full text-[9px]">{feedback.filter(x => x.status === 'new').length}</span>}
+              {f} {f === 'new' && feedback.filter(x => x.status === 'new').length > 0 && <span className="ml-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[8px] animate-pulse">{feedback.filter(x => x.status === 'new').length}</span>}
             </button>
           ))}
         </div>
@@ -139,38 +149,44 @@ export default function SuperAdminFeedbackPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative items-start">
         {/* Inbox List */}
-        <div className="lg:col-span-1 space-y-3 lg:sticky lg:top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 custom-scrollbar">
+        <div className="lg:col-span-1 space-y-4 lg:sticky lg:top-32 max-h-[calc(100vh-12rem)] overflow-y-auto pr-4 custom-scrollbar">
           {filteredData.length === 0 ? (
-            <div className="text-center py-12 bg-white dark:bg-[#1a2035] rounded-2xl border border-gray-200 dark:border-white/5">
-              <CheckCircle2 size={32} className="mx-auto text-emerald-500 mb-3 opacity-50" />
-              <p className="text-gray-500 text-sm font-medium">Inbox zero! No feedback found.</p>
+            <div className="py-20 bg-[var(--surface-card)] rounded-[2.5rem] border border-dashed border-[var(--border-subtle)] text-center space-y-4 premium-grain">
+              <CheckCircle2 size={40} className="mx-auto text-emerald-500 opacity-20" />
+              <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Matrix Empty. Inbox Zero Achieved.</p>
             </div>
           ) : (
             filteredData.map((item) => (
               <button
                 key={item.id}
                 onClick={() => setSelectedItem(item)}
-                className={`w-full text-left p-4 rounded-2xl border transition-all 
+                className={`w-full text-left p-6 rounded-[2rem] border transition-all relative overflow-hidden premium-grain
                   ${selectedItem?.id === item.id
-                    ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/30 shadow-sm'
-                    : 'bg-white dark:bg-[#1a2035] border-gray-200 dark:border-white/5 hover:border-gray-300 dark:hover:border-white/10'}`}
+                    ? 'bg-[var(--brand)]/[0.03] border-[var(--brand)] shadow-xl shadow-[var(--brand)]/5'
+                    : 'bg-[var(--surface-card)] border-[var(--border-subtle)] hover:border-[var(--text-muted)]'}`}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex items-center gap-2">
-                    {getIconForType(item.type)}
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{item.id}</span>
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-1.5 rounded-lg border bg-white/5 ${getBadgeForType(item.type)}`}>
+                      {getIconForType(item.type)}
+                    </div>
+                    <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest">{item.id}</span>
                   </div>
-                  <span className="text-[10px] text-gray-400">{new Date(item.date).toLocaleDateString()}</span>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] opacity-50">
+                    {new Date(item.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                  </span>
                 </div>
-                <h3 className={`text-sm font-bold mb-1 line-clamp-1 ${selectedItem?.id === item.id ? 'text-indigo-900 dark:text-white' : 'text-gray-900 dark:text-gray-100'}`}>
+                <h3 className={`text-sm font-headline font-black italic tracking-tighter uppercase mb-2 line-clamp-1 ${selectedItem?.id === item.id ? 'text-[var(--text-main)]' : 'text-[var(--text-main)]/80'}`}>
                   {item.subject}
                 </h3>
-                <p className={`text-xs line-clamp-2 mb-3 ${selectedItem?.id === item.id ? 'text-indigo-700/80 dark:text-indigo-200/70' : 'text-gray-500 dark:text-gray-400'}`}>
+                <p className={`text-[11px] line-clamp-2 mb-6 leading-relaxed font-medium ${selectedItem?.id === item.id ? 'text-[var(--text-muted)]' : 'text-[var(--text-muted)]/60'}`}>
                   {item.message}
                 </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-medium text-gray-500 flex items-center gap-1.5"><User size={12} /> {item.user}</span>
-                  {getStatusBadge(item.status)}
+                <div className="flex items-center justify-between mt-auto pt-4 border-t border-[var(--border-subtle)]">
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] flex items-center gap-2 italic"><User size={10} strokeWidth={3} className="text-[var(--brand)]" /> {item.user}</span>
+                   <div className="scale-75 origin-right">
+                     {getStatusBadge(item.status)}
+                   </div>
                 </div>
               </button>
             ))
@@ -180,65 +196,71 @@ export default function SuperAdminFeedbackPage() {
         {/* Detail View */}
         <div className="lg:col-span-2">
           {selectedItem ? (
-            <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden animate-fade-in flex flex-col h-full min-h-[500px]">
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] shadow-2xl overflow-hidden animate-fade-in flex flex-col h-full min-h-[600px] premium-grain">
               {/* Header */}
-              <div className="p-6 border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/[0.02]">
-                <div className="flex justify-between items-start mb-4">
-                  <div className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-widest border ${getBadgeForType(selectedItem.type)}`}>
+              <div className="p-10 border-b border-[var(--border-subtle)] bg-[var(--surface)]/50 backdrop-blur-xl relative z-10">
+                <div className="flex justify-between items-start mb-8">
+                  <div className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] border bg-white/5 ${getBadgeForType(selectedItem.type)}`}>
                     {selectedItem.type.replace('-', ' ')}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-4">
                     {selectedItem.status !== 'resolved' && (
-                      <button onClick={() => markAs(selectedItem.id, 'resolved')} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg text-xs font-bold transition-colors">
-                        <Check size={14} /> Resolve
+                      <button onClick={() => markAs(selectedItem.id, 'resolved')} className="flex items-center gap-3 px-6 py-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500/20 transition-all">
+                        <Check size={14} strokeWidth={3} /> Resolve Node
                       </button>
                     )}
                     {selectedItem.status === 'new' && (
-                      <button onClick={() => markAs(selectedItem.id, 'reviewed')} className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded-lg text-xs font-bold transition-colors">
-                        <ArrowRight size={14} /> Mark Read
+                      <button onClick={() => markAs(selectedItem.id, 'reviewed')} className="flex items-center gap-3 px-6 py-2.5 bg-[var(--brand)]/10 border border-[var(--brand)]/20 text-[var(--brand)] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[var(--brand)]/20 transition-all">
+                        <ArrowRight size={14} strokeWidth={3} /> Review Pass
                       </button>
                     )}
                   </div>
                 </div>
-                <h2 className="text-2xl font-bold font-headline text-gray-900 dark:text-white mb-2">{selectedItem.subject}</h2>
-                <div className="flex items-center gap-4 text-xs text-gray-500">
-                  <span className="flex items-center gap-1"><Clock size={12} /> {new Date(selectedItem.date).toLocaleString()}</span>
-                  <span>Ticket ID: {selectedItem.id}</span>
-                  {getStatusBadge(selectedItem.status)}
+                <h2 className="text-4xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase leading-tight mb-4">{selectedItem.subject}</h2>
+                <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">
+                  <span className="flex items-center gap-2 italic"><Clock size={12} className="text-[var(--brand)]" /> {new Date(selectedItem.date).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })}</span>
+                  <div className="w-1 h-1 rounded-full bg-[var(--border-strong)]" />
+                  <span>Ticket Vector: {selectedItem.id}</span>
+                  <div className="w-1 h-1 rounded-full bg-[var(--border-strong)]" />
+                  <div className="scale-75 origin-left">{getStatusBadge(selectedItem.status)}</div>
                 </div>
               </div>
 
               {/* Body */}
-              <div className="p-6 flex-1">
+              <div className="p-10 flex-1 relative z-10">
                 {/* User Info Card */}
-                <div className="mb-6 flex items-center gap-4 p-4 rounded-xl border border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-white/[0.02]">
-                  <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-700 dark:text-indigo-400 font-bold text-lg">
+                <div className="mb-10 flex items-center gap-6 p-6 rounded-[2rem] border border-[var(--border-subtle)] bg-[var(--surface)] shadow-inner">
+                  <div className="w-16 h-16 rounded-3xl bg-[var(--brand)]/10 border border-[var(--brand)]/20 flex items-center justify-center text-[var(--brand)] font-headline font-black italic text-2xl shadow-inner">
                     {selectedItem.user.charAt(0)}
                   </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-gray-900 dark:text-white">{selectedItem.user}</h4>
-                    <p className="text-xs text-gray-500">{selectedItem.email} • {selectedItem.role}</p>
+                  <div className="space-y-1">
+                    <h4 className="text-lg font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase">{selectedItem.user}</h4>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] opacity-60 italic">{selectedItem.email} <span className="mx-2 opacity-30">•</span> {selectedItem.role}</p>
                   </div>
                 </div>
 
-                <div className="prose dark:prose-invert max-w-none">
-                  <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-black/20 p-5 rounded-xl border border-gray-100 dark:border-white/5">
-                    {selectedItem.message}
-                  </p>
+                <div className="space-y-4">
+                   <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] ml-2">Atomic Transmission</p>
+                   <div className="text-[14px] leading-relaxed text-[var(--text-muted)] font-medium bg-[var(--surface)] p-8 rounded-[2rem] border border-[var(--border-subtle)] shadow-inner relative overflow-hidden">
+                     <p className="relative z-10 whitespace-pre-wrap">{selectedItem.message}</p>
+                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none italic font-headline font-black text-6xl tracking-tighter uppercase">RAW</div>
+                   </div>
                 </div>
               </div>
 
               {/* Footer Actions */}
-              <div className="p-4 border-t border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-black/20 flex gap-3">
-                <input type="text" placeholder="Add an internal note or reply..." className="flex-1 bg-white dark:bg-[#1a2035] border border-gray-200 dark:border-white/10 rounded-xl px-4 text-sm focus:outline-none focus:border-indigo-500" />
-                <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md transition-colors">Send</button>
+              <div className="p-8 border-t border-[var(--border-subtle)] bg-[var(--surface)]/50 backdrop-blur-xl flex gap-4 relative z-10">
+                <input type="text" placeholder="Add infrastructure note or reply..." className="flex-1 bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl px-8 text-[12px] font-medium text-[var(--text-main)] focus:outline-none focus:ring-4 focus:ring-[var(--brand)]/10 transition-all shadow-inner" />
+                <button className="bg-[var(--brand)] text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-[var(--brand)]/20 hover:brightness-110 active:scale-95 transition-all italic font-headline">Transmit Response</button>
               </div>
             </div>
           ) : (
-            <div className="h-full min-h-[500px] flex flex-col items-center justify-center border-2 border-dashed border-gray-200 dark:border-white/10 rounded-2xl bg-gray-50/50 dark:bg-white/[0.02]">
-              <MessageSquare size={48} className="text-gray-300 dark:text-gray-600 mb-4" />
-              <h3 className="text-lg font-bold text-gray-500 dark:text-gray-400 mb-1">Select a Feedback Ticket</h3>
-              <p className="text-sm text-gray-400 dark:text-gray-500">Choose an item from the inbox to view details</p>
+            <div className="h-full min-h-[600px] flex flex-col items-center justify-center border-2 border-dashed border-[var(--border-subtle)] rounded-[2.5rem] bg-[var(--surface-card)] premium-grain opacity-40">
+              <div className="w-24 h-24 rounded-[2rem] bg-[var(--surface)] border border-[var(--border-subtle)] flex items-center justify-center mb-10 shadow-inner">
+                <MessageSquare size={40} className="text-[var(--text-muted)] opacity-40" strokeWidth={1} />
+              </div>
+              <h3 className="text-2xl font-headline font-black italic tracking-tighter text-[var(--text-muted)] uppercase mb-2">Node Idle</h3>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)] opacity-60">Awaiting Ticket Selection</p>
             </div>
           )}
         </div>

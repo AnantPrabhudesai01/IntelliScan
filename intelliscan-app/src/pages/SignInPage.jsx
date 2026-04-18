@@ -68,36 +68,41 @@ export default function SignInPage() {
 
   return (
     <PublicLayout hideFooter>
-      <div className="text-gray-900 dark:text-[#dde2f3] selection:bg-indigo-600 selection:text-white transition-colors duration-300">
-        <main className="min-h-[calc(100vh-56px)] flex items-center justify-center px-6 pt-16 relative overflow-hidden bg-white dark:bg-transparent transition-colors duration-300">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-600/10 rounded-full blur-[120px] -z-10"></div>
+      <div className="text-[var(--text-main)] selection:bg-[var(--brand)] selection:text-white transition-colors duration-300">
+        <main className="min-h-[calc(100vh-56px)] flex items-center justify-center px-6 pt-16 relative overflow-hidden bg-[var(--surface)] transition-colors duration-300">
+        {/* Ambient Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--brand)]/10 rounded-full blur-[120px] -z-10"></div>
+        
         <div className="w-full max-w-md relative z-10">
-          <div className="bg-white dark:bg-[#161c28]/80 backdrop-blur-xl border border-gray-200 dark:border-white/5 p-8 md:p-10 rounded-[2rem] shadow-xl dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.4)] transition-colors duration-300">
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600/20 mb-6 group transition-all duration-300">
-                <ScanLine className="text-indigo-500 text-3xl group-hover:scale-110 transition-transform" size={32} />
+          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] p-8 md:p-14 rounded-[2.5rem] shadow-2xl relative overflow-hidden premium-grain">
+             {/* Subtle Pattern overlay */}
+             <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none">
+               <ScanLine size={120} />
+             </div>
+
+            <div className="text-center mb-12 relative z-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-[1.25rem] bg-[var(--brand)]/10 mb-8 border border-[var(--brand)]/20 shadow-inner">
+                <ScanLine className="text-[var(--brand)]" size={32} />
               </div>
-              <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-2 font-headline transition-colors">SignIn to IntelliScan</h1>
-              <p className="text-gray-600 dark:text-[#c7c4d8] font-medium font-body transition-colors text-sm">Select your access type to continue.</p>
+              <h1 className="text-4xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase mb-3">Commit Identity</h1>
+              <p className="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-[0.3em] font-label">Initialize session protocol</p>
             </div>
 
             {/* User Type Toggle */}
-            <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-2xl mb-8 border border-gray-200 dark:border-white/5 relative">
+            <div className="flex bg-[var(--surface)] p-1 rounded-2xl mb-10 border border-[var(--border-subtle)] relative z-10">
               <button 
                 type="button"
                 onClick={() => setActiveTab('individual')}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all relative z-10 ${activeTab === 'individual' ? 'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-lg' : 'text-gray-500 dark:text-[#918fa1] hover:text-[#dde2f3]'}`}
+                className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl text-[10px] uppercase font-black tracking-widest transition-all relative z-10 ${activeTab === 'individual' ? 'bg-[var(--brand)] text-white shadow-xl shadow-[var(--brand)]/20' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
               >
-                <Shield size={16} />
-                Individual
+                <Shield size={14} /> Individual
               </button>
               <button 
                 type="button"
                 onClick={() => setActiveTab('enterprise')}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all relative z-10 ${activeTab === 'enterprise' ? 'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-lg' : 'text-gray-500 dark:text-[#918fa1] hover:text-[#dde2f3]'}`}
+                className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl text-[10px] uppercase font-black tracking-widest transition-all relative z-10 ${activeTab === 'enterprise' ? 'bg-[var(--brand)] text-white shadow-xl shadow-[var(--brand)]/20' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
               >
-                <ShieldCheck size={16} />
-                Workplace
+                <ShieldCheck size={14} /> Workplace
               </button>
             </div>
 
@@ -118,78 +123,78 @@ export default function SignInPage() {
                 </div>
               </div>
             )}
-            <form className="space-y-6" onSubmit={handleLogin}>
+            <form className="space-y-6 relative z-10" onSubmit={handleLogin}>
               {activeTab === 'individual' ? (
                 <>
-                  {/* Login Method Toggle (Only for Individual) */}
-                  <div className="flex bg-gray-100 dark:bg-[#1a202c]/50 p-1 rounded-xl mb-6 border border-gray-200 dark:border-white/5">
+                  {/* Login Method Toggle */}
+                  <div className="flex border-b border-[var(--border-subtle)] mb-8">
                     <button 
                       type="button"
                       onClick={() => setLoginMethod('email')}
-                      className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${loginMethod === 'email' ? 'bg-indigo-600 text-white' : 'text-gray-500 dark:text-[#918fa1]'}`}
+                      className={`pb-3 px-4 text-[9px] font-black uppercase tracking-[0.2em] transition-all relative ${loginMethod === 'email' ? 'text-[var(--brand)] border-b-2 border-[var(--brand)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
                     >
-                      Email
+                      Email Protocol
                     </button>
                     <button 
                       type="button"
                       onClick={() => setLoginMethod('phone')}
-                      className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${loginMethod === 'phone' ? 'bg-indigo-600 text-white' : 'text-gray-500 dark:text-[#918fa1]'}`}
+                      className={`pb-3 px-4 text-[9px] font-black uppercase tracking-[0.2em] transition-all relative ${loginMethod === 'phone' ? 'text-[var(--brand)] border-b-2 border-[var(--brand)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}`}
                     >
-                      Phone
+                      Phone Access
                     </button>
                   </div>
 
                   {loginMethod === 'email' ? (
                     <>
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700 dark:text-[#c7c4d8] ml-1 font-body" htmlFor="email">Email Address</label>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] ml-1 font-label">Identity Hash (Email)</label>
                         <div className="relative group">
-                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Mail className="text-gray-400 dark:text-[#918fa1] text-xl group-focus-within:text-indigo-600 dark:group-focus-within:text-[#c3c0ff] transition-colors" size={20} />
+                          <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                            <Mail className="text-[var(--text-muted)] group-focus-within:text-[var(--brand)] transition-colors" size={18} />
                           </div>
-                          <input value={email} onChange={(e) => setEmail(e.target.value)} className="font-body block w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-[#1a202c] border-gray-200 dark:border-0 border rounded-xl text-gray-900 dark:text-[#dde2f3] placeholder:text-gray-400 dark:placeholder:text-[#918fa1]/50 focus:ring-2 focus:ring-indigo-600 transition-all outline-none" id="email" name="email" placeholder="name@email.com" required type="email" />
+                          <input value={email} onChange={(e) => setEmail(e.target.value)} className="w-full pl-12 pr-5 py-4 bg-[var(--surface)] border border-[var(--border-subtle)] rounded-2xl text-[var(--text-main)] placeholder:text-[var(--text-muted)]/50 focus:ring-2 focus:ring-[var(--brand)]/30 transition-all outline-none font-medium" placeholder="name@email.com" required type="email" />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between items-center ml-1">
-                          <label className="text-sm font-semibold text-gray-700 dark:text-[#c7c4d8] font-body" htmlFor="password">Password</label>
-                          <Link to="/forgot-password" className="text-xs font-bold text-indigo-600 dark:text-[#c3c0ff] hover:underline transition-all font-body">Forgot?</Link>
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] font-label">Vault Key</label>
+                          <Link to="/forgot-password" title="Forgot Password" className="text-[9px] font-black uppercase text-[var(--brand)] hover:underline tracking-widest">Recover Key</Link>
                         </div>
                         <div className="relative group">
-                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Lock className="text-gray-400 dark:text-[#918fa1] text-xl group-focus-within:text-indigo-600 dark:group-focus-within:text-[#c3c0ff] transition-colors" size={20} />
+                          <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                            <Lock className="text-[var(--text-muted)] group-focus-within:text-[var(--brand)] transition-colors" size={18} />
                           </div>
-                          <input value={password} onChange={(e) => setPassword(e.target.value)} className="font-body block w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-[#1a202c] border-gray-200 dark:border-0 border rounded-xl text-gray-900 dark:text-[#dde2f3] placeholder:text-gray-400 dark:placeholder:text-[#918fa1]/50 focus:ring-2 focus:ring-indigo-600 transition-all outline-none" id="password" name="password" placeholder="••••••••" required type="password" />
+                          <input value={password} onChange={(e) => setPassword(e.target.value)} className="w-full pl-12 pr-5 py-4 bg-[var(--surface)] border border-[var(--border-subtle)] rounded-2xl text-[var(--text-main)] placeholder:text-[var(--text-muted)]/50 focus:ring-2 focus:ring-[var(--brand)]/30 transition-all outline-none font-medium" placeholder="••••••••" required type="password" />
                         </div>
                       </div>
                     </>
                   ) : (
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700 dark:text-[#c7c4d8] ml-1 font-body" htmlFor="phone">Mobile Number</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] ml-1 font-label">Mobile Link</label>
                       <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                          <ScanLine className="text-gray-400 dark:text-[#918fa1] text-xl group-focus-within:text-indigo-600 dark:group-focus-within:text-[#c3c0ff] transition-colors" size={20} />
+                        <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                          <ScanLine className="text-[var(--text-muted)] group-focus-within:text-[var(--brand)] transition-colors" size={18} />
                         </div>
-                        <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="font-body block w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-[#1a202c] border-gray-200 dark:border-0 border rounded-xl text-gray-900 dark:text-[#dde2f3] placeholder:text-gray-400 dark:placeholder:text-[#918fa1]/50 focus:ring-2 focus:ring-indigo-600 transition-all outline-none" id="phone" placeholder="+91 98765 43210" required type="tel" />
+                        <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full pl-12 pr-5 py-4 bg-[var(--surface)] border border-[var(--border-subtle)] rounded-2xl text-[var(--text-main)] placeholder:text-[var(--text-muted)]/50 focus:ring-2 focus:ring-[var(--brand)]/30 transition-all outline-none font-medium" placeholder="+91 98765 43210" required type="tel" />
                       </div>
                     </div>
                   )}
 
-                  <button disabled={isAuth0Loading} className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-indigo-600/20 mt-6 font-headline disabled:opacity-50" type="submit">
-                    {isAuth0Loading ? 'Processing...' : 'Sign In'}
+                  <button disabled={isAuth0Loading} className="w-full bg-[var(--brand)] text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:brightness-110 active:scale-[0.98] transition-all shadow-xl shadow-[var(--brand)]/20 mt-8 italic font-headline" type="submit">
+                    {isAuth0Loading ? 'Processing Data...' : 'Authorize Login'}
                   </button>
 
-                  <div className="relative my-6 text-center">
-                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200 dark:border-white/5"></div></div>
-                    <span className="relative px-4 bg-white dark:bg-[#161c28] text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-[#918fa1]">Personal Social Access</span>
+                  <div className="relative my-8 text-center pt-2">
+                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[var(--border-subtle)]"></div></div>
+                    <span className="relative px-6 bg-[var(--surface-card)] text-[9px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">Secure Handshake</span>
                   </div>
 
                   <button 
                     type="button"
                     onClick={() => handleSso('google-oauth2')}
-                    className="w-full flex items-center justify-center gap-3 bg-white text-gray-900 py-4 rounded-xl font-bold text-lg border border-gray-300 hover:bg-gray-50 active:scale-[0.98] transition-all shadow-sm font-headline"
+                    className="w-full flex items-center justify-center gap-4 bg-[var(--surface)] text-[var(--text-main)] py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] border border-[var(--border-subtle)] hover:bg-[var(--surface-card)] active:scale-[0.98] transition-all shadow-sm font-headline"
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                       <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                       <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
@@ -200,127 +205,120 @@ export default function SignInPage() {
                 </>
               ) : (
                 <>
-                  <div className="space-y-4">
-                    <label className="text-sm font-semibold text-gray-700 dark:text-[#c7c4d8] ml-1 font-body" htmlFor="corp-email">Work Email</label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Building2 className="text-gray-400 dark:text-[#918fa1] text-xl group-focus-within:text-indigo-600 transition-colors" size={20} />
-                      </div>
-                      <input 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        className="font-body block w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-[#1a202c] border-gray-200 dark:border-0 border rounded-xl text-gray-900 dark:text-[#dde2f3] placeholder:text-gray-400 dark:placeholder:text-[#918fa1]/50 focus:ring-2 focus:ring-indigo-600 transition-all outline-none" 
-                        id="corp-email" 
-                        placeholder="name@company.com" 
-                        type="email" 
-                      />
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] ml-1 font-label">Work Identity</label>
+                       <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                          <Building2 className="text-[var(--text-muted)] group-focus-within:text-[var(--brand)] transition-colors" size={18} />
+                        </div>
+                        <input 
+                          value={email} 
+                          onChange={(e) => setEmail(e.target.value)} 
+                          className="w-full pl-12 pr-5 py-4 bg-[var(--surface)] border border-[var(--border-subtle)] rounded-2xl text-[var(--text-main)] placeholder:text-[var(--text-muted)]/50 focus:ring-2 focus:ring-[var(--brand)]/30 transition-all outline-none font-medium" 
+                          id="corp-email" 
+                          placeholder="name@company.com" 
+                          type="email" 
+                        />
+                       </div>
                     </div>
                     <button 
                       type="button"
                       onClick={() => handleSso('enterprise-oidc')}
-                      className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-indigo-600/20 mt-2"
+                      className="w-full bg-[var(--brand)] text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:brightness-110 active:scale-[0.98] transition-all shadow-xl shadow-[var(--brand)]/20 italic font-headline"
                     >
                       Authenticate with SSO
                     </button>
                   </div>
 
-                  <div className="relative py-4 text-center">
-                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200 dark:border-white/5"></div></div>
-                    <span className="relative px-4 bg-white dark:bg-[#161c28] text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-[#918fa1]">Or select provider</span>
+                  <div className="relative my-8 text-center pt-2">
+                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[var(--border-subtle)]"></div></div>
+                    <span className="relative px-6 bg-[var(--surface-card)] text-[9px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">Corporate Grid</span>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 gap-6">
                     <button 
                       type="button" 
                       onClick={() => handleSso('okta')}
-                      className="flex items-center justify-between px-6 py-4 bg-gray-50 dark:bg-[#1a202c] border border-gray-200 dark:border-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-[#252b38] hover:border-indigo-500/30 transition-all group"
+                      className="flex items-center justify-between px-8 py-5 bg-[var(--surface)] border border-[var(--border-subtle)] rounded-2xl hover:bg-[var(--surface-card)] hover:border-[var(--brand)]/30 transition-all group"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-600/20 group-hover:scale-110 transition-transform">O</div>
+                      <div className="flex items-center gap-5">
+                        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-600/20 group-hover:scale-110 transition-transform italic font-headline">O</div>
                         <div className="text-left">
-                          <div className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Okta Identity</div>
+                          <div className="text-[10px] font-black uppercase tracking-widest text-[var(--text-main)] group-hover:text-[var(--brand)]">Okta Identity</div>
                         </div>
                       </div>
-                      <Lock size={16} className="text-gray-400" />
+                      <Lock size={14} className="text-[var(--text-muted)]" />
                     </button>
 
                     <button 
                        type="button" 
                        onClick={() => handleSso('windowslive')}
-                       className="flex items-center justify-between px-6 py-4 bg-gray-50 dark:bg-[#1a202c] border border-gray-200 dark:border-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-[#252b38] hover:border-emerald-500/30 transition-all group"
+                       className="flex items-center justify-between px-8 py-5 bg-[var(--surface)] border border-[var(--border-subtle)] rounded-2xl hover:bg-[var(--surface-card)] hover:border-emerald-500/30 transition-all group"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-600/20 group-hover:scale-110 transition-transform">A</div>
+                      <div className="flex items-center gap-5">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-600/20 group-hover:scale-110 transition-transform italic font-headline">A</div>
                         <div className="text-left">
-                          <div className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Microsoft Azure</div>
+                          <div className="text-[10px] font-black uppercase tracking-widest text-[var(--text-main)] group-hover:text-[var(--brand)]">Microsoft Azure</div>
                         </div>
                       </div>
-                      <Lock size={16} className="text-gray-400" />
+                      <Lock size={14} className="text-[var(--text-muted)]" />
                     </button>
                   </div>
                 </>
               )}
             </form>
 
-            {/* Handshake Simulation Overlay */}
+                 {/* Mock Handshake Simulation Overlay */}
             {mockLoading && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in">
-                <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-xl"></div>
-                
-                <div className="relative w-full max-w-sm bg-white dark:bg-[#1a202c] rounded-[2.5rem] p-10 shadow-2xl border border-white/5 text-center overflow-hidden">
-                  {/* Background Accents */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-indigo-600 to-transparent"></div>
-                  
-                  <div className="relative mb-8">
-                    <div className="w-24 h-24 rounded-full bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center mx-auto relative group">
-                      <div className="absolute inset-0 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin duration-700"></div>
-                      <Building2 className={`text-indigo-500 transition-all duration-500 ${mockLoading ? 'scale-110' : 'scale-90'}`} size={36} />
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-fade-in">
+                <div className="absolute inset-0 bg-[var(--surface)]/80 backdrop-blur-xl"></div>
+                <div className="relative w-full max-w-sm bg-[var(--surface-card)] rounded-[3rem] p-12 shadow-2xl border border-[var(--border-subtle)] text-center overflow-hidden premium-grain">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--brand)] to-transparent"></div>
+                  <div className="relative mb-10">
+                    <div className="w-24 h-24 rounded-full bg-[var(--brand)]/10 border border-[var(--brand)]/20 flex items-center justify-center mx-auto relative group">
+                      <div className="absolute inset-0 rounded-full border-2 border-[var(--brand)] border-t-transparent animate-spin duration-700"></div>
+                      <Building2 className="text-[var(--brand)]" size={36} />
                     </div>
                   </div>
-
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 font-headline">
-                    Connecting to {mockLoading === 'okta' ? 'Okta' : 'Microsoft'}
-                  </h3>
-                  <p className="text-gray-500 dark:text-[#918fa1] text-xs font-medium leading-relaxed mb-8">
-                    Authenticating your workforce credentials via Secure Edge Handshake. Please wait...
-                  </p>
-
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 dark:text-[#918fa1]/50 uppercase tracking-widest justify-center">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      Encrypted Channel Established
+                  <h3 className="text-xl font-headline font-black italic uppercase tracking-tight text-[var(--text-main)] mb-3">Edge Auth</h3>
+                  <p className="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest leading-relaxed mb-10">Authenticating workforce credentials via Secure Edge Handshake...</p>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-3 text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest justify-center">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Encrypted Node Established
                     </div>
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 dark:text-[#918fa1]/50 uppercase tracking-widest justify-center">
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse delay-75"></span>
-                      Verifying Corporate Policy
+                    <div className="flex items-center gap-3 text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest justify-center">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand)] animate-pulse"></span> Verifying Corporate Link
                     </div>
                   </div>
                 </div>
               </div>
             )}
-            {/* Divider */}
-            <div className="mt-10 pt-8 border-t border-white/5 text-center">
-              <p className="text-[#c7c4d8] font-medium font-body">
-                Don't have an account? 
-                <Link to="/sign-up" className="text-[#c3c0ff] font-bold hover:underline ml-2 transition-all">Sign Up</Link>
+
+            {/* Footer Links */}
+            <div className="mt-12 pt-10 border-t border-[var(--border-subtle)] text-center relative z-10">
+              <p className="text-[var(--text-muted)] text-[10px] font-black uppercase tracking-widest">
+                No access credentials? 
+                <Link to="/sign-up" className="text-[var(--brand)] hover:underline ml-2">Register Node</Link>
               </p>
             </div>
           </div>
-          {/* Trust Badges */}
-          <div className="mt-8 flex justify-center gap-6 grayscale opacity-40 hover:opacity-80 transition-opacity">
-            <div className="flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase text-[#c7c4d8]">
-              <Shield size={16} /> ISO 27001
+
+          {/* Infrastructure Badges */}
+          <div className="mt-12 flex justify-center gap-10 opacity-30 hover:opacity-100 transition-opacity duration-500">
+            <div className="flex items-center gap-2 text-[9px] font-black tracking-[0.3em] uppercase text-[var(--text-muted)]">
+              <Shield size={14} /> ISO 27001
             </div>
-            <div className="flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase text-[#c7c4d8]">
-              <ShieldCheck size={16} /> SOC2 TYPE II
+            <div className="flex items-center gap-2 text-[9px] font-black tracking-[0.3em] uppercase text-[var(--text-muted)]">
+              <ShieldCheck size={14} /> SOC2 TYPE II
             </div>
           </div>
         </div>
       </main>
       
-      {/* Decorative Corner Element */}
-      <div className="fixed bottom-0 right-0 p-12 pointer-events-none opacity-20 hidden lg:block">
-        <div className="w-64 h-64 border-r-2 border-b-2 border-indigo-600/30 rounded-br-[4rem]"></div>
+      {/* Structural Accent */}
+      <div className="fixed bottom-0 right-0 p-16 pointer-events-none opacity-10 hidden lg:block">
+        <div className="w-64 h-64 border-r border-b border-[var(--brand)]/20 rounded-br-[5rem]"></div>
       </div>
       </div>
     </PublicLayout>

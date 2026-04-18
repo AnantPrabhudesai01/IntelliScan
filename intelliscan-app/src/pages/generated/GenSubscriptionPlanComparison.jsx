@@ -81,19 +81,22 @@ export default function GenSubscriptionPlanComparison() {
   const [toast, setToast] = useState(null);
   
   const { tier, refreshAuth } = useRole();
-  const [plans, setPlans] = useState([]);
+  const [plans, setPlans] = useState([
+    { id: 'personal', name: 'Personal', price: 0, badge: 'Starter', features: ['100 Scan Credits / month', 'Gemini Flash OCR Engine', 'Basic AI Follow-up Drafts', 'Community Documentation'] },
+    { id: 'pro', name: 'Pro', price: 49, badge: 'Advanced', features: ['5,000 Scan Credits / month', 'Gemini Pro Vision Engine', 'Real-time CRM Sync (Live)', 'Priority Verification Support'] },
+    { id: 'enterprise', name: 'Enterprise', price: 1999, badge: 'Scale', features: ['Unlimited Scan Credits', 'Custom AI Training', 'SSO & SAML Security', 'Dedicated Account Manager'] }
+  ]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch('/api/billing/plans');
-        if (res.ok) {
-          const data = await res.json();
-          setPlans(data.plans || []);
+        const res = await apiClient.get('/billing/plans');
+        if (res.data?.plans) {
+          setPlans(res.data.plans);
         }
       } catch (err) {
-        console.error('Failed to load plans:', err);
+        console.error('Failed to load plans from API, using defaults:', err);
       }
       setLoading(false);
     };
@@ -122,17 +125,16 @@ export default function GenSubscriptionPlanComparison() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-white selection:bg-indigo-500/30 font-sans pb-24 overflow-x-hidden relative">
+    <div className="min-h-screen bg-[var(--surface)] text-[var(--text-main)] selection:bg-[var(--brand)]/30 font-sans pb-24 overflow-x-hidden relative">
       
       {/* Dynamic Glow Gradients */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-purple-500/5 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[var(--brand)]/5 blur-[120px] rounded-full pointer-events-none"></div>
 
       {/* Loading Overlay */}
       {isProcessing && (
         <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="w-16 h-16 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-6 shadow-2xl shadow-indigo-500/20"></div>
-          <p className="text-lg font-black italic uppercase tracking-tighter animate-pulse">{statusText || 'Processing secure payment...'}</p>
+          <div className="w-16 h-16 border-4 border-[var(--brand)]/20 border-t-[var(--brand)] rounded-full animate-spin mb-6 shadow-2xl shadow-[var(--brand)]/20"></div>
+          <p className="text-lg font-headline font-black italic uppercase tracking-tighter animate-pulse">{statusText || 'Processing secure payment...'}</p>
         </div>
       )}
 
@@ -158,22 +160,22 @@ export default function GenSubscriptionPlanComparison() {
 
       {/* Header Section */}
       <div className="max-w-7xl mx-auto px-6 text-center pt-12 pb-20 relative">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] mb-8 animate-in slide-in-from-bottom-2">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--brand)]/10 border border-[var(--brand)]/20 text-[var(--brand)] text-[10px] font-black uppercase tracking-[0.2em] mb-8 animate-in slide-in-from-bottom-2">
           <Zap size={14} className="fill-current"/> INTELLISCAN TIER SYSTEM 2.0
         </div>
-        <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/30 leading-none mb-8">
+        <h1 className="text-6xl md:text-8xl font-headline font-black italic tracking-tighter text-[var(--text-main)] leading-none mb-8">
           SCALE YOUR <br/> NETWORKING.
         </h1>
-        <p className="max-w-xl mx-auto text-gray-400 text-lg leading-relaxed font-medium">
-          Unlock industrial-grade AI precision and real-time CRM synchronization with our project-tailored professional plans.
+        <p className="max-w-xl mx-auto text-[var(--text-muted)] text-lg leading-relaxed font-medium">
+          Unlock industrial-grade AI precision and real-time CRM synchronization with our architectural tier infrastructure.
         </p>
-
+ 
         {/* Current Plan Badge */}
         {isLoggedIn && (
-          <div className="mt-8 inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl animate-in zoom-in-95">
+          <div className="mt-8 inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-[var(--surface-card)] border border-[var(--border-subtle)] shadow-sm animate-in zoom-in-95">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              Current Active Tier: <span className="text-white ml-1">{tier.toUpperCase()}</span>
+            <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest">
+              Current Active Tier: <span className="text-[var(--text-main)] ml-1">{tier.toUpperCase()}</span>
             </p>
           </div>
         )}
@@ -182,7 +184,7 @@ export default function GenSubscriptionPlanComparison() {
       {/* Pricing Grids */}
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch relative">
         {loading ? (
-          <div className="lg:col-span-3 text-center py-20 text-gray-500 font-bold">Loading Tier Catalog...</div>
+          <div className="lg:col-span-3 text-center py-20 text-[var(--text-muted)] font-bold">Loading Tier Catalog...</div>
         ) : (
           plans.map((p) => {
             const isPro = p.id === 'pro';
@@ -190,58 +192,59 @@ export default function GenSubscriptionPlanComparison() {
             const isCurrent = tier === p.id;
             
             return (
-              <div key={p.id} className={`group relative rounded-[32px] p-10 flex flex-col justify-between transition-all duration-500 hover:shadow-2xl shadow-indigo-500/5 ${
-                isPro 
-                ? 'bg-gradient-to-b from-indigo-600 to-indigo-800 shadow-indigo-600/20 hover:scale-[1.02] z-10 border border-white/10' 
-                : 'bg-white/5 border border-white/10 hover:bg-white/[0.07] hover:border-white/20'
-              }`}>
+              <div key={p.id} className={`group relative rounded-[32px] p-10 flex flex-col justify-between transition-all duration-500 hover:shadow-2xl 
+                ${isPro 
+                  ? 'bg-[var(--brand)] text-white shadow-[var(--brand)]/20 z-10 border border-white/10' 
+                  : 'bg-[var(--surface-card)] border border-[var(--border-subtle)] text-[var(--text-main)] transition-colors'
+                }`}>
                 {isPro && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-[#161c28] px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-2xl">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-[var(--brand)] px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-2xl">
                     <Star size={12} className="fill-current" /> MOST RECOMMENDED
                   </div>
                 )}
                 
                 <div>
                   <div className="flex items-center justify-between mb-8">
-                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-white/5 ${isPro ? 'text-white/50 bg-black/10' : 'text-gray-500 bg-white/5'}`}>
+                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-white/5 
+                      ${isPro ? 'text-white/70 bg-black/10' : 'text-[var(--text-muted)] bg-[var(--surface)]'}`}>
                       {p.badge || p.name.toUpperCase()}
                     </span>
-                    {isPro ? <Cpu size={20} className="text-indigo-200" /> : isEnt ? <Globe size={20} className="text-gray-500" /> : <Layers size={20} className="text-gray-500" />}
+                    {isPro ? <Cpu size={20} className="text-indigo-200" /> : isEnt ? <Globe size={20} className="text-[var(--text-muted)]" /> : <Layers size={20} className="text-[var(--text-muted)]" />}
                   </div>
                   
-                  <h3 className={`text-4xl font-extrabold italic tracking-tighter mb-2 ${isPro ? 'text-white' : ''}`}>{p.name}</h3>
+                  <h3 className={`text-4xl font-headline font-black italic tracking-tighter mb-2 ${isPro ? 'text-white' : ''}`}>{p.name}</h3>
                   <div className="flex items-baseline gap-1 mb-6">
                     {p.price === 0 ? (
-                      <span className={`text-4xl font-black italic ${isPro ? 'text-white' : ''}`}>Free</span>
+                      <span className={`text-4xl font-headline font-black italic ${isPro ? 'text-white' : ''}`}>Free</span>
                     ) : (
                       <>
-                        <span className={`text-3xl font-black ${isPro ? 'text-white' : 'text-white'}`}>₹{p.price.toLocaleString()}</span>
-                        <span className={`text-xs font-bold uppercase ${isPro ? 'text-indigo-200' : 'text-gray-500'}`}>/ {p.period || 'mo'}</span>
+                        <span className={`text-3xl font-headline font-black ${isPro ? 'text-white' : 'text-[var(--text-main)]'}`}>₹{p.price.toLocaleString()}</span>
+                        <span className={`text-[10px] font-bold uppercase ${isPro ? 'text-indigo-200' : 'text-[var(--text-muted)]'} ml-2`}>/ cycle</span>
                       </>
                     )}
                   </div>
                   
-                  <p className={`text-sm font-medium leading-relaxed mb-10 ${isPro ? 'text-indigo-100/70' : 'text-gray-500'}`}>
+                  <p className={`text-sm font-medium leading-relaxed mb-10 ${isPro ? 'text-white/70' : 'text-[var(--text-muted)]'}`}>
                     {p.id === 'personal' ? 'Essential tools for individual professionals building their first digital database.' : isPro ? 'Industrial-grade precision for high-volume networking and automated CRM delivery.' : 'Industrial scale scanning for organizations requiring dedicated infra and custom AI training.'}
                   </p>
                   
                   <ul className="space-y-4 mb-12">
                     {p.features?.map((f, i) => (
-                      <li key={i} className={`flex items-center gap-3 text-sm font-bold ${isPro ? 'text-white' : 'text-gray-400'}`}>
-                        <Check size={18} className={`${isPro ? 'text-indigo-200 bg-white/10 p-0.5 rounded-full' : 'text-indigo-500'} stroke-[3px]`} /> {f}
+                      <li key={i} className={`flex items-center gap-3 text-sm font-bold ${isPro ? 'text-white' : 'text-[var(--text-muted)]'}`}>
+                        <Check size={18} className={`${isPro ? 'text-indigo-200 bg-white/10 p-0.5 rounded-full' : 'text-[var(--brand)]'} stroke-[3px]`} /> {f}
                       </li>
                     ))}
                   </ul>
                 </div>
-
+ 
                 <button 
                   onClick={() => isEnt && !isCurrent ? setShowSalesModal(true) : handleUpgrade(p.id)} 
                   className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
                     isCurrent 
                       ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' 
                       : isPro 
-                        ? 'bg-white text-indigo-600 shadow-xl hover:bg-indigo-50' 
-                        : 'bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black'
+                        ? 'bg-white text-[var(--brand)] shadow-xl hover:bg-white/90' 
+                        : 'bg-[var(--text-main)] text-[var(--surface)] hover:opacity-90 shadow-lg'
                   }`}
                 >
                   {isCurrent ? <><Check size={16} strokeWidth={4} /> Current Plan</> : isEnt ? <><Mail size={16} /> TALK TO SALES</> : <><Zap size={16} /> Upgrade Now</>}
@@ -251,35 +254,36 @@ export default function GenSubscriptionPlanComparison() {
           })
         )}
       </div>
+>
 
       {/* Detail Matrix */}
       <section className="mt-32 max-w-6xl mx-auto px-6">
         <div className="flex items-center gap-4 mb-12">
-          <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10"></div>
-          <h2 className="text-3xl font-black italic uppercase tracking-tighter">Feature Comparison Matrix</h2>
-          <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10"></div>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--border-subtle)]"></div>
+          <h2 className="text-3xl font-headline font-black italic uppercase tracking-tighter">Feature Matrix</h2>
+          <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--border-subtle)]"></div>
         </div>
         
-        <div className="overflow-hidden rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-xl">
+        <div className="overflow-hidden rounded-[32px] border border-[var(--border-subtle)] bg-[var(--surface-card)] shadow-sm">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-white/5 border-b border-white/5">
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-500">Infrastructure Layers</th>
-                <th className="px-8 py-6 text-sm font-black italic tracking-tight">Free</th>
-                <th className="px-8 py-6 text-sm font-black italic tracking-tight text-indigo-400 underline decoration-indigo-400/30 decoration-4 underline-offset-8">Pro</th>
-                <th className="px-8 py-6 text-sm font-black italic tracking-tight">Enterprise</th>
+              <tr className="bg-[var(--surface)] border-b border-[var(--border-subtle)]">
+                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Infrastructure Layers</th>
+                <th className="px-8 py-6 text-sm font-headline font-black italic tracking-tight">Free</th>
+                <th className="px-8 py-6 text-sm font-headline font-black italic tracking-tight text-[var(--brand)] underline decoration-[var(--brand)]/30 decoration-4 underline-offset-8">Pro</th>
+                <th className="px-8 py-6 text-sm font-headline font-black italic tracking-tight">Enterprise</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-[var(--border-subtle)]">
               {COMPARISON_DATA.map((row, i) => (
-                <tr key={i} className="hover:bg-white/5 transition-all group">
-                  <td className="px-8 py-5 text-xs font-bold text-gray-400 group-hover:text-white transition-colors flex items-center gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/40 group-hover:bg-indigo-500"></div>
+                <tr key={i} className="hover:bg-[var(--surface)]/50 transition-all group font-medium">
+                  <td className="px-8 py-5 text-xs text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors flex items-center gap-3">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand)]/20 group-hover:bg-[var(--brand)]"></div>
                     {row.feature}
                   </td>
-                  <td className="px-8 py-5 text-xs font-medium text-gray-500">{row.free}</td>
-                  <td className="px-8 py-5 text-xs font-black text-indigo-400 italic bg-indigo-500/[0.02] border-x border-white/5">{row.pro}</td>
-                  <td className="px-8 py-5 text-xs font-medium text-white/50">{row.enterprise}</td>
+                  <td className="px-8 py-5 text-xs text-[var(--text-muted)]">{row.free}</td>
+                  <td className="px-8 py-5 text-xs font-black text-[var(--brand)] italic bg-[var(--brand)]/[0.02] border-x border-[var(--border-subtle)]">{row.pro}</td>
+                  <td className="px-8 py-5 text-xs text-[var(--text-muted)]">{row.enterprise}</td>
                 </tr>
               ))}
             </tbody>
@@ -289,21 +293,21 @@ export default function GenSubscriptionPlanComparison() {
 
       {/* Security Banner */}
       <div className="max-w-4xl mx-auto px-6 mt-24">
-        <div className="bg-indigo-600/5 border border-indigo-500/20 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-6 justify-between">
+        <div className="bg-[var(--brand)]/5 border border-[var(--brand)]/10 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-6 justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-indigo-600 rounded-2xl text-white shadow-xl shadow-indigo-500/20">
+            <div className="p-3 bg-[var(--brand)] rounded-2xl text-white shadow-xl shadow-[var(--brand)]/20">
               <ShieldCheck size={32} />
             </div>
             <div>
-              <h4 className="text-lg font-black italic tracking-tight uppercase">Bank-Grade Transactions</h4>
-              <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Secured by Razorpay. 256-Bit SSL Encryption.</p>
+              <h4 className="text-lg font-headline font-black italic tracking-tight uppercase">Architectural Transactions</h4>
+              <p className="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest">Secured by Razorpay. 256-Bit SSL Encryption.</p>
             </div>
           </div>
-          <div className="flex items-center gap-6 saturate-0 opacity-50">
-            <div className="text-[10px] font-black tracking-[.2em] uppercase border-r border-white/10 pr-6 hidden md:block">WE ACCEPT</div>
-            <span className="font-extrabold italic text-sm tracking-tighter italic">VISA</span>
-            <span className="font-extrabold italic text-sm tracking-tighter italic">MASTERCARD</span>
-            <span className="font-extrabold italic text-sm tracking-tighter italic">UPI</span>
+          <div className="flex items-center gap-6 saturate-0 opacity-30">
+            <div className="text-[10px] font-black tracking-[.2em] uppercase border-r border-[var(--border-subtle)] pr-6 hidden md:block text-[var(--text-muted)]">WE ACCEPT</div>
+            <span className="font-extrabold italic text-sm tracking-tighter italic text-[var(--text-main)]">VISA</span>
+            <span className="font-extrabold italic text-sm tracking-tighter italic text-[var(--text-main)]">MASTERCARD</span>
+            <span className="font-extrabold italic text-sm tracking-tighter italic text-[var(--text-main)]">UPI</span>
           </div>
         </div>
       </div>

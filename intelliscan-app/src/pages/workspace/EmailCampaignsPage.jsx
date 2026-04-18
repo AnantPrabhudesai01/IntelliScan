@@ -129,12 +129,15 @@ export default function EmailCampaignsPage() {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto space-y-6 pt-6 animate-pulse">
-        <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded-lg w-1/4"></div>
-        <div className="grid grid-cols-3 gap-6">
-          {[1, 2, 3].map(i => <div key={i} className="h-32 bg-gray-100 dark:bg-[#161c28] rounded-2xl border border-gray-200 dark:border-gray-800"></div>)}
+      <div className="max-w-6xl mx-auto space-y-10 animate-pulse py-12">
+        <div className="flex flex-col gap-6">
+          <div className="h-12 bg-[var(--surface-card)] rounded-2xl w-1/3 border border-[var(--border-subtle)]"></div>
+          <div className="h-4 bg-[var(--surface-card)] rounded-full w-2/3 border border-[var(--border-subtle)]"></div>
         </div>
-        <div className="h-64 bg-gray-100 dark:bg-[#161c28] rounded-2xl border border-gray-200 dark:border-gray-800"></div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[1, 2, 3].map(i => <div key={i} className="h-40 bg-[var(--surface-card)] rounded-[2.5rem] border border-[var(--border-subtle)]"></div>)}
+        </div>
+        <div className="h-96 bg-[var(--surface-card)] rounded-[2.5rem] border border-[var(--border-subtle)]"></div>
       </div>
     );
   }
@@ -146,25 +149,28 @@ export default function EmailCampaignsPage() {
     : 0;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-12">
+    <div className="max-w-6xl mx-auto space-y-10 animate-fade-in pb-20">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
+        <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <Mail className="text-indigo-600 dark:text-indigo-400" size={28} />
-            <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">Email Marketing</h1>
-            <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800/50">Enterprise Only</span>
+             <div className="px-3 py-1 bg-amber-500/10 rounded-lg border border-amber-500/20 shadow-inner">
+               <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-500">Tier 3 Authorization</span>
+             </div>
+             <div className="w-1 h-1 rounded-full bg-[var(--border-strong)]" />
+             <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Neural Outreach Active</span>
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 max-w-xl">
-            Target your explicitly scanned contacts using AI-inferred demographics. Create high-converting campaigns directly from your pipeline.
+          <h1 className="text-5xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase leading-tight">Neural <br/>Campaigns</h1>
+          <p className="text-[11px] text-[var(--text-muted)] font-medium leading-relaxed max-w-xl">
+            Target high-fidelity neural patterns inferred from card scans. High-conversion automated routing active across all authenticated workspace nodes.
           </p>
         </div>
         {!isDrafting && (
           <button
             onClick={() => setIsDrafting(true)}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-sm transition-all shadow-indigo-500/20 active:scale-95 text-sm"
+            className="flex items-center gap-4 bg-[var(--brand)] text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-[var(--brand)]/20 hover:brightness-110 active:scale-95 transition-all italic font-headline"
           >
-            <Send size={16} /> New AI Campaign
+            <Send size={14} /> Initialize Campaign
           </button>
         )}
       </div>
@@ -184,81 +190,93 @@ export default function EmailCampaignsPage() {
       ) : null}
 
       {isDrafting ? (
-        <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-3xl p-6 md:p-8 shadow-sm">
-          <div className="flex justify-between items-center mb-8 border-b border-gray-100 dark:border-gray-800 pb-4">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <Sparkles className="text-indigo-500" size={20} /> AI Campaign Builder
-            </h2>
-            <button onClick={() => setIsDrafting(false)} className="text-xs font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white">Cancel</button>
+        <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[3rem] p-8 md:p-14 shadow-2xl relative overflow-hidden premium-grain">
+          <div className="flex justify-between items-center mb-12 border-b border-[var(--border-subtle)] pb-8 relative z-10 transition-colors">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-purple-500/10 rounded-2xl border border-purple-500/20 text-purple-500">
+                <Sparkles size={24} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase">Blueprint Generator</h2>
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">Assisted Neural Copywriting</p>
+              </div>
+            </div>
+            <button onClick={() => setIsDrafting(false)} className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-red-500 transition-colors">Abort Construction</button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10">
             {/* Left Col: Audience Segmentation */}
-            <div className="lg:col-span-4 flex flex-col gap-6">
-              <div className="bg-gray-50 dark:bg-gray-900/50 p-5 rounded-2xl border border-gray-200 dark:border-gray-800">
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Filter size={16} className="text-indigo-500" /> Audience Segmentation
-                </h3>
+            <div className="lg:col-span-4 flex flex-col gap-8">
+              <div className="bg-[var(--surface)] p-8 rounded-[2rem] border border-[var(--border-subtle)] shadow-inner space-y-8">
+                <div className="space-y-2">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-main)] flex items-center gap-3">
+                    <Filter size={14} className="text-[var(--brand)]" /> Segmentation
+                  </h3>
+                  <div className="w-full h-px bg-[var(--border-subtle)] opacity-50"></div>
+                </div>
                 
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Target Industry (AI)</label>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] ml-1 font-label">Target Sector (AI)</label>
                     <select 
                       value={newCampaign.targetIndustry} 
                       onChange={e => setNewCampaign((prev) => ({ ...prev, targetIndustry: e.target.value }))}
-                      className="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 text-sm rounded-xl px-3 py-2 outline-none focus:border-indigo-500 text-gray-900 dark:text-white"
+                      className="w-full bg-[var(--surface-card)] border border-[var(--border-subtle)] text-[11px] font-black uppercase tracking-widest rounded-xl px-4 py-3.5 outline-none focus:ring-4 focus:ring-[var(--brand)]/10 transition-all text-[var(--text-main)] cursor-pointer appearance-none"
                     >
-                      <option value="">Any Industry</option>
-                      <option value="Technology">Technology</option>
-                      <option value="Real Estate">Real Estate</option>
-                      <option value="Finance">Finance</option>
-                      <option value="Healthcare">Healthcare</option>
+                      <option value="">Universal Sector</option>
+                      <option value="Technology">Technology Matrix</option>
+                      <option value="Real Estate">Property Nodes</option>
+                      <option value="Finance">Capital Markets</option>
+                      <option value="Healthcare">Bio-Systems</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Target Seniority (AI)</label>
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] ml-1 font-label">Neural Rank (AI)</label>
                     <select 
                       value={newCampaign.targetSeniority} 
                       onChange={e => setNewCampaign((prev) => ({ ...prev, targetSeniority: e.target.value }))}
-                      className="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 text-sm rounded-xl px-3 py-2 outline-none focus:border-indigo-500 text-gray-900 dark:text-white"
+                      className="w-full bg-[var(--surface-card)] border border-[var(--border-subtle)] text-[11px] font-black uppercase tracking-widest rounded-xl px-4 py-3.5 outline-none focus:ring-4 focus:ring-[var(--brand)]/10 transition-all text-[var(--text-main)] cursor-pointer appearance-none"
                     >
-                      <option value="">Any Seniority</option>
-                      <option value="CXO / Founder">CXO / Founder</option>
-                      <option value="VP / Director">VP / Director</option>
-                      <option value="Senior">Senior</option>
-                      <option value="Mid-Level">Mid-Level</option>
+                      <option value="">Universal Rank</option>
+                      <option value="CXO / Founder">CXO Tier</option>
+                      <option value="VP / Director">Executive Hub</option>
+                      <option value="Senior">Senior Analyst</option>
+                      <option value="Mid-Level">Operational Node</option>
                     </select>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800 text-center">
-                  <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Dynamically Routed Audience</div>
-                  <div className="flex items-center justify-center gap-2 text-2xl font-extrabold text-indigo-600 dark:text-indigo-400">
-                    {isPreviewLoading ? <RefreshCw size={20} className="animate-spin" /> : <Users size={24} />}
-                    {audienceCount !== null ? audienceCount : '--'}
+                <div className="pt-8 border-t border-[var(--border-subtle)] text-center space-y-3">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">Awaiting Handshakes</p>
+                  <div className="flex items-center justify-center gap-4 py-4 bg-[var(--surface-card)] rounded-2xl border border-[var(--border-subtle)]">
+                    {isPreviewLoading ? <RefreshCw size={24} className="animate-spin text-[var(--brand)]" /> : <Users size={28} className="text-[var(--brand)] opacity-50" />}
+                    <span className="text-4xl font-headline font-black italic tracking-tighter text-[var(--text-main)]">
+                      {audienceCount !== null ? audienceCount : '--'}
+                    </span>
                   </div>
+                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] opacity-60 italic">Identified Pipeline Nodes</p>
                 </div>
               </div>
             </div>
 
             {/* Right Col: Editor */}
-            <div className="lg:col-span-8 flex flex-col gap-4">
+            <div className="lg:col-span-8 flex flex-col gap-6">
               <input
                 type="text"
-                placeholder="Internal Campaign Name (e.g., Tech VP Outreach Q3)"
+                placeholder="Blueprint ID (e.g., Tech VP Outreach Q3)"
                 value={newCampaign.name}
                 onChange={e => setNewCampaign({...newCampaign, name: e.target.value})}
-                className="w-full bg-gray-50 dark:bg-gray-900/50 border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-[#161c28] text-lg font-bold rounded-xl px-4 py-3 outline-none transition-all placeholder:text-gray-400 dark:text-white"
+                className="w-full bg-[var(--surface)] border border-[var(--border-subtle)] focus:border-[var(--brand)]/30 focus:bg-[var(--surface-card)] text-xl font-headline font-black italic uppercase italic tracking-tighter rounded-[1.5rem] px-8 py-5 outline-none transition-all shadow-inner placeholder:text-[var(--text-muted)]/30 text-[var(--text-main)]"
               />
               
-              <div className="border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden focus-within:border-indigo-500 transition-colors bg-white dark:bg-[#161c28]">
-                <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50 dark:bg-gray-900/40">
-                  <div className="flex items-center gap-3 flex-1">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Subject:</span>
+              <div className="border border-[var(--border-subtle)] rounded-[2rem] overflow-hidden focus-within:ring-4 focus-within:ring-[var(--brand)]/5 transition-all bg-[var(--surface)] shadow-inner">
+                <div className="px-8 py-5 border-b border-[var(--border-subtle)] flex items-center justify-between bg-[var(--surface-card)]/50 backdrop-blur-md">
+                  <div className="flex items-center gap-4 flex-1">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">Protocol Subject:</span>
                     <input
                       type="text"
-                      className="flex-1 bg-transparent border-none outline-none text-sm font-semibold text-gray-900 dark:text-white placeholder:font-normal placeholder:text-gray-400"
-                      placeholder="Catchy subject line..."
+                      className="flex-1 bg-transparent border-none outline-none text-[12px] font-black uppercase tracking-widest text-[var(--text-main)] placeholder:font-normal placeholder:opacity-30"
+                      placeholder="Neural engagement hook..."
                       value={newCampaign.subject}
                       onChange={e => setNewCampaign({...newCampaign, subject: e.target.value})}
                     />
@@ -266,26 +284,26 @@ export default function EmailCampaignsPage() {
                   <button
                     onClick={handleGenerateAI}
                     disabled={!newCampaign.targetIndustry || !newCampaign.targetSeniority}
-                    className="shrink-0 flex items-center gap-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="shrink-0 flex items-center gap-3 bg-purple-500/10 text-purple-500 hover:bg-purple-500/20 px-6 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] transition-all disabled:opacity-30 border border-purple-500/20"
                   >
-                    <Sparkles size={14} /> Auto-Write Email
+                    <Sparkles size={14} className="animate-pulse" /> Auto-Construct
                   </button>
                 </div>
                 <textarea
-                  className="w-full h-64 p-4 bg-transparent outline-none resize-none text-sm text-gray-800 dark:text-gray-200 leading-relaxed font-body placeholder:text-gray-400"
-                  placeholder="Draft your message here. You can use {{firstName}} and {{company}} as dynamic variables..."
+                  className="w-full h-80 p-8 bg-transparent outline-none resize-none text-[13px] text-[var(--text-main)] leading-relaxed font-medium placeholder:opacity-20 custom-scrollbar"
+                  placeholder="Draft your blueprint here. Access variables via {{firstName}} and {{company}}..."
                   value={newCampaign.body}
                   onChange={e => setNewCampaign({...newCampaign, body: e.target.value})}
                 ></textarea>
               </div>
 
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-end lg:pt-4">
                 <button
                   onClick={handleSendCampaign}
                   disabled={!newCampaign.subject || !newCampaign.body || !audienceCount || isSending || isPreviewLoading}
-                  className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 dark:disabled:bg-indigo-900/40 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-bold shadow-sm transition-all"
+                  className="flex items-center gap-4 bg-[var(--brand)] disabled:bg-[var(--border-subtle)] disabled:text-[var(--text-muted)] disabled:opacity-50 text-white px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-[var(--brand)]/20 hover:brightness-110 active:scale-95 transition-all italic font-headline"
                 >
-                  {isSending ? <><RefreshCw size={16} className="animate-spin" /> Blasting to {audienceCount} contacts...</> : <><Send size={16} /> Send Campaign to {audienceCount} Contacts</>}
+                  {isSending ? <><RefreshCw size={16} className="animate-spin" /> Transmitting to {audienceCount} Nodes...</> : <><Send size={16} /> Force Transmit to {audienceCount} Targets</>}
                 </button>
               </div>
             </div>
@@ -294,103 +312,112 @@ export default function EmailCampaignsPage() {
       ) : (
         <>
           {/* Top Level Metric Strip */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
-                <Send className="text-indigo-600 dark:text-indigo-400" size={24} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] p-8 shadow-xl premium-grain flex items-center gap-6 group hover:translate-y-[-4px] transition-all">
+              <div className="w-16 h-16 rounded-3xl bg-[var(--brand)]/10 flex items-center justify-center shrink-0 border border-[var(--brand)]/20 shadow-inner group-hover:scale-110 transition-transform">
+                <Send className="text-[var(--brand)]" size={32} strokeWidth={1.5} />
               </div>
-              <div>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Total Emails Sent</p>
-                <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{totalSent.toLocaleString()}</p>
+              <div className="space-y-1">
+                <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em]">Atomic Dispatch</p>
+                <p className="text-3xl font-headline font-black italic tracking-tighter text-[var(--text-main)] group-hover:text-[var(--brand)] transition-colors">{totalSent.toLocaleString()}</p>
               </div>
             </div>
-            <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
-                <Target className="text-emerald-600 dark:text-emerald-400" size={24} />
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] p-8 shadow-xl premium-grain flex items-center gap-6 group hover:translate-y-[-4px] transition-all">
+              <div className="w-16 h-16 rounded-3xl bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/20 shadow-inner group-hover:scale-110 transition-transform">
+                <Target className="text-emerald-500" size={32} strokeWidth={1.5} />
               </div>
-              <div>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Average Open Rate</p>
-                <div className="flex items-baseline gap-2">
-                  <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{avgOpenRate}%</p>
-                  <span className="text-xs text-emerald-500 font-bold flex items-center"><TrendingUp size={12} className="mr-0.5" /> +2.4%</span>
+              <div className="space-y-1">
+                <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em]">Engagement Yield</p>
+                <div className="flex items-baseline gap-3">
+                  <p className="text-3xl font-headline font-black italic tracking-tighter text-[var(--text-main)] group-hover:text-emerald-500 transition-colors">{avgOpenRate}%</p>
+                  <span className="text-[10px] text-emerald-500 font-black flex items-center uppercase tracking-tighter"><TrendingUp size={10} className="mr-1" /> OPTIMIZED</span>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
-                <Activity className="text-amber-600 dark:text-amber-400" size={24} />
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] p-8 shadow-xl premium-grain flex items-center gap-6 group hover:translate-y-[-4px] transition-all">
+              <div className="w-16 h-16 rounded-3xl bg-amber-500/10 flex items-center justify-center shrink-0 border border-amber-500/20 shadow-inner group-hover:scale-110 transition-transform">
+                <Activity className="text-amber-500" size={32} strokeWidth={1.5} />
               </div>
-              <div>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Campaigns Active</p>
-                <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{campaigns.length}</p>
+              <div className="space-y-1">
+                <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em]">Active Pipelines</p>
+                <p className="text-3xl font-headline font-black italic tracking-tighter text-[var(--text-main)] group-hover:text-amber-500 transition-colors">{campaigns.length}</p>
               </div>
             </div>
           </div>
 
           {/* Campaigns Database */}
-          <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/40 flex items-center gap-2">
-              <BarChart3 size={18} className="text-indigo-500" />
-              <h3 className="font-bold text-gray-900 dark:text-white">Marketing Telemetry Logs</h3>
+          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] shadow-2xl overflow-hidden premium-grain">
+            <div className="px-10 py-6 border-b border-[var(--border-subtle)] bg-[var(--surface)]/50 backdrop-blur-md flex items-center justify-between relative z-10">
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-[var(--brand)]/10 rounded-xl">
+                  <BarChart3 size={20} className="text-[var(--brand)]" />
+                </div>
+                <h3 className="text-[12px] font-headline font-black italic uppercase tracking-tighter text-[var(--text-main)]">Marketing Telemetry Logs</h3>
+              </div>
+              <div className="flex items-center gap-3">
+                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                 <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">Real-time Stream</span>
+              </div>
             </div>
             
             {campaigns.length === 0 ? (
-              <div className="p-12 text-center flex flex-col items-center">
-                <Mail size={48} className="text-gray-300 dark:text-gray-700 mb-4" />
-                <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No active campaigns</h4>
-                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mb-6">Your data is just sitting there. Build an email campaign to actionably route your extracted leads.</p>
-                <button onClick={() => setIsDrafting(true)} className="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-bold rounded-lg text-sm hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors">Start First Campaign</button>
+              <div className="p-20 text-center flex flex-col items-center relative z-10 opacity-30">
+                <div className="w-24 h-24 rounded-3xl bg-[var(--surface)] border border-[var(--border-subtle)] flex items-center justify-center mb-8">
+                  <Mail size={48} strokeWidth={1} />
+                </div>
+                <h4 className="text-2xl font-headline font-black italic tracking-tighter uppercase mb-2">Node Idle</h4>
+                <p className="text-[11px] font-medium max-w-sm mb-10 leading-relaxed">Infrastructure awaiting routing instructions. Initialize a campaign to actionably transmit extracted lead data.</p>
+                <button onClick={() => setIsDrafting(true)} className="px-10 py-4 bg-[var(--brand)] text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl italic font-headline hover:brightness-110 active:scale-95 transition-all">Initialize First Wave</button>
               </div>
             ) : (
-              <div className="divide-y divide-gray-100 dark:divide-gray-800/80">
-                <div className="grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-gray-400 bg-gray-50 dark:bg-gray-900/20">
-                  <div className="col-span-4">Campaign Details</div>
-                  <div className="col-span-3">Target Audience (AI)</div>
-                  <div className="col-span-2 text-right">Sent</div>
-                  <div className="col-span-3 text-right">Performance Metrics</div>
+              <div className="divide-y divide-[var(--border-subtle)] relative z-10">
+                <div className="grid grid-cols-12 gap-8 px-10 py-6 text-[9px] font-black uppercase tracking-[0.25em] text-[var(--text-muted)] bg-[var(--surface)]/30">
+                  <div className="col-span-5">Protocol Matrix</div>
+                  <div className="col-span-3">Neural Target Sector</div>
+                  <div className="col-span-1 text-right">Dispatch</div>
+                  <div className="col-span-3 text-right">Yield Metrics</div>
                 </div>
                 {campaigns.map((camp, idx) => (
-                  <div key={idx} className="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors group">
-                    <div className="col-span-4">
-                      <p className="font-bold text-sm text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{camp.name}</p>
-                      <p className="text-xs text-gray-500 truncate">{camp.subject}</p>
-                      <p className="text-[10px] text-gray-400 mt-1 font-mono flex items-center gap-2">
-                        <span>{new Date(camp.created_at).toLocaleDateString()}</span>
-                        <span className={`px-1.5 py-0.5 rounded font-black uppercase tracking-widest ${camp.send_mode === 'smtp' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'}`}>
+                  <div key={idx} className="grid grid-cols-12 gap-8 px-10 py-8 items-center hover:bg-[var(--brand)]/[0.02] transition-all group cursor-pointer" onClick={() => navigate(`/campaigns/${camp.id}`)}>
+                    <div className="col-span-5 space-y-2">
+                      <div className="flex items-center gap-3">
+                        <p className="font-headline font-black italic text-lg tracking-tighter text-[var(--text-main)] group-hover:text-[var(--brand)] transition-colors uppercase leading-tight">{camp.name}</p>
+                        <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border ${camp.send_mode === 'smtp' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-amber-500/10 border-amber-500/20 text-amber-500'}`}>
                           {camp.send_mode === 'smtp' ? 'LIVE' : 'SIM'}
                         </span>
+                      </div>
+                      <p className="text-[11px] font-medium text-[var(--text-muted)] truncate opacity-60 italic">“{camp.subject}”</p>
+                      <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] mt-3">
+                        {new Date(camp.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                       </p>
                     </div>
                     <div className="col-span-3">
-                      <div className="flex flex-col gap-1.5 items-start">
-                        {camp.target_industry ? <span className="text-[10px] font-bold px-2 py-0.5 rounded border bg-purple-50 border-purple-200 text-purple-700 dark:bg-purple-900/20 dark:border-purple-800/50 dark:text-purple-400 truncate max-w-full">IND: {camp.target_industry}</span> : null}
-                        {camp.target_seniority ? <span className="text-[10px] font-bold px-2 py-0.5 rounded border bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/20 dark:border-blue-800/50 dark:text-blue-400 truncate max-w-full">LVL: {camp.target_seniority}</span> : null}
+                      <div className="flex flex-col gap-2 items-start">
+                        {camp.target_industry ? <div className="px-3 py-1.5 rounded-xl border bg-purple-500/10 border-purple-500/20 text-purple-500 text-[9px] font-black uppercase tracking-widest w-fit">Sector: {camp.target_industry}</div> : null}
+                        {camp.target_seniority ? <div className="px-3 py-1.5 rounded-xl border bg-[var(--brand)]/10 border-[var(--brand)]/20 text-[var(--brand)] text-[9px] font-black uppercase tracking-widest w-fit">Rank: {camp.target_seniority}</div> : null}
                       </div>
                     </div>
-                    <div className="col-span-2 text-right">
-                      <p className="text-lg font-black text-gray-900 dark:text-white">{Number(camp.delivered_count ?? camp.sent_count ?? 0)}</p>
-                      <p className="text-[10px] text-gray-400 uppercase tracking-widest">Delivered</p>
-                      {Number(camp.failed_count || 0) > 0 ? (
-                        <p className="text-[10px] text-red-500 font-bold mt-1">{camp.failed_count} failed</p>
-                      ) : null}
+                    <div className="col-span-1 text-right">
+                      <p className="text-2xl font-headline font-black italic tracking-tighter text-[var(--text-main)]">{Number(camp.delivered_count ?? camp.sent_count ?? 0)}</p>
+                      <p className="text-[8px] font-black uppercase tracking-widest text-[var(--text-muted)] mt-1 opacity-60">Nodes</p>
                     </div>
-                    <div className="col-span-3 flex flex-col justify-center items-end gap-2">
-                      <div className="w-full max-w-[120px]">
-                        <div className="flex justify-between text-[10px] font-bold mb-1">
-                          <span className="text-gray-500">Open Rate</span>
-                          <span className={`${camp.open_rate > 40 ? 'text-emerald-500' : 'text-gray-700 dark:text-gray-300'}`}>{camp.open_rate}%</span>
+                    <div className="col-span-3 space-y-5">
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-end">
+                          <span className="text-[8px] font-black uppercase tracking-widest text-[var(--text-muted)]">Open Yield</span>
+                          <span className={`text-[12px] font-headline font-black italic tracking-tighter ${camp.open_rate > 40 ? 'text-emerald-500' : 'text-[var(--text-main)]'}`}>{camp.open_rate}%</span>
                         </div>
-                        <div className="w-full bg-gray-100 dark:bg-gray-800 h-1.5 rounded-full overflow-hidden">
-                          <div className={`h-full rounded-full ${camp.open_rate > 40 ? 'bg-emerald-500' : 'bg-indigo-500'}`} style={{ width: `${camp.open_rate}%` }}></div>
+                        <div className="w-full bg-[var(--surface)] h-1.5 rounded-full overflow-hidden border border-[var(--border-subtle)] shadow-inner">
+                          <div className={`h-full rounded-full transition-all duration-1000 ${camp.open_rate > 40 ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'bg-[var(--brand)]'}`} style={{ width: `${camp.open_rate}%` }}></div>
                         </div>
                       </div>
-                      <div className="w-full max-w-[120px]">
-                        <div className="flex justify-between text-[10px] font-bold mb-1">
-                          <span className="text-gray-500">Clicks</span>
-                          <span className="text-gray-700 dark:text-gray-300">{camp.click_rate}%</span>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-end">
+                          <span className="text-[8px] font-black uppercase tracking-widest text-[var(--text-muted)]">Interaction Index</span>
+                          <span className="text-[12px] font-headline font-black italic tracking-tighter text-[var(--text-main)]">{camp.click_rate}%</span>
                         </div>
-                        <div className="w-full bg-gray-100 dark:bg-gray-800 h-1.5 rounded-full overflow-hidden">
-                          <div className="bg-amber-500 h-full rounded-full" style={{ width: `${camp.click_rate}%` }}></div>
+                        <div className="w-full bg-[var(--surface)] h-1.5 rounded-full overflow-hidden border border-[var(--border-subtle)] shadow-inner">
+                          <div className="bg-amber-500 h-full rounded-full opacity-60 shadow-[0_0_12px_rgba(245,158,11,0.3)]" style={{ width: `${camp.click_rate}%` }}></div>
                         </div>
                       </div>
                     </div>

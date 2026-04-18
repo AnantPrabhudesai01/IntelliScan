@@ -2,48 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Odoo/Zoho Enterprise Theme Variables ── */
+/* ── Digital Atelier Premium Theme ── */
 :root {
-  --brand: #714B67;
-  --brand-light: #875A7B;
-  --brand-dark: #5B3D54;
-  --sidebar-bg: #21132E;
-  --sidebar-hover: #2D1B3D;
-  --sidebar-active: #3A2450;
-  --sidebar-border: #3D2650;
-  --sidebar-text: #BBA8C8;
-  --accent: #1890FF;
+  --brand: #6366f1;
+  --brand-light: #818cf8;
+  --brand-dark: #4f46e5;
   
-  /* Warm Creamy Light Mode */
-  --surface: #FAF8F5;
-  --surface-card: #FFFDF9;
-  --border-subtle: #E8E2D9;
-  --text-main: #2D2518;
-  --text-muted: #6B5E4F;
-  --shadow-vibrant: 0 10px 15px -3px rgba(45, 37, 24, 0.08), 0 4px 6px -2px rgba(45, 37, 24, 0.04);
-  --glass-bg: rgba(255, 253, 249, 0.75);
-  --glass-border: rgba(232, 226, 217, 0.5);
+  /* Midnight Sidebar (Unified across modes for professional contrast) */
+  --sidebar-bg: #0C0C0E;
+  --sidebar-hover: #16171D;
+  --sidebar-active: #1F1F28;
+  --sidebar-border: #1F1F28;
+  --sidebar-text: #8E8EA0;
+  --accent: #6366f1;
+  
+  /* Warm Professional Light Mode */
+  --surface: #F9F9F8;
+  --surface-card: #FFFFFF;
+  --border-subtle: #EDEEF0;
+  --border-strong: #E2E4E9;
+  --text-main: #121212;
+  --text-muted: #646464;
+  --shadow-vibrant: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.05);
 }
 
 .dark {
-  --surface: #050508;
-  --surface-card: #0F1018;
-  --border-subtle: #1F1F2E;
-  --text-main: #F7FAFC;
-  --text-muted: #A0AEC0;
-  --shadow-vibrant: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --glass-bg: rgba(15, 15, 25, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --surface: #080809;
+  --surface-card: #111113;
+  --border-subtle: #1C1C1F;
+  --border-strong: #242429;
+  --text-main: #FFFFFF;
+  --text-muted: #8E8EA0;
+  --shadow-vibrant: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(17, 17, 19, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.06);
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&display=swap');
 
 @layer base {
   body {
-    @apply bg-[var(--surface)] text-[var(--text-main)] antialiased transition-colors duration-500;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    @apply bg-[var(--surface)] text-[var(--text-main)] antialiased transition-colors duration-500 selection:bg-[var(--brand)] selection:text-white;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6, .font-headline {
+    font-family: 'Outfit', sans-serif;
+    @apply tracking-tight;
   }
 }
 
 @layer utilities {
+  .border-hairline {
+    border-width: 0.5px;
+  }
   .animate-fade-in {
     animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -54,7 +68,7 @@
     animation: flashEffect 0.2s ease-out;
   }
   .glass-card {
-    @apply backdrop-blur-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] shadow-[var(--shadow-vibrant)];
+    @apply backdrop-blur-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] shadow-sm;
   }
   .premium-grain {
     position: relative;
@@ -63,9 +77,10 @@
     content: "";
     position: absolute;
     inset: 0;
-    opacity: 0.03;
+    opacity: 0.02;
     pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    z-index: 10;
   }
 }
 

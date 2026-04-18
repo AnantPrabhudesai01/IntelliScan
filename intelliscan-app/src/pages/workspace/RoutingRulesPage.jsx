@@ -130,159 +130,182 @@ export default function RoutingRulesPage() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto space-y-6 p-8 animate-pulse">
-        <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded-lg w-1/3"></div>
-        <div className="h-4 bg-gray-100 dark:bg-gray-800/50 rounded w-2/3"></div>
-        {[1,2,3].map(i => <div key={i} className="h-24 bg-gray-100 dark:bg-[#161c28] rounded-2xl border border-gray-200 dark:border-gray-800"></div>)}
+      <div className="max-w-5xl mx-auto space-y-10 py-12 animate-pulse">
+        <div className="flex flex-col gap-6">
+          <div className="h-12 bg-[var(--surface-card)] rounded-2xl w-1/3 border border-[var(--border-subtle)]"></div>
+          <div className="h-4 bg-[var(--surface-card)] rounded-full w-2/3 border border-[var(--border-subtle)]"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[1, 2, 3].map(i => <div key={i} className="h-32 bg-[var(--surface-card)] rounded-[2.5rem] border border-[var(--border-subtle)]"></div>)}
+        </div>
+        <div className="h-96 bg-[var(--surface-card)] rounded-[2.5rem] border border-[var(--border-subtle)]"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-12">
+    <div className="max-w-5xl mx-auto space-y-10 animate-fade-in pb-20">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white flex items-center gap-3 tracking-tight">
-            <GitBranch className="text-indigo-600 dark:text-indigo-400" size={24} />
-            Lead Routing Engine
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 max-w-lg">
-            Build intelligent "If/Then" automation rules. Contacts are routed automatically when they match your configured conditions using AI-extracted data fields.
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+             <div className="p-3 bg-[var(--brand)]/10 rounded-2xl border border-[var(--brand)]/20 shadow-inner">
+               <GitBranch size={24} className="text-[var(--brand)]" />
+             </div>
+             <div>
+               <h1 className="text-4xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase leading-tight">Automation <br/>Logic Hub</h1>
+               <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">Atomic Lead Routing Protocol</p>
+             </div>
+          </div>
+          <p className="text-[11px] text-[var(--text-muted)] font-medium leading-relaxed max-w-xl">
+             Construct intelligent “If/Then” infrastructure. Data vectors are automatically routed to targets when conditions align with AI-extracted neural profiles.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <button
             onClick={handleRunRules}
             disabled={rules.length === 0 || isRunning}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 active:scale-95 transition-all disabled:opacity-50"
+            className="flex items-center gap-3 px-6 py-3 border border-[var(--border-subtle)] bg-[var(--surface-card)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-main)] hover:border-[var(--brand)]/30 hover:text-[var(--brand)] transition-all disabled:opacity-50"
           >
-            {isRunning ? <><Zap size={16} className="animate-spin" /> Running...</> : <><Zap size={16} /> Run Rules</>}
+            {isRunning ? <><Zap size={14} className="animate-spin" /> Engaged</> : <><Zap size={14} /> Run Protocol</>}
           </button>
+          
           <button
             onClick={handleSave}
             disabled={rules.length === 0}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm ${
+            className={`flex items-center gap-4 px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl transition-all italic font-headline ${
               isSaved
-                ? 'bg-emerald-600 text-white'
-                : 'bg-indigo-600 hover:bg-indigo-700 text-white disabled:bg-gray-300 dark:disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed'
+                ? 'bg-emerald-500 text-white shadow-emerald-500/20'
+                : 'bg-[var(--brand)] hover:brightness-110 text-white shadow-[var(--brand)]/20 active:scale-95 disabled:bg-[var(--border-subtle)] disabled:text-[var(--text-muted)]'
             }`}
           >
-            {isSaved ? <><Check size={16} /> Saved!</> : <><Save size={16} /> Save Rules</>}
+            {isSaved ? <><Check size={16} /> Matrix Commited</> : <><Save size={16} /> Deploy Matrix</>}
           </button>
         </div>
       </div>
 
       {/* Live Stats Strip */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm">
-          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Leads Routed</p>
-          <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats.total_routed.toLocaleString()}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] p-8 shadow-xl premium-grain flex flex-col gap-2">
+          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em]">Vectors Routed</p>
+          <p className="text-4xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase">{stats.total_routed.toLocaleString()}</p>
         </div>
-        <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm">
-          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Auto-Tagged</p>
-          <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats.auto_tagged.toLocaleString()}</p>
+        <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] p-8 shadow-xl premium-grain flex flex-col gap-2">
+          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em]">Atomic Tags</p>
+          <p className="text-4xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase">{stats.auto_tagged.toLocaleString()}</p>
         </div>
-        <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm">
-          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Flagged Priority</p>
-          <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{stats.flagged.toLocaleString()}</p>
+        <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] p-8 shadow-xl premium-grain flex flex-col gap-2">
+          <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em]">Flagged Nodes</p>
+          <p className="text-4xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase">{stats.flagged.toLocaleString()}</p>
         </div>
       </div>
 
       {/* Active Rules */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {rules.map((rule, idx) => {
           const ActionIcon = ACTION_TYPES.find(a => a.value === rule.action)?.icon || User;
           return (
             <div
               key={rule.id}
-              className={`bg-white dark:bg-[#161c28] border rounded-2xl p-5 shadow-sm transition-all ${
+              className={`bg-[var(--surface-card)] border rounded-[2.5rem] p-10 shadow-2xl transition-all relative overflow-hidden premium-grain ${
                 rule.is_active
-                  ? 'border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700'
-                  : 'border-dashed border-gray-300 dark:border-gray-700 opacity-50'
+                  ? 'border-[var(--border-subtle)] hover:border-[var(--brand)]/30'
+                  : 'border-dashed border-[var(--border-subtle)] opacity-40 grayscale'
               }`}
             >
               {/* Rule Number & Toggle */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center font-bold text-sm text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/50">
+              <div className="flex items-center justify-between mb-10 border-b border-[var(--border-subtle)] pb-8">
+                <div className="flex items-center gap-6">
+                  <div className="w-12 h-12 rounded-[1.25rem] bg-[var(--surface)] flex items-center justify-center font-headline font-black italic text-xl text-[var(--brand)] border border-[var(--border-subtle)] shadow-inner">
                     {idx + 1}
                   </div>
-                  <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Rule #{idx + 1}</span>
-                  <select
-                    value={rule.priority}
-                    onChange={e => updateRule(rule.id, 'priority', e.target.value)}
-                    className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border outline-none cursor-pointer ${PRIORITY_COLORS[rule.priority]}`}
-                  >
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                  </select>
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em]">Protocol Block</span>
+                    <div className="flex items-center gap-4">
+                      <select
+                        value={rule.priority}
+                        onChange={e => updateRule(rule.id, 'priority', e.target.value)}
+                        className={`text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-current outline-none cursor-pointer bg-white/5 ${
+                          rule.priority === 'high' ? 'text-red-500' :
+                          rule.priority === 'medium' ? 'text-amber-500' : 'text-emerald-500'
+                        }`}
+                      >
+                        <option value="high">High Velocity</option>
+                        <option value="medium">Medium Load</option>
+                        <option value="low">Low Priority</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-6">
                   <button
                     onClick={() => toggleRule(rule.id)}
-                    className={`relative w-10 h-5 rounded-full transition-colors ${rule.is_active ? 'bg-indigo-600' : 'bg-gray-300 dark:bg-gray-700'}`}
+                    className={`relative w-14 h-7 rounded-full transition-all border-2 border-[var(--border-subtle)] ${rule.is_active ? 'bg-[var(--brand)] border-[var(--brand)]' : 'bg-[var(--surface)]'}`}
                   >
-                    <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${rule.is_active ? 'left-5' : 'left-0.5'}`} />
+                    <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-lg transition-transform ${rule.is_active ? 'translate-x-[28px]' : 'translate-x-[2px]'}`} />
                   </button>
-                  <button onClick={() => deleteRule(rule.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
-                    <Trash2 size={16} />
+                  <button onClick={() => deleteRule(rule.id)} className="w-10 h-10 flex items-center justify-center text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all">
+                    <Trash2 size={18} />
                   </button>
                 </div>
               </div>
 
               {/* Condition → Action Flow */}
-              <div className="flex flex-col lg:flex-row items-start lg:items-center gap-3">
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] items-center gap-8">
                 {/* IF Block */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 px-3 py-1.5 rounded-lg uppercase tracking-widest">IF</span>
+                <div className="flex items-center gap-4 flex-wrap bg-[var(--surface)] p-6 rounded-[1.5rem] border border-[var(--border-subtle)] shadow-inner">
+                  <div className="px-3 py-1.5 bg-[var(--brand)]/10 border border-[var(--brand)]/20 rounded-lg text-xs font-black italic font-headline text-[var(--brand)] uppercase tracking-widest">IF</div>
+                  
                   <select
                     value={rule.condition_field}
                     onChange={e => updateRule(rule.id, 'condition_field', e.target.value)}
-                    className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/40"
+                    className="bg-[var(--surface-card)] border border-[var(--border-subtle)] text-[var(--text-main)] text-[11px] font-black uppercase tracking-widest rounded-xl px-4 py-3 outline-none focus:ring-4 focus:ring-[var(--brand)]/10 transition-all appearance-none cursor-pointer"
                   >
                     {CONDITION_FIELDS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                   </select>
+
                   <select
                     value={rule.condition_op}
                     onChange={e => updateRule(rule.id, 'condition_op', e.target.value)}
-                    className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500/40"
+                    className="bg-[var(--surface-card)] border border-[var(--border-subtle)] text-[var(--text-main)] text-[11px] font-black uppercase tracking-widest rounded-xl px-4 py-3 outline-none focus:ring-4 focus:ring-[var(--brand)]/10 transition-all appearance-none cursor-pointer"
                   >
                     {CONDITION_OPS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                   </select>
+
                   <input
                     type="text"
                     value={rule.condition_val}
                     onChange={e => updateRule(rule.id, 'condition_val', e.target.value)}
-                    placeholder="e.g. Real Estate"
-                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-lg px-3 py-2 outline-none w-36 focus:ring-2 focus:ring-indigo-500/40 placeholder:text-gray-400"
+                    placeholder="Vector Value..."
+                    className="flex-1 min-w-[140px] bg-[var(--surface-card)] border border-[var(--border-subtle)] text-[var(--text-main)] text-[11px] font-medium rounded-xl px-5 py-3 outline-none focus:ring-4 focus:ring-[var(--brand)]/10 placeholder:opacity-20 shadow-inner"
                   />
                 </div>
 
                 {/* Arrow */}
-                <div className="hidden lg:flex items-center px-2">
-                  <ArrowRight size={20} className="text-indigo-400" />
+                <div className="flex justify-center lg:rotate-0 rotate-90 opacity-20">
+                  <ArrowRight size={32} strokeWidth={1} />
                 </div>
 
                 {/* THEN Block */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 px-3 py-1.5 rounded-lg uppercase tracking-widest">THEN</span>
+                <div className="flex items-center gap-4 flex-wrap bg-[var(--surface)] p-6 rounded-[1.5rem] border border-[var(--border-subtle)] shadow-inner">
+                  <div className="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs font-black italic font-headline text-emerald-500 uppercase tracking-widest">THEN</div>
+                  
                   <select
                     value={rule.action}
                     onChange={e => updateRule(rule.id, 'action', e.target.value)}
-                    className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800/50 text-emerald-900 dark:text-emerald-200 text-sm rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500/40"
+                    className="bg-[var(--surface-card)] border border-[var(--border-subtle)] text-[var(--text-main)] text-[11px] font-black uppercase tracking-widest rounded-xl px-4 py-3 outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all appearance-none cursor-pointer"
                   >
                     {ACTION_TYPES.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
                   </select>
-                  <div className="relative">
-                    <ActionIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+                  <div className="relative flex-1 min-w-[180px]">
+                    <ActionIcon size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500 opacity-40" />
                     <input
                       type="text"
                       value={rule.target}
                       onChange={e => updateRule(rule.id, 'target', e.target.value)}
-                      placeholder={rule.action === 'tag_as' ? 'e.g. VIP' : rule.action === 'assign_to' ? 'e.g. Sarah Jenkins' : 'e.g. slack-channel'}
-                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-lg pl-9 pr-3 py-2 outline-none w-44 focus:ring-2 focus:ring-emerald-500/40 placeholder:text-gray-400"
+                      placeholder={rule.action === 'tag_as' ? 'e.g. VIP Cluster' : rule.action === 'assign_to' ? 'e.g. Agent Alpha' : 'Routing Target...'}
+                      className="w-full bg-[var(--surface-card)] border border-[var(--border-subtle)] text-[var(--text-main)] text-[11px] font-medium rounded-xl pl-12 pr-5 py-3 outline-none focus:ring-4 focus:ring-emerald-500/10 placeholder:opacity-20 shadow-inner"
                     />
                   </div>
                 </div>
@@ -295,52 +318,67 @@ export default function RoutingRulesPage() {
       {/* Add Rule Button */}
       <button
         onClick={addRule}
-        className="flex items-center justify-center gap-2 w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 text-indigo-600 dark:text-indigo-400 font-bold rounded-2xl transition-all group"
+        className="flex items-center justify-center gap-6 w-full py-8 border-2 border-dashed border-[var(--border-subtle)] hover:border-[var(--brand)] hover:bg-[var(--brand)]/5 text-[var(--text-muted)] hover:text-[var(--brand)] font-black text-[12px] uppercase tracking-[0.4em] rounded-[2.5rem] transition-all group italic font-headline mb-10"
       >
-        <Plus size={20} className="group-hover:rotate-90 transition-transform" /> Add New Rule
+        <div className="w-10 h-10 rounded-full bg-[var(--surface)] border border-[var(--border-subtle)] flex items-center justify-center group-hover:scale-110 group-hover:bg-[var(--brand)] group-hover:text-white transition-all">
+          <Plus size={20} className="group-hover:rotate-90 transition-transform" />
+        </div>
+        Extend Logic Matrix
       </button>
 
       {/* Info Banner */}
-      <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200/50 dark:border-indigo-800/30 rounded-2xl p-6 flex items-start gap-4">
-        <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center shrink-0">
-          <Sparkles size={20} className="text-indigo-600 dark:text-indigo-400" />
+      <div className="bg-[var(--brand)]/[0.03] border border-[var(--brand)]/20 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center gap-10 premium-grain">
+        <div className="w-20 h-20 rounded-[2rem] bg-[var(--brand)]/10 border border-[var(--brand)]/20 flex items-center justify-center shrink-0">
+          <Sparkles size={32} className="text-[var(--brand)]" strokeWidth={1.5} />
         </div>
-        <div>
-          <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">AI-Powered Routing</h3>
-          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-            Rules can use <strong>Industry (AI)</strong> and <strong>Seniority (AI)</strong> fields — these are automatically inferred by IntelliScan's Gemini engine during every card scan. No manual data entry required.
+        <div className="space-y-3 text-center md:text-left">
+          <h3 className="text-xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase">Gemini Neural Routing</h3>
+          <p className="text-[11px] text-[var(--text-muted)] font-medium leading-relaxed max-w-2xl">
+            Rules leverage <strong>Industry (AI)</strong> and <strong>Seniority (AI)</strong> neural vectors — automatically synthesized by IntelliScan’s Gemini engine during card ingestion. Atomic precision achieved without manual keying.
           </p>
         </div>
       </div>
 
       {/* Run Results Panel */}
       {runResult && (
-        <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-5">
-            <Check size={20} className="text-emerald-500" />
-            <h3 className="font-bold text-gray-900 dark:text-white">Rules Execution Results</h3>
-            <span className="text-xs bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-bold">Completed</span>
+        <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] p-10 shadow-2xl premium-grain mt-10">
+          <div className="flex items-center justify-between mb-8 border-b border-[var(--border-subtle)] pb-8">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                <Check size={20} />
+              </div>
+              <h3 className="text-xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase">Execution Report</h3>
+            </div>
+            <div className="px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[9px] font-black uppercase tracking-widest rounded-full">
+               Protocol Finalized
+            </div>
           </div>
-          <div className="grid grid-cols-3 gap-4 mb-6">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
             {[
-              { label: 'Contacts Matched', value: runResult.stats?.total_routed || 0, color: 'text-indigo-600 dark:text-indigo-400' },
-              { label: 'Auto-Tagged', value: runResult.stats?.auto_tagged || 0, color: 'text-emerald-600 dark:text-emerald-400' },
-              { label: 'Flagged Priority', value: runResult.stats?.flagged || 0, color: 'text-amber-600 dark:text-amber-400' },
+              { label: 'Matricies Matched', value: runResult.stats?.total_routed || 0, color: 'text-[var(--brand)]' },
+              { label: 'Atomic Tags', value: runResult.stats?.auto_tagged || 0, color: 'text-emerald-500' },
+              { label: 'Priority Alerts', value: runResult.stats?.flagged || 0, color: 'text-amber-500' },
             ].map(stat => (
-              <div key={stat.label} className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4">
-                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1">{stat.label}</p>
-                <p className={`text-2xl font-extrabold ${stat.color}`}>{stat.value}</p>
+              <div key={stat.label} className="bg-[var(--surface)] border border-[var(--border-subtle)] rounded-2xl p-6 shadow-inner space-y-2">
+                <p className="text-[8px] font-black text-[var(--text-muted)] uppercase tracking-widest">{stat.label}</p>
+                <p className={`text-3xl font-headline font-black italic tracking-tighter ${stat.color}`}>{stat.value}</p>
               </div>
             ))}
           </div>
+
           {(runResult.match_log || []).length > 0 && (
-            <div>
-              <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Match Log (last 20)</p>
-              <div className="space-y-1.5 max-h-48 overflow-y-auto">
+            <div className="space-y-4">
+              <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em] ml-2">Transmission Log (Recent)</p>
+              <div className="space-y-2 max-h-64 overflow-y-auto pr-4 custom-scrollbar">
                 {runResult.match_log.map((m, i) => (
-                  <div key={i} className="flex items-center justify-between py-1.5 px-3 bg-gray-50 dark:bg-gray-900 rounded-lg text-xs">
-                    <span className="font-semibold text-gray-800 dark:text-gray-200">{m.contact_name}</span>
-                    <span className="text-gray-500">{m.rule_action.replace('_', ' ')}: <strong className="text-indigo-600 dark:text-indigo-400">{m.rule_target}</strong></span>
+                  <div key={i} className="flex items-center justify-between py-4 px-6 bg-[var(--surface)] hover:bg-[var(--brand)]/[0.03] border border-[var(--border-subtle)] rounded-xl group transition-all">
+                    <span className="text-[12px] font-bold text-[var(--text-main)]">{m.contact_name}</span>
+                    <div className="flex items-center gap-4">
+                       <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">{m.rule_action.replace('_', ' ')}</span>
+                       <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand)] opacity-20 group-hover:opacity-100 transition-opacity" />
+                       <strong className="text-[11px] font-black uppercase tracking-widest text-[var(--brand)]">{m.rule_target}</strong>
+                    </div>
                   </div>
                 ))}
               </div>

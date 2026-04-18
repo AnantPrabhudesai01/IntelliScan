@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Check, CheckCircle2, Zap, Crown, Building2, RefreshCw, ArrowUpRight, Shield, Star, X, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
-import { getStoredToken, setStoredAuth } from '../utils/auth';
+import { getStoredToken } from '../utils/auth';
+import apiClient from '../api/client';
 
 // Frontend definitions for icons and local mapping only
 const PLAN_ICONS = {
@@ -18,61 +19,62 @@ function PlanCard({ plan, currentTier, onUpgrade, loading }) {
   const tierWeights = { personal: 0, pro: 1, enterprise: 2 };
   const isDowngrade = tierWeights[plan.id] < tierWeights[currentTier];
   
-  const colorMap = { gray: 'border-white/10 bg-white/5', indigo: 'border-indigo-500/30 bg-indigo-500/5', amber: 'border-amber-500/30 bg-amber-500/5' };
-  const badgeMap = { Scale: 'bg-amber-500 text-white', Advanced: 'bg-indigo-600 text-white', Starter: 'bg-gray-700 text-gray-300' };
+  const isPro = plan.id === 'pro';
   
   const features = Array.isArray(plan.features) ? plan.features : [];
   const negatives = Array.isArray(plan.negatives) ? plan.negatives : [];
 
   return (
-    <div className={`relative rounded-[32px] border-2 ${colorMap[plan.color || 'gray']} p-8 flex flex-col shadow-2xl transition-all duration-300 hover:scale-[1.02] ${plan.id === 'pro' ? 'border-indigo-500 shadow-indigo-500/10' : ''}`}>
+    <div className={`relative rounded-[32px] border-hairline p-8 flex flex-col transition-all duration-500 hover:shadow-2xl 
+      ${isPro 
+        ? 'border-[var(--brand)] bg-[var(--brand)]/5 shadow-[var(--brand)]/5' 
+        : 'border-[var(--border-subtle)] bg-[var(--surface-card)]'}`}>
+      
       {plan.badge && (
-        <span className={`absolute -top-3 left-8 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${badgeMap[plan.badge] || 'bg-indigo-600 text-white'}`}>
+        <span className={`absolute -top-3 left-8 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm 
+          ${isPro ? 'bg-[var(--brand)] text-white' : 'bg-[var(--text-main)] text-[var(--surface)]'}`}>
           {plan.badge}
         </span>
       )}
-      <div className="flex items-center gap-3 mb-6 pt-2">
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${cfg.bg}`}>
-          <IconComp size={24} className={cfg.color} />
+
+      <div className="flex items-center gap-4 mb-8 pt-2">
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-[var(--brand)]/10`}>
+          <IconComp size={24} className="text-[var(--brand)]" />
         </div>
-        <h3 className="font-headline font-black italic text-2xl text-white uppercase tracking-tighter">{plan.name}</h3>
+        <h3 className="font-headline font-black italic text-2xl text-[var(--text-main)] uppercase tracking-tighter">{plan.name}</h3>
       </div>
-      <div className="mb-6">
+
+      <div className="mb-8">
         {plan.price === 0 ? (
-          <p className="text-4xl font-black text-white italic tracking-tighter">Free</p>
+          <p className="text-4xl font-headline font-black text-[var(--text-main)] italic tracking-tighter">Selection</p>
         ) : (
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-bold text-gray-500">₹</span>
-            <span className="text-5xl font-black text-white italic tracking-tighter">{plan.price.toLocaleString()}</span>
-            <span className="text-gray-500 font-black text-xs uppercase ml-1">/ month</span>
+            <span className="text-xl font-bold text-[var(--text-muted)]">₹</span>
+            <span className="text-5xl font-headline font-black text-[var(--text-main)] italic tracking-tighter">{plan.price.toLocaleString()}</span>
+            <span className="text-[var(--text-muted)] font-black text-[10px] uppercase ml-2">/ cycle</span>
           </div>
         )}
       </div>
+
       <ul className="space-y-4 mb-10 flex-1">
         {features.map(f => (
-          <li key={f} className="flex items-start gap-3 text-sm font-bold text-gray-300">
-            <CheckCircle2 size={18} className={`shrink-0 ${plan.color === 'indigo' ? 'text-indigo-500' : plan.color === 'amber' ? 'text-amber-500' : 'text-emerald-500'}`} />
+          <li key={f} className="flex items-start gap-3 text-sm font-semibold text-[var(--text-muted)] group">
+            <CheckCircle2 size={18} className="shrink-0 text-[var(--brand)] transition-transform group-hover:scale-110" />
             {f}
           </li>
         ))}
-        {negatives.map(l => (
-          <li key={l} className="flex items-start gap-3 text-sm font-medium text-gray-500">
-            <X size={18} className="shrink-0 text-gray-600" />
-            {l}
-          </li>
-        ))}
       </ul>
+
       {isCurrentPlan ? (
-        <div className="py-4 rounded-2xl bg-white/5 border border-white/10 text-center text-xs font-black uppercase tracking-widest text-indigo-400">Current Active Tier</div>
-      ) : isDowngrade ? (
-        <button onClick={() => onUpgrade(plan.id)} className="py-4 rounded-2xl border border-white/5 hover:bg-white/5 transition-colors text-center text-xs font-black uppercase text-gray-400">Switch to {plan.name}</button>
+        <div className="py-4 rounded-2xl bg-[var(--surface)] border-hairline border-[var(--border-strong)] text-center text-[10px] font-black uppercase tracking-widest text-[var(--brand)]">Current Active Tier</div>
       ) : (
         <button onClick={() => onUpgrade(plan.id)} disabled={loading}
-          className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 ${
-            plan.color === 'amber' ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xl shadow-amber-500/20'
-            : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-500/20'
-          } disabled:opacity-60`}>
-          {loading ? <RefreshCw size={16} className="animate-spin" /> : <><Sparkles size={16} /> Upgrade to {plan.name}</>}
+          className={`w-full py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg 
+            ${isPro 
+              ? 'bg-[var(--brand)] hover:brightness-110 text-white shadow-[var(--brand)]/20' 
+              : 'bg-[var(--text-main)] text-[var(--surface)] hover:opacity-90 shadow-black/10'
+            } disabled:opacity-60`}>
+          {loading ? <RefreshCw size={16} className="animate-spin" /> : <><Sparkles size={16} /> {isDowngrade ? `Switch to ${plan.name}` : `Upgrade to ${plan.name}`}</>}
         </button>
       )}
     </div>
@@ -99,24 +101,32 @@ export default function BillingPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const headers = { Authorization: `Bearer ${token}` };
         const [plansRes, quotaRes, overviewRes, methodsRes, invoicesRes] = await Promise.all([
-          fetch('/api/billing/plans'),
-          fetch('/api/user/quota', { headers }),
-          fetch('/api/workspace/billing/overview', { headers }),
-          fetch('/api/workspace/billing/payment-methods', { headers }),
-          fetch('/api/workspace/billing/invoices', { headers })
+          apiClient.get('/billing/plans'),
+          apiClient.get('/user/quota'),
+          apiClient.get('/workspace/billing/overview'),
+          apiClient.get('/workspace/billing/payment-methods'),
+          apiClient.get('/workspace/billing/invoices')
         ]);
-        if (plansRes.ok) setPlans((await plansRes.json()).plans || []);
-        if (quotaRes.ok) {
-          const qData = await quotaRes.json();
+        
+        if (plansRes.data?.plans) setPlans(plansRes.data.plans);
+        if (quotaRes.data) {
+          const qData = quotaRes.data;
           setQuota(qData);
           setCurrentTier(qData.tier || 'personal');
         }
-        if (overviewRes.ok) setWorkspaceBilling(await overviewRes.json());
-        if (methodsRes.ok) setPaymentMethods((await methodsRes.json()).methods || []);
-        if (invoicesRes.ok) setInvoices((await invoicesRes.json()).invoices || []);
-      } catch (e) { console.error('Billing load failed:', e); }
+        if (overviewRes.data) setWorkspaceBilling(overviewRes.data);
+        if (methodsRes.data?.methods) setPaymentMethods(methodsRes.data.methods);
+        if (invoicesRes.data?.invoices) setInvoices(invoicesRes.data.invoices);
+      } catch (e) { 
+        console.error('Billing load failed:', e);
+        // Fallback for plans if they are empty
+        setPlans([
+          { id: 'personal', name: 'Personal', price: 0, badge: 'Starter', features: ['100 Scan Credits / month', 'Gemini Flash OCR Engine'] },
+          { id: 'pro', name: 'Pro', price: 49, badge: 'Advanced', features: ['5,000 Scan Credits / month', 'Gemini Pro Vision Engine'] },
+          { id: 'enterprise', name: 'Enterprise', price: 1999, badge: 'Scale', features: ['Unlimited Scan Credits', 'Custom AI Training'] }
+        ]);
+      }
       setLoading(false);
     };
     load();
@@ -128,10 +138,8 @@ export default function BillingPage() {
 
   const refreshPaymentMethods = async () => {
     try {
-      const liveToken = getStoredToken();
-      const res = await fetch('/api/workspace/billing/payment-methods', { headers: { Authorization: `Bearer ${liveToken}` } });
-      const payload = await res.json();
-      if (!res.ok) throw new Error(payload?.error || `Failed with status ${res.status}`);
+      const res = await apiClient.get('/workspace/billing/payment-methods');
+      const payload = res.data;
       setPaymentMethods(payload.methods || []);
     } catch (err) {
       setMessage({ text: `Error: ${err.message}`, type: 'error' });
@@ -140,10 +148,8 @@ export default function BillingPage() {
 
   const refreshInvoices = async () => {
     try {
-      const liveToken = getStoredToken();
-      const res = await fetch('/api/workspace/billing/invoices', { headers: { Authorization: `Bearer ${liveToken}` } });
-      const payload = await res.json();
-      if (!res.ok) throw new Error(payload?.error || `Failed with status ${res.status}`);
+      const res = await apiClient.get('/workspace/billing/invoices');
+      const payload = res.data;
       setInvoices(payload.invoices || []);
     } catch (err) {
       setMessage({ text: `Error: ${err.message}`, type: 'error' });
@@ -182,11 +188,8 @@ export default function BillingPage() {
   const downloadExportCsv = async () => {
     try {
       const liveToken = getStoredToken();
-      const res = await fetch('/api/workspace/billing/invoices/export', {
-        headers: { Authorization: `Bearer ${liveToken}` }
-      });
-      const text = await res.text();
-      if (!res.ok) throw new Error(text || `Failed with status ${res.status}`);
+      const res = await apiClient.get('/workspace/billing/invoices/export');
+      const text = res.data;
 
       const blob = new Blob([text], { type: 'text/csv;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -205,11 +208,8 @@ export default function BillingPage() {
   const downloadReceipt = async (invoiceId, invoiceNumber) => {
     try {
       const liveToken = getStoredToken();
-      const res = await fetch(`/api/workspace/billing/invoices/${invoiceId}/receipt`, {
-        headers: { Authorization: `Bearer ${liveToken}` }
-      });
-      const text = await res.text();
-      if (!res.ok) throw new Error(text || `Failed with status ${res.status}`);
+      const res = await apiClient.get(`/workspace/billing/invoices/${invoiceId}/receipt`);
+      const text = res.data;
 
       const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);

@@ -556,18 +556,18 @@ export default function SettingsPage() {
       {/* AI Modal */}
       {showAIModal && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#161c28] w-full max-w-md rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-2xl animate-scale-up">
+          <div className="bg-[var(--surface-card)] w-full max-w-md rounded-2xl p-8 border border-[var(--border-subtle)] shadow-2xl animate-scale-up">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-3">
-                <Sparkles className="text-indigo-600" size={24} />
-                <h3 className="text-xl font-bold font-headline dark:text-white">AI {aiType === 'logo' ? 'Logo' : 'Avatar'} Creator</h3>
+                <Sparkles className="text-[var(--brand)]" size={24} />
+                <h3 className="text-xl font-bold font-headline text-[var(--text-main)]">AI {aiType === 'logo' ? 'Logo' : 'Avatar'} Creator</h3>
               </div>
-              <button onClick={() => setShowAIModal(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+              <button onClick={() => setShowAIModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-main)]"><X size={20} /></button>
             </div>
-            <p className="text-sm text-gray-500 mb-6 font-body">Enter a prompt and our AI will generate a unique {aiType} for you.</p>
+            <p className="text-sm text-[var(--text-muted)] mb-6 font-body">Enter a prompt and our AI will generate a unique {aiType} for you.</p>
             <div className="space-y-4">
               <textarea 
-                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white resize-none"
+                className="w-full bg-[var(--surface)] border border-[var(--border-subtle)] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[var(--brand)] outline-none transition-all text-[var(--text-main)] resize-none"
                 rows={3}
                 placeholder="e.g. A futuristic blue tech minimalist avatar..."
                 value={aiPrompt}
@@ -576,7 +576,7 @@ export default function SettingsPage() {
               <button 
                 disabled={isGenerating || !aiPrompt}
                 onClick={handleGenerateAI}
-                className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-3 bg-[var(--brand)] text-white font-bold rounded-xl hover:brightness-110 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isGenerating ? <RefreshCw className="animate-spin" size={18} /> : <Sparkles size={18} />}
                 {isGenerating ? 'Generating...' : 'Generate with AI'}
@@ -589,20 +589,20 @@ export default function SettingsPage() {
       {/* Library Modal */}
       {showLibraryModal && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#161c28] w-full max-w-2xl rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-2xl animate-scale-up">
+          <div className="bg-[var(--surface-card)] w-full max-w-2xl rounded-2xl p-8 border border-[var(--border-subtle)] shadow-2xl animate-scale-up">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold font-headline dark:text-white">Select from Library</h3>
-              <button onClick={() => setShowLibraryModal(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+              <h3 className="text-xl font-bold font-headline text-[var(--text-main)]">Select from Library</h3>
+              <button onClick={() => setShowLibraryModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-main)]"><X size={20} /></button>
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
               {avatarLibrary.map(item => (
                 <button 
                   key={item.id}
                   onClick={() => selectFromLibrary(item.url)}
-                  className="group relative aspect-square rounded-xl overflow-hidden border-2 border-transparent hover:border-indigo-600 transition-all"
+                  className="group relative aspect-square rounded-xl overflow-hidden border-2 border-transparent hover:border-[var(--brand)] transition-all"
                 >
                   <img src={item.url} alt="avatar" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-indigo-600/20 opacity-0 group-hover:opacity-100 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-[var(--brand)]/20 opacity-0 group-hover:opacity-100 flex items-center justify-center">
                     <Check className="text-white" size={24} />
                   </div>
                 </button>
@@ -615,10 +615,10 @@ export default function SettingsPage() {
       {/* Email OTP Modal */}
       {showEmailModal && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#161c28] w-full max-w-md rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-2xl animate-scale-up">
+          <div className="bg-[var(--surface-card)] w-full max-w-md rounded-2xl p-8 border border-[var(--border-subtle)] shadow-2xl animate-scale-up">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold font-headline dark:text-white">Update Email Address</h3>
-              <button onClick={() => setShowEmailModal(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+              <h3 className="text-xl font-bold font-headline text-[var(--text-main)]">Update Email Address</h3>
+              <button onClick={() => setShowEmailModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-main)]"><X size={20} /></button>
             </div>
             
             {!otpSent ? (
@@ -731,15 +731,15 @@ export default function SettingsPage() {
 
       <header className="mb-0">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-indigo-600 rounded-2xl text-white shadow-lg shadow-indigo-500/20">
+          <div className="p-2.5 bg-[var(--brand)] rounded-2xl text-white shadow-lg shadow-[var(--brand)]/20">
             <Settings2 size={24} />
           </div>
-          <h1 className="text-4xl font-black tracking-tighter text-gray-900 dark:text-white font-headline uppercase italic">Account Settings</h1>
+          <h1 className="text-4xl font-black tracking-tighter text-[var(--text-main)] font-headline uppercase italic">Account Settings</h1>
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium ml-14 mt-1">Configure your personal scanning workspace and enterprise identity.</p>
+        <p className="text-sm text-[var(--text-muted)] font-medium ml-14 mt-1">Configure your personal scanning workspace and enterprise identity.</p>
       </header>
       
-      <div className="flex items-center gap-2 p-1 bg-gray-100 dark:bg-white/5 rounded-2xl w-fit border border-gray-200 dark:border-white/10">
+      <div className="flex items-center gap-2 p-1 bg-[var(--surface-card)] rounded-2xl w-fit border border-[var(--border-subtle)] shadow-sm">
         {[
           { id: 'Personal Info', icon: User, allowed: ['free', 'pro', 'enterprise'] },
           { id: 'Security', icon: Lock, allowed: ['free', 'pro', 'enterprise'] },
@@ -764,9 +764,9 @@ export default function SettingsPage() {
         {activeTab === 'Personal Info' && (
           <>
             {/* Profile Picture Section */}
-            <section className="col-span-12 md:col-span-5 lg:col-span-4 bg-white dark:bg-[#161c28] rounded-xl p-8 flex flex-col items-center justify-center text-center border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in relative overflow-hidden">
+            <section className="col-span-12 md:col-span-5 lg:col-span-4 bg-[var(--surface-card)] rounded-2xl p-8 flex flex-col items-center justify-center text-center border border-[var(--border-subtle)] shadow-sm animate-fade-in relative overflow-hidden premium-grain">
                {/* Background Glow */}
-               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-50"></div>
+               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--brand)] via-purple-500 to-[var(--brand)] opacity-50"></div>
               
               <div className="relative group">
                 <div className="w-32 h-32 rounded-full overflow-hidden mb-6 ring-4 ring-indigo-100 dark:ring-indigo-900/30 group-hover:ring-indigo-200 dark:group-hover:ring-indigo-800/50 transition-all flex items-center justify-center bg-gray-100 dark:bg-gray-800">
@@ -801,75 +801,75 @@ export default function SettingsPage() {
                 
                 {(profile.tier === 'pro' || profile.tier === 'enterprise') && (
                   <>
-                    <button onClick={() => { setAiType('avatar'); setShowAIModal(true); }} className="w-full py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-sm font-bold rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-all border border-indigo-100 dark:border-indigo-900/40 flex items-center justify-center gap-2">
+                    <button onClick={() => { setAiType('avatar'); setShowAIModal(true); }} className="w-full py-2.5 bg-[var(--brand)]/10 text-[var(--brand)] text-sm font-bold rounded-xl hover:bg-[var(--brand)]/20 transition-all border border-[var(--brand)]/20 flex items-center justify-center gap-2">
                       <Sparkles size={14} /> AI Avatar Generator
                     </button>
                     {profile.tier === 'pro' && (
-                      <button onClick={() => { setAiType('logo'); setShowAIModal(true); }} className="w-full py-2.5 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-sm font-bold rounded-xl hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-all border border-amber-100 dark:border-amber-900/40 flex items-center justify-center gap-2">
+                      <button onClick={() => { setAiType('logo'); setShowAIModal(true); }} className="w-full py-2.5 bg-amber-500/10 text-amber-500 text-sm font-bold rounded-xl hover:bg-amber-500/20 transition-all border border-amber-500/20 flex items-center justify-center gap-2">
                         <Sparkles size={14} /> AI Logo Generator
                       </button>
                     )}
                   </>
                 )}
                 
-                <button onClick={fetchLibrary} className="w-full py-2.5 text-gray-600 dark:text-gray-300 text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-all flex items-center justify-center gap-2">
+                <button onClick={fetchLibrary} className="w-full py-2.5 text-[var(--text-muted)] text-sm font-bold hover:bg-[var(--surface)] rounded-xl transition-all flex items-center justify-center gap-2">
                   <Blocks size={14} /> Browse Avatar Library
                 </button>
               </div>
 
               {profile.tier === 'enterprise' && (
-                <div className="mt-6 p-3 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-xl">
-                  <div className="flex items-center gap-2 text-red-600 dark:text-red-400 mb-1">
+                <div className="mt-6 p-4 bg-red-500/5 border border-red-500/20 rounded-xl">
+                  <div className="flex items-center gap-2 text-red-500 mb-2">
                     <Shield size={14} />
-                    <span className="text-[10px] font-black uppercase tracking-tighter">Enterprise Formal Policy</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Enterprise Formal Policy</span>
                   </div>
-                  <p className="text-[10px] text-red-700 dark:text-red-300 leading-tight">Photos must follow company identity guidelines. Changes are audited.</p>
+                  <p className="text-[10px] text-red-500/70 leading-relaxed font-medium">Photos must follow company identity guidelines. Changes are audited.</p>
                 </div>
               )}
             </section>
 
             {/* Personal Info Form */}
-            <section className="col-span-12 md:col-span-7 lg:col-span-8 bg-white dark:bg-[#161c28] rounded-xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in relative">
+            <section className="col-span-12 md:col-span-7 lg:col-span-8 bg-[var(--surface-card)] rounded-2xl p-8 border border-[var(--border-subtle)] shadow-sm animate-fade-in relative overflow-hidden">
                {/* Background Pattern */}
-               <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+               <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none text-[var(--text-main)]">
                 <Settings2 size={120} />
               </div>
               
-              <h3 className="text-lg font-headline font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                <User size={20} className="text-indigo-600" /> Personal Details
+              <h3 className="text-lg font-headline font-black italic tracking-tighter uppercase text-[var(--text-main)] mb-6 flex items-center gap-2">
+                <User size={20} className="text-[var(--brand)]" /> Personal Details
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Full Name</label>
-                  <input className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all" type="text" value={profile.name} onChange={(e) => setProfile(prev => ({ ...prev, name: e.target.value }))}/>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] font-label">Full Name</label>
+                  <input className="w-full bg-[var(--surface)] border border-[var(--border-subtle)] rounded-xl px-4 py-3 text-[var(--text-main)] focus:ring-2 focus:ring-[var(--brand)]/30 outline-none transition-all font-medium" type="text" value={profile.name} onChange={(e) => setProfile(prev => ({ ...prev, name: e.target.value }))}/>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Account Identification</label>
-                  <input className="w-full bg-gray-100 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-500 dark:text-gray-500 cursor-not-allowed" type="text" disabled value={profile.tier === 'enterprise' ? 'Enterprise Managed Node' : 'Personal Independent Node'} />
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] font-label">Account Identification</label>
+                  <input className="w-full bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-xl px-4 py-3 text-[var(--text-muted)] italic font-black text-xs uppercase cursor-not-allowed" type="text" disabled value={profile.tier === 'enterprise' ? 'Enterprise Managed Node' : 'Personal Independent Node'} />
                 </div>
                 
                 {profile.tier === 'enterprise' && (
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Workspace Affiliation</label>
-                    <input className="w-full bg-gray-100 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-500 dark:text-gray-500 cursor-not-allowed" type="text" disabled value="IntelliScan Demo Workspace" />
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] font-label">Workspace Affiliation</label>
+                    <input className="w-full bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-xl px-4 py-3 text-[var(--text-muted)] italic font-black text-xs uppercase cursor-not-allowed" type="text" disabled value="IntelliScan Demo Workspace" />
                   </div>
                 )}
                 
                 <div className="space-y-2 md:col-span-2">
                   <div className="flex justify-between items-end">
-                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Email Address</label>
-                    <button onClick={() => setShowEmailModal(true)} className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 hover:underline">Request Change via OTP</button>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] font-label">Email Address</label>
+                    <button onClick={() => setShowEmailModal(true)} className="text-[10px] font-black uppercase text-[var(--brand)] hover:underline tracking-widest">Request Change via OTP</button>
                   </div>
-                  <input className="w-full bg-gray-100 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-500 dark:text-gray-500 cursor-not-allowed" type="email" disabled value={profile.email}/>
+                  <input className="w-full bg-[var(--surface-card)] border border-[var(--border-strong)] rounded-xl px-4 py-3 text-[var(--text-muted)] font-bold cursor-not-allowed" type="email" disabled value={profile.email}/>
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label flex items-center gap-2">
+                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] font-label flex items-center gap-2">
                        Registered Phone (for OTP)
                        {profile.phone_number && phoneStatus === 'LOCKED' && (
-                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest animate-fade-in shadow-inner">
+                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-black text-emerald-500 uppercase tracking-widest animate-fade-in">
                            <Check size={10} className="stroke-[4px]" /> Verified
                          </span>
                        )}
@@ -879,131 +879,45 @@ export default function SettingsPage() {
                           <button 
                             onClick={requestUnlockOTP} 
                             disabled={otpLoading}
-                            className="text-[10px] font-black uppercase text-indigo-600 hover:text-indigo-700 bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm border border-indigo-100 dark:border-indigo-800"
+                            className="text-[9px] font-black uppercase tracking-widest text-[var(--brand)] hover:text-white hover:bg-[var(--brand)] bg-[var(--brand)]/10 px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all shadow-sm border border-[var(--brand)]/20"
                           >
-                            <Shield size={12}/> Change factor via OTP
-                          </button>
-                        )}
-                        {phoneStatus === 'EDIT' && localPhone && (countryCode + localPhone) !== originalPhone && (
-                          <button onClick={requestPhoneOTP} disabled={otpLoading} className="text-[10px] font-black uppercase text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded flex items-center gap-1 transition-colors shadow-md">
-                            <Shield size={12}/> Verify New Number
+                            <Shield size={12}/> Security Unlock
                           </button>
                         )}
                      </div>
                    </div>
 
-                   {phoneStatus === 'EDIT' && (
-                     <div className="mt-2 mb-4 p-4 bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100/50 dark:border-indigo-900/20 rounded-2xl animate-fade-in">
-                       <div className="flex items-start gap-3">
-                         <div className="p-2 bg-indigo-600 rounded-lg text-white mt-0.5">
-                           <Smartphone size={16} />
-                         </div>
-                         <div className="flex-1">
-                           <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-100 flex items-center gap-2">
-                             WhatsApp Connect (Discovery Mode)
-                           </h4>
-                           <p className="text-[11px] text-indigo-700/80 dark:text-indigo-300/60 mb-3 font-medium leading-relaxed">
-                             <strong>Step 1:</strong> Click "Join Sandbox" and send the pre-filled message.<br/>
-                             <strong>Step 2:</strong> After Twilio replies "You are all set", send your Session Code.
-                           </p>
-                           <div className="flex flex-wrap items-center gap-2">
-                               <a 
-                                 href={`https://wa.me/14155238886?text=join%20baseball-eventually`} 
-                                 target="_blank"
-                                 rel="noopener noreferrer"
-                                 onClick={startPhoneDiscovery}
-                                 className={`inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg hover:shadow-emerald-600/20 transition-all ${isPollingDiscovery ? 'animate-pulse ring-4 ring-emerald-500/20' : ''}`}
-                               >
-                                 {isPollingDiscovery ? <RefreshCw className="animate-spin" size={14} /> : <MessageSquare size={14} />}
-                                 {isPollingDiscovery ? 'Syncing Heartbeat...' : '1. Join Sandbox'}
-                               </a>
-                              {discoveryCode && (
-                                <div className="px-3 py-2 bg-white dark:bg-gray-800 border border-indigo-100 dark:border-indigo-900 rounded-xl flex items-center gap-2">
-                                   <span className="text-[10px] text-gray-400 uppercase font-black tracking-widest">2. Send Code:</span>
-                                   <span className="text-sm font-mono font-bold text-indigo-600 dark:text-indigo-400 select-all">{discoveryCode}</span>
-                                </div>
-                              )}
-                           </div>
-                         </div>
-                       </div>
-                     </div>
-                   )}
-
-                   {phoneStatus === 'UNLOCKING' && (
-                      <div className="mt-2 mb-4 p-5 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-2xl animate-fade-in shadow-inner">
-                         <div className="flex items-start gap-4">
-                            <div className="p-2 bg-amber-100 dark:bg-amber-900/40 rounded-xl text-amber-600 mt-1">
-                               <RefreshCw className="animate-spin" size={20} />
-                            </div>
-                            <div className="flex-1">
-                               <h4 className="text-sm font-bold text-amber-900 dark:text-amber-100 mb-1">Waiting for Unlock Code...</h4>
-                               <p className="text-[11px] text-amber-700/80 dark:text-amber-300/60 leading-relaxed mb-4">
-                                 Your security OTP was sent to <strong>{profile.phone_number}</strong> via WhatsApp.
-                               </p>
-                               <div className="flex flex-wrap items-center gap-3">
-                                  <a 
-                                    href={`https://wa.me/14155238886?text=join%20baseball-eventually`} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center gap-2"
-                                  >
-                                    <MessageSquare size={12} /> Re-link WhatsApp Instance
-                                  </a>
-                                  <button 
-                                    onClick={() => setShowPhoneModal(true)}
-                                    className="bg-white dark:bg-gray-800 text-amber-900 dark:text-amber-100 border border-amber-200 dark:border-amber-800 px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-amber-50 dark:hover:bg-amber-900/30 transition-all active:scale-95"
-                                  >
-                                    2. Enter Code Manually
-                                  </button>
-                                  <button 
-                                    onClick={() => setPhoneStatus('LOCKED')}
-                                    className="text-[10px] text-amber-600 hover:underline px-2"
-                                  >
-                                    Cancel
-                                  </button>
-                               </div>
-                            </div>
-                         </div>
-                      </div>
-                   )}
-
-                   <div className="flex gap-2 relative">
+                   <div className="flex gap-2 relative mt-2">
                       <select 
                         disabled={phoneStatus === 'LOCKED' || phoneStatus === 'UNLOCKING'}
-                        className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all min-w-[100px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-[var(--surface)] border border-[var(--border-subtle)] rounded-xl px-2 py-3 text-sm text-[var(--text-main)] focus:ring-2 focus:ring-[var(--brand)]/40 outline-none transition-all min-w-[100px] cursor-pointer disabled:opacity-50"
                         value={countryCode}
                         onChange={(e) => setCountryCode(e.target.value)}
                       >
                         <option value="+91">🇮🇳 +91</option>
                         <option value="+1">🇺🇸 +1</option>
                         <option value="+44">🇬🇧 +44</option>
-                        <option value="+61">🇦🇺 +61</option>
-                        <option value="+971">🇦🇪 +971</option>
                       </select>
                       <div className="relative flex-1">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[var(--text-muted)]">
                           <Smartphone size={18} />
                         </div>
                         <input 
                           disabled={phoneStatus === 'LOCKED' || phoneStatus === 'UNLOCKING'}
-                          className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pl-12 pr-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all disabled:text-gray-400 disabled:bg-gray-100 dark:disabled:bg-gray-900/50" 
+                          className="w-full bg-[var(--surface)] border border-[var(--border-subtle)] rounded-xl pl-12 pr-4 py-3 text-[var(--text-main)] focus:ring-2 focus:ring-[var(--brand)]/40 outline-none transition-all disabled:text-[var(--text-muted)] disabled:bg-[var(--surface-card)]" 
                           type="tel" 
                           value={localPhone} 
                           placeholder="e.g. 8160551448" 
-                          onChange={(e) => {
-                            const local = e.target.value.replace(/\D/g, ''); 
-                            setLocalPhone(local);
-                          }}
                         />
                       </div>
                    </div>
-                   <p className="text-[10px] text-gray-400 mt-1 font-medium">Verified WhatsApp device is strictly locked for identity protection.</p>
+                   <p className="text-[10px] text-[var(--text-muted)] mt-1 font-bold uppercase tracking-tight">Verified device is strictly locked for identity protection.</p>
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Bio (Optional)</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] font-label">Bio (Optional)</label>
                   <textarea 
-                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all resize-none font-body" 
+                    className="w-full bg-[var(--surface)] border border-[var(--border-subtle)] rounded-xl px-4 py-3 text-[var(--text-main)] focus:ring-2 focus:ring-[var(--brand)]/40 outline-none transition-all resize-none font-medium text-sm" 
                     rows={3} 
                     placeholder="Tell the network about yourself..."
                     value={profile.bio || ''}
@@ -1012,19 +926,14 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="mt-8 flex flex-col items-end gap-3">
-                {(countryCode + localPhone) !== originalPhone && (
-                  <p className="text-[10px] text-red-500 font-black uppercase tracking-widest animate-pulse flex items-center gap-1">
-                    <Shield size={10} /> Verification Required: Please verify your new number above
-                  </p>
-                )}
                 <button 
                   onClick={handleSaveChanges}
                   disabled={(countryCode + localPhone) !== originalPhone}
-                  className={`px-8 py-3 font-bold rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-2 
-                    ${(countryCode + localPhone) !== originalPhone ? 'bg-gray-400 cursor-not-allowed text-white/50' : 
-                      savedProfile ? 'bg-green-600 text-white' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                  className={`px-12 py-4 font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl shadow-xl transition-all active:scale-95 flex items-center gap-2 
+                    ${(countryCode + localPhone) !== originalPhone ? 'bg-[var(--surface)] text-[var(--text-muted)] cursor-not-allowed' : 
+                      savedProfile ? 'bg-emerald-500 text-white' : 'bg-[var(--brand)] text-white hover:brightness-110'}`}
                 >
-                  {savedProfile ? <><Check size={16} /> Saved!</> : 'Update Profile'}
+                  {savedProfile ? <><Check size={16} /> Saved!</> : 'Update Architecture'}
                 </button>
               </div>
             </section>
@@ -1035,112 +944,119 @@ export default function SettingsPage() {
         {activeTab === 'Security' && (
           <>
             {/* Security / Password Section */}
-            <section className="col-span-12 lg:col-span-6 bg-white dark:bg-[#161c28] rounded-xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in">
-              <div className="flex items-center gap-3 mb-6">
-                <Lock className="text-indigo-600 dark:text-indigo-400" size={24} />
-                <h3 className="text-lg font-headline font-bold text-gray-900 dark:text-white">Authentication & Security</h3>
+            <section className="col-span-12 lg:col-span-6 bg-[var(--surface-card)] rounded-2xl p-8 border border-[var(--border-subtle)] shadow-sm animate-fade-in premium-grain">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2.5 bg-[var(--brand)]/10 rounded-xl text-[var(--brand)]">
+                  <Lock size={20} />
+                </div>
+                <h3 className="text-xl font-headline font-black italic tracking-tighter uppercase text-[var(--text-main)]">Vault & Authentication</h3>
               </div>
               <div className="space-y-6">
-                <div className="p-6 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-start justify-between mb-4">
+                <div className="p-6 bg-[var(--surface)] rounded-2xl border border-[var(--border-subtle)] relative overflow-hidden">
+                  <div className="flex items-start justify-between mb-4 relative z-10">
                     <div>
-                      <h4 className="font-headline font-bold text-gray-900 dark:text-white mb-1">Two-Factor Authentication</h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-body">Add an extra layer of security to your account.</p>
+                      <h4 className="font-headline font-black italic tracking-tight text-[var(--text-main)] mb-1 uppercase text-sm">Two-Factor Authentication</h4>
+                      <p className="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest">Double-layer identity verification.</p>
                     </div>
                     <div className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" className="sr-only peer" defaultChecked />
-                      <div className="w-11 h-6 bg-gray-300 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                      <div className="w-11 h-6 bg-[var(--border-strong)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--brand)]"></div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 py-2 px-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg w-fit border border-emerald-200 dark:border-emerald-800/40">
-                    <Shield className="text-emerald-700 dark:text-emerald-400" size={16} />
-                    <p className="text-[11px] text-emerald-800 dark:text-emerald-300 font-bold tracking-tight uppercase">Active via Authenticator</p>
+                  <div className="flex items-center gap-3 py-2 px-4 bg-emerald-500/10 rounded-xl w-fit border border-emerald-500/20 relative z-10">
+                    <Shield className="text-emerald-500" size={14} />
+                    <p className="text-[10px] text-emerald-500 font-black tracking-widest uppercase">Encryption Active</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Current Password</label>
-                    <input className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all cursor-not-allowed" disabled placeholder="••••••••••••" type="password"/>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] font-label">Current Master Key</label>
+                    <input className="w-full bg-[var(--surface-card)] border border-[var(--border-strong)] rounded-xl px-4 py-3 text-[var(--text-muted)] focus:ring-2 focus:ring-[var(--brand)]/40 outline-none transition-all cursor-not-allowed font-medium" disabled placeholder="••••••••••••" type="password"/>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">New Password</label>
-                      <input className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all" type="password"/>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] font-label">New Master Key</label>
+                      <input className="w-full bg-[var(--surface)] border border-[var(--border-subtle)] rounded-xl px-4 py-3 text-[var(--text-main)] focus:ring-2 focus:ring-[var(--brand)]/40 outline-none transition-all font-medium" type="password"/>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 font-label">Confirm Password</label>
-                      <input className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/40 outline-none transition-all" type="password"/>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] font-label">Confirm Key</label>
+                      <input className="w-full bg-[var(--surface)] border border-[var(--border-subtle)] rounded-xl px-4 py-3 text-[var(--text-main)] focus:ring-2 focus:ring-[var(--brand)]/40 outline-none transition-all font-medium" type="password"/>
                     </div>
                   </div>
                 </div>
-                <button className="w-full py-3 bg-gray-100 dark:bg-gray-800/50 text-gray-900 dark:text-white font-bold rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all shadow-sm">Update Security Credentials</button>
+                <button className="w-full py-4 bg-[var(--text-main)] text-[var(--surface)] font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl hover:opacity-90 transition-all shadow-xl">Update Security Architecture</button>
               </div>
             </section>
 
             {/* Session Management / Active Devices Section */}
-            <section className="col-span-12 lg:col-span-6 bg-white dark:bg-[#161c28] rounded-xl p-8 flex flex-col border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in overflow-hidden">
+            <section className="col-span-12 lg:col-span-6 bg-[var(--surface-card)] rounded-2xl p-8 flex flex-col border border-[var(--border-subtle)] shadow-sm animate-fade-in relative overflow-hidden">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                  <Monitor className="text-indigo-600 dark:text-indigo-400" size={24} />
-                  <h3 className="text-lg font-headline font-bold text-gray-900 dark:text-white">Device Sessions</h3>
+                  <div className="p-2.5 bg-[var(--brand)]/10 rounded-xl text-[var(--brand)]">
+                    <Monitor size={20} />
+                  </div>
+                  <h3 className="text-xl font-headline font-black italic tracking-tighter uppercase text-[var(--text-main)]">Active Infrastructure</h3>
                 </div>
-                <button onClick={fetchSessions} className="p-2 text-gray-400 hover:text-indigo-600 transition-colors">
-                  <RefreshCw size={16} className={isLoadingSessions ? "animate-spin" : ""} />
+                <button onClick={fetchSessions} className="p-2 text-[var(--text-muted)] hover:text-[var(--brand)] transition-colors">
+                  <RefreshCw size={18} className={isLoadingSessions ? "animate-spin" : ""} />
                 </button>
               </div>
               
               <div className="flex-1 space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                 {/* Current Session */}
                 {currentSession && (
-                  <div className="flex items-start gap-4 p-4 rounded-xl border border-indigo-200 dark:border-indigo-800/40 bg-indigo-50/50 dark:bg-indigo-900/10">
-                    <div className="mt-1 p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-lg text-indigo-600 dark:text-indigo-400">
-                      {currentSession.device_info?.includes('iPhone') || currentSession.device_info?.includes('Android') ? <Smartphone size={20} /> : currentSession.device_info?.includes('iPad') ? <Tablet size={20} /> : <Monitor size={20} />}
+                  <div className="flex items-start gap-4 p-5 rounded-2xl border-hairline border-[var(--brand)]/30 bg-[var(--brand)]/5 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.05] group-hover:opacity-10 transition-opacity">
+                      <Zap size={60} />
+                    </div>
+                    <div className="mt-1 p-2 bg-[var(--brand)] rounded-lg text-white shadow-lg shadow-[var(--brand)]/20">
+                      {currentSession.device_info?.includes('iPhone') || currentSession.device_info?.includes('Android') ? <Smartphone size={18} /> : currentSession.device_info?.includes('iPad') ? <Tablet size={18} /> : <Monitor size={18} />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-0.5">
-                        <p className="font-headline font-bold text-gray-900 dark:text-white truncate">{formatDeviceInfo(currentSession.device_info)}</p>
-                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded block whitespace-nowrap">This Device</span>
+                      <div className="flex justify-between items-start mb-1">
+                        <p className="font-headline font-black italic tracking-tight text-[var(--text-main)] truncate uppercase text-sm">{formatDeviceInfo(currentSession.device_info)}</p>
+                        <span className="text-[10px] uppercase font-black px-2 py-0.5 bg-[var(--brand)] text-white rounded-md block whitespace-nowrap shadow-sm">Active Instance</span>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-body mb-2">{currentSession.location} • {currentSession.ip_address}</p>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">Active Now</p>
+                      <p className="text-[11px] text-[var(--text-muted)] font-medium mb-2">{currentSession.location} • {currentSession.ip_address}</p>
+                      <p className="text-[9px] text-[var(--brand)] font-black uppercase tracking-widest">Master Session • Zero Latency</p>
                     </div>
                   </div>
                 )}
 
                 {/* Other Sessions */}
                 {otherSessions.map(session => (
-                  <div key={session.id} className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-100 dark:border-gray-800/60 transition-colors group">
-                    <div className="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-500 dark:text-gray-400">
-                      {session.device_info.includes('iPhone') || session.device_info.includes('Android') ? <Smartphone size={20} /> : session.device_info.includes('iPad') ? <Tablet size={20} /> : <Monitor size={20} />}
+                  <div key={session.id} className="flex items-start gap-4 p-5 rounded-2xl border border-[var(--border-subtle)] hover:border-[var(--brand)]/30 hover:bg-[var(--surface)] transition-all group">
+                    <div className="mt-1 p-2 bg-[var(--surface)] border border-[var(--border-subtle)] rounded-lg text-[var(--text-muted)] group-hover:text-[var(--brand)] transition-colors">
+                      {session.device_info.includes('iPhone') || session.device_info.includes('Android') ? <Smartphone size={18} /> : session.device_info.includes('iPad') ? <Tablet size={18} /> : <Monitor size={18} />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-0.5">
-                        <p className="font-headline font-bold text-gray-900 dark:text-white truncate">{formatDeviceInfo(session.device_info)}</p>
-                        <button onClick={() => handleRevokeSession(session.id)} className="text-[10px] font-bold text-gray-400 hover:text-red-500 flex items-center gap-1 uppercase tracking-widest transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
-                          <Trash2 size={12} /> Revoke
+                      <div className="flex justify-between items-start mb-1">
+                        <p className="font-headline font-black italic tracking-tight text-[var(--text-main)] truncate uppercase text-sm">{formatDeviceInfo(session.device_info)}</p>
+                        <button onClick={() => handleRevokeSession(session.id)} className="text-[9px] font-black text-[var(--text-muted)] hover:text-red-500 flex items-center gap-1 uppercase tracking-widest transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 bg-[var(--surface)] px-2 py-1 rounded-md border border-[var(--border-subtle)] shadow-sm">
+                          <Trash2 size={12} /> Terminate
                         </button>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-body mb-2">{session.location} • {session.ip_address}</p>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">Last Active: {new Date(session.last_active).toLocaleString()}</p>
+                      <p className="text-[11px] text-[var(--text-muted)] font-medium mb-2">{session.location} • {session.ip_address}</p>
+                      <p className="text-[9px] text-[var(--text-muted)] font-black uppercase tracking-widest">Last Synced: {new Date(session.last_active).toLocaleString()}</p>
                     </div>
                   </div>
                 ))}
 
-                {isLoadingSessions && <div className="text-center py-4 text-xs font-bold text-gray-400 uppercase tracking-widest animate-pulse">Loading devices...</div>}
+                {isLoadingSessions && <div className="text-center py-8 text-[9px] font-black text-[var(--brand)] uppercase tracking-[0.3em] animate-pulse">Syncing Global Matrix...</div>}
                 
                 {!isLoadingSessions && sessions.length === 0 && (
-                  <div className="text-center py-4 text-xs font-bold text-gray-500 uppercase tracking-widest">No active sessions found. Log in again.</div>
+                  <div className="text-center py-8 text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest">No foreign nodes detected.</div>
                 )}
               </div>
               
-              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800">
+              <div className="mt-6 pt-6 border-t border-[var(--border-subtle)]">
                 <button 
                   onClick={handleRevokeAllOtherSessions}
                   disabled={otherSessions.length === 0}
-                  className="w-full flex items-center justify-center gap-2 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-widest hover:bg-red-50 dark:hover:bg-red-900/10 py-3 rounded-xl transition-all disabled:opacity-50 disabled:hover:bg-transparent"
+                  className="w-full flex items-center justify-center gap-2 text-red-500 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-red-500/5 py-4 rounded-2xl transition-all disabled:opacity-30 border-hairline border-red-500/20"
                 >
-                  <LogOut size={16} /> Log out of all other sessions
+                  <LogOut size={16} /> Purge All Foreign Sessions
                 </button>
               </div>
             </section>
@@ -1149,161 +1065,141 @@ export default function SettingsPage() {
 
         {/* Notifications and Integrations */}
         {activeTab === 'Integrations' && (
-          <section className="col-span-12 bg-white dark:bg-[#161c28] rounded-xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in">
+          <section className="col-span-12 bg-[var(--surface-card)] rounded-2xl p-8 border border-[var(--border-subtle)] shadow-sm animate-fade-in premium-grain">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
-                <Blocks className="text-indigo-600 dark:text-indigo-400" size={24} />
-                <h3 className="text-lg font-headline font-bold text-gray-900 dark:text-white">Connected Services</h3>
+                <div className="p-2.5 bg-[var(--brand)]/10 rounded-xl text-[var(--brand)]">
+                  <Blocks size={20} />
+                </div>
+                <h3 className="text-xl font-headline font-black italic tracking-tighter uppercase text-[var(--text-main)]">Connected Intelligence</h3>
               </div>
               <button onClick={() => navigate('/marketplace')}
-                className="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-2">
-                Browse Marketplace <ExternalLink size={13} />
+                className="px-6 py-3 bg-[var(--brand)] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:brightness-110 transition-all flex items-center gap-2 shadow-lg shadow-[var(--brand)]/20">
+                Browse Ecosystem <ExternalLink size={13} />
               </button>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800">
-                <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm mb-4 border border-gray-100 dark:border-gray-700">
-                  <Cloud size={24} className="text-[#00a1e0]" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white mb-0.5">Salesforce</p>
-                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Auto-sync active</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { name: 'Salesforce', icon: Cloud, color: '#00a1e0', status: 'Auto-sync active', pulse: true },
+                { name: 'HubSpot', icon: Globe, color: '#ff5a5f', status: 'Auth required', pulse: false, warning: true },
+                { name: 'Slack', icon: MessageSquare, color: '#4a154b', status: 'Active', pulse: true }
+              ].map(service => (
+                <div key={service.name} className="bg-[var(--surface)] p-6 rounded-2xl border border-[var(--border-subtle)] hover:border-[var(--brand)]/30 transition-all group">
+                  <div className="w-12 h-12 rounded-xl bg-[var(--surface-card)] flex items-center justify-center shadow-sm mb-6 border border-[var(--border-subtle)] group-hover:scale-110 transition-transform">
+                    <service.icon size={24} style={{ color: service.color }} />
                   </div>
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                </div>
-              </div>
-              
-              <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800">
-                <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm mb-4 border border-gray-100 dark:border-gray-700">
-                  <Globe size={24} className="text-[#ff5a5f]" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white mb-0.5">HubSpot</p>
-                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Auth required</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-black italic tracking-tight text-[var(--text-main)] mb-1 uppercase font-headline">{service.name}</p>
+                      <p className="text-[9px] text-[var(--text-muted)] uppercase font-black tracking-widest">{service.status}</p>
+                    </div>
+                    <div className={`w-2 h-2 rounded-full ${service.warning ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'} ${service.pulse ? 'animate-pulse' : ''}`}></div>
                   </div>
-                  <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"></div>
                 </div>
-              </div>
-              
-              <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800">
-                <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm mb-4 border border-gray-100 dark:border-gray-700">
-                  <MessageSquare size={24} className="text-[#4a154b]" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white mb-0.5">Slack</p>
-                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Active</p>
-                  </div>
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                </div>
-              </div>
+              ))}
               
               <div onClick={() => navigate('/marketplace')}
-                className="bg-gray-50 dark:bg-gray-900/40 p-6 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors cursor-pointer group flex flex-col items-center justify-center text-center min-h-[140px]">
-                <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/30 transition-colors mb-3">
-                  <Plus size={20} className="text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" />
+                className="bg-[var(--surface)]/50 p-6 rounded-2xl border-hairline border-dashed border-[var(--border-strong)] hover:border-[var(--brand)]/50 transition-all cursor-pointer group flex flex-col items-center justify-center text-center min-h-[140px]">
+                <div className="w-10 h-10 rounded-full bg-[var(--surface-card)] flex items-center justify-center group-hover:bg-[var(--brand)] group-hover:text-white transition-all mb-4 border border-[var(--border-subtle)]">
+                  <Plus size={18} />
                 </div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Add Service</p>
-                <p className="text-[10px] text-gray-400 mt-1">Browse Marketplace →</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] group-hover:text-[var(--brand)]">Extend Ecosystem</p>
+                <p className="text-[9px] text-[var(--text-muted)] mt-1 font-bold">Browse Marketplace →</p>
               </div>
             </div>
           </section>
         )}
 
         {activeTab === 'Communications' && (
-          <section className="col-span-12 bg-white dark:bg-[#111111] rounded-[2rem] p-8 md:p-12 border border-gray-200 dark:border-white/5 shadow-2xl animate-fade-in relative overflow-hidden">
+          <section className="col-span-12 bg-[var(--surface-card)] rounded-[2.5rem] p-8 md:p-14 border border-[var(--border-subtle)] shadow-2xl animate-fade-in relative overflow-hidden premium-grain">
              {/* Background Effects */}
-             <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none"></div>
-             <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+             <div className="absolute -top-24 -right-24 w-64 h-64 bg-[var(--brand)]/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-             <div className="relative z-10 flex flex-col lg:flex-row gap-12">
+             <div className="relative z-10 flex flex-col lg:flex-row gap-16">
                {/* Left Side: Setup Wizard */}
-               <div className="lg:w-7/12 space-y-8">
-                  <div className="space-y-2">
-                    <h3 className="text-3xl font-black font-headline tracking-tighter text-gray-900 dark:text-white uppercase italic">WhatsApp Magic Link Setup</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Link your phone in seconds to start scanning cards on the go.</p>
+               <div className="lg:w-7/12 space-y-10">
+                  <div className="space-y-3">
+                    <h3 className="text-4xl font-black font-headline tracking-tighter text-[var(--text-main)] uppercase italic">WhatsApp Magic Link</h3>
+                    <p className="text-[11px] text-[var(--text-muted)] font-black uppercase tracking-[0.2em]">Hardware-free mobile scanning pipeline.</p>
                   </div>
 
                   <div className="space-y-0 relative">
                     {/* Vertical Line */}
-                    <div className="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-indigo-500 via-gray-200 dark:via-gray-800 to-transparent border-dashed"></div>
+                    <div className="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-[var(--brand)] via-[var(--border-subtle)] to-transparent border-dashed"></div>
 
                     {/* Step 1 */}
-                    <div className="relative flex gap-8 pb-12 group">
-                      <div className="z-10 bg-indigo-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">1</div>
-                      <div className="space-y-3">
-                        <h4 className="text-lg font-bold text-gray-900 dark:text-white mt-2">Join the Sandbox</h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">Tap the button below to automatically send the activation command to our AI node.</p>
+                    <div className="relative flex gap-10 pb-12 group">
+                      <div className="z-10 bg-[var(--brand)] text-white w-12 h-12 rounded-2xl flex items-center justify-center font-headline font-black text-xl shadow-xl shadow-[var(--brand)]/30 group-hover:scale-110 transition-transform italic">1</div>
+                      <div className="space-y-4">
+                        <h4 className="text-lg font-headline font-black italic tracking-tight text-[var(--text-main)] mt-2 uppercase">Interface Sandbox</h4>
+                        <p className="text-xs text-[var(--text-muted)] max-w-sm leading-relaxed font-medium">Initialize the secure connection tunnel by joining the automated node.</p>
                         <a 
                           href="https://wa.me/14155238886?text=join%20baseball-eventually" 
                           target="_blank"
                           rel="noopener noreferrer"
-                          onClick={() => { startPhoneDiscovery(); showToast('Sandbox link opened!', 'info'); }}
-                          className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-white/5 border border-indigo-200 dark:border-white/10 hover:border-indigo-500 dark:hover:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all shadow-sm"
+                          onClick={() => { startPhoneDiscovery(); }}
+                          className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--surface)] border border-[var(--border-subtle)] hover:border-[var(--brand)] text-[var(--brand)] font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all shadow-sm group-hover:shadow-lg"
                         >
-                          <Smartphone size={14} /> Open WhatsApp to Join
+                          <Smartphone size={16} /> Protocol Activation
                         </a>
                       </div>
                     </div>
 
                     {/* Step 2 */}
-                    <div className="relative flex gap-8 pb-12 group">
-                      <div className="z-10 bg-gray-200 dark:bg-gray-800 text-gray-500 w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl group-hover:bg-indigo-600 group-hover:text-white transition-all">2</div>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3 mt-2">
-                           <h4 className="text-lg font-bold text-gray-900 dark:text-white">Link Your Session</h4>
-                           <div className="px-3 py-1 bg-yellow-400/10 text-yellow-600 dark:text-yellow-400 text-[9px] font-black uppercase rounded-lg border border-yellow-400/20">Critical</div>
+                    <div className="relative flex gap-10 pb-12 group">
+                      <div className="z-10 bg-[var(--surface)] border border-[var(--border-subtle)] text-[var(--text-muted)] w-12 h-12 rounded-2xl flex items-center justify-center font-headline font-black text-xl group-hover:bg-[var(--brand)] group-hover:text-white group-hover:border-[var(--brand)] transition-all italic">2</div>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4 mt-2">
+                           <h4 className="text-lg font-headline font-black italic tracking-tight text-[var(--text-main)] uppercase">Node Pairing</h4>
+                           <div className="px-3 py-1 bg-amber-500/10 text-amber-500 text-[8px] font-black uppercase rounded-lg border border-amber-500/20 tracking-widest">Encrypted</div>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">Send your private session code. We've pre-filled it for you below—just one tap!</p>
+                        <p className="text-xs text-[var(--text-muted)] max-w-sm leading-relaxed font-medium">Verify your session with the architectural pairing code provided below.</p>
                         
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                            <a 
-                            href={`https://wa.me/14155238886?text=${encodeURIComponent(discoveryCode || 'IS-' + Math.floor(1000 + Math.random() * 9000))}`}
+                            href={`https://wa.me/14155238886?text=${encodeURIComponent(discoveryCode || 'IS-KEY')}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg hover:shadow-indigo-600/30 transition-all hover:-translate-y-0.5"
+                            className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[var(--text-main)] text-[var(--surface)] font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-xl hover:opacity-90 transition-all"
                            >
-                            <MessageSquare size={14} /> Link Now (Auto-Send {discoveryCode})
+                            <MessageSquare size={16} /> Finalize Pairing ({discoveryCode})
                            </a>
                            
                            <button 
                             onClick={() => { 
                               navigator.clipboard.writeText(discoveryCode); 
-                              showToast('Code copied to clipboard!');
+                              showToast('Key copied to vault!');
                             }}
-                            className="p-3 bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 rounded-xl hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-                            title="Copy Code"
+                            className="p-4 bg-[var(--surface)] text-[var(--text-muted)] rounded-2xl hover:text-[var(--brand)] border border-[var(--border-subtle)] transition-colors"
                            >
-                             <Copy size={14} />
+                             <Copy size={16} />
                            </button>
                         </div>
                       </div>
                     </div>
 
                     {/* Step 3 */}
-                    <div className="relative flex gap-8 group">
-                      <div className={`z-10 w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl transition-all ${profile.phone_number ? 'bg-emerald-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-500'}`}>3</div>
-                      <div className="space-y-3">
-                        <h4 className="text-lg font-bold text-gray-900 dark:text-white mt-2">Check Connection</h4>
+                    <div className="relative flex gap-10 group">
+                      <div className={`z-10 w-12 h-12 rounded-2xl flex items-center justify-center font-headline font-black text-xl transition-all italic ${profile.phone_number ? 'bg-emerald-500 text-white' : 'bg-[var(--surface)] border border-[var(--border-subtle)] text-[var(--text-muted)]'}`}>3</div>
+                      <div className="space-y-4">
+                        <h4 className="text-lg font-headline font-black italic tracking-tight text-[var(--text-main)] mt-2 uppercase">Integrity Status</h4>
                         <div className="flex items-center gap-4">
                            {whatsappStatus.loading ? (
-                             <div className="flex items-center gap-2 text-xs font-bold text-gray-500 animate-pulse">
-                               <RefreshCw size={14} className="animate-spin" /> Verifying...
+                             <div className="flex items-center gap-3 text-[10px] font-black text-[var(--brand)] uppercase tracking-widest animate-pulse">
+                               <RefreshCw size={16} className="animate-spin" /> Hardware Syncing...
                              </div>
                            ) : profile.phone_number ? (
-                             <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-600 text-xs font-black uppercase border border-emerald-500/20 rounded-xl">
-                               <Check size={14} strokeWidth={4} /> Fully Linked ({profile.phone_number})
+                             <div className="flex items-center gap-3 px-6 py-3 bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase border border-emerald-500/20 rounded-2xl shadow-sm">
+                               <Check size={16} strokeWidth={4} /> Instance Linked ({profile.phone_number})
                              </div>
                            ) : (
-                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-white/5 text-gray-500 text-xs font-black uppercase border border-gray-200 dark:border-white/10 rounded-xl">
-                               Awaiting Connection
+                             <div className="flex items-center gap-3 px-6 py-3 bg-[var(--surface)] text-[var(--text-muted)] text-[10px] font-black uppercase border border-[var(--border-subtle)] rounded-2xl">
+                               Awaiting Handshake
                              </div>
                            )}
-                           <button onClick={checkWhatsappConnectivity} className="p-2 text-gray-400 hover:text-indigo-600 transition-colors">
-                             <RefreshCw size={14} />
+                           <button onClick={checkWhatsappConnectivity} className="p-3 text-[var(--text-muted)] hover:text-[var(--brand)] transition-colors bg-[var(--surface)] rounded-xl border border-[var(--border-subtle)]">
+                             <RefreshCw size={16} />
                            </button>
                         </div>
                       </div>
@@ -1312,148 +1208,113 @@ export default function SettingsPage() {
                </div>
 
                {/* Right Side: Status & Settings */}
-               <div className="lg:w-5/12 space-y-6">
+               <div className="lg:w-5/12 space-y-8">
                   {/* Status Panel */}
-                  <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl p-8 space-y-6">
-                     <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Engine Status</p>
+                  <div className="bg-[var(--surface)] border border-[var(--border-subtle)] rounded-[2rem] p-10 space-y-10 shadow-sm relative overflow-hidden">
+                     <div className="absolute top-0 right-0 p-10 opacity-[0.03] pointer-events-none text-[var(--text-main)]">
+                        <Cpu size={120} />
+                     </div>
+                     <div className="flex items-center justify-between relative z-10">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)] font-headline italic">Engine Status</p>
                         {whatsappStatus.active ? (
-                          <div className="flex items-center gap-2">
-                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                             <span className="text-[10px] font-black text-emerald-500 tracking-widest">PROD LIVE</span>
+                          <div className="flex items-center gap-3 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                             <span className="text-[9px] font-black text-emerald-500 tracking-[0.2em]">GRID ACTIVE</span>
                           </div>
                         ) : (
-                          <span className="text-[10px] font-black text-amber-500 tracking-widest">MAINTENANCE</span>
+                          <span className="text-[9px] font-black text-amber-500 tracking-[0.2em] px-3 py-1 bg-amber-500/10 rounded-full border border-amber-500/20">MAINTENANCE</span>
                         )}
                      </div>
 
-                     <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                           <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
-                              <Sparkles size={18} className="text-indigo-600" />
-                           </div>
-                           <div>
-                              <p className="text-xs font-bold text-gray-900 dark:text-white">AI-Auto Scanning</p>
-                              <p className="text-[9px] text-gray-500 tracking-wide">Enabled for all incoming photos</p>
-                           </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                           <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
-                              <Shield size={18} className="text-emerald-500" />
-                           </div>
-                           <div>
-                              <p className="text-xs font-bold text-gray-900 dark:text-white">Secure Magic Links</p>
-                              <p className="text-[9px] text-gray-500 tracking-wide">Industry standard JWT protection</p>
-                           </div>
-                        </div>
+                     <div className="space-y-6 relative z-10">
+                        {[
+                          { icon: Sparkles, color: '[var(--brand)]', title: 'AI OCR Pipeline', desc: 'Neural sorting prioritized' },
+                          { icon: Shield, color: 'emerald-500', title: 'Vault Protection', desc: 'Secure Magic Link rotation' }
+                        ].map(item => (
+                          <div key={item.title} className="flex items-center gap-5">
+                             <div className="w-12 h-12 rounded-2xl bg-[var(--surface-card)] flex items-center justify-center shadow-lg border border-[var(--border-subtle)]">
+                                <item.icon size={20} className={`text-${item.color}`} />
+                             </div>
+                             <div>
+                                <p className="text-[11px] font-black text-[var(--text-main)] uppercase tracking-widest font-headline italic">{item.title}</p>
+                                <p className="text-[10px] text-[var(--text-muted)] font-medium">{item.desc}</p>
+                             </div>
+                          </div>
+                        ))}
                      </div>
 
-                     <div className="pt-4 border-t border-gray-200 dark:border-white/10 flex flex-col gap-3">
-                        <p className="text-[9px] font-medium text-gray-500 italic">"IntelliScan removes the friction between a handshake and your CRM. Just point, shoot, and let the AI do the sorting."</p>
+                     <div className="pt-8 border-t border-[var(--border-subtle)] flex flex-col gap-6 relative z-10">
+                        <p className="text-[10px] font-bold text-[var(--text-muted)] italic leading-relaxed">"Eliminate the friction between a handshake and your CRM. Point, shoot, and scale."</p>
                         <button 
                           onClick={() => navigate('/setup-guide')}
-                          className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-black font-black text-[9px] uppercase tracking-[0.1em] rounded-xl hover:opacity-90 transition-opacity"
+                          className="w-full py-4 bg-[var(--text-main)] text-[var(--surface)] font-black text-[9px] uppercase tracking-[0.2em] rounded-2xl hover:opacity-90 transition-all shadow-xl"
                         >
-                          View Advanced Setup Guide
+                          Advanced Setup Documentation
                         </button>
                      </div>
                   </div>
 
                   {/* SMTP Panel */}
-                  <div className={`bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-3xl p-8 text-white space-y-4 shadow-xl shadow-indigo-500/20 transition-all duration-500 ${showSmtpConfig ? 'lg:col-span-12' : ''}`}>
-                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                           <RefreshCw size={24} className={isTestingSmtp ? 'animate-spin' : ''} />
-                           <h4 className="text-lg font-bold font-headline">SMTP Engine</h4>
+                  <div className={`bg-[var(--brand)] rounded-[2rem] p-10 text-white space-y-6 shadow-2xl shadow-[var(--brand)]/30 transition-all duration-500 relative overflow-hidden ${showSmtpConfig ? 'lg:col-span-12' : ''}`}>
+                     <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                        <RefreshCw size={100} className={isTestingSmtp ? 'animate-spin' : ''} />
+                     </div>
+                     <div className="flex items-center justify-between relative z-10">
+                        <div className="flex items-center gap-4">
+                           <h4 className="text-xl font-headline font-black italic uppercase tracking-tight">SMTP Engine</h4>
                         </div>
                         <button 
                           onClick={() => setShowSmtpConfig(!showSmtpConfig)}
-                          className="px-4 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors"
+                          className="px-6 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-white/10"
                         >
-                          {showSmtpConfig ? 'Close' : 'Configure'}
+                          {showSmtpConfig ? 'Close Node' : 'Initialize'}
                         </button>
                      </div>
-                     <p className="text-xs opacity-80 leading-relaxed font-medium">Sync your professional email to send AI-drafted follow-ups instantly after a scan.</p>
+                     <p className="text-xs text-white/70 leading-relaxed font-medium relative z-10 max-w-xs">Distribute AI follow-ups instantly through your professional infrastructure.</p>
                      
                      {!showSmtpConfig ? (
-                       <div className="flex items-center justify-between bg-white/10 p-4 rounded-2xl border border-white/10">
-                          <span className="text-[10px] font-black uppercase tracking-widest opacity-80">Server Status</span>
-                          <span className="text-[10px] font-black">{smtpVerified ? 'VERIFIED' : 'UNCONFIGURED'}</span>
+                       <div className="flex items-center justify-between bg-white/10 p-5 rounded-[1.5rem] border border-white/10 relative z-10">
+                          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/50">Connectivity Status</span>
+                          <span className="text-[10px] font-black italic tracking-widest">{smtpVerified ? 'VERIFIED' : 'UNINITIALIZED'}</span>
                        </div>
                      ) : (
-                       <div className="space-y-4 pt-4 border-t border-white/10 animate-fade-in">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">SMTP Host</label>
-                                <input 
-                                  value={smtpConfig.host}
-                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, host: e.target.value })}
-                                  placeholder="smtp.gmail.com"
-                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
-                                />
-                             </div>
-                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Port</label>
-                                <input 
-                                  value={smtpConfig.port}
-                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, port: e.target.value })}
-                                  placeholder="587"
-                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
-                                />
-                             </div>
-                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Username (Email)</label>
-                                <input 
-                                  value={smtpConfig.user}
-                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, user: e.target.value })}
-                                  placeholder="you@company.com"
-                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
-                                />
-                             </div>
-                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Password / App Key</label>
-                                <input 
-                                  type="password"
-                                  value={smtpConfig.pass}
-                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, pass: e.target.value })}
-                                  placeholder="••••••••••••"
-                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
-                                />
-                             </div>
-                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Sender Name</label>
-                                <input 
-                                  value={smtpConfig.from_name}
-                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, from_name: e.target.value })}
-                                  placeholder="John Doe from IntelliScan"
-                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
-                                />
-                             </div>
-                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">From Email (Optional)</label>
-                                <input 
-                                  value={smtpConfig.from_email}
-                                  onChange={(e) => setSmtpConfig({ ...smtpConfig, from_email: e.target.value })}
-                                  placeholder="you@company.com"
-                                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-white/30 outline-none placeholder:text-white/30"
-                                />
-                             </div>
+                       <div className="space-y-6 pt-8 border-t border-white/10 animate-fade-in relative z-10">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             {[
+                               { label: 'SMTP Host', val: 'host', placeholder: 'smtp.gmail.com' },
+                               { label: 'Port', val: 'port', placeholder: '587' },
+                               { label: 'Username', val: 'user', placeholder: 'you@company.com' },
+                               { label: 'Master Key', val: 'pass', placeholder: '••••••••••••', type: 'password' },
+                               { label: 'Sender Identity', val: 'from_name', placeholder: 'John Doe | IntelliScan' },
+                               { label: 'Origin Email', val: 'from_email', placeholder: 'you@company.com' }
+                             ].map(field => (
+                              <div key={field.label} className="space-y-2">
+                                 <label className="text-[9px] font-black uppercase tracking-widest text-white/40">{field.label}</label>
+                                 <input 
+                                   type={field.type || 'text'}
+                                   value={smtpConfig[field.val]}
+                                   onChange={(e) => setSmtpConfig({ ...smtpConfig, [field.val]: e.target.value })}
+                                   placeholder={field.placeholder}
+                                   className="w-full bg-white/10 border border-white/10 rounded-2xl px-5 py-3 text-xs focus:ring-2 focus:ring-white/30 outline-none placeholder:text-white/30 font-medium transition-all"
+                                 />
+                              </div>
+                             ))}
                           </div>
-                          <div className="flex gap-3 pt-2">
+                          <div className="flex gap-4 pt-4">
                              <button 
                                onClick={handleTestSmtp}
                                disabled={isTestingSmtp}
-                               className="flex-1 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                               className="flex-1 py-4 bg-white/10 hover:bg-white/20 border border-white/10 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 italic"
                              >
-                               {isTestingSmtp ? <RefreshCw size={14} className="animate-spin" /> : <Lock size={14} />}
-                               Test Settings
+                               {isTestingSmtp ? <RefreshCw size={16} className="animate-spin" /> : <Shield size={16} />}
+                               Verify Node
                              </button>
                              <button 
                                onClick={handleSaveSmtp}
                                disabled={isSavingSmtp}
-                               className="flex-1 py-3 bg-white text-indigo-700 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:shadow-white/20 transition-all"
+                               className="flex-1 py-4 bg-white text-[var(--brand)] rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-2xl hover:brightness-110 transition-all italic"
                              >
-                               {isSavingSmtp ? 'Saving...' : 'Save Configuration'}
+                               {isSavingSmtp ? 'Architecting...' : 'Commit Settings'}
                              </button>
                           </div>
                        </div>

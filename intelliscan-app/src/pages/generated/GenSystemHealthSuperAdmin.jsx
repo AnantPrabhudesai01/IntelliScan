@@ -128,26 +128,34 @@ export default function GenSystemHealthSuperAdmin() {
   const activeAlerts = alerts.filter(a => !a.dismissed);
 
   return (
-    <div className="w-full h-full animate-fade-in p-6">
+    <div className="w-full h-full animate-fade-in pb-20">
       <Toast toast={toast} />
 
       {/* Full Logs Modal */}
       {showFullLogs && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={() => setShowFullLogs(false)}>
-          <div className="bg-[#0d1117] border border-white/10 rounded-2xl w-full max-w-3xl max-h-[80vh] flex flex-col overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-              <h2 className="text-lg font-bold text-white font-mono flex items-center gap-2"><Activity size={16} className="text-indigo-400" /> Full System Logs ({logs.length} entries)</h2>
-              <div className="flex gap-3">
-                <button onClick={handleExportLogs} className="text-xs font-bold text-indigo-400 flex items-center gap-1"><Download size={14} /> Export</button>
-                <button onClick={() => setShowFullLogs(false)} className="text-gray-400 hover:text-white"><X size={20} /></button>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xl p-6" onClick={() => setShowFullLogs(false)}>
+          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl premium-grain" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-10 py-8 border-b border-[var(--border-subtle)] bg-[var(--surface)]/50">
+              <div className="flex items-center gap-4">
+                 <div className="w-10 h-10 rounded-xl bg-[var(--brand)]/10 flex items-center justify-center text-[var(--brand)]">
+                    <Activity size={20} />
+                 </div>
+                 <div>
+                    <h2 className="text-xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase">Infrastructure Logs</h2>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">{logs.length} Vectors Captured</p>
+                 </div>
+              </div>
+              <div className="flex gap-6">
+                <button onClick={handleExportLogs} className="text-[10px] font-black uppercase tracking-widest text-[var(--brand)] flex items-center gap-2 hover:underline"><Download size={14} /> Matrix Export</button>
+                <button onClick={() => setShowFullLogs(false)} className="w-10 h-10 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all"><X size={24} /></button>
               </div>
             </div>
-            <div className="overflow-y-auto p-6 font-mono text-xs space-y-1.5 flex-1">
+            <div className="overflow-y-auto p-10 font-mono text-[11px] space-y-2 flex-1 scrollbar-hide bg-[var(--surface)]">
               {logs.map((l, i) => (
-                <div key={i} className="hover:bg-white/5 px-2 py-0.5 rounded">
-                  <span className="text-indigo-600 mr-2">[{l.time}]</span>
-                  <span className={`font-bold ${l.color} mr-2`}>{l.level}:</span>
-                  <span className="text-gray-300">{l.msg}</span>
+                <div key={i} className="hover:bg-[var(--brand)]/5 px-4 py-2 rounded-xl transition-colors border border-transparent hover:border-[var(--brand)]/10">
+                  <span className="text-[var(--brand)] opacity-40 mr-4">[{l.time}]</span>
+                  <span className={`font-black uppercase tracking-widest ${l.color === 'text-indigo-400' ? 'text-[var(--brand)]' : l.color} mr-4`}>{l.level}:</span>
+                  <span className="text-[var(--text-main)] opacity-80">{l.msg}</span>
                 </div>
               ))}
             </div>
@@ -155,164 +163,198 @@ export default function GenSystemHealthSuperAdmin() {
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-white">System Health</h1>
-            <p className="text-gray-400 text-sm mt-1">Real-time infrastructure monitoring across all global nodes.</p>
+      <div className="max-w-7xl mx-auto space-y-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+               <div className="p-3 bg-[var(--brand)]/10 rounded-2xl border border-[var(--brand)]/20 shadow-inner">
+                 <Server size={24} className="text-[var(--brand)]" />
+               </div>
+               <div>
+                 <h1 className="text-4xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase leading-tight">Infrastructure <br/>Pulse</h1>
+                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">Global Node Network</p>
+               </div>
+            </div>
+            <p className="text-[11px] text-[var(--text-muted)] font-medium leading-relaxed max-w-xl">
+               Real-time architectural monitoring across the global IntelliScan grid. Neural latency and compute cycles are visualized in atomic precision.
+            </p>
           </div>
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold uppercase ${activeAlerts.length > 0 ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-green-500/10 border-green-500/20 text-green-400'}`}>
-            <span className={`w-2 h-2 rounded-full animate-pulse ${activeAlerts.length > 0 ? 'bg-red-400' : 'bg-green-400'}`} />
-            {activeAlerts.length > 0 ? `${activeAlerts.length} Active Alerts` : 'All Systems Stable'}
+          <div className={`flex items-center gap-4 px-6 py-3 rounded-2xl border text-[10px] font-black uppercase tracking-widest shadow-xl transition-all ${activeAlerts.length > 0 ? 'bg-red-500/10 border-red-500/20 text-red-500 shadow-red-500/10' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 shadow-emerald-500/10'}`}>
+            <span className={`w-2.5 h-2.5 rounded-full ${activeAlerts.length > 0 ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`} />
+            {activeAlerts.length > 0 ? `${activeAlerts.length} Critical Vectors` : 'System Architecture Stable'}
           </div>
         </div>
 
         <div className="grid grid-cols-12 gap-6">
           {/* World Map */}
-          <section className="col-span-12 lg:col-span-8 bg-[#161c28] border border-white/5 rounded-xl overflow-hidden relative min-h-[420px]">
-            <div className="absolute inset-0 z-0 opacity-40">
-              <img className="w-full h-full object-cover grayscale brightness-50" alt="Global node map" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClPEpc16u1-ZHJlZRaQfYD_nULRrgJzgJoTqINQ7U96AK6ddyWMhoWI6MFMrZT9uyLyg3Fe8Z07gecO1wDPLuf52VcLzJGt77p-dCRXCeVZu8WB5UPO7sXYEgEbN8jE54yRpcDLvoQCM9P4BIWvuKID7TcNS-c7apu_k1Fgg4XOkJASbDpyQuSb20UTMNG-tcyYsvm7xlTKPZCaKV4YNf7_Bm9DKHe4YCj4N3LuY5JxToK_TZ3NKo0YLBfEbIXKDFgDnCUi74txcmn" />
+          <section className="col-span-12 lg:col-span-8 bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] overflow-hidden relative min-h-[500px] shadow-2xl premium-grain">
+            <div className="absolute inset-0 z-0 opacity-20 mix-blend-overlay">
+              <img className="w-full h-full object-cover grayscale brightness-[0.2]" alt="Global node map" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClPEpc16u1-ZHJlZRaQfYD_nULRrgJzgJoTqINQ7U96AK6ddyWMhoWI6MFMrZT9uyLyg3Fe8Z07gecO1wDPLuf52VcLzJGt77p-dCRXCeVZu8WB5UPO7sXYEgEbN8jE54yRpcDLvoQCM9P4BIWvuKID7TcNS-c7apu_k1Fgg4XOkJASbDpyQuSb20UTMNG-tcyYsvm7xlTKPZCaKV4YNf7_Bm9DKHe4YCj4N3LuY5JxToK_TZ3NKo0YLBfEbIXKDFgDnCUi74txcmn" />
             </div>
-            <div className="relative z-10 p-8 h-full flex flex-col">
-              <div className="flex justify-between items-start">
+            <div className="relative z-10 p-10 h-full flex flex-col">
+              <div className="flex justify-between items-start mb-10">
                 <div>
-                  <h3 className="font-bold text-xl text-white mb-1">Global Node Distribution</h3>
-                  <p className="text-gray-400 text-sm">Real-time latency: 42ms (Avg)</p>
+                  <h3 className="text-2xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase">Global Pulse Matrix</h3>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Neural Round-Trip: 42ms (Average)</p>
                 </div>
-                <div className="flex gap-2">
-                  <span className="px-3 py-1 bg-white/10 backdrop-blur rounded-full text-[10px] font-bold uppercase tracking-wider text-white border border-white/20">{clusterList.length} Active Clusters</span>
-                  <span className={`px-3 py-1 backdrop-blur rounded-full text-[10px] font-bold uppercase tracking-wider border ${activeAlerts.length > 0 ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-green-500/20 text-green-400 border-green-500/30'}`}>
-                    {activeAlerts.length > 0 ? 'Alert' : 'Stable'}
+                <div className="flex gap-4">
+                  <span className="px-4 py-1.5 bg-[var(--surface)] text-[9px] font-black uppercase tracking-widest text-[var(--text-main)] rounded-full border border-[var(--border-subtle)] backdrop-blur shadow-inner">{clusterList.length} Network Clusters</span>
+                  <span className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border border-current backdrop-blur shadow-inner ${activeAlerts.length > 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                    {activeAlerts.length > 0 ? 'Alert Engaged' : 'Operational'}
                   </span>
                 </div>
               </div>
 
               <div className="flex-1 relative">
                 {[
-                  { label: 'US-East (N. Virginia)', load: clusters['US-East-1'].load, x: '22%', y: '33%' },
-                  { label: 'EU-Central (Frankfurt)', load: clusters['EU-Central-1'].load, x: '48%', y: '26%' },
-                  { label: 'AS-South (Singapore)', load: clusters['AS-South-1'].load, x: '74%', y: '60%' },
+                  { label: 'US-East Node', load: clusters['US-East-1'].load, x: '22%', y: '33%' },
+                  { label: 'EU-Central Node', load: clusters['EU-Central-1'].load, x: '48%', y: '26%' },
+                  { label: 'AS-South Node', load: clusters['AS-South-1'].load, x: '74%', y: '60%' },
                 ].map(n => (
                   <div key={n.label} className="absolute group cursor-pointer" style={{ left: n.x, top: n.y }}>
                     <div className="relative">
-                      <div className={`absolute -inset-2 rounded-full animate-ping opacity-30 ${n.load > 60 ? 'bg-amber-500' : 'bg-indigo-500'}`} />
-                      <div className={`h-3 w-3 rounded-full border-2 border-white ${n.load > 60 ? 'bg-amber-500' : 'bg-indigo-500'}`} />
+                      <div className={`absolute -inset-4 rounded-full animate-ping opacity-20 ${n.load > 60 ? 'bg-amber-500' : 'bg-[var(--brand)]'}`} />
+                      <div className={`h-4 w-4 rounded-full border-2 border-white shadow-xl ${n.load > 60 ? 'bg-amber-500' : 'bg-[var(--brand)]'}`} />
                     </div>
-                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 px-3 py-2 rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-xl">
-                      <p className="text-[10px] font-bold text-white">{n.label}</p>
-                      <p className="text-[9px] text-gray-400">Load: {n.load}%</p>
+                    <div className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 bg-[var(--surface-card)] px-4 py-3 rounded-2xl border border-[var(--border-subtle)] opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 z-10 shadow-2xl premium-grain pointer-events-none">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-main)] mb-1">{n.label}</p>
+                      <p className={`text-[12px] font-headline font-black italic tracking-tighter uppercase ${n.load > 60 ? 'text-amber-500' : 'text-[var(--brand)]'}`}>Load: {n.load}%</p>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-auto flex gap-8 py-4 border-t border-white/10">
-                <div><span className="block text-[10px] text-gray-400 uppercase tracking-tighter">Throughput</span><span className="text-xl font-bold text-white">1.2 TB/s</span></div>
-                <div><span className="block text-[10px] text-gray-400 uppercase tracking-tighter">Total Scans/Min</span><span className="text-xl font-bold text-white">48.2k</span></div>
-                <div><span className="block text-[10px] text-gray-400 uppercase tracking-tighter">Active Instances</span><span className="text-xl font-bold text-white">{clusterList.reduce((s, [, c]) => s + c.nodes, 0)}</span></div>
+              <div className="mt-auto grid grid-cols-3 gap-10 pt-10 border-t border-[var(--border-subtle)]/50">
+                <div><span className="block text-[9px] text-[var(--text-muted)] font-black uppercase tracking-widest mb-1 italic">Grid Throughput</span><span className="text-3xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase leading-none">1.2 TB/s</span></div>
+                <div><span className="block text-[9px] text-[var(--text-muted)] font-black uppercase tracking-widest mb-1 italic">Ingestion Velocity</span><span className="text-3xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase leading-none">48.2k<span className="text-xs ml-1 opacity-40">/M</span></span></div>
+                <div><span className="block text-[9px] text-[var(--text-muted)] font-black uppercase tracking-widest mb-1 italic">Active Nodes</span><span className="text-3xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase leading-none">{clusterList.reduce((s, [, c]) => s + c.nodes, 0)}</span></div>
               </div>
             </div>
           </section>
 
           {/* Controls */}
-          <section className="col-span-12 lg:col-span-4 flex flex-col gap-6">
+          <section className="col-span-12 lg:col-span-4 flex flex-col gap-8">
             {/* Failover Controls */}
-            <div className="bg-[#161c28] border border-white/5 rounded-xl p-6">
-              <h3 className="font-bold text-white mb-4 flex items-center gap-2"><Zap size={16} className="text-indigo-400" /> Failover Controls</h3>
-              <div className="space-y-4">
-                <div className="bg-[#0d1117] p-4 rounded-xl border border-white/5">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-xs font-semibold text-white">Force Failover: US-East</span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${failoverStatus === 'complete' ? 'bg-green-500/20 text-green-400' : failoverStatus === 'in_progress' ? 'bg-amber-500/20 text-amber-400' : 'bg-white/5 text-gray-400'}`}>
-                      {failoverStatus === 'complete' ? 'Complete' : failoverStatus === 'in_progress' ? 'In Progress...' : failoverStatus === 'confirming' ? 'Confirm?' : 'Manual'}
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] p-8 shadow-2xl premium-grain flex flex-col">
+              <h3 className="text-lg font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase mb-6 flex items-center gap-3">
+                <Zap size={18} className="text-[var(--brand)]" /> Failover Protocol
+              </h3>
+              <div className="space-y-6">
+                <div className="bg-[var(--surface)] p-6 rounded-[2rem] border border-[var(--border-subtle)] shadow-inner">
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">Force Swap: US-East Cluster</span>
+                    <span className={`text-[8px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest border border-current ${failoverStatus === 'complete' ? 'text-emerald-500' : failoverStatus === 'in_progress' ? 'text-amber-500' : 'text-[var(--text-muted)]/40'}`}>
+                      {failoverStatus === 'complete' ? 'Protocol Finalized' : failoverStatus === 'in_progress' ? 'Transmitting...' :'Manual Override'}
                     </span>
                   </div>
                   <button onClick={handleInitiateTransition} disabled={failoverStatus === 'in_progress' || failoverStatus === 'complete'}
-                    className={`w-full py-2 text-xs font-bold rounded-lg transition-all active:scale-95 ${failoverStatus === 'confirming' ? 'bg-red-600 text-white' : failoverStatus === 'complete' ? 'bg-green-600/20 text-green-400 cursor-not-allowed' : failoverStatus === 'in_progress' ? 'bg-white/5 text-gray-500 cursor-not-allowed animate-pulse' : 'bg-white/10 text-white hover:bg-red-600 hover:text-white'}`}>
-                    {failoverStatus === 'confirming' ? '⚠ Confirm Transition' : failoverStatus === 'complete' ? '✓ Failover Complete' : failoverStatus === 'in_progress' ? 'Transitioning...' : 'Initiate Transition'}
+                    className={`w-full py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl italic font-headline ${
+                      failoverStatus === 'confirming' ? 'bg-red-500 text-white shadow-red-500/20' : 
+                      failoverStatus === 'complete' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shadow-none' : 
+                      failoverStatus === 'in_progress' ? 'bg-[var(--surface-card)] text-[var(--text-muted)] animate-pulse' : 
+                      'bg-[var(--brand)] text-white shadow-[var(--brand)]/20 hover:brightness-110'
+                    }`}>
+                    {failoverStatus === 'confirming' ? 'Confirm Logic Swap' : failoverStatus === 'complete' ? 'Pulse Rerouted' : failoverStatus === 'in_progress' ? 'Switching Grid...' : 'Execute Failover'}
                   </button>
                   {failoverStatus === 'confirming' && (
-                    <button onClick={() => setFailoverStatus(null)} className="w-full mt-2 py-1.5 text-xs text-gray-400 hover:text-white transition-colors">Cancel</button>
+                    <button onClick={() => setFailoverStatus(null)} className="w-full mt-4 text-[9px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors italic">Abort Mission</button>
                   )}
                 </div>
 
-                <div className="bg-[#0d1117] p-4 rounded-xl border border-white/5">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-xs font-semibold text-white">Scale Cluster: EU-Central</span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${clusters['EU-Central-1'].load > 60 ? 'bg-amber-500/20 text-amber-400' : 'bg-green-500/20 text-green-400'}`}>
-                      {clusters['EU-Central-1'].load > 60 ? 'High Load' : 'Normal'}
+                <div className="bg-[var(--surface)] p-6 rounded-[2rem] border border-[var(--border-subtle)] shadow-inner">
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">Scale: EU-Central Grid</span>
+                    <span className={`text-[8px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest border border-current ${clusters['EU-Central-1'].load > 60 ? 'text-amber-500' : 'text-emerald-500'}`}>
+                      {clusters['EU-Central-1'].load > 60 ? 'Thermal Alert' : 'Nominal'}
                     </span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-4">
                     {[2, 5].map(n => (
                       <button key={n} onClick={() => handleScaleCluster('EU-Central-1', n)} disabled={scalingCluster === 'EU-Central-1' + n}
-                        className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all active:scale-95 ${scalingCluster === 'EU-Central-1' + n ? 'bg-indigo-600 text-white animate-pulse' : 'bg-white/10 text-white hover:bg-indigo-600'}`}>
-                        {scalingCluster === 'EU-Central-1' + n ? 'Provisioning...' : `+ ${n} Nodes`}
+                        className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all active:scale-95 italic font-headline ${
+                          scalingCluster === 'EU-Central-1' + n ? 'bg-[var(--brand)] text-white animate-pulse' : 'bg-[var(--surface-card)] border border-[var(--border-subtle)] text-[var(--text-main)] hover:border-[var(--brand)] hover:text-[var(--brand)]'
+                        }`}>
+                        {scalingCluster === 'EU-Central-1' + n ? '...' : `+${n} Nodes`}
                       </button>
                     ))}
                   </div>
-                  <p className="text-[10px] text-gray-500 mt-2">Current: {clusters['EU-Central-1'].nodes} nodes</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] mt-5 ml-1 opacity-40 italic">Active Instances: {clusters['EU-Central-1'].nodes}</p>
                 </div>
               </div>
             </div>
 
             {/* Critical Alerts */}
-            <div className="bg-[#161c28] border border-white/5 rounded-xl p-6 flex-1">
-              <h3 className="font-bold text-white mb-4 flex items-center gap-2"><AlertTriangle size={16} className="text-red-400" /> Critical Alerts</h3>
-              <div className="space-y-3">
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] p-8 shadow-2xl premium-grain flex-1 flex flex-col">
+              <h3 className="text-lg font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase mb-6 flex items-center gap-3">
+                <AlertTriangle size={18} className="text-red-500" /> Neural Alerts
+              </h3>
+              <div className="space-y-4 flex-1">
                 {activeAlerts.length === 0 ? (
-                  <div className="text-center py-6 text-gray-500 text-sm">
-                    <Check size={24} className="mx-auto mb-2 text-green-400" />
-                    All alerts cleared
-                  </div>
-                ) : activeAlerts.map(alert => (
-                  <div key={alert.id} className={`flex gap-3 p-3 rounded-lg relative group ${alert.level === 'ERR' ? 'bg-red-500/10 border-l-2 border-red-500' : 'bg-amber-500/10 border-l-2 border-amber-500'}`}>
-                    <AlertTriangle size={18} className={alert.level === 'ERR' ? 'text-red-400 flex-shrink-0' : 'text-amber-400 flex-shrink-0'} />
-                    <div className="flex-1">
-                      <p className="text-xs font-bold text-white">{alert.title}</p>
-                      <p className="text-[10px] text-gray-400 mt-0.5">{alert.msg}</p>
+                  <div className="h-full flex flex-col items-center justify-center py-10 opacity-30">
+                    <div className="w-16 h-16 rounded-[1.5rem] bg-[var(--surface)] border border-[var(--border-subtle)] flex items-center justify-center mb-6">
+                       <Check size={32} className="text-emerald-500" />
                     </div>
-                    <button onClick={() => handleDismissAlert(alert.id)}
-                      className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-white transition-all p-1 rounded">
-                      <X size={14} />
-                    </button>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">Matrix Stable</p>
                   </div>
-                ))}
+                ) : (
+                  <div className="space-y-4">
+                    {activeAlerts.map(alert => (
+                      <div key={alert.id} className={`flex gap-5 p-6 rounded-[1.5rem] relative group border backdrop-blur-sm shadow-xl ${alert.level === 'ERR' ? 'bg-red-500/5 border-red-500/20' : 'bg-amber-500/5 border-amber-500/20'}`}>
+                        <div className={`p-2 rounded-xl border border-current h-fit ${alert.level === 'ERR' ? 'text-red-500' : 'text-amber-500'}`}>
+                          <AlertTriangle size={18} strokeWidth={3} />
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <p className="text-[11px] font-black uppercase tracking-widest text-[var(--text-main)] italic font-headline">{alert.title}</p>
+                          <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">{alert.msg}</p>
+                        </div>
+                        <button onClick={() => handleDismissAlert(alert.id)}
+                          className="opacity-0 group-hover:opacity-100 text-[var(--text-muted)] hover:text-white transition-all p-2 bg-black/20 rounded-xl">
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </section>
 
           {/* Cluster Performance Metrics */}
-          <section className="col-span-12 lg:col-span-8 bg-[#161c28] border border-white/5 rounded-xl p-6">
-            <h3 className="font-bold text-white mb-6">Cluster Performance Metrics</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <section className="col-span-12 lg:col-span-8 bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] p-10 shadow-2xl premium-grain">
+            <h3 className="text-2xl font-headline font-black italic tracking-tighter text-[var(--text-main)] uppercase mb-10">Neural Compute Cycles</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {clusterList.map(([key, cluster]) => {
                 const isHigh = cluster.load > 60;
-                const barColor = isHigh ? 'bg-amber-500' : 'bg-indigo-500';
+                const barColor = isHigh ? 'bg-amber-500' : 'bg-[var(--brand)]';
                 return (
-                  <div key={key} className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-mono text-gray-400">{key}</span>
-                      <span className={`text-[10px] font-bold ${isHigh ? 'text-amber-400' : 'text-green-400'}`}>{cluster.uptime}%</span>
+                  <div key={key} className="space-y-6">
+                    <div className="flex justify-between items-end">
+                      <div className="space-y-1">
+                        <span className="block text-[8px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)] italic">Node Identifier</span>
+                        <span className="text-[12px] font-black uppercase text-[var(--text-main)] tracking-widest">{key}</span>
+                      </div>
+                      <span className={`text-[12px] font-headline font-black italic tracking-tighter ${isHigh ? 'text-amber-500' : 'text-emerald-500'}`}>{cluster.uptime}% Uptime</span>
                     </div>
-                    <div className="h-16 flex items-end gap-1 px-1">
-                      {[...Array(7)].map((_, i) => (
-                        <div key={i} className={`w-full ${i === 6 ? barColor : `${barColor}/30`} rounded-t-sm transition-all`}
-                          style={{ height: `${20 + Math.random() * 70}%` }} />
+                    <div className="h-24 flex items-end gap-1.5 p-2 bg-[var(--surface)] rounded-[1.5rem] border border-[var(--border-subtle)] shadow-inner">
+                      {[...Array(10)].map((_, i) => (
+                        <div key={i} className={`w-full ${i === 9 ? barColor : `${barColor}/20`} rounded-full transition-all group relative`}
+                          style={{ height: `${20 + Math.random() * 80}%` }}>
+                          <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${barColor} opacity-0 group-hover:opacity-100 -translate-y-4`} />
+                        </div>
                       ))}
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="bg-[#0d1117] p-2 rounded-lg text-center">
-                        <span className="block text-[9px] text-gray-500 uppercase">CPU</span>
-                        <span className="text-xs font-bold text-white">{cluster.cpu}%</span>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-[var(--surface)] p-4 rounded-2xl border border-[var(--border-subtle)] text-center shadow-sm">
+                        <span className="block text-[7px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">CPU</span>
+                        <span className="text-[12px] font-black text-[var(--text-main)]">{cluster.cpu}%</span>
                       </div>
-                      <div className="bg-[#0d1117] p-2 rounded-lg text-center">
-                        <span className="block text-[9px] text-gray-500 uppercase">MEM</span>
-                        <span className="text-xs font-bold text-white">{cluster.mem}GB</span>
+                      <div className="bg-[var(--surface)] p-4 rounded-2xl border border-[var(--border-subtle)] text-center shadow-sm">
+                        <span className="block text-[7px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">MEM</span>
+                        <span className="text-[12px] font-black text-[var(--text-main)]">{cluster.mem}G</span>
                       </div>
-                      <div className="bg-[#0d1117] p-2 rounded-lg text-center">
-                        <span className="block text-[9px] text-gray-500 uppercase">Nodes</span>
-                        <span className="text-xs font-bold text-white">{cluster.nodes}</span>
+                      <div className="bg-[var(--surface)] p-4 rounded-2xl border border-[var(--border-subtle)] text-center shadow-sm">
+                        <span className="block text-[7px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">Nodes</span>
+                        <span className="text-[12px] font-black text-[var(--text-main)]">{cluster.nodes}</span>
                       </div>
                     </div>
                   </div>
@@ -322,31 +364,34 @@ export default function GenSystemHealthSuperAdmin() {
           </section>
 
           {/* System Logs - Live */}
-          <section className="col-span-12 lg:col-span-4 bg-[#161c28] border border-white/5 rounded-xl overflow-hidden flex flex-col max-h-[400px]">
-            <div className="p-4 border-b border-white/5 flex justify-between items-center flex-shrink-0">
-              <h3 className="font-bold text-white text-sm flex items-center gap-2">System Logs</h3>
-              <div className="flex items-center gap-2">
-                <button onClick={handleExportLogs} className="text-[9px] text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1"><Download size={10} /> Export</button>
-                <span className="h-1.5 w-1.5 rounded-full bg-red-400 animate-pulse" />
-                <span className="text-[10px] text-gray-400 font-mono">LIVE</span>
+          <section className="col-span-12 lg:col-span-4 bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl premium-grain max-h-[500px]">
+            <div className="p-8 border-b border-[var(--border-subtle)] flex justify-between items-center flex-shrink-0 bg-[var(--surface)]/50 backdrop-blur-xl">
+              <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text-main)] flex items-center gap-3 italic font-headline">
+                <Activity size={16} className="text-[var(--brand)]" /> System Transmission
+              </h3>
+              <div className="flex items-center gap-4">
+                <button onClick={handleExportLogs} title="Matrix Export" className="text-[var(--text-muted)] hover:text-[var(--brand)] transition-all">
+                  <Download size={14} />
+                </button>
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-red-500 italic">LIVE INGEST</span>
+                </div>
               </div>
             </div>
-            <div ref={logRef} className="flex-1 overflow-y-auto p-4 font-mono text-[11px] leading-relaxed space-y-1.5">
-              {(showFullLogs ? logs : logs.slice(0, 12)).map((l, i) => (
-                <div key={i} className="hover:bg-white/5 px-1 py-0.5 rounded">
-                  <span className="text-indigo-600 mr-1">[{l.time}]</span>
-                  <span className={`font-bold ${l.color} mr-1`}>{l.level}:</span>
-                  <span className="text-gray-300">{l.msg}</span>
+            <div ref={logRef} className="flex-1 overflow-y-auto p-8 font-mono text-[10px] leading-relaxed space-y-3 custom-scrollbar bg-[var(--surface)]">
+              {(showFullLogs ? logs : logs.slice(0, 15)).map((l, i) => (
+                <div key={i} className="hover:bg-[var(--brand)]/5 px-3 py-2 rounded-xl transition-all border border-transparent hover:border-[var(--brand)]/10 group">
+                  <span className="text-[var(--brand)] opacity-40 mr-3">[{l.time}]</span>
+                  <span className={`font-black uppercase tracking-widest ${l.color === 'text-indigo-400' ? 'text-[var(--brand)]' : l.color} mr-3`}>{l.level}:</span>
+                  <span className="text-[var(--text-main)] opacity-70 group-hover:opacity-100 transition-opacity">{l.msg}</span>
                 </div>
               ))}
             </div>
-            <div className="p-3 border-t border-white/5 flex-shrink-0 flex gap-2">
+            <div className="p-6 border-t border-[var(--border-subtle)] bg-[var(--surface)]/50 backdrop-blur-xl flex justify-center">
               <button onClick={() => setShowFullLogs(true)}
-                className="flex-1 text-[10px] text-indigo-400 font-bold uppercase tracking-widest hover:text-indigo-300 transition-colors text-center">
-                View Full Logs ({logs.length})
-              </button>
-              <button onClick={handleExportLogs} className="text-[10px] text-gray-500 hover:text-white transition-colors">
-                <Download size={12} />
+                className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--brand)] hover:brightness-110 transition-all italic font-headline">
+                Open Matrix Terminal ({logs.length})
               </button>
             </div>
           </section>

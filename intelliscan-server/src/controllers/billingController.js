@@ -10,8 +10,7 @@ const {
   rupeesToPaise, 
   getRazorpayCredentials, 
   createRazorpayOrder, 
-  verifyRazorpaySignature,
-  rupeesToPaise 
+  verifyRazorpaySignature 
 } = require('../utils/billingUtils');
 const { createSmtpTransporterFromEnv } = require('../utils/smtp');
 

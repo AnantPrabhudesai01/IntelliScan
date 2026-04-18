@@ -131,15 +131,15 @@ export default function DashboardLayout() {
   const sidebarWidth = sidebarCollapsed ? 'w-[68px]' : 'w-60';
 
   const renderSidebarContent = ({ isMobile = false } = {}) => (
-    <div className="flex flex-col h-full bg-[#21132E] text-white select-none">
+    <div className="flex flex-col h-full bg-[var(--sidebar-bg)] text-white select-none transition-colors duration-300">
       {/* Logo */}
-      <div className={`h-14 flex items-center ${sidebarCollapsed && !isMobile ? 'justify-center px-2' : 'px-4'} border-b border-[#3D2650] shrink-0`}>
+      <div className={`h-14 flex items-center ${sidebarCollapsed && !isMobile ? 'justify-center px-2' : 'px-4'} border-b border-[var(--sidebar-border)] shrink-0`}>
         <Link to="/dashboard/scan" className="flex items-center gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center flex-shrink-0">
             <ScanLine className="text-white" size={18} />
           </div>
           {(!sidebarCollapsed || isMobile) && (
-            <span className="font-bold text-[15px] tracking-tight text-white truncate">IntelliScan</span>
+            <span className="font-headline font-black text-lg tracking-tighter text-white truncate">INTELLISCAN</span>
           )}
         </Link>
         {isMobile && (
@@ -180,7 +180,7 @@ export default function DashboardLayout() {
               <div className="relative">
                 <item.icon size={18} className={`flex-shrink-0 ${isActive ? 'text-brand-light' : 'text-sidebar-text group-hover:text-white'} ${item.isLocked ? 'opacity-40' : ''}`} />
                 {item.isLocked && (
-                  <div className="absolute -top-1 -right-1 bg-[#1A1119] rounded-full p-0.5 border border-[#3D2650]">
+                  <div className="absolute -top-1 -right-1 bg-[var(--sidebar-bg)] rounded-full p-0.5 border border-[var(--sidebar-border)]">
                     <Zap size={8} className="text-brand-light fill-brand-light" />
                   </div>
                 )}
@@ -206,15 +206,15 @@ export default function DashboardLayout() {
 
       {/* Plan Status — only when expanded */}
       {(!sidebarCollapsed || isMobile) && (
-        <div className="px-3 pb-3 border-t border-[#3D2650] pt-3">
-          <div className="bg-sidebar-hover rounded-lg p-3">
+        <div className="px-3 pb-3 border-t border-[var(--sidebar-border)] pt-3">
+          <div className="bg-[var(--sidebar-hover)] rounded-xl p-3 border border-white/5">
             <div className="flex justify-between items-center mb-2">
               <span className="text-[10px] font-bold uppercase text-sidebar-text tracking-wider">
                 {user?.role === 'super_admin' ? 'Super Admin' : user?.role === 'business_admin' ? 'Business Admin' : (quota.tier === 'enterprise' ? 'Enterprise Plan' : quota.tier === 'pro' ? 'Pro Plan' : 'Free Plan')}
               </span>
               <span className="text-[10px] font-bold text-brand-light">{quota.used}/{quota.limit}</span>
             </div>
-            <div className="w-full bg-[#1A1119] h-1.5 rounded-full overflow-hidden mb-2.5">
+            <div className="w-full bg-black/40 h-1 rounded-full overflow-hidden mb-2.5">
               <div className="bg-brand h-full rounded-full transition-all" style={{ width: `${Math.min((quota.used / quota.limit) * 100, 100)}%` }} />
             </div>
             <Link to="/subscription-plan-comparison" className="w-full py-1.5 bg-brand hover:bg-brand-light text-white font-semibold text-[11px] rounded-md flex items-center justify-center gap-1.5 transition-colors">
@@ -225,7 +225,7 @@ export default function DashboardLayout() {
       )}
 
       {/* Profile */}
-      <div className={`border-t border-[#3D2650] ${sidebarCollapsed && !isMobile ? 'p-2' : 'p-3'} shrink-0`}>
+      <div className={`border-t border-[var(--sidebar-border)] ${sidebarCollapsed && !isMobile ? 'p-2' : 'p-3'} shrink-0`}>
         <div className={`flex items-center ${sidebarCollapsed && !isMobile ? 'justify-center' : 'gap-2.5'} py-1`}>
           <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center flex-shrink-0">
             <span className="text-white text-xs font-bold">{user.name.charAt(0)}</span>
@@ -300,7 +300,7 @@ export default function DashboardLayout() {
               </button>
               
               {quotaOpen && (
-                <div className="absolute top-9 right-0 w-60 bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-4 z-50 animate-fade-in">
+                <div className="absolute top-9 right-0 w-60 bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-xl shadow-2xl p-4 z-50 animate-fade-in premium-grain">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Plan Quota</span>
                     <span className="text-[10px] font-bold text-brand">{quota.limit > quota.used ? `${quota.limit - quota.used} Left` : 'Exceeded'}</span>
@@ -361,7 +361,7 @@ export default function DashboardLayout() {
                 <ChevronDown size={12} className="text-gray-400 hidden sm:block" />
               </button>
               {profileOpen && (
-                <div className="absolute right-0 mt-1 w-52 bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl py-1 z-50 animate-fade-in">
+                <div className="absolute right-0 mt-1 w-52 bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-xl shadow-2xl py-1 z-50 animate-fade-in premium-grain">
                   <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">{user.name}</p>
                     <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{user.email}</p>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import PublicLayout from '../../layouts/PublicLayout';
 import { getStoredToken } from '../../utils/auth';
+import apiClient from '../../api/client';
 
 function formatRupees(amount) {
   const n = Number(amount) || 0;
@@ -17,13 +18,19 @@ export default function PricingPage() {
     let mounted = true;
     const load = async () => {
       try {
-        const res = await fetch('/api/billing/plans');
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data?.error || `Failed with status ${res.status}`);
-        const list = Array.isArray(data?.plans) ? data.plans : [];
+        const res = await apiClient.get('/billing/plans');
+        const list = Array.isArray(res.data?.plans) ? res.data.plans : [];
         if (mounted) setPlans(list);
       } catch (e) {
-        if (mounted) setError(e.message || 'Failed to load plans.');
+        console.error('Pricing load failed:', e);
+        if (mounted) {
+          // Fallback
+          setPlans([
+            { id: 'personal', name: 'Personal', price: 0, badge: 'Starter', features: ['100 Scan Credits / month', 'Gemini Flash OCR Engine'] },
+            { id: 'pro', name: 'Pro', price: 49, badge: 'Advanced', features: ['5,000 Scan Credits / month', 'Gemini Pro Vision Engine'] },
+            { id: 'enterprise', name: 'Enterprise', price: 1999, badge: 'Scale', features: ['Unlimited Scan Credits', 'Custom AI Training'] }
+          ]);
+        }
       } finally {
         if (mounted) setLoading(false);
       }
