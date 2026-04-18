@@ -1217,7 +1217,12 @@ export default function SettingsPage() {
                 </div>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Add Service</p>
                 <p className="text-[10px] text-gray-400 mt-1">Browse Marketplace →</p>
-                     {activeTab === 'Communications' && (
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'Communications' && (
           <section className="col-span-12 bg-white dark:bg-[#111111] rounded-[2rem] p-8 md:p-12 border border-gray-200 dark:border-white/5 shadow-2xl animate-fade-in relative overflow-hidden">
              {/* Background Effects */}
              <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -1380,13 +1385,10 @@ export default function SettingsPage() {
              </div>
           </section>
         )}
-         </div>
-                </div>
-             </div>
-          </section>
-        )}
 
       </div>
     </div>
   );
 }
+
+export default SettingsPage;
