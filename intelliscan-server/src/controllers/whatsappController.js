@@ -148,23 +148,22 @@ exports.webhook = async (req, res) => {
     console.log(`[WhatsApp] Calling AI Engine (Gemini Flash)...`);
     const aiStart = Date.now();
     
-    const extractionResult = await unifiedExtractionPipeline({
-      imageBase64,
-      mimeType: MediaContentType0 || 'image/jpeg',
-      userId: user.id,
-      tier: user.tier,
-      prompt: `Act as a world-class OCR and Data Extraction AI. Look carefully at the image and extract ALL business cards found.
+    let extractionResult;
+    try {
+      extractionResult = await unifiedExtractionPipeline({
+        imageBase64,
+        mimeType: MediaContentType0 || 'image/jpeg',
+        userId: user.id,
+        tier: user.tier,
+        prompt: `Act as a world-class OCR and Data Extraction AI. Look carefully at the image and extract ALL business cards found.
 Even if the lighting is poor or it's angled, try your absolute best to read the text.
 JSON FORMAT ONLY:
 {
   "cards": [
     {
-      "name": "Full Name (In English)",
-      "name_native": "Name in original non-English script (if applicable)",
-      "company": "Company Name (In English)",
-      "company_native": "Company in original non-English script (if applicable)",
-      "title": "Job Title (In English)",
-      "title_native": "Title in original non-English script (if applicable)",
+      "name": "Full Name",
+      "company": "Company Name",
+      "title": "Job Title",
       "email": "email address",
       "phone": "standardized phone",
       "website": "url",
@@ -173,19 +172,27 @@ JSON FORMAT ONLY:
     }
   ]
 }`
-    });
+      });
+    } catch (aiErr) {
+      console.error(`[WhatsApp] AI Engine Crash:`, aiErr.message);
+      return sendWhatsAppReply(From, `❌ AI Extraction Error: The engine encountered a temporary issue. Please try again in a moment!`);
+    }
 
     console.log(`[WhatsApp] AI process finished in ${((Date.now() - aiStart)/1000).toFixed(1)}s`);
 
-    if (extractionResult.error) throw new Error(extractionResult.error);
+    if (extractionResult.error) {
+      console.error(`[WhatsApp] AI Engine returned error:`, extractionResult.error);
+      return sendWhatsAppReply(From, `❌ AI Extraction Failed: ${extractionResult.error}. Please try a clearer photo!`);
+    }
 
-    let cards = extractionResult.data.cards || [];
-    if (cards.length === 0 && extractionResult.data.name) {
+    let cards = extractionResult.data?.cards || [];
+    if (cards.length === 0 && extractionResult.data?.name) {
       cards = [extractionResult.data]; // Handle single object fallback
     }
 
     if (cards.length === 0) {
-      return sendWhatsAppReply(From, `❌ Sorry, I couldn't find any clear business cards in that photo. Please try again with better lighting!`);
+      console.warn(`[WhatsApp] No cards extracted from image.`);
+      return sendWhatsAppReply(From, `🔍 I couldn't find any clear details in that photo. Please make sure the card's text is legible and well-lit!`);
     }
 
     // 6. Persistence & Sync with Duplicacy Check

@@ -161,9 +161,16 @@ async function callGeminiWithRetry(model, parts, maxRetries = 2) {
       const is429 = err?.status === 429 || 
                    (err?.message || '').toLowerCase().includes('too many requests') || 
                    (err?.message || '').toLowerCase().includes('resource_exhausted');
-      if (is429 && i < maxRetries) {
-        const retryAfterMs = (err?.errorDetails?.[0]?.retryDelay ? parseInt(err.errorDetails[0].retryDelay) * 1000 : 7000) + 500;
-        console.log(`⏳ Gemini rate-limited (429). Retrying in ${retryAfterMs / 1000}s (attempt ${i+1}/${maxRetries})...`);
+      
+      // In serverless/production, we FAIL FAST and fallback rather than sleeping for 7 seconds.
+      // This prevents Vercel/Twilio timeouts.
+      if (is429) {
+        console.warn(`⏳ Gemini rate-limited (429). Falling back immediately to next provider...`);
+        throw err; 
+      }
+      
+      if (i < maxRetries) {
+        const retryAfterMs = 500; // Small delay for non-429 errors
         await new Promise(resolve => setTimeout(resolve, retryAfterMs));
       } else {
         throw err;
@@ -431,18 +438,26 @@ async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'j
     }
   }
 
-  // 1. Try Gemini (Primary) - TEMPORARILY DISABLED
-  /*
+  // 1. Try Gemini (Primary) - Prioritized for Low Latency
   try {
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
     if (apiKey) {
-      const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-8b";
+      // Use Flash-8B for CHAT to get ~1s response time.
+      const modelName = preferredModel || process.env.GEMINI_MODEL || "gemini-1.5-flash-8b-latest";
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+      
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: combinedPrompt }] }] })
+        body: JSON.stringify({ 
+          contents: [{ parts: [{ text: combinedPrompt }] }],
+          generationConfig: {
+            maxOutputTokens: 1024,
+            temperature: 0.7
+          }
+        })
       });
+
       const result = await response.json();
       if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
         const text = result.candidates[0].content.parts[0].text;
@@ -450,17 +465,17 @@ async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'j
         if (responseFormat === 'json') {
           const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
           const extracted = extractJsonObjectFromText(cleaned);
-          return { success: true, data: JSON.parse(extracted || cleaned) };
+          return { success: true, data: JSON.parse(extracted || cleaned), model_used: modelName };
         }
-        return { success: true, data: text.trim() };
+        return { success: true, data: text.trim(), model_used: modelName };
       }
       throw new Error(result.error?.message || 'Gemini REST Error');
     }
   } catch (err) {
-    console.warn('Gemini Text API Failed (Falling back to OpenAI):', err.message);
+    console.warn('Gemini Direct Fast-Track Failed, checking fallbacks:', err.message);
   }
-  */
 
+  // 2. Try OpenRouter (Secondary Cloud Fallback)
   try {
     const orKey = process.env.OPENROUTER_API_KEY;
     if (orKey) {
