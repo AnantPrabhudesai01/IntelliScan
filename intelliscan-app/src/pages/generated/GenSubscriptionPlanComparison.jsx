@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, X, Zap, Mail, ArrowRight, ChevronDown, ChevronUp, Star, ShieldCheck, Globe, Database, Cpu, Layers, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Check, X, Zap, Mail, ArrowRight, ChevronDown, ChevronUp, Star, ShieldCheck, Globe, Database, Cpu, Layers, Sparkles, AlertCircle, CheckCircle2, RefreshCw } from 'lucide-react';
 import { getStoredToken, safeReadStoredUser } from '../../utils/auth.js';
 import { useRole } from '../../context/RoleContext';
 import checkoutService from '../../utils/checkoutService';
