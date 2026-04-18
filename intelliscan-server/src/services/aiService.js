@@ -244,6 +244,7 @@ function runTesseractOcrInWorker({ base64Data, lang = 'eng', timeoutMs = 25000 }
 async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId, tier, allowTesseract = true }) {
   const base64Data = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
   const effectiveMime = mimeType || 'image/jpeg';
+  let lastError = 'No engines attempted';
 
   const modelStatuses = await dbAllAsync('SELECT type, status FROM ai_models');
   const isEngineActive = (type) => {
@@ -372,9 +373,13 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
           data.engine_used = `OpenRouter (${orModel})`;
           return { data };
         }
-        throw new Error(result.error?.message || 'OpenRouter API Error');
+        
+        // Detailed Error Capture
+        const errMsg = result.error?.message || response.statusText || 'Unknown OpenRouter Error';
+        throw new Error(`OpenRouter (${orModel}): ${errMsg}`);
       }
     } catch (err) {
+      lastError = err.message;
       console.error('OpenRouter Extraction Failed:', err.message);
     }
   }
@@ -390,11 +395,12 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
         return { data: { text: ocr.text, engine_used: 'Tesseract Offline' } };
       }
     } catch (err) {
+      lastError = `Tesseract: ${err.message}`;
       console.error('Tesseract Extraction Failed:', err.message);
     }
   }
 
-  return { error: 'All extraction engines failed', status: 500 };
+  return { error: `All extraction engines failed. Last error: ${lastError}`, status: 500 };
 }
 
 /**
