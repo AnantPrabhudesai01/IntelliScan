@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import apiClient from '../api/client';
-import { Camera, Lock, Monitor, Smartphone, Globe, Cloud, Blocks, MessageSquare, Plus, LogOut, Shield, RefreshCw, Trash2, Laptop, Check, ExternalLink, Settings2, X, Sparkles, User, Image as ImageIcon, Smartphone as PhoneIcon } from 'lucide-react';
+import { Camera, Lock, Monitor, Smartphone, Globe, Cloud, Blocks, MessageSquare, Plus, LogOut, Shield, RefreshCw, Trash2, Laptop, Check, ExternalLink, Settings2, X, Sparkles, User, Image as ImageIcon, Smartphone as PhoneIcon, Tablet, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getStoredToken, setStoredAuth } from '../utils/auth.js';
 import ConfirmationModal from '../components/common/ConfirmationModal';
@@ -14,11 +14,6 @@ export default function SettingsPage() {
   const [toast, setToast] = useState(null);
   const [savedProfile, setSavedProfile] = useState(false);
   
-  // Toast Helper
-  const showToast = (message, type = 'success') => {
-    setToast(message);
-    setTimeout(() => setToast(null), 3000);
-  };
   
   // New States
   const [profile, setProfile] = useState({
@@ -1154,11 +1149,6 @@ export default function SettingsPage() {
         {/* Notifications and Integrations */}
         {activeTab === 'Integrations' && (
           <section className="col-span-12 bg-white dark:bg-[#161c28] rounded-xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in">
-            {toast && (
-              <div className="fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl shadow-2xl text-sm font-bold text-white bg-green-600 flex items-center gap-3">
-                <Check size={16} /> {toast}
-              </div>
-            )}
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <Blocks className="text-indigo-600 dark:text-indigo-400" size={24} />
@@ -1281,8 +1271,7 @@ export default function SettingsPage() {
                            <button 
                             onClick={() => { 
                               navigator.clipboard.writeText(discoveryCode); 
-                              if (window.showToast) window.showToast('Code copied to clipboard!');
-                              else alert('Code copied: ' + discoveryCode);
+                              showToast('Code copied to clipboard!');
                             }}
                             className="p-3 bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 rounded-xl hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                             title="Copy Code"
@@ -1390,5 +1379,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-export default SettingsPage;
