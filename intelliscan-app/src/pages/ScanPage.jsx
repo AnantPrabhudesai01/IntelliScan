@@ -514,31 +514,46 @@ export default function ScanPage() {
             </button>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
-              <a 
-                href={`https://wa.me/14155238886?text=join%20baseball-eventually`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all gap-3 bg-[#25D366] text-white hover:bg-[#128C7E] shadow-xl shadow-green-500/20 active:scale-95 group flex items-center justify-center"
-              >
-                <MessageCircle size={16} className="group-hover:rotate-12 transition-transform" /> 1. Join Sandbox
-              </a>
-              <div className="bg-white dark:bg-gray-800 border border-emerald-500/30 px-4 py-2 rounded-2xl flex flex-col justify-center items-center shadow-lg">
-                <span className="text-[8px] font-black text-emerald-600 uppercase tracking-tighter">2. Send Code</span>
-                <span className="text-xs font-mono font-bold text-gray-900 dark:text-white">{discoveryCode}</span>
-              </div>
-            </div>
-            <div className="text-center space-y-1">
-              <Link 
-                to="/setup/whatsapp"
-                className="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:underline"
-              >
-                Setup Guide & Instructions
-              </Link>
-              <p className="text-[7px] text-gray-500 font-bold uppercase tracking-tighter">
-                Click join first, then send the IS-Code once Twilio replies.
-              </p>
+          {/* Premium WhatsApp Quick-Sync Widget */}
+          <div className="relative group/wsync">
+            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-indigo-500/20 rounded-3xl blur opacity-0 group-hover/wsync:opacity-100 transition duration-700"></div>
+            <div className="relative flex items-center gap-4 bg-white dark:bg-[#121214] border border-gray-200 dark:border-white/5 px-6 py-4 rounded-[1.5rem] shadow-xl">
+               <div className="flex -space-x-3">
+                  <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white border-2 border-white dark:border-[#121214] z-20 shadow-lg">
+                    <Smartphone size={18} />
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white border-2 border-white dark:border-[#121214] z-10 shadow-lg">
+                    <MessageCircle size={18} />
+                  </div>
+               </div>
+
+               <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">Mobile Sync Pool</p>
+                    <span className="text-[8px] font-black px-1.5 py-0.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded">V2 AI</span>
+                  </div>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium truncate">Scan cards directly from your phone</p>
+               </div>
+
+               <div className="flex items-center gap-2 border-l border-gray-100 dark:border-white/5 pl-4">
+                  <a 
+                    href={`https://wa.me/14155238886?text=${encodeURIComponent('join baseball-eventually')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
+                    title="1. Join Sandbox"
+                  >
+                    <Smartphone size={14} />
+                  </a>
+                  <a 
+                    href={`https://wa.me/14155238886?text=${encodeURIComponent(discoveryCode || 'IS-SCAN')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-600/30 transition-all hover:-translate-y-0.5"
+                  >
+                    <Zap size={14} /> Link Now
+                  </a>
+               </div>
             </div>
           </div>
         </div>

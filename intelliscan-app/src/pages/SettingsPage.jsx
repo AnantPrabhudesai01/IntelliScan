@@ -14,6 +14,12 @@ export default function SettingsPage() {
   const [toast, setToast] = useState(null);
   const [savedProfile, setSavedProfile] = useState(false);
   
+  // Toast Helper
+  const showToast = (message, type = 'success') => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
+  
   // New States
   const [profile, setProfile] = useState({
     name: '',
@@ -1211,215 +1217,170 @@ export default function SettingsPage() {
                 </div>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Add Service</p>
                 <p className="text-[10px] text-gray-400 mt-1">Browse Marketplace →</p>
-              </div>
-            </div>
+                     {activeTab === 'Communications' && (
+          <section className="col-span-12 bg-white dark:bg-[#111111] rounded-[2rem] p-8 md:p-12 border border-gray-200 dark:border-white/5 shadow-2xl animate-fade-in relative overflow-hidden">
+             {/* Background Effects */}
+             <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+             <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+             <div className="relative z-10 flex flex-col lg:flex-row gap-12">
+               {/* Left Side: Setup Wizard */}
+               <div className="lg:w-7/12 space-y-8">
+                  <div className="space-y-2">
+                    <h3 className="text-3xl font-black font-headline tracking-tighter text-gray-900 dark:text-white uppercase italic">WhatsApp Magic Link Setup</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Link your phone in seconds to start scanning cards on the go.</p>
+                  </div>
+
+                  <div className="space-y-0 relative">
+                    {/* Vertical Line */}
+                    <div className="absolute left-6 top-8 bottom-8 w-px bg-gradient-to-b from-indigo-500 via-gray-200 dark:via-gray-800 to-transparent border-dashed"></div>
+
+                    {/* Step 1 */}
+                    <div className="relative flex gap-8 pb-12 group">
+                      <div className="z-10 bg-indigo-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">1</div>
+                      <div className="space-y-3">
+                        <h4 className="text-lg font-bold text-gray-900 dark:text-white mt-2">Join the Sandbox</h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">Tap the button below to automatically send the activation command to our AI node.</p>
+                        <a 
+                          href="https://wa.me/14155238886?text=join%20baseball-eventually" 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => { startPhoneDiscovery(); showToast('Sandbox link opened!', 'info'); }}
+                          className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-white/5 border border-indigo-200 dark:border-white/10 hover:border-indigo-500 dark:hover:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all shadow-sm"
+                        >
+                          <Smartphone size={14} /> Open WhatsApp to Join
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Step 2 */}
+                    <div className="relative flex gap-8 pb-12 group">
+                      <div className="z-10 bg-gray-200 dark:bg-gray-800 text-gray-500 w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl group-hover:bg-indigo-600 group-hover:text-white transition-all">2</div>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 mt-2">
+                           <h4 className="text-lg font-bold text-gray-900 dark:text-white">Link Your Session</h4>
+                           <div className="px-3 py-1 bg-yellow-400/10 text-yellow-600 dark:text-yellow-400 text-[9px] font-black uppercase rounded-lg border border-yellow-400/20">Critical</div>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">Send your private session code. We've pre-filled it for you below—just one tap!</p>
+                        
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                           <a 
+                            href={`https://wa.me/14155238886?text=${encodeURIComponent(discoveryCode || 'IS-' + Math.floor(1000 + Math.random() * 9000))}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg hover:shadow-indigo-600/30 transition-all hover:-translate-y-0.5"
+                           >
+                            <MessageSquare size={14} /> Link Now (Auto-Send {discoveryCode})
+                           </a>
+                           
+                           <button 
+                            onClick={() => { 
+                              navigator.clipboard.writeText(discoveryCode); 
+                              if (window.showToast) window.showToast('Code copied to clipboard!');
+                              else alert('Code copied: ' + discoveryCode);
+                            }}
+                            className="p-3 bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 rounded-xl hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                            title="Copy Code"
+                           >
+                             <Copy size={14} />
+                           </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Step 3 */}
+                    <div className="relative flex gap-8 group">
+                      <div className={`z-10 w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl transition-all ${profile.phone_number ? 'bg-emerald-500 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-500'}`}>3</div>
+                      <div className="space-y-3">
+                        <h4 className="text-lg font-bold text-gray-900 dark:text-white mt-2">Check Connection</h4>
+                        <div className="flex items-center gap-4">
+                           {whatsappStatus.loading ? (
+                             <div className="flex items-center gap-2 text-xs font-bold text-gray-500 animate-pulse">
+                               <RefreshCw size={14} className="animate-spin" /> Verifying...
+                             </div>
+                           ) : profile.phone_number ? (
+                             <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-600 text-xs font-black uppercase border border-emerald-500/20 rounded-xl">
+                               <Check size={14} strokeWidth={4} /> Fully Linked ({profile.phone_number})
+                             </div>
+                           ) : (
+                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-white/5 text-gray-500 text-xs font-black uppercase border border-gray-200 dark:border-white/10 rounded-xl">
+                               Awaiting Connection
+                             </div>
+                           )}
+                           <button onClick={checkWhatsappConnectivity} className="p-2 text-gray-400 hover:text-indigo-600 transition-colors">
+                             <RefreshCw size={14} />
+                           </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+               </div>
+
+               {/* Right Side: Status & Settings */}
+               <div className="lg:w-5/12 space-y-6">
+                  {/* Status Panel */}
+                  <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl p-8 space-y-6">
+                     <div className="flex items-center justify-between">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Engine Status</p>
+                        {whatsappStatus.active ? (
+                          <div className="flex items-center gap-2">
+                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                             <span className="text-[10px] font-black text-emerald-500 tracking-widest">PROD LIVE</span>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] font-black text-amber-500 tracking-widest">MAINTENANCE</span>
+                        )}
+                     </div>
+
+                     <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                           <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                              <Sparkles size={18} className="text-indigo-600" />
+                           </div>
+                           <div>
+                              <p className="text-xs font-bold text-gray-900 dark:text-white">AI-Auto Scanning</p>
+                              <p className="text-[9px] text-gray-500 tracking-wide">Enabled for all incoming photos</p>
+                           </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                           <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                              <Shield size={18} className="text-emerald-500" />
+                           </div>
+                           <div>
+                              <p className="text-xs font-bold text-gray-900 dark:text-white">Secure Magic Links</p>
+                              <p className="text-[9px] text-gray-500 tracking-wide">Industry standard JWT protection</p>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="pt-4 border-t border-gray-200 dark:border-white/10 flex flex-col gap-3">
+                        <p className="text-[9px] font-medium text-gray-500 italic">"IntelliScan removes the friction between a handshake and your CRM. Just point, shoot, and let the AI do the sorting."</p>
+                        <button 
+                          onClick={() => navigate('/setup-guide')}
+                          className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-black font-black text-[9px] uppercase tracking-[0.1em] rounded-xl hover:opacity-90 transition-opacity"
+                        >
+                          View Advanced Setup Guide
+                        </button>
+                     </div>
+                  </div>
+
+                  {/* SMTP Panel Small */}
+                  <div className="bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-3xl p-8 text-white space-y-4 shadow-xl shadow-indigo-500/20">
+                     <div className="flex items-center gap-3">
+                        <RefreshCw size={24} />
+                        <h4 className="text-lg font-bold font-headline">SMTP Engine</h4>
+                     </div>
+                     <p className="text-xs opacity-80 leading-relaxed font-medium">Sync your professional email to send AI-drafted follow-ups instantly after a scan.</p>
+                     <div className="flex items-center justify-between bg-white/10 p-4 rounded-2xl border border-white/10">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-80">Server Status</span>
+                        <span className="text-[10px] font-black">{smtpVerified ? 'VERIFIED' : 'UNCONFIGURED'}</span>
+                     </div>
+                  </div>
+               </div>
+             </div>
           </section>
         )}
-
-        {activeTab === 'Communications' && (
-          <section className="col-span-12 bg-white dark:bg-[#161c28] rounded-xl p-8 border border-gray-200 dark:border-gray-800 shadow-sm animate-fade-in">
-             <div className="flex items-center gap-3 mb-8">
-                <MessageSquare className="text-indigo-600 dark:text-indigo-400" size={24} />
-                <h3 className="text-lg font-headline font-bold text-gray-900 dark:text-white">Email & Communication Servers</h3>
-             </div>
-             
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="space-y-6">
-                   <div className="space-y-4">
-                      <p className="text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">SMTP Host Settings</p>
-                      <div className="grid grid-cols-3 gap-4">
-                         <div className="col-span-2 space-y-2">
-                            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Mail Server Host</label>
-                            <input 
-                              className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
-                              placeholder="smtp.gmail.com"
-                              value={smtpConfig.host}
-                              onChange={(e) => setSmtpConfig({...smtpConfig, host: e.target.value})}
-                            />
-                         </div>
-                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Port</label>
-                            <input 
-                              className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
-                              placeholder="587"
-                              value={smtpConfig.port}
-                              onChange={(e) => setSmtpConfig({...smtpConfig, port: e.target.value})}
-                            />
-                         </div>
-                      </div>
-                      <div className="space-y-2">
-                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Authentication User</label>
-                         <input 
-                           className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
-                           placeholder="user@example.com"
-                           value={smtpConfig.user}
-                           onChange={(e) => setSmtpConfig({...smtpConfig, user: e.target.value})}
-                         />
-                      </div>
-                      <div className="space-y-2">
-                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Password / App Key</label>
-                         <input 
-                           className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
-                           type="password"
-                           placeholder="••••••••••••"
-                           value={smtpConfig.pass}
-                           onChange={(e) => setSmtpConfig({...smtpConfig, pass: e.target.value})}
-                         />
-                      </div>
-                   </div>
-
-                   <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                      <p className="text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Sender Identity</p>
-                      <div className="space-y-2">
-                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">From Name</label>
-                         <input 
-                           className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
-                           placeholder="Your Name / Company"
-                           value={smtpConfig.from_name}
-                           onChange={(e) => setSmtpConfig({...smtpConfig, from_name: e.target.value})}
-                         />
-                      </div>
-                      <div className="space-y-2">
-                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Verified From Email</label>
-                         <input 
-                           className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40"
-                           placeholder="outreach@company.com"
-                           value={smtpConfig.from_email}
-                           onChange={(e) => setSmtpConfig({...smtpConfig, from_email: e.target.value})}
-                         />
-                      </div>
-                   </div>
-
-                   <div className="pt-6 flex items-center gap-3">
-                      <button 
-                        onClick={handleTestSmtp}
-                        disabled={isTestingSmtp || !smtpConfig.host}
-                        className="px-6 py-2.5 rounded-xl border border-indigo-600 text-indigo-600 text-xs font-black uppercase tracking-widest hover:bg-indigo-50 dark:hover:bg-indigo-900/10 transition-all flex items-center gap-2 disabled:opacity-50"
-                      >
-                         {isTestingSmtp ? <RefreshCw className="animate-spin" size={14} /> : <RefreshCw size={14} />}
-                         Test Connection
-                      </button>
-                      <button 
-                        onClick={handleSaveSmtp}
-                        disabled={isSavingSmtp || !smtpVerified}
-                        className="px-8 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50"
-                      >
-                         {isSavingSmtp ? 'Saving...' : 'Save Settings'}
-                      </button>
-                   </div>
-                </div>
-
-                <div className="space-y-6">
-                   {/* WhatsApp Connect Block */}
-                   <div className="bg-indigo-50/50 dark:bg-indigo-900/10 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-900/20 relative overflow-hidden group">
-                      <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                         <Smartphone size={80} />
-                      </div>
-                      
-                      <div className="flex items-center justify-between mb-4">
-                         <p className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
-                            <MessageSquare size={14} /> WhatsApp Connect
-                         </p>
-                         {whatsappStatus.loading ? (
-                            <span className="flex items-center gap-1 text-[9px] font-bold text-gray-400">
-                               <RefreshCw size={10} className="animate-spin" /> Checking Sync...
-                            </span>
-                         ) : whatsappStatus.active ? (
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-[8px] font-black border border-emerald-500/20">
-                               ONLINE
-                            </span>
-                         ) : (
-                            <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 text-[8px] font-black border border-amber-500/20">
-                               OFFLINE / Action Required
-                            </span>
-                         )}
-                      </div>
-                      
-                      <div className="space-y-4 relative z-10">
-                         <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-                           Link your account to extract business cards via WhatsApp. Get instant AI scans and magic Excel exports directly on your phone.
-                         </p>
-
-                         <div className="flex flex-wrap items-center gap-3">
-                            <a 
-                              href={`https://wa.me/14155238886?text=join%20baseball-eventually`} 
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={() => startPhoneDiscovery()}
-                              className={`inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-emerald-600/30 transition-all active:scale-95 ${isPollingDiscovery ? 'ring-4 ring-emerald-500/20' : ''}`}
-                            >
-                              {isPollingDiscovery ? <RefreshCw className="animate-spin" size={14} /> : <MessageSquare size={14} />}
-                              {isPollingDiscovery ? '1. Syncing Heartbeat...' : '1. Join Sandbox'}
-                            </a>
-
-                            {discoveryCode && (
-                              <div className="px-4 py-3 bg-white dark:bg-gray-800 border border-indigo-100 dark:border-indigo-900 rounded-xl flex items-center gap-3 shadow-sm">
-                                 <span className="text-[9px] text-gray-400 uppercase font-black tracking-widest leading-none">2. Code:</span>
-                                 <span className="text-sm font-mono font-bold text-indigo-600 dark:text-indigo-400 select-all leading-none">{discoveryCode}</span>
-                              </div>
-                            )}
-                         </div>
-
-                         {isPollingDiscovery ? (
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-amber-600 dark:text-amber-400 animate-pulse">
-                               <RefreshCw size={12} className="animate-spin" /> Heartbeat active. Waiting for your WhatsApp message...
-                            </div>
-                         ) : profile.phone_number ? (
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                               <Check size={14} /> WhatsApp linked to {profile.phone_number}
-                            </div>
-                         ) : !whatsappStatus.loading && !whatsappStatus.active ? (
-                            <div className="text-[10px] text-amber-500 font-bold flex items-center gap-2 underline-offset-2">
-                               ⚠️ Engine Inactive. Please set ENABLE_WHATSAPP=true in Vercel.
-                               <button onClick={checkWhatsappConnectivity} className="underline hover:text-amber-600 ml-1">Retry Check</button>
-                            </div>
-                         ) : (
-                            <div className="text-[10px] text-gray-400 italic">
-                               Click Step 1 and then send your Session Code to link your number.
-                            </div>
-                         )}
-                      </div>
-                   </div>
-
-                   <div className="bg-gray-50 dark:bg-gray-900/40 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 flex flex-col justify-center">
-                   <div className="space-y-6">
-                      <div className="flex gap-4">
-                         <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 shrink-0">
-                            <Sparkles size={20} />
-                         </div>
-                         <div>
-                            <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Professional Outbound</h4>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">By using your own SMTP server, AI generated follow-up drafts will be sent directly from your professional address, improving deliverability and trust.</p>
-                         </div>
-                      </div>
-                      
-                      <div className="flex gap-4">
-                         <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 shrink-0">
-                            <Shield size={20} />
-                         </div>
-                         <div>
-                            <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Security Standards</h4>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">We support TLS (Port 587) and SSL (Port 465). For Gmail/Outlook, please ensure you use a dedicated <strong>App Password</strong> rather than your primary account password.</p>
-                         </div>
-                      </div>
-
-                      <div className="p-4 bg-white dark:bg-gray-850 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
-                         <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Workspace Integration Status</p>
-                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-bold dark:text-gray-200">Email Engine</span>
-                            {smtpVerified ? (
-                               <span className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 text-[9px] font-black uppercase border border-emerald-500/20 flex items-center gap-1">
-                                  <Check size={10} strokeWidth={4} /> Valid / Active
-                               </span>
-                            ) : (
-                               <span className="px-2 py-1 rounded-lg bg-gray-500/10 text-gray-500 text-[9px] font-black uppercase border border-gray-500/20">
-                                  Inactive
-                               </span>
-                            )}
-                         </div>
-                      </div>
-                   </div>
-                </div>
+         </div>
                 </div>
              </div>
           </section>
