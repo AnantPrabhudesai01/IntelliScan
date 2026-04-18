@@ -10,9 +10,13 @@ const {
   rupeesToPaise, 
   getRazorpayCredentials, 
   createRazorpayOrder, 
-  verifyRazorpaySignature 
+  verifyRazorpaySignature,
+  rupeesToPaise 
 } = require('../utils/billingUtils');
 const { createSmtpTransporterFromEnv } = require('../utils/smtp');
+
+// Check if we should allow simulated upgrades (no real payment)
+const ALLOW_SIMULATED = process.env.ALLOW_SIMULATED_PAYMENTS === 'true' || process.env.NODE_ENV === 'development';
 
 /**
  * GET /api/billing/plans
@@ -42,24 +46,31 @@ exports.createOrder = async (req, res) => {
     const notes = { user_id: req.user.id, workspace_id: scopeWorkspaceId, plan_id: plan.id };
 
     const creds = getRazorpayCredentials();
-    if (!creds) {
+    let orderId = `sim_${Date.now()}`;
+    let finalAmount = amountPaise;
+    let finalCurrency = currency;
+    let keyId = 'simulated_key';
+    let simulated = 1;
+
+    if (creds) {
+      const order = await createRazorpayOrder({ amountPaise, currency, receipt, notes });
+      orderId = order.id;
+      finalAmount = Number(order.amount || amountPaise);
+      finalCurrency = String(order.currency || currency);
+      keyId = creds.keyId;
+      simulated = 0;
+    } else if (!ALLOW_SIMULATED) {
       return res.status(503).json({ 
         error: 'RAZORPAY_NOT_CONFIGURED', 
         message: 'The payment gateway is not configured on the server. Please add RAZORPAY_KEY_ID to Vercel.' 
       });
     }
 
-    const order = await createRazorpayOrder({ amountPaise, currency, receipt, notes });
-    const orderId = order.id;
-    const finalAmount = Number(order.amount || amountPaise);
-    const finalCurrency = String(order.currency || currency);
-    const keyId = creds.keyId;
-
     await dbRunAsync(
       `INSERT INTO billing_orders
         (user_id, workspace_id, plan_id, amount_paise, currency, razorpay_order_id, status, simulated)
-       VALUES (?, ?, ?, ?, ?, ?, 'created', 0)`,
-      [req.user.id, scopeWorkspaceId, plan.id, finalAmount, finalCurrency, orderId]
+       VALUES (?, ?, ?, ?, ?, ?, 'created', ?)`,
+      [req.user.id, scopeWorkspaceId, plan.id, finalAmount, finalCurrency, orderId, simulated]
     );
 
     logAuditEvent(req, {
@@ -123,7 +134,9 @@ exports.verifyPayment = async (req, res) => {
       return res.status(404).json({ error: 'Order not found for this user' });
     }
 
-    if (!simulated) {
+    const isSimulatedOrder = Boolean(existingOrder.simulated);
+
+    if (!simulated && !isSimulatedOrder) {
       const creds = getRazorpayCredentials();
       if (!creds) return res.status(500).json({ error: 'Razorpay is not configured on the server.' });
       const valid = verifyRazorpaySignature({ orderId, paymentId, signature, keySecret: creds.keySecret });

@@ -81,6 +81,25 @@ export default function GenSubscriptionPlanComparison() {
   const [toast, setToast] = useState(null);
   
   const { tier, refreshAuth } = useRole();
+  const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch('/api/billing/plans');
+        if (res.ok) {
+          const data = await res.json();
+          setPlans(data.plans || []);
+        }
+      } catch (err) {
+        console.error('Failed to load plans:', err);
+      }
+      setLoading(false);
+    };
+    load();
+  }, []);
+
   const isLoggedIn = !!getStoredToken();
 
   const showToast = (msg, type = 'success') => {
@@ -99,22 +118,7 @@ export default function GenSubscriptionPlanComparison() {
       return;
     }
 
-    setIsProcessing(true);
-    try {
-      const result = await checkoutService.handleUpgrade(planId, setStatusText);
-      if (result.success) {
-        showToast(result.message || 'Payment Successful! Your account is being upgraded...');
-        // Force refresh the auth context to get the new token/tier
-        await refreshAuth();
-        setTimeout(() => navigate('/dashboard/scan'), 1500);
-      }
-    } catch (err) {
-      console.error('Upgrade error:', err);
-      showToast(err.message || 'Payment processing failed. Please try again.', 'error');
-    } finally {
-      setIsProcessing(false);
-      setStatusText(null);
-    }
+    navigate(`/dashboard/checkout/${planId}`);
   };
 
   return (
@@ -177,109 +181,75 @@ export default function GenSubscriptionPlanComparison() {
 
       {/* Pricing Grids */}
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch relative">
-        
-        {/* Starter Plan */}
-        <div className="group bg-white/5 border border-white/10 rounded-[32px] p-10 flex flex-col justify-between hover:bg-white/[0.07] hover:border-white/20 transition-all duration-500 hover:shadow-2xl shadow-indigo-500/5">
-          <div>
-            <div className="flex items-center justify-between mb-8">
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">PERSONAL</span>
-              <Layers size={20} className="text-gray-500" />
-            </div>
-            <h3 className="text-4xl font-extrabold italic tracking-tighter mb-2">Free</h3>
-            <div className="flex items-baseline gap-1 mb-6">
-              <span className="text-3xl font-black">₹0</span>
-              <span className="text-gray-500 text-xs font-bold uppercase">/ Forever</span>
-            </div>
-            <p className="text-gray-500 text-sm font-medium leading-relaxed mb-10">Essential tools for individual professionals building their first digital database.</p>
-            <ul className="space-y-4 mb-12">
-              {[
-                { label: '100 AI Credit Points / mo', ok: true },
-                { label: 'Gemini Flash Engine', ok: true },
-                { label: 'Basic CRM Export', ok: true },
-                { label: 'Standard Community Support', ok: true }
-              ].map((f, i) => (
-                <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-400">
-                  <Check size={16} className="text-indigo-500 stroke-[3px]" /> {f.label}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <button 
-            onClick={() => tier === 'personal' ? navigate('/dashboard/scan') : (isLoggedIn ? navigate('/dashboard/scan') : navigate('/sign-up'))} 
-            className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${tier === 'personal' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black'}`}
-          >
-            {tier === 'personal' ? <><Check size={16} strokeWidth={4} /> Current Plan</> : (isLoggedIn ? 'Access Scanner' : 'Create Free Account')}
-          </button>
-        </div>
+        {loading ? (
+          <div className="lg:col-span-3 text-center py-20 text-gray-500 font-bold">Loading Tier Catalog...</div>
+        ) : (
+          plans.map((p) => {
+            const isPro = p.id === 'pro';
+            const isEnt = p.id === 'enterprise';
+            const isCurrent = tier === p.id;
+            
+            return (
+              <div key={p.id} className={`group relative rounded-[32px] p-10 flex flex-col justify-between transition-all duration-500 hover:shadow-2xl shadow-indigo-500/5 ${
+                isPro 
+                ? 'bg-gradient-to-b from-indigo-600 to-indigo-800 shadow-indigo-600/20 hover:scale-[1.02] z-10 border border-white/10' 
+                : 'bg-white/5 border border-white/10 hover:bg-white/[0.07] hover:border-white/20'
+              }`}>
+                {isPro && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-[#161c28] px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-2xl">
+                    <Star size={12} className="fill-current" /> MOST RECOMMENDED
+                  </div>
+                )}
+                
+                <div>
+                  <div className="flex items-center justify-between mb-8">
+                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-white/5 ${isPro ? 'text-white/50 bg-black/10' : 'text-gray-500 bg-white/5'}`}>
+                      {p.badge || p.name.toUpperCase()}
+                    </span>
+                    {isPro ? <Cpu size={20} className="text-indigo-200" /> : isEnt ? <Globe size={20} className="text-gray-500" /> : <Layers size={20} className="text-gray-500" />}
+                  </div>
+                  
+                  <h3 className={`text-4xl font-extrabold italic tracking-tighter mb-2 ${isPro ? 'text-white' : ''}`}>{p.name}</h3>
+                  <div className="flex items-baseline gap-1 mb-6">
+                    {p.price === 0 ? (
+                      <span className={`text-4xl font-black italic ${isPro ? 'text-white' : ''}`}>Free</span>
+                    ) : (
+                      <>
+                        <span className={`text-3xl font-black ${isPro ? 'text-white' : 'text-white'}`}>₹{p.price.toLocaleString()}</span>
+                        <span className={`text-xs font-bold uppercase ${isPro ? 'text-indigo-200' : 'text-gray-500'}`}>/ {p.period || 'mo'}</span>
+                      </>
+                    )}
+                  </div>
+                  
+                  <p className={`text-sm font-medium leading-relaxed mb-10 ${isPro ? 'text-indigo-100/70' : 'text-gray-500'}`}>
+                    {p.id === 'personal' ? 'Essential tools for individual professionals building their first digital database.' : isPro ? 'Industrial-grade precision for high-volume networking and automated CRM delivery.' : 'Industrial scale scanning for organizations requiring dedicated infra and custom AI training.'}
+                  </p>
+                  
+                  <ul className="space-y-4 mb-12">
+                    {p.features?.map((f, i) => (
+                      <li key={i} className={`flex items-center gap-3 text-sm font-bold ${isPro ? 'text-white' : 'text-gray-400'}`}>
+                        <Check size={18} className={`${isPro ? 'text-indigo-200 bg-white/10 p-0.5 rounded-full' : 'text-indigo-500'} stroke-[3px]`} /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-        {/* Pro Plan */}
-        <div className="relative group bg-gradient-to-b from-indigo-600 to-indigo-800 rounded-[32px] p-10 flex flex-col justify-between shadow-2xl shadow-indigo-600/20 hover:scale-[1.02] transition-all duration-500 z-10 border border-white/10">
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-[#161c28] px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-2xl">
-            <Star size={12} className="fill-current" /> MOST RECOMMENDED
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-8">
-              <span className="text-[10px] font-black uppercase tracking-widest text-white/50 bg-black/10 px-3 py-1 rounded-full">PROFESSIONAL</span>
-              <Cpu size={20} className="text-indigo-200" />
-            </div>
-            <h3 className="text-4xl font-extrabold italic tracking-tighter text-white mb-2">Pro</h3>
-            <div className="flex items-baseline gap-1 mb-6">
-              <span className="text-5xl font-black text-white">₹49</span>
-              <span className="text-indigo-200 text-sm font-bold uppercase">/ mo</span>
-            </div>
-            <p className="text-indigo-100/70 text-sm font-medium leading-relaxed mb-10">Industrial-grade precision for high-volume networking and automated CRM delivery.</p>
-            <ul className="space-y-4 mb-12">
-              {[
-                '5,000 AI Credit Points / mo',
-                'Gemini Pro Vision Engine',
-                'Real-time CRM Sync (Live)',
-                'Priority Verification Support',
-                'Custom AI Identity Policy'
-              ].map((f, i) => (
-                <li key={i} className="flex items-center gap-3 text-sm font-bold text-white">
-                  <Check size={18} className="text-indigo-200 bg-white/10 p-0.5 rounded-full stroke-[3px]" /> {f}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <button onClick={() => handleUpgrade('pro')} className="w-full py-5 rounded-2xl bg-white text-indigo-600 font-black text-xs uppercase tracking-widest shadow-xl hover:bg-indigo-50 transition-all active:scale-[0.98] flex items-center justify-center gap-3">
-            <Zap size={16} fill="currentColor"/> {tier === 'pro' ? 'Current Plan' : 'UPGRADE NOW'}
-          </button>
-        </div>
-
-        {/* Enterprise Plan */}
-        <div className="group bg-white/5 border border-white/10 rounded-[32px] p-10 flex flex-col justify-between hover:bg-white/[0.07] hover:border-white/20 transition-all duration-500 hover:shadow-2xl shadow-indigo-500/5">
-          <div>
-            <div className="flex items-center justify-between mb-8">
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">ENTERPRISE</span>
-              <Globe size={20} className="text-gray-500" />
-            </div>
-            <h3 className="text-4xl font-extrabold italic tracking-tighter mb-2">Enterprise</h3>
-            <div className="flex items-baseline gap-1 mb-6">
-              <span className="text-3xl font-black font-headline tracking-tighter uppercase italic">CUSTOM</span>
-            </div>
-            <p className="text-gray-500 text-sm font-medium leading-relaxed mb-10">Industrial scale scanning for organizations requiring dedicated infra and custom AI training.</p>
-            <ul className="space-y-4 mb-12">
-              {[
-                'Unlimited Bulk Scans',
-                'SSO / SAML Security',
-                'Dedicated Success Manager',
-                'Whitelabel Card Systems',
-                'Workspace API Cluster'
-              ].map((f, i) => (
-                <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-400">
-                  <Check size={16} className="text-indigo-500 stroke-[3px]" /> {f}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <button 
-            onClick={() => tier === 'enterprise' ? navigate('/workspace/dashboard') : setShowSalesModal(true)} 
-            className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${tier === 'enterprise' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-600 hover:text-white'}`}
-          >
-            {tier === 'enterprise' ? <><Check size={16} strokeWidth={4} /> Current Plan</> : <><Mail size={16} /> TALK TO SALES</>}
-          </button>
-        </div>
+                <button 
+                  onClick={() => isEnt && !isCurrent ? setShowSalesModal(true) : handleUpgrade(p.id)} 
+                  className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
+                    isCurrent 
+                      ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' 
+                      : isPro 
+                        ? 'bg-white text-indigo-600 shadow-xl hover:bg-indigo-50' 
+                        : 'bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black'
+                  }`}
+                >
+                  {isCurrent ? <><Check size={16} strokeWidth={4} /> Current Plan</> : isEnt ? <><Mail size={16} /> TALK TO SALES</> : <><Zap size={16} /> Upgrade Now</>}
+                </button>
+              </div>
+            );
+          })
+        )}
       </div>
 
       {/* Detail Matrix */}

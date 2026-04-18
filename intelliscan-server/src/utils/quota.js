@@ -1,21 +1,18 @@
 const { dbGetAsync, dbRunAsync, isPostgres } = require('./db');
+const { BILLING_PLANS } = require('./billingUtils');
 
 /**
  * Resolves the scan limits based on user tier.
  */
 function resolveTierLimits(tier) {
   const normalizedTier = String(tier || 'personal').toLowerCase();
+  const plan = BILLING_PLANS.find(p => p.id === normalizedTier) || BILLING_PLANS[0];
   
-  if (normalizedTier === 'enterprise' || normalizedTier === 'business_admin' || normalizedTier === 'super_admin') {
-    return { single: 1000000, group: 1000000, tier: 'enterprise' };
-  }
-  
-  if (normalizedTier === 'pro') {
-    return { single: 5000, group: 100, tier: 'pro' };
-  }
-
-  // Personal / Starter
-  return { single: 100, group: 5, tier: 'personal' };
+  return { 
+    single: plan.limits.single, 
+    group: plan.limits.group, 
+    tier: plan.id 
+  };
 }
 
 /**

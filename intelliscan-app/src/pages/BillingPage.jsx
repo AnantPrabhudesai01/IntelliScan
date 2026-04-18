@@ -4,65 +4,58 @@ import { useNavigate } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
 import { getStoredToken, setStoredAuth } from '../utils/auth';
 
-const PLAN_FEATURES = {
-  personal: {
-    color: 'gray', icon: Shield, badge: 'Starter',
-    features: ['100 AI Credit Points / month', 'Gemini Flash Engine', 'Basic AI Follow-up Drafts', 'Community Documentation'],
-    limits: ['Manual CRM Export', 'No real-time sync']
-  },
-  pro: {
-    color: 'indigo', icon: Zap, badge: 'Advanced',
-    features: ['5,000 AI Credit Points / month', 'Gemini Pro Vision Engine', 'Real-time CRM Sync (Live)', 'Priority Verification Support', 'Custom AI Identity Policy', 'No Branding on Digital Cards'],
-    limits: ['Up to 10 Seats']
-  },
-  enterprise: {
-    color: 'amber', icon: Crown, badge: 'Scale',
-    features: ['Unlimited Credit Points', 'Custom AI Training (Your Industry)', 'Single Sign-On (SSO) & SAML', 'Global Workspace Audit Trails', 'Dedicated Account Manager', 'Bulk Team Member Workspaces'],
-    limits: []
-  }
+// Frontend definitions for icons and local mapping only
+const PLAN_ICONS = {
+  personal: { icon: Shield, color: 'text-gray-400', bg: 'bg-white/10' },
+  pro: { icon: Zap, color: 'text-indigo-400', bg: 'bg-indigo-500/20' },
+  enterprise: { icon: Crown, color: 'text-amber-400', bg: 'bg-amber-500/20' }
 };
 
 function PlanCard({ plan, currentTier, onUpgrade, loading }) {
-  const cfg = PLAN_FEATURES[plan.id] || PLAN_FEATURES.personal;
+  const cfg = PLAN_ICONS[plan.id] || PLAN_ICONS.personal;
   const IconComp = cfg.icon;
   const isCurrentPlan = currentTier === plan.id;
   const tierWeights = { personal: 0, pro: 1, enterprise: 2 };
   const isDowngrade = tierWeights[plan.id] < tierWeights[currentTier];
+  
   const colorMap = { gray: 'border-white/10 bg-white/5', indigo: 'border-indigo-500/30 bg-indigo-500/5', amber: 'border-amber-500/30 bg-amber-500/5' };
   const badgeMap = { Scale: 'bg-amber-500 text-white', Advanced: 'bg-indigo-600 text-white', Starter: 'bg-gray-700 text-gray-300' };
+  
+  const features = Array.isArray(plan.features) ? plan.features : [];
+  const negatives = Array.isArray(plan.negatives) ? plan.negatives : [];
 
   return (
-    <div className={`relative rounded-3xl border-2 ${colorMap[cfg.color]} p-8 flex flex-col shadow-2xl transition-all duration-300 hover:scale-[1.02] ${plan.id === 'pro' ? 'border-indigo-500 shadow-indigo-500/10' : ''}`}>
-      {cfg.badge && (
-        <span className={`absolute -top-3 left-8 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${badgeMap[cfg.badge]}`}>
-          {cfg.badge}
+    <div className={`relative rounded-[32px] border-2 ${colorMap[plan.color || 'gray']} p-8 flex flex-col shadow-2xl transition-all duration-300 hover:scale-[1.02] ${plan.id === 'pro' ? 'border-indigo-500 shadow-indigo-500/10' : ''}`}>
+      {plan.badge && (
+        <span className={`absolute -top-3 left-8 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${badgeMap[plan.badge] || 'bg-indigo-600 text-white'}`}>
+          {plan.badge}
         </span>
       )}
       <div className="flex items-center gap-3 mb-6 pt-2">
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${cfg.color === 'indigo' ? 'bg-indigo-500/20' : cfg.color === 'amber' ? 'bg-amber-500/20' : 'bg-white/10'}`}>
-          <IconComp size={24} className={cfg.color === 'indigo' ? 'text-indigo-400' : cfg.color === 'amber' ? 'text-amber-400' : 'text-gray-400'} />
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${cfg.bg}`}>
+          <IconComp size={24} className={cfg.color} />
         </div>
         <h3 className="font-headline font-black italic text-2xl text-white uppercase tracking-tighter">{plan.name}</h3>
       </div>
       <div className="mb-6">
         {plan.price === 0 ? (
-          <p className="text-4xl font-black text-white italic">Free</p>
+          <p className="text-4xl font-black text-white italic tracking-tighter">Free</p>
         ) : (
           <div className="flex items-baseline gap-1">
             <span className="text-2xl font-bold text-gray-500">₹</span>
             <span className="text-5xl font-black text-white italic tracking-tighter">{plan.price.toLocaleString()}</span>
-            <span className="text-gray-500 font-black text-xs uppercase ml-1">/ mo</span>
+            <span className="text-gray-500 font-black text-xs uppercase ml-1">/ month</span>
           </div>
         )}
       </div>
       <ul className="space-y-4 mb-10 flex-1">
-        {cfg.features.map(f => (
+        {features.map(f => (
           <li key={f} className="flex items-start gap-3 text-sm font-bold text-gray-300">
-            <CheckCircle2 size={18} className={`shrink-0 ${cfg.color === 'indigo' ? 'text-indigo-500' : cfg.color === 'amber' ? 'text-amber-500' : 'text-emerald-500'}`} />
+            <CheckCircle2 size={18} className={`shrink-0 ${plan.color === 'indigo' ? 'text-indigo-500' : plan.color === 'amber' ? 'text-amber-500' : 'text-emerald-500'}`} />
             {f}
           </li>
         ))}
-        {cfg.limits.map(l => (
+        {negatives.map(l => (
           <li key={l} className="flex items-start gap-3 text-sm font-medium text-gray-500">
             <X size={18} className="shrink-0 text-gray-600" />
             {l}
@@ -70,16 +63,16 @@ function PlanCard({ plan, currentTier, onUpgrade, loading }) {
         ))}
       </ul>
       {isCurrentPlan ? (
-        <div className="py-4 rounded-2xl bg-white/5 border border-white/10 text-center text-xs font-black uppercase tracking-widest text-indigo-400">Your Current Active Tier</div>
+        <div className="py-4 rounded-2xl bg-white/5 border border-white/10 text-center text-xs font-black uppercase tracking-widest text-indigo-400">Current Active Tier</div>
       ) : isDowngrade ? (
-        <div className="py-4 rounded-2xl border border-white/5 text-center text-xs font-black uppercase text-gray-600">Standard Access</div>
+        <button onClick={() => onUpgrade(plan.id)} className="py-4 rounded-2xl border border-white/5 hover:bg-white/5 transition-colors text-center text-xs font-black uppercase text-gray-400">Switch to {plan.name}</button>
       ) : (
         <button onClick={() => onUpgrade(plan.id)} disabled={loading}
           className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 ${
-            cfg.color === 'amber' ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xl shadow-amber-500/20'
+            plan.color === 'amber' ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xl shadow-amber-500/20'
             : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-500/20'
           } disabled:opacity-60`}>
-          {loading ? <RefreshCw size={16} className="animate-spin" /> : <><Sparkles size={16} /> Elevate to {plan.name}</>}
+          {loading ? <RefreshCw size={16} className="animate-spin" /> : <><Sparkles size={16} /> Upgrade to {plan.name}</>}
         </button>
       )}
     </div>
@@ -130,7 +123,7 @@ export default function BillingPage() {
   }, [token]);
 
   const handleUpgrade = (planId) => {
-    navigate('/subscription-plan-comparison');
+    navigate(`/dashboard/checkout/${planId}`);
   };
 
   const refreshPaymentMethods = async () => {

@@ -41,12 +41,14 @@ export default function CheckoutPage() {
       
       const orderRes = await fetch('/api/billing/create-order', { 
         method: 'POST', 
-        headers, 
+        headers: headers, 
         body: JSON.stringify({ plan: planId }) 
       });
       const orderPayload = await orderRes.json().catch(() => ({}));
       if (!orderRes.ok) throw new Error(orderPayload?.error || 'Failed to create payment order');
       const order = orderPayload;
+
+      const isSimulated = order.key_id === 'simulated_key';
 
       const applyVerifyResult = (result) => {
         if (result?.token && result?.user) {
@@ -57,6 +59,32 @@ export default function CheckoutPage() {
         }
       };
 
+      if (isSimulated) {
+        // Handle simulation on client side
+        setTimeout(async () => {
+          try {
+            const verifyRes = await fetch('/api/billing/verify-payment', {
+              method: 'POST', headers,
+              body: JSON.stringify({ 
+                order_id: order.order_id, 
+                simulated: true,
+                plan: planId 
+              })
+            });
+            const result = await verifyRes.json();
+            if (verifyRes.ok) applyVerifyResult(result);
+            else {
+               setMessage(result.error);
+               setProcessing(false);
+            }
+          } catch (e) {
+            setMessage('Simulation verification failed.');
+            setProcessing(false);
+          }
+        }, 2000);
+        return;
+      }
+
       const razorpayOptions = {
         key: order.key_id,
         amount: order.amount,
@@ -64,11 +92,6 @@ export default function CheckoutPage() {
         name: 'IntelliScan Premium',
         description: `Upgrade to ${order.plan_name}`,
         order_id: order.order_id,
-        prefill: {
-          name: '', // Ideally from user profile
-          email: '', // Ideally from user profile
-        },
-        theme: { color: '#4f46e5' },
         handler: async (response) => {
           const verifyRes = await fetch('/api/billing/verify-payment', {
             method: 'POST', headers,
@@ -98,7 +121,11 @@ export default function CheckoutPage() {
         document.body.appendChild(script);
       }
     } catch (err) {
-      setMessage(`Error: ${err.message}`);
+      if (err.message === 'RAZORPAY_NOT_CONFIGURED') {
+         setMessage('Payment gateway not configured. Contact admin for setup.');
+      } else {
+         setMessage(`Error: ${err.message}`);
+      }
       setProcessing(false);
     }
   };

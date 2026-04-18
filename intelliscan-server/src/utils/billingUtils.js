@@ -6,17 +6,21 @@ const crypto = require('crypto');
 const BILLING_PLANS = [
   {
     id: 'personal',
-    name: 'Free',
+    name: 'Personal',
     price: 0,
     currency: 'INR',
-    period: 'free',
+    period: 'month',
+    color: 'gray',
+    icon: 'Shield',
+    badge: 'Starter',
     features: [
-      '100 Credit Points / month', 
+      '100 Scan Credits / month', 
       'Gemini Flash OCR Engine',
       'Basic AI Follow-up Drafts',
       'Community Documentation'
     ],
-    limits: { single: 100, group: 5, ai_credits: 100 }
+    limits: { single: 100, group: 5, ai_credits: 100 },
+    negatives: ['Manual CRM Export', 'No real-time sync']
   },
   {
     id: 'pro',
@@ -24,15 +28,19 @@ const BILLING_PLANS = [
     price: 49,
     currency: 'INR',
     period: 'month',
+    color: 'indigo',
+    icon: 'Zap',
+    badge: 'Advanced',
     features: [
-      '5,000 Credit Points / month',
-      'Gemini Pro Vision (Ultra Precision)',
-      'Real-time CRM Sync (Salesforce/Sheets)',
-      'Priority Email Support',
-      'AI Personal Identity Policy',
+      '5,000 Scan Credits / month',
+      'Gemini Pro Vision Engine',
+      'Real-time CRM Sync (Live)',
+      'Priority Verification Support',
+      'Custom AI Identity Policy',
       'No Branding on Digital Cards'
     ],
-    limits: { single: 5000, group: 100, ai_credits: 5000 }
+    limits: { single: 5000, group: 100, ai_credits: 5000 },
+    negatives: ['Up to 10 Seats']
   },
   {
     id: 'enterprise',
@@ -40,15 +48,19 @@ const BILLING_PLANS = [
     price: 1999,
     currency: 'INR',
     period: 'month',
+    color: 'amber',
+    icon: 'Crown',
+    badge: 'Scale',
     features: [
-      'Unlimited Credit Points',
+      'Unlimited Scan Credits',
       'Custom AI Training (Your Industry)',
       'Single Sign-On (SSO) & SAML',
       'Global Workspace Audit Trails',
       'Dedicated Account Manager',
       'Bulk Team Member Workspaces'
     ],
-    limits: { single: 999999, group: 999999, ai_credits: -1 }
+    limits: { single: 1000000, group: 1000000, ai_credits: -1 },
+    negatives: []
   }
 ];
 
