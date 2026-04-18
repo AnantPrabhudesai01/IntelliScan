@@ -69,30 +69,38 @@ const { bootstrap } = require('./boot');
 let isBootstrapped = false;
 let bootPromise = null;
 
+let bootError = null;
+
 app.use(async (req, res, next) => {
-  // ⚡ Bypassing bootstrap for diagnostic routes to keep status visible
   const isDiagnostic = req.path.includes('/health') || req.path.includes('/public');
   if (isBootstrapped || isDiagnostic) return next();
   
-  // Prevent parallel boot calls
+  if (bootError && !isDiagnostic) {
+    return res.status(500).send(`[System] Initial Database Setup Failed: ${bootError.message}\n\nStack: ${bootError.stack}`);
+  }
+
   if (!bootPromise) {
     console.log('[System] Triggering cold-start database bootstrap...');
     bootPromise = bootstrap().then(() => {
       isBootstrapped = true;
       bootPromise = null;
+      bootError = null;
       console.log('[System] Bootstrap complete. Ready for traffic.');
     }).catch(err => {
       bootPromise = null;
+      bootError = err;
       console.error('❌ Critical Boot Failure:', err.message);
-      // We don't throw here to avoid crashing the whole process; 
-      // let the route handler decide what to do if tables are missing.
     });
   }
   
-  // If we're not a diagnostic route, wait for the boot to finish
   if (bootPromise) {
     await bootPromise;
   }
+
+  if (bootError) {
+    return res.status(500).send(`[System] Database Setup Failure: ${bootError.message}`);
+  }
+
   next();
 });
 

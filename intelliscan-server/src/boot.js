@@ -389,7 +389,10 @@ async function bootstrap() {
       { table: 'deals', column: 'workspace_id', type: 'INTEGER' },
       { table: 'deals', column: 'notes', type: 'TEXT' },
       { table: 'deals', column: 'updated_at', type: `${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}` },
-      { table: 'calendars', column: 'type', type: 'TEXT' }
+      { table: 'calendars', column: 'type', type: 'TEXT' },
+      { table: 'user_quotas', column: 'group_limit_amount', type: 'INTEGER DEFAULT 1' },
+      { table: 'user_quotas', column: 'group_scans_used', type: 'INTEGER DEFAULT 0' },
+      { table: 'sessions', column: 'is_active', type: 'BOOLEAN DEFAULT TRUE' }
     ];
 
     // 2.2 Bulk Column Metadata Fetch (Optimizes 30+ roundtrips into 1)
