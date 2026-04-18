@@ -360,5 +360,108 @@ router.post('/settings/smtp/test', authenticateToken, async (req, res) => {
     res.status(400).json({ error: `Connection failed: ${err.message}` });
   }
 });
+// ══════════════════════════════════════════════════════════════════
+// WORKSPACE BILLING ENDPOINTS (Required by BillingPage.jsx)
+// ══════════════════════════════════════════════════════════════════
+
+// GET /api/workspace/billing/overview
+router.get('/billing/overview', authenticateToken, async (req, res) => {
+  try {
+    const user = await dbGetAsync('SELECT id, tier, name, email FROM users WHERE id = ?', [req.user.id]);
+    const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
+    
+    const latestOrder = await dbGetAsync(
+      `SELECT plan_id, status, created_at, auto_pay FROM billing_orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 1`,
+      [req.user.id]
+    );
+
+    const quota = await dbGetAsync('SELECT used_count, limit_amount, group_scans_used, group_limit_amount FROM user_quotas WHERE user_id = ?', [req.user.id]);
+
+    res.json({
+      current_plan: user?.tier || 'personal',
+      workspace_id: scopeWorkspaceId,
+      auto_pay: latestOrder?.auto_pay === 1,
+      billing_cycle: latestOrder ? {
+        started_at: latestOrder.created_at,
+        period_label: 'Monthly'
+      } : null,
+      usage: {
+        scans_used: quota?.used_count || 0,
+        scans_limit: quota?.limit_amount || 100,
+        group_scans_used: quota?.group_scans_used || 0,
+        group_scans_limit: quota?.group_limit_amount || 1
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/workspace/billing/payment-methods
+router.get('/billing/payment-methods', authenticateToken, async (req, res) => {
+  try {
+    // Razorpay doesn't store cards server-side — return empty or simulated
+    res.json({ methods: [], message: 'Payment methods are managed by Razorpay at checkout.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/workspace/billing/invoices
+router.get('/billing/invoices', authenticateToken, async (req, res) => {
+  try {
+    const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
+    const invoices = await dbAllAsync(
+      `SELECT id, invoice_number, amount_cents, currency, status, issued_at FROM billing_invoices WHERE workspace_id = ? ORDER BY issued_at DESC LIMIT 50`,
+      [scopeWorkspaceId]
+    );
+    res.json(invoices || []);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/workspace/billing/invoices/export
+router.get('/billing/invoices/export', authenticateToken, async (req, res) => {
+  try {
+    const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
+    const invoices = await dbAllAsync(
+      `SELECT invoice_number, amount_cents, currency, status, issued_at FROM billing_invoices WHERE workspace_id = ? ORDER BY issued_at DESC`,
+      [scopeWorkspaceId]
+    );
+    
+    let csv = 'Invoice Number,Amount,Currency,Status,Date\n';
+    for (const inv of (invoices || [])) {
+      csv += `${inv.invoice_number},${(inv.amount_cents / 100).toFixed(2)},${inv.currency},${inv.status},${inv.issued_at}\n`;
+    }
+    
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=billing-history.csv');
+    res.send(csv);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/workspace/billing/invoices/:id/receipt
+router.get('/billing/invoices/:id/receipt', authenticateToken, async (req, res) => {
+  try {
+    const invoice = await dbGetAsync(
+      `SELECT * FROM billing_invoices WHERE id = ?`,
+      [req.params.id]
+    );
+    if (!invoice) return res.status(404).json({ error: 'Invoice not found' });
+    
+    res.json({
+      invoice_number: invoice.invoice_number,
+      amount: (invoice.amount_cents / 100).toFixed(2),
+      currency: invoice.currency,
+      status: invoice.status,
+      issued_at: invoice.issued_at
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;

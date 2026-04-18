@@ -288,17 +288,30 @@ async function bootstrap() {
       `CREATE TABLE IF NOT EXISTS billing_orders (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER NOT NULL REFERENCES users(id),
+        workspace_id INTEGER,
         plan_id TEXT NOT NULL,
-        amount INTEGER DEFAULT 0,
+        amount_paise INTEGER DEFAULT 0,
         currency TEXT DEFAULT 'INR',
         razorpay_order_id TEXT,
         razorpay_payment_id TEXT,
+        razorpay_signature TEXT,
         status TEXT DEFAULT 'created',
+        simulated INTEGER DEFAULT 0,
         auto_pay INTEGER DEFAULT 0,
         period_start ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
         period_end ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'},
         reminder_sent INTEGER DEFAULT 0,
-        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )`,
+      `CREATE TABLE IF NOT EXISTS billing_invoices (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        workspace_id INTEGER,
+        invoice_number TEXT UNIQUE,
+        amount_cents INTEGER DEFAULT 0,
+        currency TEXT DEFAULT 'INR',
+        status TEXT DEFAULT 'pending',
+        issued_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
       )`,
       `CREATE TABLE IF NOT EXISTS workspace_chats (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
@@ -414,7 +427,12 @@ async function bootstrap() {
       { table: 'calendars', column: 'type', type: 'TEXT' },
       { table: 'user_quotas', column: 'group_limit_amount', type: 'INTEGER DEFAULT 1' },
       { table: 'user_quotas', column: 'group_scans_used', type: 'INTEGER DEFAULT 0' },
-      { table: 'sessions', column: 'is_active', type: 'BOOLEAN DEFAULT TRUE' }
+      { table: 'sessions', column: 'is_active', type: 'BOOLEAN DEFAULT TRUE' },
+      { table: 'billing_orders', column: 'workspace_id', type: 'INTEGER' },
+      { table: 'billing_orders', column: 'amount_paise', type: 'INTEGER DEFAULT 0' },
+      { table: 'billing_orders', column: 'simulated', type: 'INTEGER DEFAULT 0' },
+      { table: 'billing_orders', column: 'razorpay_signature', type: 'TEXT' },
+      { table: 'billing_orders', column: 'updated_at', type: `${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}` }
     ];
 
     // 2.2 Bulk Column Metadata Fetch (Optimizes 30+ roundtrips into 1)
