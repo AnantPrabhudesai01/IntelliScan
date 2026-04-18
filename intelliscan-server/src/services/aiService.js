@@ -335,7 +335,7 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
         
         if (isMultiScan && orModel.includes('free')) {
           console.log('[AI Service] Dense scan detected. Upgrading to Gemini 1.5 Flash for accuracy.');
-          orModel = "google/gemini-1.5-flash"; // Industry standard for multi-card vision
+          orModel = "google/gemini-flash-1.5"; // Industry standard for multi-card vision
         }
 
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
