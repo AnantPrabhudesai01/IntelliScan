@@ -444,7 +444,7 @@ exports.getLists = async (req, res) => {
       const newList = { id: result.lastID, name: "All Scanned Contacts", description: "Automatically populated from your recent scans", contact_count: 0 };
       
       // Attempt to sync some contacts into this list
-      const recentContacts = await dbAllAsync("SELECT email, name, company FROM contacts WHERE user_id = ? AND is_deleted = 0 LIMIT 50", [req.user.id]);
+      const recentContacts = await dbAllAsync("SELECT email, name, company FROM contacts WHERE user_id = ? AND (is_deleted IS FALSE OR is_deleted IS NULL) LIMIT 50", [req.user.id]);
       for (const c of recentContacts) {
         await dbRunAsync("INSERT OR IGNORE INTO email_list_contacts (list_id, email, first_name, company) VALUES (?, ?, ?, ?)", [result.lastID, c.email, c.name?.split(' ')[0], c.company]);
       }

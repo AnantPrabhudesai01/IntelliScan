@@ -197,8 +197,8 @@ exports.exportContacts = (req, res) => {
             `SELECT c.*, u.name as scanner_name
              FROM contacts c
              LEFT JOIN users u ON c.user_id = u.id
-             WHERE u.workspace_id = ? OR c.user_id = ?
-             AND (c.is_deleted = 0 OR c.is_deleted IS NULL)
+             WHERE (u.workspace_id = ? OR c.user_id = ?)
+             AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
              ORDER BY c.scan_date DESC`,
             [workspaceId, req.user.id]
           );
