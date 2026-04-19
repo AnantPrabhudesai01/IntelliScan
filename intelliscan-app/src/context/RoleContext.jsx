@@ -11,6 +11,12 @@ export function RoleProvider({ children }) {
   const [role, setRole] = useState(initialToken ? (initialUser?.role || initialDecoded?.role || 'anonymous') : 'anonymous');
   const [tier, setTier] = useState(initialToken ? (initialUser?.tier || initialDecoded?.tier || 'personal') : 'personal');
   const [isAuthReady, setIsAuthReady] = useState(false);
+
+  // Derived Helpers (Source of Truth)
+  const normalizedTier = (tier || 'personal').toLowerCase();
+  const isFree = normalizedTier === 'personal';
+  const isPro = normalizedTier === 'pro';
+  const isEnterprise = normalizedTier === 'enterprise' || role === 'business_admin' || role === 'super_admin';
   const { logout, isLoading: isAuth0Loading, isAuthenticated: isAuth0Authenticated } = useAuth0();
 
   const refreshAuth = useCallback(async () => {
@@ -162,7 +168,17 @@ export function RoleProvider({ children }) {
   };
 
   return (
-    <RoleContext.Provider value={{ role, tier, isAuthReady, setRole: updateRole, refreshAuth, signOut }}>
+    <RoleContext.Provider value={{ 
+      role, 
+      tier: normalizedTier, 
+      isFree, 
+      isPro, 
+      isEnterprise, 
+      isAuthReady, 
+      setRole: updateRole, 
+      refreshAuth, 
+      signOut 
+    }}>
       {children}
     </RoleContext.Provider>
   );

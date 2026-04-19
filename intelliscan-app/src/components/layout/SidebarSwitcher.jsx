@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { User, Building, ChevronRight, Globe } from 'lucide-react';
+import { useRole } from '../../context/RoleContext';
 
 const SidebarSwitcher = ({ activeMode = 'personal', collapsed = false, isMobile = false }) => {
+  const { isPersonal: contextIsPersonal, isEnterprise } = useRole();
   const isPersonal = activeMode === 'personal';
   
   return (
@@ -18,15 +20,17 @@ const SidebarSwitcher = ({ activeMode = 'personal', collapsed = false, isMobile 
           {(!collapsed || isMobile) && <span>Personal</span>}
         </Link>
         
-        {/* Business Tab */}
-        <Link 
-          to="/workspace/dashboard"
-          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${!isPersonal ? 'bg-[var(--brand)] text-white shadow-lg shadow-[var(--brand)]/20' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
-          title="Business Workspace"
-        >
-          <Building size={14} />
-          {(!collapsed || isMobile) && <span>Business</span>}
-        </Link>
+        {/* Business Tab - Hidden for Pro/Free users per project requirement */}
+        {isEnterprise && (
+          <Link 
+            to="/workspace/dashboard"
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${!isPersonal ? 'bg-[var(--brand)] text-white shadow-lg shadow-[var(--brand)]/20' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
+            title="Business Workspace"
+          >
+            <Building size={14} />
+            {(!collapsed || isMobile) && <span>Business</span>}
+          </Link>
+        )}
       </div>
       
       {(!collapsed || isMobile) && (

@@ -20,7 +20,7 @@ function tierMeetsMin(tier, minTier) {
 
 export default function TierGuard({ children, minTier = 'personal', featureName = 'This feature' }) {
   const navigate = useNavigate();
-  const { role, tier, isAuthReady } = useRole();
+  const { role, tier, isPro, isEnterprise, isAuthReady } = useRole();
   const token = getStoredToken();
 
   if (!isAuthReady) {
@@ -36,11 +36,17 @@ export default function TierGuard({ children, minTier = 'personal', featureName 
   }
 
   // Admins always allowed
-  if (role === 'super_admin' || role === 'business_admin') {
+  if (isEnterprise) {
     return children;
   }
 
-  if (tierMeetsMin(tier, minTier)) {
+  const isProTarget = minTier.toLowerCase() === 'pro';
+  if (isProTarget && (isPro || isEnterprise)) {
+    return children;
+  }
+
+  // If minTier is personal, everyone is allowed (Rank 0)
+  if (minTier.toLowerCase() === 'personal') {
     return children;
   }
 

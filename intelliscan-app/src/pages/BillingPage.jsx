@@ -83,10 +83,10 @@ function PlanCard({ plan, currentTier, onUpgrade, loading }) {
 
 export default function BillingPage() {
   const navigate = useNavigate();
-  const { refreshAuth } = useRole();
+  const { tier: contextTier, refreshAuth } = useRole();
   const token = getStoredToken();
   const [plans, setPlans] = useState([]);
-  const [currentTier, setCurrentTier] = useState('personal');
+  const [currentTier, setCurrentTier] = useState(contextTier || 'personal');
   const [quota, setQuota] = useState(null);
   const [workspaceBilling, setWorkspaceBilling] = useState(null);
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -113,7 +113,8 @@ export default function BillingPage() {
         if (quotaRes.data) {
           const qData = quotaRes.data;
           setQuota(qData);
-          setCurrentTier(qData.tier || 'personal');
+          // Standardize tier detection: Prefer context (JWT) but allow quota (API) fallback
+          setCurrentTier(contextTier || qData.tier || 'personal');
         }
         if (overviewRes.data) setWorkspaceBilling(overviewRes.data);
         if (methodsRes.data?.methods) setPaymentMethods(methodsRes.data.methods);
@@ -122,9 +123,9 @@ export default function BillingPage() {
         console.error('Billing load failed:', e);
         // Fallback for plans if they are empty
         setPlans([
-          { id: 'personal', name: 'Personal', price: 0, badge: 'Starter', features: ['100 Scan Credits / month', 'Gemini Flash OCR Engine'] },
-          { id: 'pro', name: 'Pro', price: 49, badge: 'Advanced', features: ['5,000 Scan Credits / month', 'Gemini Pro Vision Engine'] },
-          { id: 'enterprise', name: 'Enterprise', price: 1999, badge: 'Scale', features: ['Unlimited Scan Credits', 'Custom AI Training'] }
+          { id: 'personal', name: 'Personal', price: 0, badge: 'Starter', features: ['100 Scan Credits / mo', 'Basic OCR Engine', 'Personal Workspace', 'Mobile Web App Access'] },
+          { id: 'pro', name: 'Pro', price: 49, badge: 'Advanced', features: ['5,000 Scan Credits / mo', 'Pro Vision AI Engine', 'AI Networking Coach', 'Digital Business Card', '24/7 Priority Support'] },
+          { id: 'enterprise', name: 'Enterprise', price: 1999, badge: 'Scale', features: ['Unlimited Scan Credits', 'Custom AI Training', 'Team Management', 'Export to any CRM', 'Priority API Access', 'Single Sign-On (SSO)'] }
         ]);
       }
       setLoading(false);

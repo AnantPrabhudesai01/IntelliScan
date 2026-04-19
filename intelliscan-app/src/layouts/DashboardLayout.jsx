@@ -18,7 +18,7 @@ export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
-  const { role, tier: contextTier, refreshAuth, signOut } = useRole();
+  const { role, tier, isPro, isEnterprise, refreshAuth, signOut } = useRole();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -33,11 +33,11 @@ export default function DashboardLayout() {
   };
 
   const workspaceTag =
-    user?.role === 'super_admin'
+    role === 'super_admin'
       ? 'ADM'
-      : quota?.tier === 'enterprise'
+      : isEnterprise
         ? 'ENT'
-        : quota?.tier === 'pro'
+        : isPro
           ? 'PRO'
           : 'FREE';
 
@@ -62,8 +62,8 @@ export default function DashboardLayout() {
     { to: '/dashboard/settings',    label: 'Settings',      icon: Settings },
   ];
 
-  const isEnterpriseOrHigher = (quota?.tier || '').toLowerCase() === 'enterprise' || user?.role === 'business_admin' || user?.role === 'super_admin';
-  const isProOrHigher = isEnterpriseOrHigher || (quota?.tier || '').toLowerCase() === 'pro';
+  const isEnterpriseOrHigher = isEnterprise;
+  const isProOrHigher = isEnterprise || isPro;
 
   // Plan gating (matches project docs: Free should not show Pro/Enterprise-only modules)
   const enterpriseOnlyLabels = ['Leaderboard', 'Analytics', 'Org Chart', 'Pipeline', 'Members'];
