@@ -127,7 +127,7 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1) !important;
+  background: rgba(255, 184, 0, 0.3) !important; /* Brand Gold (Soft) */
   border-radius: 20px !important;
   border: 2px solid transparent !important;
   background-clip: content-box !important;
@@ -135,17 +135,18 @@ html {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3) !important;
+  background: rgba(255, 184, 0, 0.6) !important; /* Brand Gold (Vibrant) */
 }
 
 /* Dark mode overrides for global scrollbar */
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 184, 0, 0.2) !important;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 184, 0, 0.4) !important; /* Brand glow on hover */
+  background: rgba(255, 184, 0, 0.7) !important; /* Bright Gold Glow on hover */
 }
+
 
 /* ── Specific Element Scrollbar Utilities ── */
 
