@@ -122,6 +122,10 @@ html {
   background: transparent !important;
 }
 
+::-webkit-scrollbar-button {
+  display: none !important;
+}
+
 ::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.1) !important;
   border-radius: 20px !important;
