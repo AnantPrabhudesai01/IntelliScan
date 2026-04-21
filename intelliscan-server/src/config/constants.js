@@ -13,5 +13,11 @@ module.exports = {
   PERSONAL_EMAIL_DOMAINS: new Set([
     'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 
     'icloud.com', 'aol.com', 'proton.me', 'protonmail.com'
-  ])
+  ]),
+  ADMIN_EMAILS: new Set(
+    (process.env.ADMIN_EMAILS || '')
+      .split(',')
+      .map(e => e.trim().toLowerCase())
+      .filter(e => e.length > 0)
+  )
 };

@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const passport = require('passport');
 const { z } = require('zod');
 const validate = require('../middleware/validate');
-const { JWT_SECRET, JWT_EXPIRES_IN, PERSONAL_EMAIL_DOMAINS } = require('../config/constants');
+const { JWT_SECRET, JWT_EXPIRES_IN, PERSONAL_EMAIL_DOMAINS, ADMIN_EMAILS } = require('../config/constants');
 const { dbRunAsync, dbGetAsync, dbAllAsync, sql, isPostgres } = require('../utils/db');
 const { ensureQuotaRow } = require('../utils/quota');
 const { logAuditEvent, AUDIT_SUCCESS, AUDIT_DENIED, AUDIT_ERROR } = require('../utils/logger');
@@ -318,15 +318,25 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       role = 'business_admin';
     }
 
+    // 🛡️ Super Admin Whitelist Override
+    if (ADMIN_EMAILS.has(email)) {
+      role = 'super_admin';
+      tier = 'pro'; // Admins get full features
+    }
+
     if (existingUser) {
       userId = existingUser.id;
-      role = existingUser.role;
-      tier = existingUser.tier;
+      // Overwrite role if whitelisted, otherwise keep existing
+      const targetRole = ADMIN_EMAILS.has(email) ? 'super_admin' : existingUser.role;
+      const targetTier = ADMIN_EMAILS.has(email) ? 'pro' : existingUser.tier;
+      
+      role = targetRole;
+      tier = targetTier;
       workspaceId = existingUser.workspace_id;
       
-      // Keep name synchronized if it changed in Auth0
-      if (name !== existingUser.name) {
-        await dbRunAsync('UPDATE users SET name = ? WHERE id = ?', [name, userId]);
+      // Keep identity synchronized
+      if (name !== existingUser.name || role !== existingUser.role || tier !== existingUser.tier) {
+        await dbRunAsync('UPDATE users SET name = ?, role = ?, tier = ? WHERE id = ?', [name, role, tier, userId]);
       }
     } else {
       // 1. Provision User
