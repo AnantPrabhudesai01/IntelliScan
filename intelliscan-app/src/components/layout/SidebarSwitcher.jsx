@@ -11,6 +11,7 @@ const SidebarSwitcher = ({ activeMode = 'personal', collapsed = false, isMobile 
     <div className={`px-3 py-4 ${collapsed && !isMobile ? 'flex flex-col items-center' : ''}`} style={{ minHeight: '80px' }}>
       <div className={`flex p-1 bg-black/40 rounded-xl border border-white/5 shadow-inner ${collapsed && !isMobile ? 'flex-col gap-2' : 'gap-1'}`}>
         {/* Personal Tab */}
+        <Link 
           to={role === 'super_admin' ? '/admin/dashboard' : '/dashboard/scan'}
           className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${isPersonal ? 'bg-[var(--brand)] text-white shadow-lg shadow-[var(--brand)]/20' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
           title={role === 'super_admin' ? "Platform Control Center" : "Personal Space"}

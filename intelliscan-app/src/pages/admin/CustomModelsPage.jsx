@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Cpu, Database, Play, Pause, Activity, Plus, Loader2, X, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Cpu, Database, Play, Pause, Activity, Plus, Loader2, X, CheckCircle, AlertCircle, Zap, ShieldCheck, PieChart, Info, BarChart3, TrendingDown, Target, Download } from 'lucide-react';
 import { getStoredToken } from '../../utils/auth.js';
+import DatasetVisualizer from '../../components/admin/DatasetVisualizer';
 
 export default function CustomModelsPage() {
   const [models, setModels] = useState([]);
@@ -154,6 +155,76 @@ export default function CustomModelsPage() {
           value={`${stats.vramUsage} GB`} 
           color="rose" 
         />
+      </div>
+
+      <DatasetVisualizer />
+
+      {/* Model Performance Comparison Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 shadow-sm">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-lg font-black italic tracking-tighter uppercase font-headline">Token Intelligence</h3>
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mt-1">Input vs. Output Efficiency</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-brand-500">
+              <PieChart size={20} />
+            </div>
+          </div>
+          <div className="space-y-6">
+             {[
+               { name: 'Gemini 2.0 Flash', input: '840k', output: '210k', efficiency: '98.2%' },
+               { name: 'Custom Finance V2', input: '1.2M', output: '440k', efficiency: '94.5%' },
+               { name: 'Legacy OCR-V1', input: '2.4M', output: '800k', efficiency: '82.1%' },
+             ].map(item => (
+               <div key={item.name} className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 group hover:border-brand-500/30 transition-all">
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-widest mb-1">{item.name}</p>
+                    <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest">In: {item.input} | Out: {item.output}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-black italic tracking-tighter text-brand-500">{item.efficiency}</p>
+                    <p className="text-[8px] text-emerald-500 font-black uppercase tracking-widest">Optimal</p>
+                  </div>
+               </div>
+             ))}
+          </div>
+        </div>
+
+        <div className="bg-[#0f172a] text-white rounded-3xl p-8 shadow-2xl relative overflow-hidden group border border-white/5">
+           <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-brand-500/20 blur-[100px] pointer-events-none group-hover:bg-brand-500/30 transition-colors" />
+           <div className="relative z-10 space-y-6 h-full flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
+                    <Zap size={24} className="text-brand-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black italic tracking-tighter uppercase font-headline text-white">Engine Velocity Matrix</h3>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Automated Cluster Optimization</p>
+                  </div>
+                </div>
+                <p className="text-xs text-white/60 leading-relaxed max-w-sm font-medium">
+                  The infrastructure currently achieves <span className="text-white font-bold">84,000 extractions/hr</span> with 99.4% uptime. GPU latency is stabilized at 12ms.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                    <p className="text-[8px] font-black uppercase tracking-widest text-white/40 mb-1">Compute Load</p>
+                    <p className="text-xl font-bold italic tracking-tighter">42%</p>
+                 </div>
+                 <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                    <p className="text-[8px] font-black uppercase tracking-widest text-white/40 mb-1">Cache Hit Rate</p>
+                    <p className="text-xl font-bold italic tracking-tighter">88.4%</p>
+                 </div>
+              </div>
+
+              <button className="w-full py-4 bg-brand-500 hover:bg-brand-400 transition-all rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-500/20 flex items-center justify-center gap-2">
+                 Fine-Tune New Cluster <BarChart3 size={14} />
+              </button>
+           </div>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">

@@ -5,6 +5,7 @@ import { useRole } from '../context/RoleContext';
 import { getStoredToken } from '../utils/auth';
 import apiClient from '../api/client';
 import { formatCurrency, CURRENCY_SYMBOL } from '../utils/currency';
+import ApiUsagePredictor from '../components/billing/ApiUsagePredictor';
 
 // Frontend definitions for icons and local mapping only
 const PLAN_ICONS = {
@@ -309,6 +310,8 @@ export default function BillingPage() {
           </div>
         )}
       </div>
+
+      <ApiUsagePredictor />
 
       {/* Plans */}
       <div>

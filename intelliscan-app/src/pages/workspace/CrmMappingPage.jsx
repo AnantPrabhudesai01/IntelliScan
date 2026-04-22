@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Database, RefreshCw, ArrowRight, Save, Check, Plus,
   Globe, Plug, Shield, Sparkles, XCircle, Trash2,
-  CheckCircle2, AlertCircle, Loader2, Link2, Unlink, Code2
+  CheckCircle2, AlertCircle, Loader2, Link2, Unlink, Code2,
+  Download, Target
 } from 'lucide-react';
 import { getStoredToken } from '../../utils/auth';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
@@ -60,6 +61,7 @@ export default function CrmMappingPage() {
   const [syncLog, setSyncLog] = useState([]);
   const [lastSyncTime, setLastSyncTime] = useState(null);
   const [totalContacts, setTotalContacts] = useState(null);
+  const [conflictStrategy, setConflictStrategy] = useState('smart_fill'); // smart_fill, overwrite, always_new
 
   const [loading, setLoading] = useState({ page: true, save: false, sync: false, export: false, connect: false });
   const [toast, setToast] = useState(null);
@@ -435,6 +437,50 @@ export default function CrmMappingPage() {
         </div>
       </div>
 
+      {/* ── Conflict Resolution Strategy ──────────────────────────────────── */}
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-[2.5rem] p-10 shadow-sm relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-10 opacity-[0.02] pointer-events-none group-hover:opacity-[0.04] transition-opacity">
+           <Code2 size={180} />
+        </div>
+        <div className="flex flex-col lg:flex-row gap-10 items-start relative z-10">
+          <div className="flex-1 space-y-4">
+             <div className="flex items-center gap-3">
+               <div className="p-3 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-amber-500">
+                 <Target size={20} />
+               </div>
+               <h3 className="text-xl font-headline font-black italic uppercase tracking-tight text-[var(--text-main)]">Conflict Resolution Protocol</h3>
+             </div>
+             <p className="text-[11px] text-[var(--text-muted)] font-medium leading-relaxed max-w-xl">
+               Define how the IntelliScan neural engine handles existing nodes in your CRM destination. Neural matching is performed via Email and Company Fingerprint.
+             </p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-3/5">
+            {[
+              { id: 'smart_fill', name: 'Smart Fill', desc: 'Only populate empty fields', icon: Sparkles },
+              { id: 'overwrite', name: 'Force Overwrite', desc: 'Sync always wins over CRM', icon: Zap },
+              { id: 'always_new', name: 'Always Create', desc: 'Bypass matching completely', icon: Plus },
+            ].map(strategy => (
+              <button
+                key={strategy.id}
+                onClick={() => setConflictStrategy(strategy.id)}
+                className={`p-5 rounded-2xl border text-left transition-all ${
+                  conflictStrategy === strategy.id
+                    ? 'border-amber-500 bg-amber-500/5 shadow-lg shadow-amber-500/5'
+                    : 'border-[var(--border-subtle)] bg-[var(--surface-card)] hover:border-gray-400'
+                }`}
+              >
+                <strategy.icon size={16} className={`mb-3 ${conflictStrategy === strategy.id ? 'text-amber-500' : 'text-[var(--text-muted)]'}`} />
+                <p className={`text-[10px] font-black uppercase tracking-widest ${conflictStrategy === strategy.id ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)]'}`}>
+                  {strategy.name}
+                </p>
+                <p className="text-[9px] text-[var(--text-muted)] mt-1 font-medium italic">{strategy.desc}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* ── Field Mapping Table ───────────────────────────────────────────── */}
       <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] shadow-2xl overflow-hidden premium-grain">
         {/* Column Headers */}
@@ -563,6 +609,25 @@ export default function CrmMappingPage() {
         </div>
         Extend Field Matrix
       </button>
+
+      {/* ── Predictive Sync Handshake (New Strategy) ────────────────────── */}
+      <div className="bg-[var(--brand)]/5 border border-[var(--brand)]/10 rounded-[2.5rem] p-8 flex items-center justify-between group hover:bg-[var(--brand)]/10 transition-all premium-grain">
+         <div className="flex items-center gap-6">
+            <div className="w-14 h-14 rounded-2xl bg-white dark:bg-gray-900 shadow-xl flex items-center justify-center text-[var(--brand)] border border-[var(--border-subtle)]">
+              <RefreshCw size={24} className="group-hover:rotate-180 transition-transform duration-700" />
+            </div>
+            <div>
+              <h4 className="text-[12px] font-black uppercase tracking-widest text-[var(--text-main)]">Predictive Handshake Volume</h4>
+              <p className="text-[10px] text-[var(--text-muted)] font-medium mt-1">
+                Estimated throughput: <span className="text-[var(--brand)] font-extrabold italic uppercase tracking-tighter">1,200 nodes</span> in next sync cycle.
+              </p>
+            </div>
+         </div>
+         <div className="flex items-center gap-4 px-6 py-2 bg-white/50 dark:bg-black/20 rounded-full border border-white dark:border-white/5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">Matrix Optimal</span>
+         </div>
+      </div>
 
       {/* ── Sync Activity Log ─────────────────────────────────────────────── */}
       <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-[2.5rem] p-10 shadow-xl premium-grain">

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CalendarDays, ChevronDown, Bell, Zap, Users, BarChart2, Cpu, FileText, RefreshCw, ArrowUpRight, MessageCircle } from 'lucide-react';
+import GlobalIntelligenceMap from '../components/analytics/GlobalIntelligenceMap';
+import NeuralExtractionHeatmap from '../components/analytics/NeuralExtractionHeatmap';
 import { useNavigate } from 'react-router-dom';
 import { getStoredToken } from '../utils/auth';
 
@@ -171,6 +173,12 @@ export default function WorkspaceDashboard() {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Advanced Analytics & Heatmaps */}
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+        <GlobalIntelligenceMap />
+        <NeuralExtractionHeatmap />
       </div>
 
       {/* Live Activity Feed — REAL DATA */}
