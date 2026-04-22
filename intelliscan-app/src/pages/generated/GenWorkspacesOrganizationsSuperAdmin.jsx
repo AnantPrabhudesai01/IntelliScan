@@ -114,6 +114,7 @@ export default function GenWorkspacesOrganizationsSuperAdmin() {
   const enterpriseTiers = orgs.filter(o => o.tier === 'enterprise').length;
   const monthlyScans = globalStats.scans || orgs.reduce((sum, o) => sum + (o.scans || 0), 0);
   const totalUsers = globalStats.users || orgs.reduce((sum, o) => sum + (o.used_seats || 0), 0);
+  const avgSeatUtil = globalStats.avg_seat_util || (totalOrgs > 0 ? ((totalUsers / (totalOrgs * 20)) * 100).toFixed(1) : 0);
 
 
   const filteredOrgs = orgs.filter(o => {
