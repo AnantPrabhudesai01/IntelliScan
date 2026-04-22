@@ -169,9 +169,3 @@ export default function GenAdvancedApiExplorerSandbox() {
     </div>
   );
 }
-
-
-
-    </div>
-  );
-}
