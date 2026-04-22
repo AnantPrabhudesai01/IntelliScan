@@ -1,4 +1,5 @@
 const twilio = require('twilio');
+const { JWT_SECRET } = require('../config/constants');
 const { dbGetAsync, dbRunAsync, isPostgres } = require('../utils/db');
 const { ensureQuotaRow, resolveTierLimits } = require('../utils/quota');
 const { unifiedExtractionPipeline } = require('../services/aiService');
@@ -95,7 +96,7 @@ exports.webhook = async (req, res) => {
       const jwt = require('jsonwebtoken');
       const exportToken = jwt.sign(
         { id: user.id, purpose: 'magic_export' }, 
-        process.env.JWT_SECRET, 
+        JWT_SECRET, 
         { expiresIn: '15m' }
       );
       
