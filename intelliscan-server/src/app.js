@@ -45,7 +45,7 @@ const marketingRouter = require('./routes/marketing');
 const calendarRouter = require('./routes/calendar');
 const workspaceRouter = require('./routes/workspaceRoutes');
 const cronRouter = require('./routes/cron');
-const cardRouter = require('./routes/cardRouter');
+const cardRouter = require('./routes/cards');
 const coachRouter = require('./routes/coach');
 const analyticsRouter = require('./routes/analytics');
 const systemRouter = require('./routes/system');
@@ -54,7 +54,7 @@ const integrationsRouter = require('./routes/integrations');
 
 // Controllers
 const scanController = require('./controllers/scanController');
-const cardController = require('./controllers/cardController');
+const cardController = require('./controllers/cardsController');
 
 const app = express();
 app.set('trust proxy', 1);

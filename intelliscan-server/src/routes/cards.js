@@ -32,4 +32,11 @@ router.post('/generate-logo', authenticateToken, cardsController.generateAiLogo)
  */
 router.post('/upload-logo', authenticateToken, upload.single('logo'), cardsController.uploadLogo);
 
+/**
+ * @route POST /api/cards/generate-design
+ * @desc Generate an AI-powered design configuration.
+ * @access Private
+ */
+router.post('/generate-design', authenticateToken, cardsController.generateAiDesign);
+
 module.exports = router;

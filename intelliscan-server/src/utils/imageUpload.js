@@ -14,7 +14,8 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 
 async function uploadToImgbb(base64Data) {
   if (!process.env.IMGBB_API_KEY) throw new Error('IMGBB_API_KEY is not configured in .env');
   const base64Content = base64Data.includes(',') ? base64Data.split(',')[1] : base64Data;
-  const formData = new URLSearchParams();
+  
+  const formData = new FormData();
   formData.append('key', process.env.IMGBB_API_KEY);
   formData.append('image', base64Content);
 

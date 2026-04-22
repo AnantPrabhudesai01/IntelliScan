@@ -53,7 +53,8 @@ exports.saveCard = async (req, res) => {
 
 exports.generateAiDesign = async (req, res) => {
   try {
-    const { name, title, company, industry, vibe } = req.body;
+    const { firstName, lastName, name: providedName, title, company, industry, vibe } = req.body;
+    const name = providedName || `${firstName || ''} ${lastName || ''}`.trim() || 'Professional';
 
     const aiPrompt = `You are a professional premium brand designer. Generate a high-end digital business card configuration for:
 Name: ${name}
