@@ -13,9 +13,11 @@ import {
   Clock,
   CheckCircle2,
   Calendar,
-  Contact2
+  Contact2,
+  IndianRupee
 } from 'lucide-react';
 import { getStoredToken } from '../../utils/auth';
+import { formatCurrency, CURRENCY_SYMBOL } from '../../utils/currency';
 
 const STAGES = ['Prospect', 'Qualified', 'Proposal', 'Negotiation', 'Closed'];
 
@@ -128,7 +130,7 @@ export default function PipelinePage() {
              </div>
              <div>
                 <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Total Pipeline</p>
-                <p className="text-xl font-black text-gray-900 dark:text-white font-headline">${stats.totalValue.toLocaleString()}</p>
+                <p className="text-xl font-black text-gray-900 dark:text-white font-headline">{CURRENCY_SYMBOL}{formatCurrency(stats.totalValue)}</p>
              </div>
           </div>
           
@@ -138,7 +140,7 @@ export default function PipelinePage() {
              </div>
              <div>
                 <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Closed Won</p>
-                <p className="text-xl font-black text-gray-900 dark:text-white font-headline">${stats.closedValue.toLocaleString()}</p>
+                <p className="text-xl font-black text-gray-900 dark:text-white font-headline">{CURRENCY_SYMBOL}{formatCurrency(stats.closedValue)}</p>
              </div>
           </div>
         </div>
@@ -179,7 +181,7 @@ export default function PipelinePage() {
                   <h3 className="font-extrabold text-gray-900 dark:text-white uppercase tracking-tighter text-sm">{stage}</h3>
                   <span className="bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-[10px] font-black px-2 py-0.5 rounded-full">{stageContacts.length}</span>
                 </div>
-                <p className="text-[10px] font-black text-brand-600 dark:text-brand-400">${stageValue.toLocaleString()}</p>
+                <p className="text-[10px] font-black text-brand-600 dark:text-brand-400">{CURRENCY_SYMBOL}{formatCurrency(stageValue)}</p>
               </div>
 
               <div className={`flex-1 rounded-3xl p-3 border border-dashed transition-all duration-300 space-y-4 ${
@@ -215,8 +217,8 @@ export default function PipelinePage() {
                     
                     <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
                        <div className="flex items-center gap-1 text-[10px] font-black text-brand-600 dark:text-brand-400">
-                          <DollarSign size={10} />
-                          {(contact.deal_value || 0).toLocaleString()}
+                          <IndianRupee size={10} />
+                          {formatCurrency(contact.deal_value || 0)}
                        </div>
                        <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
                           <Calendar size={10} />
@@ -266,7 +268,7 @@ export default function PipelinePage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2 block">Deal Value ($)</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2 block">Deal Value ({CURRENCY_SYMBOL})</label>
                     <input 
                       type="number" 
                       value={dealForm.value}

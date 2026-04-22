@@ -268,7 +268,7 @@ export default function AdminLayout({ role = 'business_admin' }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
-  const { signOut } = useRole();
+  const { role: actualRole, signOut } = useRole();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -319,13 +319,12 @@ export default function AdminLayout({ role = 'business_admin' }) {
       {/* Mode Switcher */}
       <SidebarSwitcher activeMode={role === 'super_admin' ? 'platform' : 'business'} collapsed={false} isMobile={isMobile} />
 
-      {/* Role Badge */}
       <div className="px-3 pt-3 pb-1.5 shrink-0">
         <span className={`text-[9px] font-bold px-2 py-1 rounded w-full flex justify-center tracking-wider
-          ${role === 'super_admin'
+          ${actualRole === 'super_admin'
             ? 'bg-purple-500/20 text-purple-300'
             : 'bg-brand/30 text-brand-200'}`}>
-          {role === 'super_admin' ? 'SUPER ADMIN' : 'ENTERPRISE ADMIN'}
+          {actualRole === 'super_admin' ? 'PLATFORM CONTROLLER' : 'ENTERPRISE ADMIN'}
         </span>
       </div>
 
@@ -471,7 +470,7 @@ export default function AdminLayout({ role = 'business_admin' }) {
         {/* Desktop Slim Header */}
         <header className="hidden lg:flex h-12 items-center justify-between px-5 bg-white dark:bg-[#1A1A2E] border-b border-gray-200 dark:border-gray-800 shadow-sm z-10">
           <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-            <span className="text-gray-400 dark:text-gray-500">{role === 'super_admin' ? 'Platform' : 'Workspace'}</span>
+            <span className="text-gray-400 dark:text-gray-500">{actualRole === 'super_admin' ? 'PLATFORM CORE' : 'WORKSPACE'}</span>
             <ChevronRight size={14} className="text-gray-300 dark:text-gray-600" />
             <span className="font-semibold text-gray-800 dark:text-white capitalize">
               {location.pathname.split('/').pop()?.replace(/-/g, ' ') || 'Overview'}

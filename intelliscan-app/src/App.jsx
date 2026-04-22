@@ -272,6 +272,7 @@ export default function App() {
               <Route path="/workspace/shared" element={<SharedRolodexPage />} />
               <Route path="/workspace/pipeline" element={<PipelinePage />} />
               <Route path="/workspace/webhooks" element={<WebhookManagement />} />
+              <Route path="/workspace/settings" element={<SettingsPage />} />
             </Route>
 
             {/* ── SUPER ADMIN (Persistent Layout) ── */}
@@ -283,6 +284,7 @@ export default function App() {
               <Route path="/admin/custom-models" element={<CustomModelsPage />} />
               <Route path="/admin/integration-health" element={<JobQueuesPage />} />
               <Route path="/admin/job-queues" element={<JobQueuesPage />} />
+              <Route path="/admin/settings" element={<SettingsPage />} />
               
               {/* Auto-routes for Super Admin */}
               {generatedRoutes

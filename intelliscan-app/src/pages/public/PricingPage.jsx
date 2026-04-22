@@ -4,10 +4,7 @@ import PublicLayout from '../../layouts/PublicLayout';
 import { getStoredToken } from '../../utils/auth';
 import apiClient from '../../api/client';
 
-function formatRupees(amount) {
-  const n = Number(amount) || 0;
-  return n.toLocaleString('en-IN');
-}
+import { formatCurrency, CURRENCY_SYMBOL } from '../../utils/currency';
 
 export default function PricingPage() {
   const [plans, setPlans] = useState([]);
@@ -75,8 +72,8 @@ export default function PricingPage() {
                       <p className="text-5xl font-black text-white italic tracking-tighter">Free</p>
                     ) : (
                       <div className="flex items-baseline gap-1">
-                        <span className="text-white/40 font-bold text-xl">₹</span>
-                        <span className="text-5xl font-black text-white italic tracking-tighter">{formatRupees(p.price)}</span>
+                        <span className="text-white/40 font-bold text-xl">{CURRENCY_SYMBOL}</span>
+                        <span className="text-5xl font-black text-white italic tracking-tighter">{formatCurrency(p.price)}</span>
                         <span className="text-white/40 font-bold text-xs uppercase ml-1">/ month</span>
                       </div>
                     )}

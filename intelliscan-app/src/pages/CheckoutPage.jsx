@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { RefreshCw, ArrowLeft, ShieldCheck, Check, CreditCard } from 'lucide-react';
 import { getStoredToken, setStoredAuth } from '../utils/auth';
 import { useRole } from '../context/RoleContext';
+import { formatCurrency, CURRENCY_SYMBOL } from '../utils/currency';
 
 export default function CheckoutPage() {
   const { planId } = useParams();
@@ -182,7 +183,7 @@ export default function CheckoutPage() {
                   <p className="text-[10px] font-black text-[var(--brand)] uppercase tracking-widest">Master Pipeline</p>
                   <p className="text-sm font-black italic tracking-tight text-[var(--text-main)] uppercase font-headline">IntelliScan {planDetails.name}</p>
                 </div>
-                <span className="font-headline font-black text-lg text-[var(--text-main)]">₹{planDetails.price.toLocaleString()}</span>
+                <span className="font-headline font-black text-lg text-[var(--text-main)]">{CURRENCY_SYMBOL}{formatCurrency(planDetails.price)}</span>
               </div>
               
               <div className="flex justify-between items-center py-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">
@@ -192,7 +193,7 @@ export default function CheckoutPage() {
               
               <div className="pt-8 mt-2 border-t border-[var(--border-strong)] flex justify-between items-end">
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)] pb-1">Atomic Total</span>
-                <span className="text-4xl font-headline font-black italic text-[var(--brand)] tracking-tighter">₹{planDetails.price.toLocaleString()}</span>
+                <span className="text-4xl font-headline font-black italic text-[var(--brand)] tracking-tighter">{CURRENCY_SYMBOL}{formatCurrency(planDetails.price)}</span>
               </div>
             </div>
           </div>
@@ -256,7 +257,7 @@ export default function CheckoutPage() {
               {processing ? (
                 <><RefreshCw size={20} className="animate-spin" /> Committing Architecture...</>
               ) : (
-                <>Deploy Infrastructure ₹{planDetails.price.toLocaleString()}</>
+                <>Deploy Infrastructure {CURRENCY_SYMBOL}{formatCurrency(planDetails.price)}</>
               )}
             </button>
             <p className="text-center text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] mt-6 relative z-10 opacity-50">Handcrafted Protocol • Subject to Terms</p>

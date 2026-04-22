@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useRole } from '../context/RoleContext';
 import { getStoredToken } from '../utils/auth';
 import apiClient from '../api/client';
+import { formatCurrency, CURRENCY_SYMBOL } from '../utils/currency';
 
 // Frontend definitions for icons and local mapping only
 const PLAN_ICONS = {
@@ -49,8 +50,8 @@ function PlanCard({ plan, currentTier, onUpgrade, loading }) {
           <p className="text-4xl font-headline font-black text-[var(--text-main)] italic tracking-tighter">Selection</p>
         ) : (
           <div className="flex items-baseline gap-1">
-            <span className="text-xl font-bold text-[var(--text-muted)]">₹</span>
-            <span className="text-5xl font-headline font-black text-[var(--text-main)] italic tracking-tighter">{plan.price.toLocaleString()}</span>
+            <span className="text-xl font-bold text-[var(--text-muted)]">{CURRENCY_SYMBOL}</span>
+            <span className="text-5xl font-headline font-black text-[var(--text-main)] italic tracking-tighter">{formatCurrency(plan.price)}</span>
             <span className="text-[var(--text-muted)] font-black text-[10px] uppercase ml-2">/ cycle</span>
           </div>
         )}
