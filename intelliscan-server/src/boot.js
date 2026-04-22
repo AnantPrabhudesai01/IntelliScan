@@ -256,6 +256,17 @@ async function bootstrap() {
         is_active INTEGER DEFAULT 1,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
       )`,
+      `CREATE TABLE IF NOT EXISTS scanner_links (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER REFERENCES users(id),
+        workspace_id INTEGER,
+        name TEXT NOT NULL,
+        slug TEXT UNIQUE NOT NULL,
+        is_active INTEGER DEFAULT 1,
+        scan_count INTEGER DEFAULT 0,
+        settings_json ${isPostgres ? 'JSONB' : 'TEXT'} DEFAULT '{}',
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )`,
       `CREATE TABLE IF NOT EXISTS webhook_logs (
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         webhook_id INTEGER REFERENCES webhooks(id),

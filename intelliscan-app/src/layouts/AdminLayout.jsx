@@ -317,7 +317,7 @@ export default function AdminLayout({ role = 'business_admin' }) {
       </div>
 
       {/* Mode Switcher */}
-      <SidebarSwitcher activeMode="business" collapsed={false} isMobile={isMobile} />
+      <SidebarSwitcher activeMode={role === 'super_admin' ? 'platform' : 'business'} collapsed={false} isMobile={isMobile} />
 
       {/* Role Badge */}
       <div className="px-3 pt-3 pb-1.5 shrink-0">

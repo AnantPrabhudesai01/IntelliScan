@@ -4,7 +4,7 @@ import { User, Building, ChevronRight, Globe } from 'lucide-react';
 import { useRole } from '../../context/RoleContext';
 
 const SidebarSwitcher = ({ activeMode = 'personal', collapsed = false, isMobile = false }) => {
-  const { isPersonal: contextIsPersonal, isEnterprise } = useRole();
+  const { role, isEnterprise } = useRole();
   const isPersonal = activeMode === 'personal';
   
   return (
@@ -14,10 +14,10 @@ const SidebarSwitcher = ({ activeMode = 'personal', collapsed = false, isMobile 
         <Link 
           to="/dashboard/scan"
           className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${isPersonal ? 'bg-[var(--brand)] text-white shadow-lg shadow-[var(--brand)]/20' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
-          title="Personal Space"
+          title={role === 'super_admin' ? "Platform Administration" : "Personal Space"}
         >
           <User size={14} />
-          {(!collapsed || isMobile) && <span>Personal</span>}
+          {(!collapsed || isMobile) && <span>{role === 'super_admin' ? 'SYSTEM' : 'Personal'}</span>}
         </Link>
         
         {/* Business Tab - Hidden for Pro/Free users per project requirement */}
@@ -25,10 +25,10 @@ const SidebarSwitcher = ({ activeMode = 'personal', collapsed = false, isMobile 
           <Link 
             to="/workspace/dashboard"
             className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${!isPersonal ? 'bg-[var(--brand)] text-white shadow-lg shadow-[var(--brand)]/20' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
-            title="Business Workspace"
+            title={role === 'super_admin' ? "Global Infrastructure Control" : "Business Workspace"}
           >
             <Building size={14} />
-            {(!collapsed || isMobile) && <span>Business</span>}
+            {(!collapsed || isMobile) && <span>{role === 'super_admin' ? 'PLATFORM' : 'Business'}</span>}
           </Link>
         )}
       </div>
@@ -38,10 +38,10 @@ const SidebarSwitcher = ({ activeMode = 'personal', collapsed = false, isMobile 
           <div className="flex flex-col">
             <div className="flex items-center gap-1">
                <Globe size={8} className={isPersonal ? 'text-brand-400' : 'text-blue-400'} />
-               <span className="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">{isPersonal ? 'Personal Area' : 'Workspace HQ'}</span>
+               <span className="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">{role === 'super_admin' ? 'PLATFORM CORE' : (isPersonal ? 'Personal Area' : 'Workspace HQ')}</span>
             </div>
             <span className="text-[10px] font-bold text-white truncate max-w-[110px]">
-              {isPersonal ? 'My Private Desk' : 'IntelliScan Global'}
+              {role === 'super_admin' ? 'IntelliScan Global' : (isPersonal ? 'My Private Desk' : 'Enterprise Hub')}
             </span>
           </div>
           <ChevronRight size={10} className="text-white/20 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />

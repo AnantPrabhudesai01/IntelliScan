@@ -183,6 +183,7 @@ app.get('/api/my-card', authenticateToken, cardController.getMyCard);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/signals', analyticsRouter);
 app.use('/api/integrations', integrationsRouter);
+app.use('/api/scanner-links', require('./routes/scannerLinks'));
 
 // Centralized Error Handling
 app.use((err, req, res, next) => {

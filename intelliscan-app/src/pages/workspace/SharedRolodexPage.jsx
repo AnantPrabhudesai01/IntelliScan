@@ -1,4 +1,4 @@
-import { Users, Filter, Download, Lock, Building2, MessageSquare, Send, X, MousePointer2, AlertTriangle, Mail, Check, RefreshCw } from 'lucide-react';
+import { Users, Filter, Download, Lock, Building2, MessageSquare, Send, X, MousePointer2, AlertTriangle, Mail, Check, RefreshCw, ArrowRight } from 'lucide-react';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
