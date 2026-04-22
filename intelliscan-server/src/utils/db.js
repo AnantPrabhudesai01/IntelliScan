@@ -143,6 +143,19 @@ async function dbExecAsync(sql) {
   return pgPool.query(sql);
 }
 
+/** Check if a column exists in a table (Postgres specific) */
+async function dbHasColumn(table, column) {
+  try {
+    const res = await pgPool.query(`
+      SELECT 1 FROM information_schema.columns 
+      WHERE table_name = $1 AND column_name = $2
+    `, [table, column]);
+    return res.rowCount > 0;
+  } catch (err) {
+    return false;
+  }
+}
+
 module.exports = {
   db,
   pgPool,
@@ -151,6 +164,7 @@ module.exports = {
   dbAllAsync,
   dbRunAsync,
   dbExecAsync,
+  dbHasColumn,
   // Dialect-aware SQL snippets (PostgreSQL only now)
   sql: {
     now: 'CURRENT_TIMESTAMP',
@@ -163,3 +177,4 @@ module.exports = {
       `(${startCol} - (${minCol} * interval '1 minute')) <= CURRENT_TIMESTAMP`
   }
 };
+

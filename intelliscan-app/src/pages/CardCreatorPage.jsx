@@ -57,8 +57,10 @@ export default function CardCreatorPage() {
   const [generating, setGenerating] = useState(false);
   const [generatingLogo, setGeneratingLogo] = useState(false);
   const [aiDesign, setAiDesign] = useState(null);
+  const [logoConcept, setLogoConcept] = useState('');
   const [saved, setSaved] = useState(false);
   const [toast, setToast] = useState('');
+
   const cardRef = useRef(null);
 
   useEffect(() => {
@@ -105,10 +107,12 @@ export default function CardCreatorPage() {
       const data = await res.json();
       if (data.success) {
         setLogoUrl(data.logoUrl);
+        if (data.concept) setLogoConcept(data.concept);
         showToast('✦ Premium Logo Generated!');
       } else {
         throw new Error(data.error);
       }
+
     } catch (err) {
       showToast('Logo seed failed — please try again');
     } finally {
@@ -366,17 +370,25 @@ export default function CardCreatorPage() {
                 </div>
 
                 {/* LOGO AREA */}
-                <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden group">
-                  {logoUrl ? (
-                    <img src={logoUrl} alt="Logo" className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
-                  ) : (
-                    <div className="flex flex-col items-center opacity-20">
-                      <ImageIcon size={20} />
-                      <span className="text-[8px] font-black uppercase tracking-tighter mt-1">Logo</span>
+                <div className="flex flex-col items-end gap-3">
+                  <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden group">
+                    {logoUrl ? (
+                      <img src={logoUrl} alt="Logo" className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
+                    ) : (
+                      <div className="flex flex-col items-center opacity-20">
+                        <ImageIcon size={20} />
+                        <span className="text-[8px] font-black uppercase tracking-tighter mt-1">Logo</span>
+                      </div>
+                    )}
+                  </div>
+                  {logoConcept && (
+                    <div className="max-w-[120px] text-right">
+                       <p className="text-[6px] font-black uppercase tracking-widest text-brand-400 opacity-60 leading-tight">AI CONCEPT VERIFIED</p>
                     </div>
                   )}
                 </div>
               </div>
+
 
               <div className="flex justify-between items-end">
                 <div className="space-y-1.5 opacity-40">

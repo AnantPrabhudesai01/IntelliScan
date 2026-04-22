@@ -193,21 +193,38 @@ exports.exportContacts = (req, res) => {
         const allMappings = [...fieldMappings, ...customFields];
 
         try {
-          const contacts = await dbAllAsync(
-            `SELECT c.*, u.name as scanner_name
-             FROM contacts c
-             LEFT JOIN users u ON c.user_id = u.id
-             WHERE (u.workspace_id = ? OR c.user_id = ?)
-             AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
-             ORDER BY c.scan_date DESC`,
-            [workspaceId, req.user.id]
-          );
+          // Check if workspace_id column exists in users table to prevent crash on older schemas
+          const { dbHasColumn } = require('../utils/db');
+          const hasWorkspaceId = await dbHasColumn('users', 'workspace_id');
+          
+          let sql;
+          let params;
+          
+          if (hasWorkspaceId) {
+            sql = `SELECT c.*, u.name as scanner_name
+                   FROM contacts c
+                   LEFT JOIN users u ON c.user_id = u.id
+                   WHERE (u.workspace_id = ? OR c.user_id = ?)
+                   AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
+                   ORDER BY c.scan_date DESC`;
+            params = [workspaceId, req.user.id];
+          } else {
+            // Fallback for older schemas where workspace_id might be missing
+            sql = `SELECT c.*, 'System' as scanner_name
+                   FROM contacts c
+                   WHERE c.user_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
+                   ORDER BY c.scan_date DESC`;
+            params = [req.user.id];
+          }
+
+          const contacts = await dbAllAsync(sql, params);
 
           // PRO LOGIC: Check for direct API connection
           const integration = await dbGetAsync(
             'SELECT is_active, config_json FROM workspace_integrations WHERE workspace_id = ? AND app_id = ?',
             [workspaceId, provider]
           );
+
 
           if (integration && integration.is_active) {
             // Attempt Direct Push

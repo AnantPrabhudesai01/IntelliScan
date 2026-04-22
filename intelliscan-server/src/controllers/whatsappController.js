@@ -113,7 +113,13 @@ exports.webhook = async (req, res) => {
       
       const exportUrl = `${finalProtocol}://${cleanDomain}/api/contacts/export/magic?token=${exportToken}`;
       
-      return sendWhatsAppReply(From, `✨ *Your Magic Excel Export is ready!*\n\nThis file is attached below. You can also download it from the cloud link if needed.\n\n📥 *Cloud Link:* \n${exportUrl}\n\n🔗 *Visit Dashboard:* \n${rawDomain}/dashboard/contacts\n\n_(Link expires in 15 minutes)_`, exportUrl);
+      // 🚀 Send Text Message First (Guarantees user gets the link even if attachment fails)
+      const message = `✨ *Your Magic Excel Export is ready!*\n\n📥 *Cloud Link (Click to Download):* \n${exportUrl}\n\n🔗 *Visit Dashboard:* \n${rawDomain}/dashboard/contacts\n\n_(Link expires in 15 minutes)_`;
+      await sendWhatsAppReply(From, message);
+
+      // 📎 Then attempt to send as an actual file attachment
+      return sendWhatsAppReply(From, `Here is your Excel file:`, exportUrl);
+
     }
 
     if (body === 'help' || body === 'guide') {

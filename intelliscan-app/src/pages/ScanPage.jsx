@@ -367,10 +367,15 @@ export default function ScanPage() {
       window.dispatchEvent(new Event('quota-update'));
     } catch (err) {
       console.error('Fetch Error:', err);
-      setErrorMsg(err.message || 'Failed to process group image.');
+      let friendlyMsg = err.message || 'Failed to process group image.';
+      if (friendlyMsg.includes('JSON') || friendlyMsg.includes('malformed')) {
+        friendlyMsg = "Dense Scan Analysis Failed: The AI response was too complex or truncated. Please try taking the photo closer to the cards or split the group into two smaller photos for better accuracy.";
+      }
+      setErrorMsg(friendlyMsg);
     } finally {
       setIsScanning(false);
     }
+
   };
 
   const saveMultiCard = async (card, idx) => {

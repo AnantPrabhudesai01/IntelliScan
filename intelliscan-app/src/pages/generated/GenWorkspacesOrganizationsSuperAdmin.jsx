@@ -1,29 +1,45 @@
-import React, { useState } from 'react';
-import { Building2, Crown, Activity, Users, Plus, Settings, CreditCard, Trash2, MoreVertical, X, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Building2, Crown, Activity, Users, Plus, Settings, CreditCard, Trash2, MoreVertical, X, Check, Loader2 } from 'lucide-react';
+import { getStoredToken } from '../../utils/auth.js';
 
 const REGIONS = ['North America', 'Europe', 'Asia', 'South America', 'Middle East'];
 const INDUSTRIES = ['Logistics', 'Aerospace', 'FinTech', 'Healthcare', 'SaaS', 'Retail', 'Education'];
-const PLAN_TIERS = ['Enterprise', 'Professional', 'Free Tier'];
-
-const INITIAL_ORGS = [
-  { id: 1, name: 'Nebula Tech Corp', region: 'North America', industry: 'Logistics', tier: 'Enterprise', maxSeats: 50, usedSeats: 45, scans: 452301, status: 'Active' },
-  { id: 2, name: 'Aether Dynamics', region: 'Europe', industry: 'Aerospace', tier: 'Professional', maxSeats: 50, usedSeats: 12, scans: 88140, status: 'Delinquent' },
-  { id: 3, name: 'Vertex Solutions', region: 'Asia', industry: 'FinTech', tier: 'Free Tier', maxSeats: 5, usedSeats: 5, scans: 2100, status: 'Inactive' },
-  { id: 4, name: 'Quantum Leap Labs', region: 'North America', industry: 'Healthcare', tier: 'Enterprise', maxSeats: 200, usedSeats: 152, scans: 1402890, status: 'Active' },
-  { id: 5, name: 'Solaris Data', region: 'Europe', industry: 'SaaS', tier: 'Professional', maxSeats: 50, usedSeats: 30, scans: 320000, status: 'Active' },
-];
+const PLAN_TIERS = ['enterprise', 'pro', 'personal'];
 
 function AddOrgModal({ onClose, onAdd }) {
-  const [form, setForm] = useState({ name: '', region: REGIONS[0], industry: INDUSTRIES[0], tier: 'Enterprise' });
-  const handleSubmit = (e) => {
+  const [form, setForm] = useState({ name: '', owner_email: '', tier: 'enterprise' });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim()) return;
-    const maxSeats = form.tier === 'Enterprise' ? 200 : form.tier === 'Professional' ? 50 : 5;
-    onAdd({ id: Date.now(), ...form, maxSeats, usedSeats: 0, scans: 0, status: 'Active' });
-    onClose();
+    if (!form.name.trim() || !form.owner_email.trim()) return;
+    
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/workspaces', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getStoredToken()}`
+        },
+        body: JSON.stringify(form)
+      });
+      const data = await res.json();
+      if (data.success) {
+        onAdd();
+        onClose();
+      } else {
+        alert(data.error || 'Failed to create organization');
+      }
+    } catch (err) {
+      alert('Network error');
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm pt-20" onClick={onClose}>
       <div className="bg-[#1a2035] border border-white/10 rounded-2xl p-8 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-white">Add Organization</h2>
@@ -36,35 +52,25 @@ function AddOrgModal({ onClose, onAdd }) {
               className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               placeholder="e.g. Acme Corp" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 block">Region</label>
-              <select value={form.region} onChange={e => setForm(f => ({ ...f, region: e.target.value }))}
-                className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                {REGIONS.map(r => <option key={r}>{r}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 block">Industry</label>
-              <select value={form.industry} onChange={e => setForm(f => ({ ...f, industry: e.target.value }))}
-                className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                {INDUSTRIES.map(i => <option key={i}>{i}</option>)}
-              </select>
-            </div>
+          <div>
+            <label className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 block">Owner Email (Must exist) *</label>
+            <input required type="email" value={form.owner_email} onChange={e => setForm(f => ({ ...f, owner_email: e.target.value }))}
+              className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              placeholder="admin@acme.com" />
           </div>
           <div>
             <label className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 block">Plan Tier</label>
             <div className="grid grid-cols-3 gap-2">
               {PLAN_TIERS.map(t => (
                 <button key={t} type="button" onClick={() => setForm(f => ({ ...f, tier: t }))}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${form.tier === t ? 'bg-brand-600 border-brand-500 text-white' : 'bg-[#0d1117] border-white/10 text-gray-300 hover:border-brand-500/50'}`}>
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all uppercase ${form.tier === t ? 'bg-brand-600 border-brand-500 text-white' : 'bg-[#0d1117] border-white/10 text-gray-300 hover:border-brand-500/50'}`}>
                   {t}
                 </button>
               ))}
             </div>
           </div>
-          <button type="submit" className="w-full mt-2 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
-            <Check size={18} /> Create Organization
+          <button type="submit" disabled={loading} className="w-full mt-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
+            {loading ? <Loader2 className="animate-spin" size={18} /> : <><Check size={18} /> Create Organization</>}
           </button>
         </form>
       </div>
@@ -73,22 +79,46 @@ function AddOrgModal({ onClose, onAdd }) {
 }
 
 export default function GenWorkspacesOrganizationsSuperAdmin() {
-  const [orgs, setOrgs] = useState(INITIAL_ORGS);
+  const [orgs, setOrgs] = useState([]);
+  const [globalStats, setGlobalStats] = useState({ workspaces: 0, users: 0, scans: 0, models: 0, calls_30d: 0 });
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All Entities');
   const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState(null);
 
-  // Derive stats from actual data
-  const totalOrgs = orgs.length;
-  const enterpriseTiers = orgs.filter(o => o.tier === 'Enterprise').length;
-  const monthlyScans = orgs.reduce((sum, o) => sum + o.scans, 0);
-  const avgSeatUtil = orgs.length > 0
-    ? Math.round(orgs.reduce((sum, o) => sum + (o.maxSeats > 0 ? (o.usedSeats / o.maxSeats) * 100 : 0), 0) / orgs.length)
-    : 0;
+  const fetchOrgs = async () => {
+    try {
+      const token = getStoredToken();
+      const [orgsRes, statsRes] = await Promise.all([
+        fetch('/api/admin/workspaces', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/admin/stats', { headers: { 'Authorization': `Bearer ${token}` } })
+      ]);
+      
+      const orgsData = await orgsRes.json();
+      const statsData = await statsRes.json();
+      
+      if (orgsData.success) setOrgs(orgsData.workspaces);
+      if (statsData.success) setGlobalStats(statsData.stats);
+    } catch (err) {
+      console.error('Fetch failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrgs();
+  }, []);
+
+  const totalOrgs = globalStats.workspaces || orgs.length;
+  const enterpriseTiers = orgs.filter(o => o.tier === 'enterprise').length;
+  const monthlyScans = globalStats.scans || orgs.reduce((sum, o) => sum + (o.scans || 0), 0);
+  const totalUsers = globalStats.users || orgs.reduce((sum, o) => sum + (o.used_seats || 0), 0);
+
 
   const filteredOrgs = orgs.filter(o => {
     if (filter === 'Delinquent') return o.status === 'Delinquent';
-    if (filter === 'Trialing') return o.tier === 'Free Tier';
+    if (filter === 'Trialing') return o.tier === 'personal';
     return true;
   });
 
@@ -97,14 +127,26 @@ export default function GenWorkspacesOrganizationsSuperAdmin() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const handleAdd = (org) => {
-    setOrgs(prev => [org, ...prev]);
-    showToast(`"${org.name}" has been successfully created!`);
+  const handleAdd = () => {
+    fetchOrgs();
+    showToast(`Organization has been successfully created!`);
   };
 
-  const handleDelete = (id, name) => {
-    setOrgs(prev => prev.filter(o => o.id !== id));
-    showToast(`"${name}" has been removed.`, 'error');
+  const handleDelete = async (id, name) => {
+    if (!confirm(`Are you sure you want to delete ${name}?`)) return;
+    try {
+      const res = await fetch(`/api/admin/workspaces/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${getStoredToken()}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchOrgs();
+        showToast(`"${name}" has been removed.`, 'error');
+      }
+    } catch (err) {
+      alert('Delete failed');
+    }
   };
 
   const formatScans = (n) => {
@@ -113,24 +155,13 @@ export default function GenWorkspacesOrganizationsSuperAdmin() {
     return n.toLocaleString();
   };
 
-  const tierBadge = (tier) => {
-    if (tier === 'Enterprise') return <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 rounded-full text-[10px] font-black uppercase border border-amber-500/20"><Crown size={10} /> Enterprise</span>;
-    if (tier === 'Professional') return <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-500/10 text-brand-400 rounded-full text-[10px] font-black uppercase border border-brand-500/20">Professional</span>;
-    return <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 text-gray-400 rounded-full text-[10px] font-black uppercase border border-white/10">Free Tier</span>;
-  };
-
-  const statusBadge = (status) => {
-    if (status === 'Active') return <span className="inline-flex items-center gap-1.5 text-green-400 text-[10px] font-bold uppercase"><span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />Active</span>;
-    if (status === 'Delinquent') return <span className="inline-flex items-center gap-1.5 text-red-400 text-[10px] font-bold uppercase"><span className="w-1.5 h-1.5 rounded-full bg-red-400" />Delinquent</span>;
-    return <span className="inline-flex items-center gap-1.5 text-gray-500 text-[10px] font-bold uppercase"><span className="w-1.5 h-1.5 rounded-full bg-gray-600" />Inactive</span>;
-  };
-
   const stats = [
     { label: 'Total Organizations', value: totalOrgs.toLocaleString(), badge: 'GLOBAL', icon: Building2, color: 'text-brand-400', bg: 'bg-brand-500/10' },
     { label: 'Enterprise Tiers', value: enterpriseTiers, badge: 'PREMIUM', icon: Crown, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-    { label: 'Monthly Scan Volume', value: formatScans(monthlyScans), badge: 'TRAFFIC', icon: Activity, color: 'text-green-400', bg: 'bg-green-500/10' },
-    { label: 'Avg. Seat Utilization', value: `${avgSeatUtil}%`, badge: 'USAGE', icon: Users, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+    { label: 'System Wide Scans', value: formatScans(monthlyScans), badge: 'TRAFFIC', icon: Activity, color: 'text-green-400', bg: 'bg-green-500/10' },
+    { label: 'Total active Users', value: totalUsers.toLocaleString(), badge: 'IDENTITY', icon: Users, color: 'text-purple-400', bg: 'bg-purple-500/10' },
   ];
+
 
   return (
     <div className="w-full h-full animate-fade-in relative">
@@ -201,24 +232,34 @@ export default function GenWorkspacesOrganizationsSuperAdmin() {
                         <div className="w-10 h-10 rounded-lg bg-brand-600/20 flex items-center justify-center font-bold text-brand-400 text-sm">{org.name[0]}</div>
                         <div>
                           <p className="font-bold text-white text-sm">{org.name}</p>
-                          <p className="text-[10px] text-gray-500">{org.region} • {org.industry}</p>
+                          <p className="text-[10px] text-gray-500">{org.owner_email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">{tierBadge(org.tier)}</td>
+                    <td className="px-6 py-4">
+                      {org.tier === 'enterprise' ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 rounded-full text-[10px] font-black uppercase border border-amber-500/20"><Crown size={10} /> Enterprise</span>
+                      ) : org.tier === 'pro' ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-500/10 text-brand-400 rounded-full text-[10px] font-black uppercase border border-brand-500/20">Professional</span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 text-gray-400 rounded-full text-[10px] font-black uppercase border border-white/10">Free Tier</span>
+                      )}
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="flex-1 h-1.5 bg-white/10 rounded-full max-w-[80px] overflow-hidden">
                           <div className="h-full bg-brand-500 rounded-full transition-all duration-300"
-                            style={{ width: `${org.maxSeats > 0 ? (org.usedSeats / org.maxSeats) * 100 : 0}%` }} />
+                            style={{ width: `${(org.used_seats / 50) * 100}%` }} />
                         </div>
-                        <span className="text-xs font-mono text-white">{org.usedSeats}/{org.maxSeats}</span>
+                        <span className="text-xs font-mono text-white">{org.used_seats}/50</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-sm font-mono text-white">{org.scans.toLocaleString()} <span className="text-[10px] text-gray-500">SCANS</span></p>
+                      <p className="text-sm font-mono text-white">{(org.scans || 0).toLocaleString()} <span className="text-[10px] text-gray-500">SCANS</span></p>
                     </td>
-                    <td className="px-6 py-4">{statusBadge(org.status)}</td>
+                    <td className="px-6 py-4">
+                       <span className="inline-flex items-center gap-1.5 text-green-400 text-[10px] font-bold uppercase"><span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />Active</span>
+                    </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button className="p-2 hover:bg-white/10 rounded-lg text-gray-500 hover:text-white transition-all" title="Billing"><CreditCard size={16} /></button>
