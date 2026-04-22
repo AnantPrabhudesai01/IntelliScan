@@ -917,19 +917,6 @@ exports.exportContactsToExcel = async (req, res) => {
   try {
     let userId = req.user?.id;
 
-    // Handle Token from WhatsApp link
-    if (!userId && req.query.token) {
-      try {
-        const jwt = require('jsonwebtoken');
-        const decoded = jwt.verify(req.query.token, process.env.JWT_SECRET);
-        if (decoded.purpose === 'magic_export') {
-          userId = decoded.id;
-        }
-      } catch (e) {
-        return res.status(401).json({ error: 'Export link expired or invalid' });
-      }
-    }
-
     if (!userId) return res.status(401).json({ error: 'Identification required' });
 
 
