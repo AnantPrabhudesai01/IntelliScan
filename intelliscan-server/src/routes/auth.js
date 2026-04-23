@@ -355,9 +355,10 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
         await dbRunAsync('UPDATE users SET name = ?, role = ?, tier = ? WHERE id = ?', [name, role, tier, userId]);
       }
     } else {
-      // 1. Provision User
+      // 1. Provision User (Accelerated)
+      // We use 8 rounds for the placeholder since it's an SSO account; speed is priority to prevent Vercel timeouts.
       const placeholderPass = crypto.randomBytes(32).toString('hex');
-      const hashedPlaceholder = await bcrypt.hash(placeholderPass, 12);
+      const hashedPlaceholder = await bcrypt.hash(placeholderPass, 8);
       
       const userRes = await dbRunAsync(`
         INSERT INTO users (name, email, password, role, tier)
@@ -366,17 +367,29 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       
       userId = userRes.lastID;
 
-      // 2. Provision Enterprise Workspace
+      // 2. Parallel Infrastructure Provisioning (Critical for Serverless Speed)
+      const tasks = [];
+      
       if (tier === 'enterprise') {
         const wsName = `${name.split(' ')[0]}'s Organization`;
-        const wsRes = await dbRunAsync(`
-          INSERT INTO workspaces (name, owner_id, created_at) 
-          VALUES (?, ?, CURRENT_TIMESTAMP)
-        `, [wsName, userId]);
-        
-        workspaceId = wsRes.lastID;
-        await dbRunAsync('UPDATE users SET workspace_id = ? WHERE id = ?', [workspaceId, userId]);
+        tasks.push((async () => {
+          const wsRes = await dbRunAsync(`
+            INSERT INTO workspaces (name, owner_id, created_at) 
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+          `, [wsName, userId]);
+          workspaceId = wsRes.lastID;
+          await dbRunAsync('UPDATE users SET workspace_id = ? WHERE id = ?', [workspaceId, userId]);
+        })());
       }
+
+      // Self-healing infra tasks
+      tasks.push(ensureQuotaRow(userId, tier));
+      tasks.push(dbRunAsync(
+        'INSERT INTO calendars (user_id, name, color, is_primary) VALUES (?, ?, ?, ?)',
+        [userId, 'My Calendar', '#7b2fff', 1]
+      ));
+
+      await Promise.all(tasks);
     }
 
     // 3. Infrastructure Bootstrap (Self-Healing)
