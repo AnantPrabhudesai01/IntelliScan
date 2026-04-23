@@ -67,8 +67,6 @@ export default function Auth0Synchronizer() {
           if (active) {
             clearStoredAuth();
             await refreshAuth();
-            const desc = encodeURIComponent(error.message || 'Identity Handshake Failed');
-            window.location.href = `/sign-in?error=sync_failed&error_description=${desc}`;
           }
         }
       } else {
