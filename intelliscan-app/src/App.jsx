@@ -161,6 +161,16 @@ export default function App() {
     return <SplashScreen message="Loading IntelliScan Neural Cluster..." />;
   }
 
+  // 🛡️ Loop Breaker: If we are at the root but already authenticated, jump to dashboard immediately
+  useEffect(() => {
+    if (isAuthenticated && token && window.location.pathname === '/') {
+      console.log('[App] Authenticated user detected at root. Forcing redirect to dashboard...');
+      const decoded = tryDecodeJwtPayload(token);
+      const home = resolveHomeRoute({ role: decoded?.role || 'user', tier: decoded?.tier || 'personal' });
+      window.location.assign(home);
+    }
+  }, [isAuthenticated, token]);
+
   return (
     <ThemeProvider>
       <NotificationProvider>
