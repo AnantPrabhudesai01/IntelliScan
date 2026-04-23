@@ -142,7 +142,6 @@ export default function FeedbackPage() {
               )}
             </button>
           </div>
-          </div>
         </form>
       </div>
 
