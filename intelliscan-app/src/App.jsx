@@ -145,6 +145,11 @@ import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
 
 export default function App() {
+  // Database Wake-Up Ping (Prevents Cold Start Timeouts)
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/health`).catch(() => {});
+  }, []);
+
   const { isAuthReady } = useRole();
   const { isLoading: isAuth0Loading, isAuthenticated } = useAuth0();
   const token = getStoredToken();
