@@ -53,6 +53,8 @@ export default function SuperAdminFeedbackPage() {
   const [feedback, setFeedback] = useState([]);
   const [filter, setFilter] = useState('all');
   const [selectedItem, setSelectedItem] = useState(null);
+  const [replyText, setReplyText] = useState('');
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     const fetchFeedback = async () => {
@@ -112,6 +114,32 @@ export default function SuperAdminFeedbackPage() {
       await apiClient.patch(`/feedbacks/${id}/status`, { status: newStatus });
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const transmitResponse = async () => {
+    if (!selectedItem || !replyText.trim() || sending) return;
+    
+    setSending(true);
+    try {
+      await apiClient.post(`/feedbacks/${selectedItem.id}/respond`, {
+        response: replyText,
+        status: selectedItem.status === 'new' ? 'reviewed' : selectedItem.status
+      });
+      
+      // Update local state
+      const updated = feedback.map(f => 
+        f.id === selectedItem.id ? { ...f, admin_response: replyText, status: f.status === 'new' ? 'reviewed' : f.status } : f
+      );
+      setFeedback(updated);
+      setSelectedItem({ ...selectedItem, admin_response: replyText, status: selectedItem.status === 'new' ? 'reviewed' : selectedItem.status });
+      setReplyText('');
+      alert('Transmission successful. Response synced to user node.');
+    } catch (err) {
+      console.error('Transmission failure:', err);
+      alert('Failed to transmit response. Check core connection.');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -250,9 +278,30 @@ export default function SuperAdminFeedbackPage() {
 
               {/* Footer Actions */}
               <div className="p-8 border-t border-[var(--border-subtle)] bg-[var(--surface)]/50 backdrop-blur-xl flex gap-4 relative z-10">
-                <input type="text" placeholder="Add infrastructure note or reply..." className="flex-1 bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl px-8 text-[12px] font-medium text-[var(--text-main)] focus:outline-none focus:ring-4 focus:ring-[var(--brand)]/10 transition-all shadow-inner" />
-                <button className="bg-[var(--brand)] text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-[var(--brand)]/20 hover:brightness-110 active:scale-95 transition-all italic font-headline">Transmit Response</button>
+                <input 
+                  type="text" 
+                  placeholder="Add infrastructure note or reply..." 
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && transmitResponse()}
+                  className="flex-1 bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl px-8 text-[12px] font-medium text-[var(--text-main)] focus:outline-none focus:ring-4 focus:ring-[var(--brand)]/10 transition-all shadow-inner" 
+                />
+                <button 
+                  onClick={transmitResponse}
+                  disabled={sending || !replyText.trim()}
+                  className="bg-[var(--brand)] text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-[var(--brand)]/20 hover:brightness-110 active:scale-95 transition-all italic font-headline disabled:opacity-50"
+                >
+                  {sending ? 'Transmitting...' : 'Transmit Response'}
+                </button>
               </div>
+              
+              {/* Display existing response if any */}
+              {selectedItem.admin_response && (
+                <div className="mx-10 mb-10 p-6 bg-emerald-500/5 border border-emerald-500/20 rounded-[2rem]">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-2">Previous Transmission</p>
+                  <p className="text-[12px] text-[var(--text-muted)] italic font-medium">"{selectedItem.admin_response}"</p>
+                </div>
+              )}
             </div>
           ) : (
             <div className="h-full min-h-[600px] flex flex-col items-center justify-center border-2 border-dashed border-[var(--border-subtle)] rounded-[2.5rem] bg-[var(--surface-card)] premium-grain opacity-40">

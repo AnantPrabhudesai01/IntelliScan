@@ -8,6 +8,20 @@ export default function FeedbackPage() {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [history, setHistory] = useState([]);
+
+  const fetchHistory = async () => {
+    try {
+      const res = await apiClient.get('/feedbacks/my');
+      setHistory(res.data);
+    } catch (err) {
+      console.error('Failed to load history:', err);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchHistory();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,6 +32,7 @@ export default function FeedbackPage() {
       
       setIsSubmitting(false);
       setIsSuccess(true);
+      fetchHistory(); // Refresh history after new submission
       setTimeout(() => {
         setIsSuccess(false);
         setSubject('');
@@ -127,8 +142,63 @@ export default function FeedbackPage() {
               )}
             </button>
           </div>
+          </div>
         </form>
       </div>
+
+      {/* History Section */}
+      {history.length > 0 && (
+        <div className="mt-16 animate-fade-in">
+          <div className="flex items-center gap-3 mb-6">
+            <MessageSquare size={24} className="text-brand-500" />
+            <h2 className="text-2xl font-bold font-headline text-gray-900 dark:text-white">Your Feedback History</h2>
+          </div>
+          
+          <div className="space-y-4">
+            {history.map((item) => (
+              <div key={item.id} className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-white/5 rounded-2xl p-6 transition-all hover:border-brand-500/30">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                      item.type === 'bug' ? 'bg-red-500/10 text-red-500' :
+                      item.type === 'feature' ? 'bg-amber-500/10 text-amber-500' :
+                      'bg-brand-500/10 text-brand-500'
+                    }`}>
+                      {item.type}
+                    </span>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{item.subject}</h3>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-gray-500">{new Date(item.created_at).toLocaleDateString()}</span>
+                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
+                      item.status === 'new' ? 'bg-blue-500/10 text-blue-500' :
+                      item.status === 'reviewed' ? 'bg-amber-500/10 text-amber-500' :
+                      'bg-emerald-500/10 text-emerald-500'
+                    }`}>
+                      {item.status}
+                    </span>
+                  </div>
+                </div>
+                
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+                  {item.message}
+                </p>
+
+                {item.admin_response && (
+                  <div className="bg-brand-500/5 border-l-4 border-brand-500 p-4 rounded-r-xl">
+                    <p className="text-[10px] font-bold text-brand-500 uppercase tracking-widest mb-1 flex items-center gap-2">
+                      <CheckCircle2 size={12} /> Official Response
+                    </p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 font-medium italic">
+                      "{item.admin_response}"
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

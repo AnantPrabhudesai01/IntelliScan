@@ -372,6 +372,8 @@ async function bootstrap() {
         subject TEXT,
         message TEXT,
         status TEXT DEFAULT 'new',
+        admin_response TEXT,
+        admin_note TEXT,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
       )`,
       "CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id)",
