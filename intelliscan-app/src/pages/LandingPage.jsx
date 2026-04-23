@@ -1,13 +1,21 @@
-import { Zap, ArrowRight, PlayCircle, ScanLine, Share2, Sparkles, Shield, Lock, CheckCircle, Star, AlertCircle, X } from 'lucide-react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Zap, ArrowRight, PlayCircle, ScanLine, Share2, Sparkles, Shield, Lock, CheckCircle, Star, AlertCircle, X, Loader2 } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getStoredToken, resolveHomeRoute, safeReadStoredUser, tryDecodeJwtPayload } from '../utils/auth';
 import PublicLayout from '../layouts/PublicLayout';
+import SplashScreen from '../components/SplashScreen';
 
 export default function LandingPage() {
+  const { isAuthenticated, isLoading: auth0Loading } = useAuth0();
   const navigate = useNavigate();
   const location = useLocation();
   const [authError, setAuthError] = useState(null);
+
+  // 🛡️ Handshake Force: Skip landing if already authenticated
+  if (auth0Loading || (isAuthenticated && !getStoredToken())) {
+    return <SplashScreen message="Initializing Identity Handshake..." />;
+  }
 
   useEffect(() => {
     // Check for Auth0 error params in URL
@@ -26,13 +34,15 @@ export default function LandingPage() {
 
     const token = getStoredToken();
     const user = safeReadStoredUser();
+    
+    // Redirect returning users
     if (token && !error) {
       const decoded = tryDecodeJwtPayload(token);
       const role = user?.role || decoded?.role || 'user';
       const tier = user?.tier || decoded?.tier || 'personal';
       navigate(resolveHomeRoute({ role, tier }), { replace: true });
     }
-  }, [navigate, location]);
+  }, [navigate, location, isAuthenticated]);
 
   return (
     <PublicLayout>

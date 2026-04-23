@@ -27,7 +27,12 @@ createRoot(document.getElementById('root')).render(
           clientId={import.meta.env.VITE_AUTH0_CLIENT_ID || "xovwCn299yoIc2F5HpxfBq24joO1Rleg"}
           authorizationParams={{ redirect_uri: window.location.origin }}
           onRedirectCallback={(appState) => {
-            window.history.replaceState({}, document.title, appState?.returnTo || window.location.pathname);
+            // 🛡️ Deep Cleanup: Force-clear security tokens from URL immediately
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Smooth Transition: Take user to dashboard or their intended destination
+            const target = appState?.returnTo || '/dashboard';
+            window.location.assign(target); 
           }}
         >
           <RoleProvider>
