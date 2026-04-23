@@ -1,4 +1,5 @@
 // [Build] IntelliScan-Neural-Stable-v1.0.4 - Production Refresh Trigger
+import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import DashboardLayout from './layouts/DashboardLayout';
