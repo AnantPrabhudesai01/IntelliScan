@@ -155,12 +155,6 @@ export default function App() {
   const { isLoading: isAuth0Loading, isAuthenticated } = useAuth0();
   const token = getStoredToken();
 
-  // App-level loading to prevent flicker
-  // Only show full splash if we are truly unauthenticated or bootstrapping for the first time
-  if ((isAuth0Loading || !isAuthReady) && !token) {
-    return <SplashScreen message="Loading IntelliScan Neural Cluster..." />;
-  }
-
   // 🛡️ Loop Breaker: If we are at the root but already authenticated, jump to dashboard immediately
   useEffect(() => {
     if (isAuthenticated && token && window.location.pathname === '/') {
@@ -170,6 +164,12 @@ export default function App() {
       window.location.assign(home);
     }
   }, [isAuthenticated, token]);
+
+  // App-level loading to prevent flicker
+  // Only show full splash if we are truly unauthenticated or bootstrapping for the first time
+  if ((isAuth0Loading || !isAuthReady) && !token) {
+    return <SplashScreen message="Loading IntelliScan Neural Cluster..." />;
+  }
 
   return (
     <ThemeProvider>
