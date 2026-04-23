@@ -12,6 +12,8 @@ const { extractJsonObjectFromText } = require('../utils/aiUtils');
 const OPENROUTER_FREE_POOL = [
   "google/gemini-flash-1.5",
   "mistralai/mistral-7b-instruct:free",
+  "openai/gpt-4o-mini",
+  "meta-llama/llama-3.1-8b-instruct:free",
   "microsoft/phi-3-mini-128k-instruct:free"
 ];
 
