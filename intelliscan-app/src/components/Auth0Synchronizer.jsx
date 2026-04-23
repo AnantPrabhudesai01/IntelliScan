@@ -10,7 +10,7 @@ export default function Auth0Synchronizer() {
   useEffect(() => {
     let active = true;
 
-    const syncToken = async () => {
+    const syncToken = async (retryCount = 0) => {
       if (isLoading) return;
 
       // Prevent redundant syncs if we already have a token and user matches
@@ -46,24 +46,23 @@ export default function Auth0Synchronizer() {
             throw new Error(data.details || data.error || `Identity synchronization failed with status ${response.status}`);
           }
           
-          // Use the LOCAL JWT returned by our backend for all future API calls
           if (active) {
-            setStoredAuth({ 
-              token: data.token, 
-              user: data.user 
-            });
+            setStoredAuth({ token: data.token, user: data.user });
             console.log("✅ Auth0 synced with local DB");
-            
-            // Explicitly trigger a refresh of the role context
             await refreshAuth();
           }
         } catch (error) {
-          console.error("Auth0 token sync failed:", error);
+          console.error(`Auth0 token sync attempt ${retryCount + 1} failed:`, error);
+          
+          // ⚡ SECOND CHANCE: If it fails once, retry IMMEDIATELY with a fresh attempt
+          if (retryCount < 1 && active) {
+            console.log("[AuthSync] Retrying identity handshake...");
+            return syncToken(retryCount + 1);
+          }
+
           if (active) {
             clearStoredAuth();
             await refreshAuth();
-            
-            // Redirect with descriptive error to help debugging
             const desc = encodeURIComponent(error.message || 'Unknown identity error');
             window.location.href = `/sign-in?error=sync_failed&error_description=${desc}`;
           }

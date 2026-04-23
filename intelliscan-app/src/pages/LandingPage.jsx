@@ -18,8 +18,14 @@ export default function LandingPage() {
   }
 
   useEffect(() => {
-    // Check for Auth0 error params in URL
+    // 🛡️ URL ERASER: If we see a "code" from Auth0, wipe it and wait for the handshake
     const params = new URLSearchParams(location.search);
+    if (params.get('code')) {
+      console.log('[Handshake] Detected security token. Initiating deep cleanup...');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Check for Auth0 error params in URL
     const error = params.get('error');
     const errorDescription = params.get('error_description');
     
