@@ -11,6 +11,7 @@ const {
   buildFallbackMultiCardResponse,
   normalizeExtractedCard
 } = require('../utils/scanUtils');
+const { logIncident } = require('../utils/incidentLogger');
 
 /**
  * POST /api/scan
@@ -183,6 +184,15 @@ Accuracy is paramount. If you see a business card, extract every detail with hig
     });
   } catch (error) {
     console.error('OCR Error:', error);
+
+    // REAL-WORLD LOGGING: Capture this extraction failure in the Incident Center
+    await logIncident({
+      service: 'AI Extraction Engine',
+      description: `Single scan failure for user ${req.user?.email}: ${error.message}`,
+      severity: 'high',
+      metadata: { error: error.stack, userId: req.user?.id }
+    });
+
     if (shouldUseMockAiFallback()) {
       return res.json(buildFallbackSingleCardResponse());
     }
@@ -344,6 +354,15 @@ Return ONLY a valid JSON object in this exact format:
 
   } catch (error) {
     console.error('Multi-Card OCR Error:', error);
+
+    // REAL-WORLD LOGGING: Capture multi-scan failure
+    await logIncident({
+      service: 'AI Multi-Extraction',
+      description: `Batch scan failure for user ${req.user?.email}: ${error.message}`,
+      severity: 'high',
+      metadata: { error: error.stack, userId: req.user?.id }
+    });
+
     if (shouldUseMockAiFallback()) {
       try {
         await dbRunAsync('UPDATE user_quotas SET group_scans_used = group_scans_used + 1 WHERE user_id = ?', [req.user.id]);

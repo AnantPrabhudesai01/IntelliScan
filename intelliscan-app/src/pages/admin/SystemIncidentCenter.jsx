@@ -23,19 +23,19 @@ export default function SystemIncidentCenter() {
     title: '',
     severity: 'medium',
     service: 'platform',
-    impact: ''
+    description: ''
   });
 
   const fetchIncidents = async () => {
     setLoading(true);
     try {
       const token = getStoredToken();
-      const res = await fetch('/api/admin/incidents', {
+      const res = await fetch('/api/incidents', {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
-        setIncidents(data.incidents || []);
+        setIncidents(data || []);
       }
     } catch (error) {
       console.error('Failed to load incidents:', error);
@@ -61,10 +61,14 @@ export default function SystemIncidentCenter() {
     try {
       const token = getStoredToken();
       const options = {
-        method: action === 'delete' ? 'DELETE' : 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        method: action === 'delete' ? 'DELETE' : 'PATCH',
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: action !== 'delete' ? JSON.stringify({ status: action === 'ack' ? 'acknowledged' : 'resolved' }) : null
       };
-      const endpoint = action === 'delete' ? `/api/admin/incidents/${id}` : `/api/admin/incidents/${id}/${action}`;
+      const endpoint = action === 'delete' ? `/api/incidents/${id}` : `/api/incidents/${id}/status`;
       const res = await fetch(endpoint, options);
       if (res.ok) {
         await fetchIncidents();
@@ -82,17 +86,21 @@ export default function SystemIncidentCenter() {
     setBusyId('create');
     try {
       const token = getStoredToken();
-      const res = await fetch('/api/admin/incidents', {
+      const res = await fetch('/api/incidents', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify({
+          service: form.service,
+          severity: form.severity,
+          description: `${form.title}: ${form.description}`
+        })
       });
       if (res.ok) {
         setShowCreate(false);
-        setForm({ title: '', severity: 'medium', service: 'platform', impact: '' });
+        setForm({ title: '', severity: 'medium', service: 'platform', description: '' });
         await fetchIncidents();
       }
     } catch (error) {
@@ -187,8 +195,8 @@ export default function SystemIncidentCenter() {
               {!loading && incidents.map((incident) => (
                 <tr key={incident.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
                   <td className="px-5 py-4">
-                    <p className="font-bold text-sm text-gray-900 dark:text-white">{incident.title}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{incident.impact || 'No impact notes added'}</p>
+                    <p className="font-bold text-sm text-gray-900 dark:text-white">{incident.description?.split(':')[0] || 'Unknown Incident'}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{incident.description?.split(':')[1] || incident.description || 'No impact notes added'}</p>
                   </td>
                   <td className="px-5 py-4">
                     <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 dark:text-gray-300">
@@ -306,8 +314,8 @@ export default function SystemIncidentCenter() {
               <div>
                 <label className="text-xs font-black uppercase tracking-widest text-gray-500">Impact Notes</label>
                 <textarea
-                  value={form.impact}
-                  onChange={(e) => setForm(prev => ({ ...prev, impact: e.target.value }))}
+                  value={form.description}
+                  onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))}
                   rows={3}
                   className="mt-1 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-500/40 resize-none"
                   placeholder="Describe current user impact..."

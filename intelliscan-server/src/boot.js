@@ -376,6 +376,16 @@ async function bootstrap() {
         admin_note TEXT,
         created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
       )`,
+      `CREATE TABLE IF NOT EXISTS system_incidents (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        service TEXT NOT NULL,
+        description TEXT,
+        severity TEXT DEFAULT 'medium',
+        status TEXT DEFAULT 'open',
+        metadata ${isPostgres ? 'JSONB' : 'TEXT'},
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
+        resolved_at ${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'}
+      )`,
       "CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id)",
       "CREATE INDEX IF NOT EXISTS idx_contacts_is_deleted ON contacts(is_deleted)",
       "CREATE INDEX IF NOT EXISTS idx_audit_created_at ON audit_trail(created_at)",
@@ -432,6 +442,7 @@ async function bootstrap() {
       { table: 'ai_drafts', column: 'status', type: "TEXT DEFAULT 'draft'" },
       { table: 'contact_sequences', column: 'status', type: "TEXT DEFAULT 'active'" },
       { table: 'ai_models', column: 'api_model_id', type: 'TEXT' },
+      { table: 'ai_models', column: 'is_active', type: 'BOOLEAN DEFAULT FALSE' },
       { table: 'contacts', column: 'crm_synced', type: 'INTEGER DEFAULT 0' },
       { table: 'contacts', column: 'is_deleted', type: `BOOLEAN DEFAULT ${isPostgres ? 'FALSE' : '0'}` },
       { table: 'contacts', column: 'deleted_at', type: `${isPostgres ? 'TIMESTAMPTZ' : 'DATETIME'}` },

@@ -52,6 +52,8 @@ const systemRouter = require('./routes/system');
 const publicRouter = require('./routes/public');
 const integrationsRouter = require('./routes/integrations');
 const feedbacksRouter = require('./routes/feedbacks');
+const incidentsRouter = require('./routes/incidents');
+const modelsRouter = require('./routes/models');
 
 // Controllers
 const scanController = require('./controllers/scanController');
@@ -185,6 +187,8 @@ app.use('/api/analytics', analyticsRouter);
 app.use('/api/signals', analyticsRouter);
 app.use('/api/integrations', integrationsRouter);
 app.use('/api/feedbacks', feedbacksRouter);
+app.use('/api/incidents', incidentsRouter);
+app.use('/api/models', modelsRouter);
 app.use('/api/scanner-links', require('./routes/scannerLinks'));
 
 // Centralized Error Handling
