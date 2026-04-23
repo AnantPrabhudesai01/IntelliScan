@@ -78,7 +78,32 @@ export default function ChatbotWidget({ role = 'user' }) {
                   {m.role === 'user' ? <User size={14} /> : <Bot size={14} />}
                 </div>
                 <div className={`px-4 py-2.5 rounded-2xl max-w-[85%] text-sm leading-relaxed shadow-sm ${m.role === 'user' ? 'bg-brand-600 text-white rounded-tr-none' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-700 rounded-tl-none'}`}>
-                  {m.content}
+                  {m.content.split('\n').map((line, li) => {
+                    // 1. Headers (### Header)
+                    if (line.startsWith('###')) {
+                      return <h4 key={li} className="font-bold text-brand-600 dark:text-brand-400 mt-3 mb-1 text-base">{line.replace('###', '').trim()}</h4>;
+                    }
+                    // 2. Bold headers (**Header**)
+                    if (line.startsWith('**') && line.endsWith('**')) {
+                      return <h4 key={li} className="font-bold text-gray-900 dark:text-white mt-3 mb-1">{line.replace(/\*\*/g, '')}</h4>;
+                    }
+                    // 3. List items (1. Item or - Item)
+                    if (/^(\d+\.|\*|-)\s/.test(line.trim())) {
+                      return <div key={li} className="flex gap-2 ml-1 my-1">
+                        <span className="text-brand-500 font-bold">•</span>
+                        <span>{line.replace(/^(\d+\.|\*|-)\s/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').split('<strong>').map((part, i) => i % 2 === 1 ? <strong key={i}>{part.split('</strong>')[0]}</strong> : part.split('</strong>').pop())}</span>
+                      </div>;
+                    }
+                    // 4. Regular paragraph with bold support
+                    if (!line.trim()) return <div key={li} className="h-2" />;
+                    
+                    const parts = line.split(/\*\*(.*?)\*\*/g);
+                    return (
+                      <p key={li} className="mb-2 last:mb-0">
+                        {parts.map((part, i) => i % 2 === 1 ? <strong key={i} className="text-gray-900 dark:text-white font-semibold">{part}</strong> : part)}
+                      </p>
+                    );
+                  })}
                 </div>
               </div>
             ))}

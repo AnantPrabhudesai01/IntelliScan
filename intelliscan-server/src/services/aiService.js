@@ -253,8 +253,8 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
     return rows.some((m) => String(m.status || '').toLowerCase() === 'deployed');
   };
 
-  // 1. Gemini (DISABLED BY USER REQUEST)
-  if (false && isEngineActive('gemini')) {
+  // 1. Gemini (RE-ENABLED FOR STABILITY)
+  if (isEngineActive('gemini')) {
     try {
       const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
       if (apiKey) {
@@ -295,8 +295,8 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
     }
   }
 
-  // 2. OpenAI (DISABLED BY USER REQUEST)
-  if (false && isEngineActive('openai')) {
+  // 2. OpenAI (RE-ENABLED FOR STABILITY)
+  if (isEngineActive('openai')) {
     try {
       const oaKey = process.env.OPENAI_API_KEY;
       if (oaKey) {
