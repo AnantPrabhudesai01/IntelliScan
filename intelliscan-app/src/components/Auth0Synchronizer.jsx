@@ -54,16 +54,20 @@ export default function Auth0Synchronizer() {
         } catch (error) {
           console.error(`Auth0 token sync attempt ${retryCount + 1} failed:`, error);
           
-          // ⚡ SECOND CHANCE: If it fails once, retry IMMEDIATELY with a fresh attempt
-          if (retryCount < 1 && active) {
-            console.log("[AuthSync] Retrying identity handshake...");
-            return syncToken(retryCount + 1);
+          // ⚡ MULTI-CHANCE: Retry up to 5 times to wake up slow databases
+          if (retryCount < 5 && active) {
+            const delay = retryCount === 0 ? 0 : 1000; // Small delay after first failure
+            console.log(`[AuthSync] Database warming up... Retrying (Attempt ${retryCount + 2})...`);
+            setTimeout(() => {
+              if (active) syncToken(retryCount + 1);
+            }, delay);
+            return;
           }
 
           if (active) {
             clearStoredAuth();
             await refreshAuth();
-            const desc = encodeURIComponent(error.message || 'Unknown identity error');
+            const desc = encodeURIComponent(error.message || 'Identity Handshake Failed');
             window.location.href = `/sign-in?error=sync_failed&error_description=${desc}`;
           }
         }

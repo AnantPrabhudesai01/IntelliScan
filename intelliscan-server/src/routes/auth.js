@@ -285,13 +285,13 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
   // 🛡️ JSON Enforcement & Soft Timeout (prevents non-JSON 500s on Vercel)
   const syncTimeout = setTimeout(() => {
     if (!res.headersSent) {
-      console.warn(`[Sync] Timeout reached for ${authUser?.email}. Sending fail-safe JSON.`);
-      res.status(504).json({ 
-        error: 'Sync Timeout', 
-        message: 'The identity synchronization is taking longer than expected. Please refresh and try again.' 
+      console.warn(`[Sync] Safety-Valve triggered for ${authUser?.email}. Sending retry instruction.`);
+      res.status(503).json({ 
+        error: 'Database Warming Up', 
+        message: 'The identity vault is waking up. We are automatically retrying for you...' 
       });
     }
-  }, 18000); // 18s (Vercel limit is 20s)
+  }, 8000); // 8s (Vercel Hobby limit is 10s)
 
   try {
     if (!authUser || !authUser.email) {
