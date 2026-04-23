@@ -10,9 +10,9 @@ const { extractJsonObjectFromText } = require('../utils/aiUtils');
  * Order: Gemini -> OpenAI -> Hugging Face (Llama 3)
  */
 const OPENROUTER_FREE_POOL = [
+  "google/gemini-flash-1.5",
   "meta-llama/llama-3.1-70b-instruct:free",
   "mistralai/mistral-7b-instruct:free",
-  "google/gemini-flash-1.5-8b",
   "microsoft/phi-3-mini-128k-instruct:free"
 ];
 
@@ -253,11 +253,11 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
     return rows.some((m) => String(m.status || '').toLowerCase() === 'deployed');
   };
 
-  // 1. Gemini (RE-ENABLED FOR STABILITY)
-  if (isEngineActive('gemini')) {
+  // 1. Gemini (CLOUD OVERDRIVE — Priority 1)
+  const geminiApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
+  if (geminiApiKey || isEngineActive('gemini')) {
     try {
-      const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
-      if (apiKey) {
+      if (geminiApiKey) {
         // Use REST API for maximum control over version/naming
         const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
         const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
@@ -295,10 +295,10 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
     }
   }
 
-  // 2. OpenAI (RE-ENABLED FOR STABILITY)
-  if (isEngineActive('openai')) {
+  // 2. OpenAI (CLOUD OVERDRIVE — Priority 2)
+  const oaKey = process.env.OPENAI_API_KEY;
+  if (oaKey || isEngineActive('openai')) {
     try {
-      const oaKey = process.env.OPENAI_API_KEY;
       if (oaKey) {
         console.log('[AI Service] Calling OpenAI Fallback (gpt-4o-mini)');
         const openai = new OpenAI({ apiKey: oaKey });
@@ -335,8 +335,8 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
         let orModel = process.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-001";
         
         if (isMultiScan && (orModel.includes('free') || orModel.includes('nano'))) {
-          console.log('[AI Service] Dense scan detected. Upgrading to Llama 3.1 70B for accuracy.');
-          orModel = "meta-llama/llama-3.1-70b-instruct:free"; // High-power stable fallback
+          console.log('[AI Service] Dense scan detected. Upgrading to Gemini 1.5 Flash for accuracy.');
+          orModel = "google/gemini-flash-1.5"; // High-power stable fallback
         }
 
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
