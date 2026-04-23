@@ -392,17 +392,9 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       await Promise.all(tasks);
     }
 
-    // 3. Infrastructure Bootstrap (Self-Healing)
-    await ensureQuotaRow(userId, tier);
-
-    // Bootstrap Primary Calendar
-    const existingCals = await dbAllAsync('SELECT id FROM calendars WHERE user_id = ? AND is_primary = 1', [userId]);
-    if (existingCals.length === 0) {
-      await dbRunAsync(
-        'INSERT INTO calendars (user_id, name, color, is_primary) VALUES (?, ?, ?, ?)',
-        [userId, 'My Calendar', '#7b2fff', 1]
-      );
-    }
+    // 3. Infrastructure Bootstrap (Fast-Tracked)
+    // We don't await these; let them finish in the background to prevent Vercel timeouts.
+    ensureQuotaRow(userId, tier).catch(e => console.error('[Sync] Quota bootstrap background error:', e.message));
 
     // 4. Identity Generation
     const token = jwt.sign(
@@ -411,17 +403,15 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       { expiresIn: JWT_EXPIRES_IN }
     );
 
-    // 5. Session tracking (Non-blocking safety)
+    // 5. Session tracking (Fire-and-Forget safety)
     try {
       const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
       const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
-      await dbRunAsync(
+      dbRunAsync(
         'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, TRUE)',
         [userId, token, deviceInfo, ipAddress, 'Unknown Location']
-      );
-    } catch (sessionErr) {
-      console.warn('[Sync] Session tracking failed (non-critical):', sessionErr.message);
-    }
+      ).catch(e => console.warn('[Sync] Session log failed (non-critical):', e.message));
+    } catch (sessionErr) {}
 
     console.log(`[AuthSync] Successfully synchronized ${email} (${tier})`);
 
