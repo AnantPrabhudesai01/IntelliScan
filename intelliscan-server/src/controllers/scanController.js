@@ -244,13 +244,21 @@ exports.scanGroupCards = async (req, res) => {
       userId: req.user.id,
       tier,
       allowTesseract: false,
-      prompt: `You are an expert OCR AI. 
-Extract EVERY business card you can find in this image. Do not miss any.
-There may be 5 to 30 cards. Read them all carefully.
+      prompt: `You are a Professional Visual Mapping & OCR AI. 
+Analyze the image as a high-density grid. There are 10 to 35 business cards in this photo.
+Your mission is to extract EVERY SINGLE ONE without exception.
 
-Return ONLY a valid JSON object in this exact format:
+### SCANNING STRATEGY:
+1. **Grid Traversal**: Scan the image systematically, row-by-row, from TOP-LEFT to BOTTOM-RIGHT.
+2. **Exhaustive Detection**: If a card has text, it MUST be extracted. Do not truncate the list.
+3. **Data Integrity**: For each card, extract 'name', 'company', 'title', 'email', and 'phone'.
+4. **No Placeholders**: If a field is missing, use an empty string "".
+
+### OUTPUT FORMAT (STRICT JSON):
+Return ONLY a valid JSON object. Do not include any text outside the JSON.
 {
-  "engine_used": "Gemini 1.5 Flash",
+  "engine_used": "IntelliScan Dense-Vision V2",
+  "total_detected": [count],
   "cards": [
     {
       "name": "Full Name",

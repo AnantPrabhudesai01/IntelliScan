@@ -174,9 +174,9 @@ export default function ScanPage() {
     }
     const file = files[0];
     
-    // Compress at 4K native resolution (3000px) instead of 1080p (1600px) 
-    // to preserve legibility of 25+ cards, while keeping payload under 4MB limit
-    const compressedBase64 = await compressImage(file, 3000, 0.85); 
+    // Compress at 4K native resolution (4000px) instead of 1080p
+    // to preserve legibility of 25-35+ cards, while keeping payload under 5MB limit
+    const compressedBase64 = await compressImage(file, 4000, 0.88); 
     
     setSelectedImage(compressedBase64);
     localStorage.setItem('intelliscan_cached_image', compressedBase64);
