@@ -72,9 +72,10 @@ router.get('/quota', authenticateToken, async (req, res) => {
     const usedScans = Number(quota?.used_count || 0);
     const limitScans = Math.max(Number(quota?.limit_amount || 0), Number(limits.single));
 
-    console.log(`[Quota-Debug] Returning Tier: ${currentTier}, Used: ${usedScans}, Limit: ${limitScans}`);
+    console.log(`[Quota-Final] User ${req.user.id} -> Tier: ${currentTier}, Limit: ${limitScans}`);
 
     res.json({
+      userId: req.user.id, // Debug visibility
       tier: currentTier,
       used: usedScans,
       limit: limitScans,

@@ -106,7 +106,7 @@ export default function DashboardLayout() {
       const token = getStoredToken();
       if (!token) return;
       try {
-        const res = await fetch('/api/user/quota', {
+        const res = await fetch(`/api/user/quota?cb=${Date.now()}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -234,20 +234,22 @@ export default function DashboardLayout() {
           <div className="bg-[var(--sidebar-hover)] rounded-xl p-3 border border-white/5">
             <div className="flex justify-between items-center mb-2">
               <span className="text-[10px] font-bold uppercase text-sidebar-text tracking-wider">
-                {user?.role === 'super_admin' ? 'Platform Controller' : 
-                 user?.role === 'business_admin' ? 'Business Admin' : 
-                 (isEnterprise || quota.tier === 'enterprise' ? 'Enterprise Plan' : 
-                  isPro || quota.tier === 'pro' ? 'Pro Plan' : 
+                {isEnterprise ? 'Enterprise Plan' : 
+                 isPro ? 'Pro Plan' : 
+                 (quota.tier === 'enterprise' ? 'Enterprise Plan' : 
+                  quota.tier === 'pro' ? 'Pro Plan' : 
                   'Free Plan')}
               </span>
-              <span className="text-[10px] font-bold text-brand-light">{quota.used}/{quota.limit}</span>
+              <span className="text-[10px] font-bold text-brand-light">{quota.used}/{Math.max(quota.limit, (isEnterprise ? 1000000 : isPro ? 5000 : 100))}</span>
             </div>
             <div className="w-full bg-black/40 h-1 rounded-full overflow-hidden mb-2.5">
-              <div className="bg-brand h-full rounded-full transition-all" style={{ width: `${Math.min((quota.used / quota.limit) * 100, 100)}%` }} />
+              <div className="bg-brand h-full rounded-full transition-all" style={{ width: `${Math.min((quota.used / Math.max(quota.limit, (isEnterprise ? 1000000 : isPro ? 5000 : 100))) * 100, 100)}%` }} />
             </div>
-            <Link to="/subscription-plan-comparison" className="w-full py-1.5 bg-brand hover:bg-brand-light text-white font-semibold text-[11px] rounded-md flex items-center justify-center gap-1.5 transition-colors">
-              <Zap size={12} /> Upgrade
-            </Link>
+            {!isProOrHigher && (
+              <Link to="/subscription-plan-comparison" className="w-full py-1.5 bg-brand hover:bg-brand-light text-white font-semibold text-[11px] rounded-md flex items-center justify-center gap-1.5 transition-colors">
+                <Zap size={12} /> Upgrade
+              </Link>
+            )}
           </div>
         </div>
       )}
@@ -265,6 +267,7 @@ export default function DashboardLayout() {
             </div>
           )}
         </div>
+        <p className="px-3 text-[8px] font-black uppercase tracking-[0.3em] text-white/20 pb-2">v1.2.0-SyncFixed</p>
       </div>
     </div>
   );
@@ -323,7 +326,7 @@ export default function DashboardLayout() {
                 onClick={(e) => { e.stopPropagation(); setQuotaOpen(!quotaOpen); setProfileOpen(false); }}
                 className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:border-brand dark:hover:border-brand text-gray-600 dark:text-gray-300 transition-colors"
               >
-                {quota.tier === 'enterprise' ? 'Enterprise' : quota.tier === 'pro' ? 'Pro' : 'Free'}
+                {isEnterprise ? 'Enterprise' : isPro ? 'Pro' : (quota.tier === 'enterprise' ? 'Enterprise' : quota.tier === 'pro' ? 'Pro' : 'Free')}
                 <ChevronDown size={12} />
               </button>
               
@@ -331,15 +334,18 @@ export default function DashboardLayout() {
                 <div className="absolute top-9 right-0 w-60 bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-xl shadow-2xl p-4 z-50 animate-fade-in premium-grain">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Plan Quota</span>
-                    <span className="text-[10px] font-bold text-brand">{quota.limit > quota.used ? `${quota.limit - quota.used} Left` : 'Exceeded'}</span>
+                    {/* Use local limit fallback to avoid 0/100 flash */}
+                    <span className="text-[10px] font-bold text-brand">
+                      {Math.max(quota.limit, (isEnterprise ? 1000000 : isPro ? 5000 : 100)) > quota.used ? `${Math.max(quota.limit, (isEnterprise ? 1000000 : isPro ? 5000 : 100)) - quota.used} Left` : 'Exceeded'}
+                    </span>
                   </div>
                   <div className="space-y-1 mb-3">
                     <div className="flex justify-between text-xs">
                       <span className="text-gray-500 dark:text-gray-400">Credits Used</span>
-                      <span className="font-bold text-gray-900 dark:text-white">{quota.used} / {quota.limit}</span>
+                      <span className="font-bold text-gray-900 dark:text-white">{quota.used} / {Math.max(quota.limit, (isEnterprise ? 1000000 : isPro ? 5000 : 100))}</span>
                     </div>
                     <div className="w-full bg-gray-100 dark:bg-gray-800 h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-brand h-full rounded-full transition-all" style={{ width: `${Math.min((quota.used / quota.limit) * 100, 100)}%` }} />
+                      <div className="bg-brand h-full rounded-full transition-all" style={{ width: `${Math.min((quota.used / Math.max(quota.limit, (isEnterprise ? 1000000 : isPro ? 5000 : 100))) * 100, 100)}%` }} />
                     </div>
                   </div>
                   <Link to="/subscription-plan-comparison" onClick={() => setQuotaOpen(false)} className="w-full py-1.5 bg-brand/10 text-brand font-semibold text-xs rounded-md flex items-center justify-center gap-1.5 hover:bg-brand/20 transition-colors">

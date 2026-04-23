@@ -20,6 +20,7 @@ function resolveTierLimits(tier) {
  * Cross-dialect support for SQLite and PostgreSQL.
  */
 async function ensureQuotaRow(userId, currentTier = 'personal') {
+  console.log(`[Quota-Trace] Entering ensureQuotaRow for User: ${userId}, Tier: ${currentTier}`);
   const limits = resolveTierLimits(currentTier);
   
   // 1. Get current quota to check for existing higher limits (Safety)
