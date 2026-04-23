@@ -907,7 +907,7 @@ export default function SettingsPage() {
                           className="w-full bg-[var(--surface)] border border-[var(--border-subtle)] rounded-xl pl-12 pr-4 py-3 text-[var(--text-main)] focus:ring-2 focus:ring-[var(--brand)]/40 outline-none transition-all disabled:text-[var(--text-muted)] disabled:bg-[var(--surface-card)]" 
                           type="tel" 
                           value={localPhone} 
-                          placeholder="e.g. 8160551448" 
+                          placeholder="e.g. 9876543210" 
                         />
                       </div>
                    </div>

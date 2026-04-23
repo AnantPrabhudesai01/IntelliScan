@@ -22,8 +22,12 @@ export default function SplashScreen({ message = "Synchronizing Neural Session..
             <div className="absolute inset-4 rounded-full border-r-2 border-purple-500 animate-spin-slow" style={{ animationDuration: '3s' }} />
             
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-10 h-10 bg-brand-500 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-500/50 animate-pulse">
-                <ShieldCheck className="text-white" size={24} />
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-brand-500/50 animate-pulse">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-40"/>
+                  <path d="M12 8V16" stroke="#fbbf24" strokeWidth="2.5" strokeLinecap="round"/>
+                </svg>
               </div>
             </div>
           </div>

@@ -178,11 +178,16 @@ export default function DashboardLayout() {
       {/* Logo */}
       <div className={`h-14 flex items-center ${sidebarCollapsed && !isMobile ? 'justify-center px-2' : 'px-4'} border-b border-[var(--sidebar-border)] shrink-0`}>
         <Link to="/dashboard/scan" className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center flex-shrink-0">
-            <ScanLine className="text-white" size={18} />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand-light flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand/20 ring-1 ring-white/20">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-40"/>
+              <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"/>
+              <path d="M12 8V16" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" className="animate-pulse"/>
+            </svg>
           </div>
           {(!sidebarCollapsed || isMobile) && (
-            <span className="font-headline font-black text-lg tracking-tighter text-white truncate">INTELLISCAN</span>
+            <span className="font-headline font-black text-xl tracking-tighter text-white truncate">INTELLI<span className="text-brand-light">SCAN</span></span>
           )}
         </Link>
         {isMobile && (
