@@ -260,7 +260,8 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
     try {
       if (geminiApiKey) {
         // Use REST API for maximum control over version/naming
-        const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+        // Use the latest Flash model for 2x speed and better density support
+        const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-latest";
         const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiApiKey}`;
         const response = await fetch(url, {
           method: 'POST',
@@ -270,10 +271,10 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
               parts: [{ text: prompt }, { inlineData: { data: base64Data, mimeType: effectiveMime } }] 
             }],
             generationConfig: {
-              maxOutputTokens: 16384,
+              maxOutputTokens: 8192, // Reduced from 16k to speed up processing
+              temperature: 0.1,      // Lower temperature for strict JSON stability
               responseMimeType: "application/json"
             }
-
           })
         });
         const result = await response.json();
