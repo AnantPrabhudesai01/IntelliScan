@@ -28,6 +28,10 @@ async function ensureQuotaRow(userId, currentTier = 'personal') {
   const targetLimit = Math.max(limits.single, existing?.limit_amount || 0);
   const targetGroupLimit = Math.max(limits.group, existing?.group_limit_amount || 0);
 
+  if (targetLimit > (existing?.limit_amount || 0)) {
+    console.log(`[Quota] Promoting limit for User ${userId}: ${existing?.limit_amount || 0} -> ${targetLimit}`);
+  }
+
   // 2. Dialect-specific month reset logic
   const monthCheck = isPostgres 
     ? "DATE_TRUNC('month', user_quotas.last_reset_date) != DATE_TRUNC('month', CURRENT_TIMESTAMP)"

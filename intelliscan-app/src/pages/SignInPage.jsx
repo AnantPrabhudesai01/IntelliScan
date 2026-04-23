@@ -258,7 +258,7 @@ export default function SignInPage() {
 
                     <button 
                        type="button" 
-                       onClick={() => handleSso('google-apps')}
+                       onClick={() => handleSso('WorkSpace')}
                        className="flex items-center justify-between px-8 py-5 bg-[var(--surface)] border border-[var(--border-subtle)] rounded-2xl hover:bg-[var(--surface-card)] hover:border-emerald-500/30 transition-all group"
                     >
                       <div className="flex items-center gap-5">

@@ -123,6 +123,11 @@ export function resolveHomeRoute(user) {
 export function clearStoredAuth() {
   safeLocalStorageRemove(TOKEN_KEY);
   safeLocalStorageRemove(USER_KEY);
+  // Clear scan cache
+  safeLocalStorageRemove('intelliscan_cached_scan');
+  safeLocalStorageRemove('intelliscan_cached_image');
+  safeLocalStorageRemove('discoveryCode');
+  // Clear cookies
   removeCookie(TOKEN_COOKIE);
   removeCookie(USER_COOKIE);
 }

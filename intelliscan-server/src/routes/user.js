@@ -24,7 +24,17 @@ router.get('/quota', authenticateToken, async (req, res) => {
 
     let currentTier = row?.tier || 'personal';
 
-    // ── SELF-HEALING: If user has a PAID order for 'pro' but is still 'personal', promote them
+    // ── SELF-HEALING 1: If JWT claims a higher tier than DB, promote DB (Trust the signed token)
+    const jwtTier = String(req.user.tier || 'personal').toLowerCase();
+    const tierPriority = { 'personal': 0, 'pro': 1, 'enterprise': 2 };
+    
+    if (tierPriority[jwtTier] > tierPriority[currentTier]) {
+      console.log(`[Self-Healing] Promoting user ${req.user.id} to ${jwtTier} based on JWT claim.`);
+      await dbRunAsync("UPDATE users SET tier = ? WHERE id = ?", [jwtTier, req.user.id]);
+      currentTier = jwtTier;
+    }
+
+    // ── SELF-HEALING 2: If user has a PAID order for 'pro' but is still 'personal', promote them
     if (currentTier === 'personal') {
       const paidOrder = await dbGetAsync(
         "SELECT plan_id FROM billing_orders WHERE user_id = ? AND status = 'paid' AND plan_id = 'pro' LIMIT 1",

@@ -115,8 +115,16 @@ export default function DashboardLayout() {
           
           // Trigger role refresh if backend has a higher tier
           if (data.tierMatch === false) {
-             console.log('[Dashboard] Tier mismatch detected. Synchronizing profile...');
-             refreshAuth();
+            console.log('[Dashboard] Tier mismatch detected. Synchronizing profile...');
+            await refreshAuth();
+            // Re-fetch quota once profile is synced to ensure we have the correct tier-based limits
+            const freshRes = await fetch('/api/user/quota', {
+              headers: { Authorization: `Bearer ${getStoredToken()}` }
+            });
+            if (freshRes.ok) {
+              const freshData = await freshRes.json();
+              setQuota(freshData);
+            }
           }
         }
       } catch (err) {
@@ -226,7 +234,11 @@ export default function DashboardLayout() {
           <div className="bg-[var(--sidebar-hover)] rounded-xl p-3 border border-white/5">
             <div className="flex justify-between items-center mb-2">
               <span className="text-[10px] font-bold uppercase text-sidebar-text tracking-wider">
-                {user?.role === 'super_admin' ? 'Platform Controller' : user?.role === 'business_admin' ? 'Business Admin' : (quota.tier === 'enterprise' ? 'Enterprise Plan' : quota.tier === 'pro' ? 'Pro Plan' : 'Free Plan')}
+                {user?.role === 'super_admin' ? 'Platform Controller' : 
+                 user?.role === 'business_admin' ? 'Business Admin' : 
+                 (isEnterprise || quota.tier === 'enterprise' ? 'Enterprise Plan' : 
+                  isPro || quota.tier === 'pro' ? 'Pro Plan' : 
+                  'Free Plan')}
               </span>
               <span className="text-[10px] font-bold text-brand-light">{quota.used}/{quota.limit}</span>
             </div>
