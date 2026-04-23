@@ -70,11 +70,21 @@ function decodeUserCookie(raw) {
 }
 
 export function getStoredToken() {
-  return safeLocalStorageGet(TOKEN_KEY) || getCookie(TOKEN_COOKIE) || '';
+  try {
+    return safeLocalStorageGet(TOKEN_KEY) || 
+           sessionStorage.getItem(TOKEN_KEY) || 
+           getCookie(TOKEN_COOKIE) || '';
+  } catch {
+    return getCookie(TOKEN_COOKIE) || '';
+  }
 }
 
 export function safeReadStoredUser() {
-  const localRaw = safeLocalStorageGet(USER_KEY);
+  let localRaw = safeLocalStorageGet(USER_KEY);
+  if (!localRaw) {
+    try { localRaw = sessionStorage.getItem(USER_KEY); } catch(e) {}
+  }
+
   if (localRaw) {
     try {
       const parsed = JSON.parse(localRaw);
@@ -93,12 +103,14 @@ export function setStoredAuth({ token, user }) {
   const normalizedToken = String(token || '').trim();
   if (normalizedToken) {
     safeLocalStorageSet(TOKEN_KEY, normalizedToken);
+    try { sessionStorage.setItem(TOKEN_KEY, normalizedToken); } catch(e) {}
     setCookie(TOKEN_COOKIE, normalizedToken);
   }
 
   if (user && typeof user === 'object') {
     const userJson = JSON.stringify(user);
     safeLocalStorageSet(USER_KEY, userJson);
+    try { sessionStorage.setItem(USER_KEY, userJson); } catch(e) {}
     const encoded = encodeUserCookie(user);
     if (encoded) setCookie(USER_COOKIE, encoded);
   }
