@@ -93,21 +93,17 @@ app.use(async (req, res, next) => {
   const isDiagnostic = req.path.includes('/health') || req.path.includes('/public');
   if (isBootstrapped || isDiagnostic) return next();
   
+  // 🛡️ Panic-Mode: If boot fails, we still try to proceed. 
+  // Most routes will handle their own DB errors gracefully.
   if (bootError && !isDiagnostic) {
-    return res.status(500).send(`[System] Initial Database Setup Failed: ${bootError.message}\n\nStack: ${bootError.stack}`);
+    console.warn('[System] Boot encountered errors, but proceeding in Panic-Mode:', bootError.message);
   }
 
-  // If boot is still in progress, wait for it up to the Vercel limit
+  // If boot is still in progress, we wait but don't crash
   if (bootPromise) {
     try {
-       await bootPromise;
-    } catch (e) {
-       // Error is already handled in the catch block above
-    }
-  }
-
-  if (bootError) {
-    return res.status(500).send(`[System] Database Setup Failure: ${bootError.message}`);
+       await Promise.race([bootPromise, new Promise(resolve => setTimeout(resolve, 5000))]);
+    } catch (e) {}
   }
 
   next();

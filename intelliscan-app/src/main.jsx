@@ -27,9 +27,10 @@ createRoot(document.getElementById('root')).render(
           clientId={import.meta.env.VITE_AUTH0_CLIENT_ID || "xovwCn299yoIc2F5HpxfBq24joO1Rleg"}
           authorizationParams={{ 
             redirect_uri: window.location.origin,
-            audience: `https://${import.meta.env.VITE_AUTH0_DOMAIN || "dev-1s0xix56z6m3jc0i.jp.auth0.com"}/api/v2/`,
             scope: "openid profile email offline_access"
           }}
+          cacheLocation="localstorage"
+          useRefreshTokens={true}
           onRedirectCallback={(appState) => {
             // 🛡️ Deep Cleanup: Force-clear security tokens from URL immediately
             window.history.replaceState({}, document.title, window.location.pathname);
