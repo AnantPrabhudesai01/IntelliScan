@@ -371,11 +371,9 @@ export default function ScanPage() {
       window.dispatchEvent(new Event('quota-update'));
     } catch (err) {
       console.error('Fetch Error:', err);
-      let friendlyMsg = err.message || 'Failed to process group image.';
-      if (friendlyMsg.includes('JSON') || friendlyMsg.includes('malformed')) {
-        friendlyMsg = "Dense Scan Analysis Failed: The AI response was too complex or truncated. Please try taking the photo closer to the cards or split the group into two smaller photos for better accuracy.";
-      }
-      setErrorMsg(friendlyMsg);
+      // TRUTH-MODE: Show the actual error message for precise diagnostics
+      setErrorMsg(`System Error: ${err.message}`);
+      toast.error('Scan stalled: ' + err.message, { id: 'scan-step' });
     } finally {
       setIsScanning(false);
     }
