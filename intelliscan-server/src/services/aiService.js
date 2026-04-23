@@ -354,14 +354,14 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
                 body: JSON.stringify({
                   model: currentModel,
                   messages: [
-                    {
-                      role: "user",
-                      content: [
-                        { type: "text", text: prompt },
-                        { type: "image_url", image_url: { url: `data:${effectiveMime};base64,${base64Data}` } }
-                      ]
-                    }
-                  ]
+                    { role: "system", content: "Extract business card data into a DENSE JSON object. Minimize whitespace to save tokens." },
+                    { role: "user", content: [
+                      { type: "text", text: extractionPrompt },
+                      { type: "image_url", image_url: { url: `data:${effectiveMime};base64,${base64Data}` } }
+                    ]}
+                  ],
+                  max_tokens: 8192,
+                  temperature: 0.1
                 })
               });
 
