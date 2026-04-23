@@ -13,7 +13,7 @@ const OPENROUTER_FREE_POOL = [
   "meta-llama/llama-3.2-11b-vision-instruct:free",
   "mistralai/pixtral-12b:free",
   "google/gemini-2.0-flash-exp:free",
-  "microsoft/phi-3-mini-128k-instruct:free"
+  "qwen/qwen-2-vl-7b-instruct:free"
 ];
 
 async function generateWithFallback(prompt) {
@@ -326,73 +326,68 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
 
   // 3. OpenRouter (Secondary Cloud Fallback)
   if (isEngineActive('openrouter')) {
-    try {
-      const orKey = process.env.OPENROUTER_API_KEY;
-      if (orKey) {
-        // IMPROVEMENT: If prompt indicates multiple cards, force a high-power model
-        // Many 'Free' models on OpenRouter (like Nemotron-Nano) cannot handle whiteboards.
-        const isMultiScan = prompt.toLowerCase().includes('every') || prompt.toLowerCase().includes('30 cards');
-        let orModel = process.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-001";
-        
-        if (isMultiScan && (orModel.includes('free') || orModel.includes('nano'))) {
-          console.log('[AI Service] Dense scan detected. Upgrading to Llama 3.2 Vision for accuracy.');
-          orModel = "meta-llama/llama-3.2-11b-vision-instruct:free"; // Powerful free fallback
-        }
-
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${orKey}`,
-            "Content-Type": "application/json",
-            "HTTP-Referer": process.env.SERVER_URL || "https://intelliscan.vercel.app", 
-            "X-Title": "IntelliScan"
-          },
-          body: JSON.stringify({
-            model: orModel,
-            messages: [
-              {
-                role: "user",
-                content: [
-                  { type: "text", text: prompt },
-                  { type: "image_url", image_url: { url: `data:${effectiveMime};base64,${base64Data}` } }
-                ]
-              }
-            ]
-            // REMOVED response_format: { type: "json_object" } as it causes 400 errors for many vision providers on OpenRouter
-          })
-        });
-
-        const result = await response.json();
-        if (result.choices?.[0]?.message?.content) {
-          let rawText = result.choices[0].message.content.trim();
+      try {
+        const orKey = process.env.OPENROUTER_API_KEY;
+        if (orKey) {
+          console.log('[AI Service] Engaging Deep Pool Hunter... Scanning for available free endpoints.');
           
-          // Use robust helper to find JSON block anywhere in the AI's response
-          const cleanedJson = extractJsonObjectFromText(rawText);
-          if (!cleanedJson) throw new Error("AI outputted text but no valid JSON block was found.");
+          const isMultiScan = prompt.toLowerCase().includes('every') || prompt.toLowerCase().includes('30 cards');
+          const primaryModel = process.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-exp:free";
+          const modelsToTry = [primaryModel, ...OPENROUTER_FREE_POOL.filter(m => m !== primaryModel)];
 
-          let data;
-          try {
-            data = JSON.parse(cleanedJson);
-          } catch (pe) {
-            console.error('[AI Service] JSON Parse Failed. Raw Length:', rawText.length, 'Error:', pe.message);
-            // If primary parse fails, we've already tried 'repairJson' inside extractJsonObjectFromText
-            // But if it's still failing, we throw a descriptive error
-            throw new Error(`The AI response was malformed and couldn't be repaired. (Length: ${rawText.length})`);
+          for (const modelCandidate of modelsToTry) {
+            try {
+              let currentModel = modelCandidate;
+              if (isMultiScan && (currentModel.includes('free') || currentModel.includes('nano'))) {
+                currentModel = "meta-llama/llama-3.2-11b-vision-instruct:free"; 
+              }
+
+              const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${orKey}`,
+                  "Content-Type": "application/json",
+                  "HTTP-Referer": process.env.SERVER_URL || "https://intelliscan.vercel.app", 
+                  "X-Title": "IntelliScan"
+                },
+                body: JSON.stringify({
+                  model: currentModel,
+                  messages: [
+                    {
+                      role: "user",
+                      content: [
+                        { type: "text", text: prompt },
+                        { type: "image_url", image_url: { url: `data:${effectiveMime};base64,${base64Data}` } }
+                      ]
+                    }
+                  ]
+                })
+              });
+
+              const result = await response.json();
+              if (result.choices?.[0]?.message?.content) {
+                let rawText = result.choices[0].message.content.trim();
+                const cleanedJson = extractJsonObjectFromText(rawText);
+                if (!cleanedJson) throw new Error("AI outputted text but no valid JSON block was found.");
+
+                const data = JSON.parse(cleanedJson);
+                data.engine_used = `OpenRouter Hunter (${currentModel})`;
+                return { data };
+              }
+              
+              const errMsg = result.error?.message || 'Model Unavailable';
+              console.warn(`[Deep Hunter] ${currentModel} failed: ${errMsg}. Trying next...`);
+            } catch (innerErr) {
+              console.warn(`[Deep Hunter] Skipping ${modelCandidate} due to error:`, innerErr.message);
+              continue;
+            }
           }
-
-          data.engine_used = `OpenRouter (${orModel})`;
-          return { data };
-
+          throw new Error("No available vision models found in the OpenRouter pool.");
         }
-        
-        // Detailed Error Capture
-        const errMsg = result.error?.message || response.statusText || 'Unknown OpenRouter Error';
-        throw new Error(`OpenRouter (${orModel}): ${errMsg}`);
+      } catch (err) {
+        lastError = err.message;
+        console.error('OpenRouter Extraction Exhausted:', err.message);
       }
-    } catch (err) {
-      lastError = err.message;
-      console.error('OpenRouter Extraction Failed:', err.message);
-    }
   }
 
   // 4. Tesseract (Last Resort)
