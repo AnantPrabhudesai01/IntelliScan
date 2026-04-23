@@ -23,6 +23,7 @@ export default function DashboardLayout() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [quotaOpen, setQuotaOpen] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [quota, setQuota] = useState({ used: 0, limit: 100, tier: 'personal' });
 
   const user = safeReadStoredUser() || { 
@@ -139,11 +140,29 @@ export default function DashboardLayout() {
 
     const handleQuotaUpdate = () => fetchQuota();
     window.addEventListener('quota-update', handleQuotaUpdate);
+
+    // PWA Install Logic
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
     return () => {
       clearInterval(pollInterval);
       window.removeEventListener('quota-update', handleQuotaUpdate);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
   }, []); // Only on mount
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
 
   // Close profile dropdown on outside click
   useEffect(() => {
@@ -231,6 +250,16 @@ export default function DashboardLayout() {
       {/* Plan Status — only when expanded */}
       {(!sidebarCollapsed || isMobile) && (
         <div className="px-3 pb-3 border-t border-[var(--sidebar-border)] pt-3">
+          {/* PWA Install Button */}
+          {deferredPrompt && (
+            <button 
+              onClick={handleInstallClick}
+              className="w-full mb-3 py-2 bg-white/5 hover:bg-white/10 text-brand-light border border-brand/30 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-wider transition-all animate-pulse"
+            >
+              <Smartphone size={14} /> Install Mobile App
+            </button>
+          )}
+
           <div className="bg-[var(--sidebar-hover)] rounded-xl p-3 border border-white/5">
             <div className="flex justify-between items-center mb-2">
               <span className="text-[10px] font-bold uppercase text-sidebar-text tracking-wider">
@@ -275,7 +304,7 @@ export default function DashboardLayout() {
   return (
     <div className="flex h-screen bg-[var(--surface)] dark:bg-[var(--surface)] font-body overflow-hidden transition-colors duration-300">
       {/* ── Desktop Sidebar (always visible) ── */}
-      <aside className={`hidden lg:flex ${sidebarWidth} flex-shrink-0 flex-col transition-all duration-200 shadow-lg z-20`}>
+      <aside className={`hidden lg:flex ${sidebarWidth} flex-shrink-0 flex-col transition-all duration-200 border-r border-[var(--sidebar-border)] shadow-lg z-20`}>
         {renderSidebarContent()}
       </aside>
 
@@ -283,7 +312,7 @@ export default function DashboardLayout() {
       {mobileSidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="fixed inset-0 bg-black/60" onClick={() => setMobileSidebarOpen(false)} />
-          <aside className="relative w-60 flex flex-col shadow-2xl z-10">
+          <aside className="relative w-60 flex flex-col border-r border-[var(--sidebar-border)] shadow-2xl z-10">
             {renderSidebarContent({ isMobile: true })}
           </aside>
         </div>

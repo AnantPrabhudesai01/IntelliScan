@@ -8,6 +8,7 @@ import DevTools from './components/DevTools';
 import CommandPalette from './components/CommandPalette';
 import ActivityTracker from './components/ActivityTracker';
 import ErrorBoundary from './components/ErrorBoundary';
+import SplashScreen from './components/SplashScreen';
 import { useRole } from './context/RoleContext';
 import { getStoredToken, resolveHomeRoute, safeReadStoredUser, tryDecodeJwtPayload } from './utils/auth';
 
@@ -126,14 +127,7 @@ const RootRoute = () => {
   // 1. Wait for Auth0 to initialize AND RoleContext bootstrap (Sync)
   // CRITICAL FIX: Ensure we wait if Auth0 authenticated us but our local API sync hasn't returned the JWT yet.
   if (isAuth0Loading || !isAuthReady || (isAuthenticated && !token)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0e131f] text-[#dde2f3]">
-        <div className="text-center">
-          <div className="w-10 h-10 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-sm font-semibold tracking-wide">Syncing Session...</p>
-        </div>
-      </div>
-    );
+    return <SplashScreen message="Syncing Neural Session..." />;
   }
 
   // 2. Decide based on session existence
@@ -157,14 +151,7 @@ export default function App() {
   // App-level loading to prevent flicker
   // Only show full splash if we are truly unauthenticated or bootstrapping for the first time
   if ((isAuth0Loading || !isAuthReady) && !token) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0e131f] text-[#dde2f3]">
-        <div className="text-center">
-          <div className="w-10 h-10 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-sm font-semibold tracking-wide">Loading IntelliScan...</p>
-        </div>
-      </div>
-    );
+    return <SplashScreen message="Loading IntelliScan Neural Cluster..." />;
   }
 
   return (
