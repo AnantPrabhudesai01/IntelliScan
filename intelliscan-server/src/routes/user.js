@@ -22,6 +22,8 @@ router.get('/quota', authenticateToken, async (req, res) => {
       [req.user.id]
     );
 
+    console.log(`[Quota-Debug] UserID: ${req.user.id}, DB-Tier: ${row?.tier}, JWT-Tier: ${req.user.tier}`);
+
     let currentTier = row?.tier || 'personal';
 
     // ── SELF-HEALING 1: If JWT claims a higher tier than DB, promote DB (Trust the signed token)
@@ -50,9 +52,16 @@ router.get('/quota', authenticateToken, async (req, res) => {
     await ensureQuotaRow(req.user.id, currentTier);
     
     // Fetch fresh data after potential promotion in ensureQuotaRow
-    const quota = await dbGetAsync('SELECT used_count, limit_amount, group_scans_used FROM user_quotas WHERE user_id = ?', [req.user.id]);
+    let quota = await dbGetAsync('SELECT used_count, limit_amount, group_scans_used FROM user_quotas WHERE user_id = ?', [req.user.id]);
     
     const limits = resolveTierLimits(currentTier);
+
+    // ── AGGRESSIVE SYNC: If user is Pro/Ent but limit is still low, force it up
+    if (quota && Number(quota.limit_amount) < Number(limits.single)) {
+      console.log(`[Quota-Aggressive] Forcing limit promotion for ${currentTier}: ${quota.limit_amount} -> ${limits.single}`);
+      await dbRunAsync('UPDATE user_quotas SET limit_amount = ? WHERE user_id = ?', [limits.single, req.user.id]);
+      quota.limit_amount = limits.single;
+    }
 
     // Fetch the latest paid order to check auto-pay status
     const latestOrder = await dbGetAsync(
@@ -60,10 +69,15 @@ router.get('/quota', authenticateToken, async (req, res) => {
       [req.user.id]
     );
 
+    const usedScans = Number(quota?.used_count || 0);
+    const limitScans = Math.max(Number(quota?.limit_amount || 0), Number(limits.single));
+
+    console.log(`[Quota-Debug] Returning Tier: ${currentTier}, Used: ${usedScans}, Limit: ${limitScans}`);
+
     res.json({
       tier: currentTier,
-      used: Number(quota?.used_count || 0),
-      limit: Number(quota?.limit_amount || limits.single),
+      used: usedScans,
+      limit: limitScans,
       group_scans_used: Number(quota?.group_scans_used || 0),
       group_scans_limit: Number(limits.group),
       tierMatch: (req.user.tier || '').toLowerCase() === currentTier.toLowerCase(),

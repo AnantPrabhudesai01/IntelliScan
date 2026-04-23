@@ -39,42 +39,35 @@ async function ensureQuotaRow(userId, currentTier = 'personal') {
 
   const nowVal = isPostgres ? "CURRENT_TIMESTAMP" : "CURRENT_TIMESTAMP";
 
-  // 3. Perform UPSERT
-  const query = `
-    INSERT INTO user_quotas (
-      user_id, 
-      used_count, 
-      limit_amount, 
-      group_scans_used, 
-      group_limit_amount,
-      last_reset_date
-    ) 
-    VALUES (?, 0, ?, 0, ?, ${nowVal})
-    ON CONFLICT (user_id) DO UPDATE SET
-      limit_amount = CASE 
-        WHEN EXCLUDED.limit_amount > user_quotas.limit_amount THEN EXCLUDED.limit_amount 
-        ELSE user_quotas.limit_amount 
-      END,
-      group_limit_amount = CASE 
-        WHEN EXCLUDED.group_limit_amount > user_quotas.group_limit_amount THEN EXCLUDED.group_limit_amount 
-        ELSE user_quotas.group_limit_amount 
-      END,
-      
-      used_count = CASE 
-        WHEN ${monthCheck} THEN 0 
-        ELSE user_quotas.used_count 
-      END,
-      group_scans_used = CASE 
-        WHEN ${monthCheck} THEN 0 
-        ELSE user_quotas.group_scans_used 
-      END,
-      last_reset_date = CASE 
-        WHEN ${monthCheck} THEN ${nowVal} 
-        ELSE user_quotas.last_reset_date 
-      END
-  `;
-
-  await dbRunAsync(query, [userId, targetLimit, targetGroupLimit]);
+  // 3. Perform UPSERT/Update
+  if (existing) {
+    const query = `
+      UPDATE user_quotas SET
+        limit_amount = ?,
+        group_limit_amount = ?,
+        used_count = CASE 
+          WHEN ${monthCheck} THEN 0 
+          ELSE used_count 
+        END,
+        group_scans_used = CASE 
+          WHEN ${monthCheck} THEN 0 
+          ELSE group_scans_used 
+        END,
+        last_reset_date = CASE 
+          WHEN ${monthCheck} THEN ${nowVal} 
+          ELSE last_reset_date 
+        END
+      WHERE user_id = ?
+    `;
+    await dbRunAsync(query, [targetLimit, targetGroupLimit, userId]);
+  } else {
+    const query = `
+      INSERT INTO user_quotas (
+        user_id, used_count, limit_amount, group_scans_used, group_limit_amount, last_reset_date
+      ) VALUES (?, 0, ?, 0, ?, ${nowVal})
+    `;
+    await dbRunAsync(query, [userId, targetLimit, targetGroupLimit]);
+  }
 }
 
 /**
