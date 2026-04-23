@@ -12,6 +12,7 @@ const { extractJsonObjectFromText } = require('../utils/aiUtils');
 const OPENROUTER_FREE_POOL = [
   "meta-llama/llama-3.2-11b-vision-instruct:free",
   "mistralai/pixtral-12b:free",
+  "openai/gpt-4o-mini",
   "google/gemini-2.0-flash-exp:free",
   "qwen/qwen-2-vl-7b-instruct:free"
 ];
@@ -390,23 +391,32 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
       }
   }
 
-  // 4. Tesseract (Last Resort)
-  if (allowTesseract && isEngineActive('tesseract')) {
-    try {
-      const tesseractLang = String(process.env.TESSERACT_LANG || 'eng').trim() || 'eng';
-      const ocr = await runTesseractOcrInWorker({ base64Data, lang: tesseractLang });
-      if (ocr?.ok) {
-        // Since Tesseract only gives text, we'd ideally need a second pass with a text-only LLM
-        // For brevity in this refactor, we return the raw text if no LLM worked
-        return { data: { text: ocr.text, engine_used: 'Tesseract Offline' } };
+      // 4. Text-Only Recovery (The "Safe-Mode" Fallback)
+      if (allowTesseract) {
+        try {
+          console.log('[AI Service] Cloud Vision exhausted. Attempting OCR Recovery Mode...');
+          const tesseractLang = String(process.env.TESSERACT_LANG || 'eng').trim() || 'eng';
+          const ocr = await runTesseractOcrInWorker({ base64Data, lang: tesseractLang });
+          
+          if (ocr?.ok && ocr.text.trim().length > 10) {
+            console.log('[AI Service] OCR Successful. Sending text to LLM for structuring.');
+            const textPrompt = `I have OCR text from a business card scan. Extract the contacts into JSON.\n\nOCR TEXT:\n${ocr.text}`;
+            const recovery = await generateWithFallback(textPrompt);
+            const extracted = extractJsonObjectFromText(recovery);
+            const data = JSON.parse(extracted || recovery);
+            data.engine_used = 'OCR + LLM Recovery';
+            return { data };
+          }
+        } catch (ocrErr) {
+          console.error('[AI Service] OCR Recovery Failed:', ocrErr.message);
+        }
       }
     } catch (err) {
-      lastError = `Tesseract: ${err.message}`;
-      console.error('Tesseract Extraction Failed:', err.message);
+      lastError = err.message;
+      console.error('OpenRouter Extraction Exhausted:', err.message);
     }
-  }
 
-  return { error: `All extraction engines failed. Last error: ${lastError}`, status: 500 };
+    return { error: `All extraction engines failed. Last error: ${lastError}`, status: 500 };
 }
 
 /**
