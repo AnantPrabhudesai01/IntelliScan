@@ -118,9 +118,9 @@ app.use(helmet({
   contentSecurityPolicy: false,
 }));
 
-// Cross-Origin Resource Sharing
+// Cross-Origin Resource Sharing (Permissive for production stability)
 app.use(cors({
-  origin: (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',').map(s => s.trim()),
+  origin: (process.env.CLIENT_ORIGIN || 'http://localhost:5173,https://intelli-scan-psi.vercel.app').split(',').map(s => s.trim()),
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: true
