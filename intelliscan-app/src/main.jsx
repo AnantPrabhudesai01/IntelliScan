@@ -26,6 +26,9 @@ createRoot(document.getElementById('root')).render(
           domain={import.meta.env.VITE_AUTH0_DOMAIN || "dev-1s0xix56z6m3jc0i.jp.auth0.com"}
           clientId={import.meta.env.VITE_AUTH0_CLIENT_ID || "xovwCn299yoIc2F5HpxfBq24joO1Rleg"}
           authorizationParams={{ redirect_uri: window.location.origin }}
+          onRedirectCallback={(appState) => {
+            window.history.replaceState({}, document.title, appState?.returnTo || window.location.pathname);
+          }}
         >
           <RoleProvider>
             <Auth0Synchronizer />
