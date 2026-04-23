@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { dbAllAsync, dbRunAsync, dbGetAsync } = require('../utils/db');
 const { authenticateToken, requireSuperAdmin } = require('../middleware/auth');
+const { createSmtpTransporterFromEnv } = require('../utils/smtp');
 
 /**
  * Platform Feedback Routes
@@ -68,7 +69,45 @@ router.post('/:id/respond', authenticateToken, requireSuperAdmin, async (req, re
       'UPDATE feedbacks SET admin_response = ?, admin_note = ?, status = ? WHERE id = ?',
       [response, note, status, id]
     );
-    res.json({ success: true, message: 'Response transmitted successfully.' });
+
+    // --- AUTO-EMAIL: Notify the user ---
+    try {
+      const feedbackData = await dbGetAsync(`
+        SELECT f.subject, u.email, u.name 
+        FROM feedbacks f 
+        JOIN users u ON f.user_id = u.id 
+        WHERE f.id = ?
+      `, [id]);
+
+      if (feedbackData && feedbackData.email) {
+        const smtp = createSmtpTransporterFromEnv();
+        if (smtp) {
+          await smtp.transporter.sendMail({
+            from: `"IntelliScan Support" <${smtp.from}>`,
+            to: feedbackData.email,
+            subject: `Update on your feedback: ${feedbackData.subject || 'Ticket #' + id}`,
+            html: `
+              <div style="font-family: sans-serif; max-width: 600px; color: #333; line-height: 1.6;">
+                <h2 style="color: #6366f1;">Hi ${feedbackData.name || 'there'},</h2>
+                <p>An administrator has responded to your feedback regarding: <strong>${feedbackData.subject || 'Platform Support'}</strong></p>
+                <div style="background: #f3f4f6; padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #6366f1;">
+                  <p style="font-weight: bold; margin-bottom: 8px; color: #1f2937;">Admin Response:</p>
+                  <p style="margin: 0; color: #4b5563; font-style: italic;">"${response}"</p>
+                </div>
+                <p style="font-size: 13px; color: #6b7280;">You can view your full feedback history anytime in your dashboard.</p>
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+                <p style="font-size: 11px; color: #9ca3af;">This is an automated notification from IntelliScan. Please do not reply directly to this email.</p>
+              </div>
+            `
+          });
+          console.log(`[Email] Feedback response sent to ${feedbackData.email}`);
+        }
+      }
+    } catch (emailErr) {
+      console.warn('[Email] Failed to send feedback notification:', emailErr.message);
+    }
+
+    res.json({ success: true, message: 'Response transmitted and user notified via email.' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

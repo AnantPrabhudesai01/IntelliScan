@@ -7,68 +7,91 @@ const { unifiedTextAIPipeline } = require('../services/aiService');
 router.get('/insights', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
-    const tier = req.user.tier || 'personal';
+    const isPostgres = process.env.DATABASE_URL && process.env.DATABASE_URL.startsWith('postgres');
 
-    // 1. Fetch data for analysis
-    const contacts = await dbAllAsync('SELECT name, company, email, phone, scan_date, confidence, linkedin_bio FROM contacts WHERE user_id = ? ORDER BY scan_date DESC LIMIT 10', [userId]);
-    const contactsCount = (await dbGetAsync('SELECT COUNT(*) as count FROM contacts WHERE user_id = ? AND is_deleted = FALSE', [userId]))?.count || 0;
-    const cardsToday = (await dbGetAsync('SELECT COUNT(*) as count FROM contacts WHERE user_id = ? AND date(scan_date) = date(\'now\')', [userId]))?.count || 0;
+    // 1. REAL DATA ANALYSIS
+    // ---------------------------------------------------------
+    
+    // Total contacts
+    const stats = await dbGetAsync(`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(CASE WHEN crm_synced = 1 THEN 1 END) as synced,
+        COUNT(CASE WHEN created_at > ${isPostgres ? "NOW() - interval '7 days'" : "datetime('now', '-7 days')"} THEN 1 END) as recent
+      FROM contacts 
+      WHERE user_id = ? AND is_deleted = FALSE
+    `, [userId]);
 
-    // 2. Check Cache (Return instantly if data is fresh)
-    const cached = await dbGetAsync(`
-      SELECT insights_json, updated_at 
-      FROM coach_insights_cache 
-      WHERE user_id = ? AND contact_count_at_cache = ?
-      AND updated_at > ${isPostgres ? "NOW() - interval '1 hour'" : "datetime('now', '-1 hour')"}
-    `, [userId, contactsCount]);
+    const total = stats.total || 0;
+    const synced = stats.synced || 0;
+    const recent = stats.recent || 0;
+    const syncRatio = total > 0 ? Math.round((synced / total) * 100) : 100;
+    
+    // Find Stale Leads (Added > 7 days ago, but not synced/updated)
+    const staleCount = (await dbGetAsync(`
+      SELECT COUNT(*) as count 
+      FROM contacts 
+      WHERE user_id = ? 
+      AND created_at < ${isPostgres ? "NOW() - interval '7 days'" : "datetime('now', '-7 days')"}
+      AND crm_synced = 0
+    `, [userId]))?.count || 0;
 
-    if (cached && cached.insights_json) {
-      const parsed = JSON.parse(cached.insights_json);
-      return res.json({
-        health_score: healthScore,
-        momentum_status: status,
-        actions: parsed.actions,
-        cached: true
+    // Calculate Health Score
+    // Formula: 40% sync ratio + 40% recent activity + 20% database cleanliness
+    const healthScore = Math.min(100, Math.round((syncRatio * 0.4) + (Math.min(recent, 10) * 4) + 20));
+    const momentumStatus = healthScore > 80 ? 'Peak Momentum' : healthScore > 50 ? 'Steady Growth' : 'Needs Attention';
+
+    // 2. GENERATE PROACTIVE ACTIONS
+    // ---------------------------------------------------------
+    let actions = [];
+
+    // Rule A: Sync Gap
+    if (syncRatio < 60 && total > 5) {
+      actions.push({
+        id: 'sync_gap',
+        title: 'CRM Sync Gap',
+        description: `Only ${syncRatio}% of your leads are in your CRM. You have ${total - synced} leads sitting locally.`,
+        cta: 'Sync to CRM',
+        color: 'red'
       });
     }
 
-    // 3. AI Insight Generation (with strict 8s timeout)
-    const contactSummary = (contacts || []).map(c => `- ${c.name} (${c.company || 'Unknown'})`).join('\n');
-    const prompt = `As a high-level Business Networking Coach, analyze this CRM snapshot for user_id ${userId}:
-Total Contacts: ${contactsCount}
-Added Today: ${cardsToday}
-Recent Leads:
-${contactSummary || 'No recent leads'}
-
-Generate 3 actionable "Next Steps" for the user. Return ONLY JSON: { "actions": [{ "title", "description", "cta", "color", "id" }] }`;
-
-    let actions = [];
-    try {
-      const aiResult = await Promise.race([
-        unifiedTextAIPipeline({ prompt, responseFormat: 'json' }),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('AI Timeout')), 8000))
-      ]);
-      if (aiResult.success) {
-        actions = aiResult.data.actions;
-        
-        // Update Cache
-        await dbRunAsync('INSERT INTO coach_insights_cache (user_id, insights_json, contact_count_at_cache, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT (user_id) DO UPDATE SET insights_json = EXCLUDED.insights_json, contact_count_at_cache = EXCLUDED.contact_count_at_cache, updated_at = CURRENT_TIMESTAMP', [userId, JSON.stringify({ actions }), contactsCount]);
-      }
-    } catch (e) {
-      console.warn(`[Coach] AI Insights failed/timed out: ${e.message}`);
+    // Rule B: Stale Leads
+    if (staleCount > 0) {
+      actions.push({
+        id: 'stale',
+        title: 'Stale Lead Alert',
+        description: `You have ${staleCount} leads from last week that haven't been contacted. Shall I draft a follow-up?`,
+        cta: 'Review Stale Leads',
+        color: 'amber'
+      });
     }
 
-    // Fallback if AI fails or times out
-    if (!actions || actions.length === 0) {
-      actions = [
-        { id: 'momentum', title: 'Maintain Momentum', description: 'Consistency is key. Scan new cards daily.', cta: 'Go to Scanner', color: 'emerald' },
-        { id: 'context', title: 'Enrich Network', description: 'Add missing details to your recent leads.', cta: 'Open Contacts', color: 'indigo' }
-      ];
+    // Rule C: Networking Win
+    if (recent > 3) {
+      actions.push({
+        id: 'momentum',
+        title: 'Networking Win',
+        description: `Great job! You added ${recent} new connections this week. Keep the momentum going.`,
+        cta: 'View Recent',
+        color: 'emerald'
+      });
+    }
+
+    // Default Fallback
+    if (actions.length === 0) {
+      actions.push({
+        id: 'context',
+        title: 'Daily Coach',
+        description: 'Your network is stable. Try adding 3 new contacts this week to increase your health score.',
+        cta: 'Go to Scanner',
+        color: 'indigo'
+      });
     }
 
     res.json({
       health_score: healthScore,
-      momentum_status: status,
+      momentum_status: momentumStatus,
       actions: actions
     });
   } catch (err) {

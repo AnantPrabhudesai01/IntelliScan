@@ -99,6 +99,7 @@ import SuperAdminFeedbackPage from './pages/SuperAdminFeedbackPage';
 import CustomModelsPage from './pages/admin/CustomModelsPage';
 import JobQueuesPage from './pages/admin/JobQueuesPage';
 import SystemIncidentCenter from './pages/admin/SystemIncidentCenter';
+import AuditTimelinePage from './pages/admin/AuditTimelinePage';
 
 // Standalone pages pulled out of catch-all for correct layout
 import GenSubscriptionPlanComparison from './pages/generated/GenSubscriptionPlanComparison.jsx';
@@ -283,6 +284,7 @@ export default function App() {
               <Route path="/admin/incidents" element={<SystemIncidentCenter />} />
               <Route path="/admin/custom-models" element={<CustomModelsPage />} />
               <Route path="/admin/integration-health" element={<JobQueuesPage />} />
+              <Route path="/admin/audit-logs" element={<AuditTimelinePage />} />
               <Route path="/admin/job-queues" element={<JobQueuesPage />} />
               <Route path="/admin/settings" element={<SettingsPage />} />
               
