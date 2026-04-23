@@ -48,7 +48,7 @@ export default function DashboardLayout() {
     { to: '/dashboard/contacts',    label: 'Contacts',      icon: Users    },
     { to: '/dashboard/calendar',    label: 'Calendar',      icon: Calendar },
     { to: '/dashboard/leaderboard', label: 'Leaderboard',   icon: Trophy   },
-    { to: '/dashboard/events',      label: 'Legacy Events', icon: ListTree },
+    { to: '/admin/audit-logs',      label: 'Audit Logs',    icon: ListTree },
     { to: '/dashboard/drafts',      label: 'AI Drafts',     icon: Mail },
     { to: '/dashboard/coach',       label: 'AI Coach',      icon: Target },
     { to: '/dashboard/email-marketing', label: 'Email Marketing', icon: Mail },

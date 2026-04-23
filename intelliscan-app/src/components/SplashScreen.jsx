@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Cpu, Globe } from 'lucide-react';
+import { Cpu, Globe } from 'lucide-react';
 
 export default function SplashScreen({ message = "Synchronizing Neural Session..." }) {
   return (
