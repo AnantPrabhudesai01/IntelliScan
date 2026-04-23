@@ -302,7 +302,23 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
     const email = authUser.email.toLowerCase().trim();
     const name = authUser.name || authUser.nickname || email.split('@')[0] || 'IntelliScan User';
     
-    let existingUser = await dbGetAsync('SELECT * FROM users WHERE LOWER(email) = LOWER(?)', [email]);
+    // ⚡ TURBO-SYNC: If user exists, return IMMEDIATELY to break loops
+    let existingUser = await dbGetAsync('SELECT id, name, email, role, tier, workspace_id FROM users WHERE LOWER(email) = LOWER(?)', [email]);
+    
+    if (existingUser) {
+       const token = jwt.sign(
+        { id: existingUser.id, email: existingUser.email, role: existingUser.role, tier: existingUser.tier, workspace_id: existingUser.workspace_id },
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRES_IN }
+      );
+      
+      clearTimeout(syncTimeout);
+      return res.json({
+        token,
+        user: existingUser
+      });
+    }
+
     let userId;
     let role = 'user';
     let tier = 'personal';
