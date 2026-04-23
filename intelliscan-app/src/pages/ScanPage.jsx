@@ -176,14 +176,18 @@ export default function ScanPage() {
     
     // 🎯 SWEET SPOT: 3200px at 0.80 quality provides perfect OCR clarity 
     // while ensuring the AI processes the image in under 5 seconds.
+    toast.loading('📥 Receiving image...', { id: 'scan-step', duration: 2000 });
     const compressedBase64 = await compressImage(file, 3200, 0.80); 
     
+    toast.loading('⚙️ Optimizing for AI...', { id: 'scan-step', duration: 2000 });
     setSelectedImage(compressedBase64);
     localStorage.setItem('intelliscan_cached_image', compressedBase64);
     
     if (scanMode === 'single') {
+      toast.loading('🔬 Single Scan Protocol...', { id: 'scan-step' });
       processSingleImage(compressedBase64, 'image/jpeg');
     } else {
+      toast.loading('🧿 Dense Vision Protocol (25+ Cards)...', { id: 'scan-step' });
       processMultiImage(compressedBase64, 'image/jpeg');
     }
   };
