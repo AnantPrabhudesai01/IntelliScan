@@ -11,7 +11,6 @@ const { extractJsonObjectFromText } = require('../utils/aiUtils');
  */
 const OPENROUTER_FREE_POOL = [
   "google/gemini-flash-1.5",
-  "meta-llama/llama-3.1-70b-instruct:free",
   "mistralai/mistral-7b-instruct:free",
   "microsoft/phi-3-mini-128k-instruct:free"
 ];
@@ -260,7 +259,7 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
       if (geminiApiKey) {
         // Use REST API for maximum control over version/naming
         const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
-        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiApiKey}`;
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
