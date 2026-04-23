@@ -16,9 +16,11 @@ try {
   pgPool = new Pool({
     connectionString: DATABASE_URL,
     ssl: { rejectUnauthorized: false }, 
-    connectionTimeoutMillis: 15000, 
-    query_timeout: 30000,
-    statement_timeout: 30000,
+    connectionTimeoutMillis: 30000, // Increased to 30s for slow cold-starts
+    query_timeout: 45000,           // 45s for heavy AI lookups
+    statement_timeout: 45000,
+    max: 15,                        // Cap connections to prevent Supabase exhaustion
+    idleTimeoutMillis: 30000,       // Close idle connections faster
     keepAlive: true,
   });
   

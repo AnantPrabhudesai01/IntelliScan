@@ -10,10 +10,10 @@ const { extractJsonObjectFromText } = require('../utils/aiUtils');
  * Order: Gemini -> OpenAI -> Hugging Face (Llama 3)
  */
 const OPENROUTER_FREE_POOL = [
-  "google/gemini-2.0-flash-exp:free",
+  "meta-llama/llama-3.1-70b-instruct:free",
   "mistralai/mistral-7b-instruct:free",
-  "openchat/openchat-7b:free",
-  "google/gemini-1.5-flash"
+  "google/gemini-flash-1.5-8b",
+  "microsoft/phi-3-mini-128k-instruct:free"
 ];
 
 async function generateWithFallback(prompt) {
@@ -335,8 +335,8 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
         let orModel = process.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-001";
         
         if (isMultiScan && (orModel.includes('free') || orModel.includes('nano'))) {
-          console.log('[AI Service] Dense scan detected. Upgrading to Gemini 2.0 Flash for accuracy.');
-          orModel = "google/gemini-2.0-flash-001"; // High-power vision model with active endpoints
+          console.log('[AI Service] Dense scan detected. Upgrading to Llama 3.1 70B for accuracy.');
+          orModel = "meta-llama/llama-3.1-70b-instruct:free"; // High-power stable fallback
         }
 
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
