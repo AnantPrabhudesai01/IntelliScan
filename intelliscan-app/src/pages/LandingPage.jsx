@@ -12,11 +12,6 @@ export default function LandingPage() {
   const location = useLocation();
   const [authError, setAuthError] = useState(null);
 
-  // 🛡️ Handshake Force: Skip landing if already authenticated
-  if (auth0Loading || (isAuthenticated && !getStoredToken())) {
-    return <SplashScreen message="Initializing Identity Handshake..." />;
-  }
-
   useEffect(() => {
     // 🛡️ URL ERASER: If we see a "code" from Auth0, wipe it and wait for the handshake
     const params = new URLSearchParams(location.search);
@@ -49,6 +44,11 @@ export default function LandingPage() {
       navigate(resolveHomeRoute({ role, tier }), { replace: true });
     }
   }, [navigate, location, isAuthenticated]);
+
+  // 🛡️ Handshake Force: Skip landing if already authenticated
+  if (auth0Loading || (isAuthenticated && !getStoredToken())) {
+    return <SplashScreen message="Initializing Identity Handshake..." />;
+  }
 
   return (
     <PublicLayout>
