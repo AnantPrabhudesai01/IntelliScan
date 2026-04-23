@@ -365,6 +365,15 @@ async function bootstrap() {
         updated_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'},
         UNIQUE(workspace_id, fingerprint)
       )`,
+      `CREATE TABLE IF NOT EXISTS feedbacks (
+        id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
+        user_id INTEGER REFERENCES users(id),
+        type TEXT NOT NULL,
+        subject TEXT,
+        message TEXT,
+        status TEXT DEFAULT 'new',
+        created_at ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
+      )`,
       "CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id)",
       "CREATE INDEX IF NOT EXISTS idx_contacts_is_deleted ON contacts(is_deleted)",
       "CREATE INDEX IF NOT EXISTS idx_audit_created_at ON audit_trail(created_at)",
