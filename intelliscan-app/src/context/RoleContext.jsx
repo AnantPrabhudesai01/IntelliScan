@@ -172,10 +172,13 @@ export function RoleProvider({ children }) {
   };
 
   const signOut = () => {
+    console.log("[RoleContext] Performing Total Reset Logout...");
     clearStoredAuth();
+    localStorage.removeItem('intelliscan_cached_image');
+    localStorage.clear(); // 🧹 Clear everything to be safe
     setRole('anonymous');
     setTier('personal');
-    logout({ logoutParams: { returnTo: window.location.origin } });
+    window.location.href = '/'; // 🚀 Force a clean start
   };
 
   return (
