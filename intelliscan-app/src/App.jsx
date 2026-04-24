@@ -126,14 +126,18 @@ const RootRoute = () => {
   const token = getStoredToken();
   const { isAuthReady } = useRole();
 
-  // 1. Wait for Auth0 to initialize AND RoleContext bootstrap (Sync)
-  // CRITICAL FIX: Ensure we wait if Auth0 authenticated us but our local API sync hasn't returned the JWT yet.
-  if (isAuth0Loading || !isAuthReady || (isAuthenticated && !token)) {
+  // 1. Wait for Auth0 to initialize
+  if (isAuth0Loading || !isAuthReady) {
     return <SplashScreen message="Syncing Neural Session..." />;
   }
 
-  // 2. Decide based on session existence
-  // Check both local token and Auth0 state to be resilient
+  // 2. Identity Handshake: If we are authenticated but the local sync hasn't finished, wait.
+  // This prevents the dashboard from crashing due to a missing token.
+  if (isAuthenticated && !token) {
+    return <SplashScreen message="Initializing Identity..." />;
+  }
+
+  // 3. Decide based on session existence
   if (!token && !isAuthenticated) return <LandingPage />;
   
   const storedUser = safeReadStoredUser();
