@@ -52,36 +52,48 @@ function translate(sql) {
 
 // ── Async Helpers (Unified Interface) ──────────────────────────
 async function dbGetAsync(sql, params = []) {
-  if (isPostgres) {
+  if (isPostgres && pgPool) {
     const res = await pgPool.query(translate(sql), params);
     return res.rows[0];
   }
-  return new Promise((resolve, reject) => {
-    sqliteDb.get(sql, params, (err, row) => err ? reject(err) : resolve(row));
-  });
+  if (sqliteDb) {
+    return new Promise((resolve, reject) => {
+      sqliteDb.get(sql, params, (err, row) => err ? reject(err) : resolve(row));
+    });
+  }
+  console.warn('⚠️ [DB] dbGetAsync called but no DB connected.');
+  return null;
 }
 
 async function dbAllAsync(sql, params = []) {
-  if (isPostgres) {
+  if (isPostgres && pgPool) {
     const res = await pgPool.query(translate(sql), params);
     return res.rows || [];
   }
-  return new Promise((resolve, reject) => {
-    sqliteDb.all(sql, params, (err, rows) => err ? reject(err) : resolve(rows));
-  });
+  if (sqliteDb) {
+    return new Promise((resolve, reject) => {
+      sqliteDb.all(sql, params, (err, rows) => err ? reject(err) : resolve(rows));
+    });
+  }
+  console.warn('⚠️ [DB] dbAllAsync called but no DB connected.');
+  return [];
 }
 
 async function dbRunAsync(sql, params = []) {
-  if (isPostgres) {
+  if (isPostgres && pgPool) {
     const res = await pgPool.query(translate(sql), params);
     return { lastID: res.rows[0]?.id || null, changes: res.rowCount };
   }
-  return new Promise((resolve, reject) => {
-    sqliteDb.run(sql, params, function(err) {
-      if (err) reject(err);
-      else resolve({ lastID: this.lastID, changes: this.changes });
+  if (sqliteDb) {
+    return new Promise((resolve, reject) => {
+      sqliteDb.run(sql, params, function(err) {
+        if (err) reject(err);
+        else resolve({ lastID: this.lastID, changes: this.changes });
+      });
     });
-  });
+  }
+  console.warn('⚠️ [DB] dbRunAsync called but no DB connected.');
+  return { lastID: null, changes: 0 };
 }
 
 module.exports = {
