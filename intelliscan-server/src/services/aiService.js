@@ -390,31 +390,27 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
         lastError = err.message;
         console.error('OpenRouter Extraction Exhausted:', err.message);
       }
-  }
+    }
 
-      // 4. Text-Only Recovery (The "Safe-Mode" Fallback)
-      if (allowTesseract) {
-        try {
-          console.log('[AI Service] Cloud Vision exhausted. Attempting OCR Recovery Mode...');
-          const tesseractLang = String(process.env.TESSERACT_LANG || 'eng').trim() || 'eng';
-          const ocr = await runTesseractOcrInWorker({ base64Data, lang: tesseractLang });
-          
-          if (ocr?.ok && ocr.text.trim().length > 10) {
-            console.log('[AI Service] OCR Successful. Sending text to LLM for structuring.');
-            const textPrompt = `I have OCR text from a business card scan. Extract the contacts into JSON.\n\nOCR TEXT:\n${ocr.text}`;
-            const recovery = await generateWithFallback(textPrompt);
-            const extracted = extractJsonObjectFromText(recovery);
-            const data = JSON.parse(extracted || recovery);
-            data.engine_used = 'OCR + LLM Recovery';
-            return { data };
-          }
-        } catch (ocrErr) {
-          console.error('[AI Service] OCR Recovery Failed:', ocrErr.message);
+    // 4. Text-Only Recovery (The "Safe-Mode" Fallback)
+    if (allowTesseract) {
+      try {
+        console.log('[AI Service] Cloud Vision exhausted. Attempting OCR Recovery Mode...');
+        const tesseractLang = String(process.env.TESSERACT_LANG || 'eng').trim() || 'eng';
+        const ocr = await runTesseractOcrInWorker({ base64Data, lang: tesseractLang });
+        
+        if (ocr?.ok && ocr.text.trim().length > 10) {
+          console.log('[AI Service] OCR Successful. Sending text to LLM for structuring.');
+          const textPrompt = `I have OCR text from a business card scan. Extract the contacts into JSON.\n\nOCR TEXT:\n${ocr.text}`;
+          const recovery = await generateWithFallback(textPrompt);
+          const extracted = extractJsonObjectFromText(recovery);
+          const data = JSON.parse(extracted || recovery);
+          data.engine_used = 'OCR + LLM Recovery';
+          return { data };
         }
+      } catch (ocrErr) {
+        console.error('[AI Service] OCR Recovery Failed:', ocrErr.message);
       }
-    } catch (err) {
-      lastError = err.message;
-      console.error('OpenRouter Extraction Exhausted:', err.message);
     }
 
     return { error: `All extraction engines failed. Last error: ${lastError}`, status: 500 };
