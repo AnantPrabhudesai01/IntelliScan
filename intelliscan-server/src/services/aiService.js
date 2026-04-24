@@ -10,11 +10,12 @@ const { extractJsonObjectFromText } = require('../utils/aiUtils');
  * Order: Gemini -> OpenAI -> Hugging Face (Llama 3)
  */
 const OPENROUTER_FREE_POOL = [
+  "google/gemini-2.0-flash-exp:free",
   "meta-llama/llama-3.2-11b-vision-instruct:free",
   "mistralai/pixtral-12b:free",
-  "openai/gpt-4o-mini",
-  "google/gemini-2.0-flash-exp:free",
-  "qwen/qwen-2-vl-7b-instruct:free"
+  "qwen/qwen-2-vl-7b-instruct:free",
+  "google/gemini-flash-1.5",
+  "openai/gpt-4o-mini"
 ];
 
 async function generateWithFallback(prompt) {
@@ -286,7 +287,7 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
           if (rawText.endsWith('```')) rawText = rawText.replace(/```$/, '');
           const extracted = extractJsonObjectFromText(rawText.trim());
           const data = JSON.parse(extracted || rawText.trim());
-          data.engine_used = 'Gemini 3 Flash (Ultra-Fast)';
+          data.engine_used = 'Gemini 1.5 Flash (Ultra-Fast)';
           return { data };
         }
         console.error('Gemini REST API Rejected:', JSON.stringify(result));
@@ -357,7 +358,7 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
                   messages: [
                     { role: "system", content: "Extract business card data into a DENSE JSON object. Minimize whitespace to save tokens." },
                     { role: "user", content: [
-                      { type: "text", text: extractionPrompt },
+                      { type: "text", text: prompt },
                       { type: "image_url", image_url: { url: `data:${effectiveMime};base64,${base64Data}` } }
                     ]}
                   ],
