@@ -100,6 +100,10 @@ export default function AnalyticsPage() {
 
   const maxVolume = Math.max(...data.scan_volume);
 
+  const handleExportPDF = () => {
+    window.print();
+  };
+
   if (loading && !analytics) {
     return (
       <div className="p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
@@ -138,7 +142,10 @@ export default function AnalyticsPage() {
               </button>
             ))}
           </div>
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm">
+          <button 
+            onClick={handleExportPDF}
+            className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm"
+          >
             <Download size={14} /> Export PDF
           </button>
         </div>
