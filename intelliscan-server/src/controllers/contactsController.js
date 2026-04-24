@@ -32,18 +32,10 @@ exports.getContacts = async (req, res) => {
     const policies = await getPoliciesForScope(scopeWorkspaceId);
     const purge = await runRetentionPurgeForScope(scopeWorkspaceId, policies.retention_days);
 
-    const sql = `
-      SELECT * FROM contacts 
-      WHERE user_id = ? AND (is_deleted IS FALSE OR is_deleted IS NULL)
-      ORDER BY sort_order ASC, scan_date DESC
-    `;
-    db.all(sql, [req.user.id], (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      
-      const sanitizedRows = (rows || []).map(row => applyPiiPolicyToContactOutput(row, policies));
-      res.setHeader('X-Retention-Purged', `${purge.purged}`);
-      res.json(sanitizedRows);
-    });
+    const rows = await dbAllAsync(sql, [req.user.id]);
+    const sanitizedRows = (rows || []).map(row => applyPiiPolicyToContactOutput(row, policies));
+    res.setHeader('X-Retention-Purged', `${purge.purged}`);
+    res.json(sanitizedRows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -73,13 +65,10 @@ exports.getWorkspaceContacts = async (req, res) => {
     
     const params = [workspaceId || req.user.id];
 
-    db.all(sql, params, (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      
-      const sanitizedRows = (rows || []).map(row => applyPiiPolicyToContactOutput(row, policies));
-      res.setHeader('X-Retention-Purged', `${purge.purged}`);
-      res.json(sanitizedRows);
-    });
+    const rows = await dbAllAsync(sql, params);
+    const sanitizedRows = (rows || []).map(row => applyPiiPolicyToContactOutput(row, policies));
+    res.setHeader('X-Retention-Purged', `${purge.purged}`);
+    res.json(sanitizedRows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -90,17 +79,18 @@ exports.getWorkspaceContacts = async (req, res) => {
  * Fetches basic contact stats for the dashboard.
  */
 exports.getStats = async (req, res) => {
-  db.get(
-    'SELECT COUNT(*) as totalScanned, AVG(confidence) as avgConfidence FROM contacts WHERE user_id = ?',
-    [req.user.id],
-    (err, row) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({
-        totalScanned: row.totalScanned || 0,
-        avgConfidence: row.avgConfidence ? Number(row.avgConfidence).toFixed(1) : 0
-      });
-    }
-  );
+  try {
+    const row = await dbGetAsync(
+      'SELECT COUNT(*) as totalScanned, AVG(confidence) as avgConfidence FROM contacts WHERE user_id = ?',
+      [req.user.id]
+    );
+    res.json({
+      totalScanned: row?.totalScanned || 0,
+      avgConfidence: row?.avgConfidence ? Number(row.avgConfidence).toFixed(1) : 0
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 /**

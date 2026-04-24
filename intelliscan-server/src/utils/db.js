@@ -52,47 +52,56 @@ function translate(sql) {
 
 // ── Async Helpers (Unified Interface) ──────────────────────────
 async function dbGetAsync(sql, params = []) {
-  if (isPostgres && pgPool) {
-    const res = await pgPool.query(translate(sql), params);
-    return res.rows[0];
+  try {
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(translate(sql), params);
+      return res.rows[0];
+    }
+    if (sqliteDb) {
+      return new Promise((resolve, reject) => {
+        sqliteDb.get(sql, params, (err, row) => err ? reject(err) : resolve(row));
+      });
+    }
+  } catch (err) {
+    console.error('❌ [DB] dbGetAsync failed:', err.message);
   }
-  if (sqliteDb) {
-    return new Promise((resolve, reject) => {
-      sqliteDb.get(sql, params, (err, row) => err ? reject(err) : resolve(row));
-    });
-  }
-  console.warn('⚠️ [DB] dbGetAsync called but no DB connected.');
   return null;
 }
 
 async function dbAllAsync(sql, params = []) {
-  if (isPostgres && pgPool) {
-    const res = await pgPool.query(translate(sql), params);
-    return res.rows || [];
+  try {
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(translate(sql), params);
+      return res.rows || [];
+    }
+    if (sqliteDb) {
+      return new Promise((resolve, reject) => {
+        sqliteDb.all(sql, params, (err, rows) => err ? reject(err) : resolve(rows));
+      });
+    }
+  } catch (err) {
+    console.error('❌ [DB] dbAllAsync failed:', err.message);
   }
-  if (sqliteDb) {
-    return new Promise((resolve, reject) => {
-      sqliteDb.all(sql, params, (err, rows) => err ? reject(err) : resolve(rows));
-    });
-  }
-  console.warn('⚠️ [DB] dbAllAsync called but no DB connected.');
   return [];
 }
 
 async function dbRunAsync(sql, params = []) {
-  if (isPostgres && pgPool) {
-    const res = await pgPool.query(translate(sql), params);
-    return { lastID: res.rows[0]?.id || null, changes: res.rowCount };
-  }
-  if (sqliteDb) {
-    return new Promise((resolve, reject) => {
-      sqliteDb.run(sql, params, function(err) {
-        if (err) reject(err);
-        else resolve({ lastID: this.lastID, changes: this.changes });
+  try {
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(translate(sql), params);
+      return { lastID: res.rows[0]?.id || null, changes: res.rowCount };
+    }
+    if (sqliteDb) {
+      return new Promise((resolve, reject) => {
+        sqliteDb.run(sql, params, function(err) {
+          if (err) reject(err);
+          else resolve({ lastID: this.lastID, changes: this.changes });
+        });
       });
-    });
+    }
+  } catch (err) {
+    console.error('❌ [DB] dbRunAsync failed:', err.message);
   }
-  console.warn('⚠️ [DB] dbRunAsync called but no DB connected.');
   return { lastID: null, changes: 0 };
 }
 
