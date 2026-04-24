@@ -1,5 +1,9 @@
-const { Pool } = require('pg');
-const sqlite3 = require('sqlite3').verbose();
+let sqlite3 = null;
+try {
+  sqlite3 = require('sqlite3').verbose();
+} catch (e) {
+  console.log('ℹ️ [DB] SQLite not installed, operating in Cloud-Only mode.');
+}
 const dns = require('dns');
 const path = require('path');
 require('dotenv').config();
@@ -13,22 +17,22 @@ let pgPool = null;
 let sqliteDb = null;
 let isPostgres = false;
 
-// 🛡️ INITIALIZATION: Try Cloud (Postgres) first, fallback to Local (SQLite)
+// 🛡️ INITIALIZATION: Try Cloud (Postgres) first, fallback to Local (SQLite) if available
 if (DATABASE_URL && !DATABASE_URL.includes('localhost')) {
   try {
     pgPool = new Pool({
       connectionString: DATABASE_URL,
-      ssl: { rejectUnauthorized: false }, // Required for Supabase/Vercel
+      ssl: { rejectUnauthorized: false }, 
       connectionTimeoutMillis: 10000,
     });
     isPostgres = true;
     console.log('✅ [DB] Cloud Persistence (PostgreSQL) Engaged.');
   } catch (err) {
-    console.warn('⚠️ [DB] Cloud init failed, falling back to Local SQLite:', err.message);
+    console.warn('⚠️ [DB] Cloud init failed:', err.message);
   }
 }
 
-if (!isPostgres) {
+if (!isPostgres && sqlite3) {
   sqliteDb = new sqlite3.Database(SQLITE_PATH, (err) => {
     if (err) console.error('❌ [DB] Local SQLite critical failure:', err.message);
     else console.log('📁 [DB] Local Persistence (SQLite) Engaged.');
