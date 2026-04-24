@@ -127,18 +127,12 @@ const RootRoute = () => {
   const { isAuthReady } = useRole();
 
   // 1. Wait for Auth0 to initialize
-  if (isAuth0Loading || !isAuthReady) {
-    return <SplashScreen message="Syncing Neural Session..." />;
+  if (isAuth0Loading) {
+    return <SplashScreen message="Initializing Session..." />;
   }
 
-  // 2. Identity Handshake: If we are authenticated but the local sync hasn't finished, wait.
-  // This prevents the dashboard from crashing due to a missing token.
-  if (isAuthenticated && !token) {
-    return <SplashScreen message="Initializing Identity..." />;
-  }
-
-  // 3. Decide based on session existence
-  if (!token && !isAuthenticated) return <LandingPage />;
+  // 2. Decide based on session existence
+  if (!isAuthenticated && !token) return <LandingPage />;
   
   const storedUser = safeReadStoredUser();
   const derivedUser = storedUser || tryDecodeJwtPayload(token) || { role: 'user' };
