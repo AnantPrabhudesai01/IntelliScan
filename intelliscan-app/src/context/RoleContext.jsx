@@ -172,13 +172,25 @@ export function RoleProvider({ children }) {
   };
 
   const signOut = () => {
-    console.log("[RoleContext] Performing Total Reset Logout...");
-    clearStoredAuth();
-    localStorage.removeItem('intelliscan_cached_image');
-    localStorage.clear(); // 🧹 Clear everything to be safe
-    setRole('anonymous');
-    setTier('personal');
-    window.location.href = '/'; // 🚀 Force a clean start
+    // ☢️ UNSTOPPABLE LOGOUT PROTOCOL
+    try {
+      console.log("[RoleContext] Engaging Master Kill-Switch...");
+      
+      // 1. Purge all persistence immediately
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // 2. Clear cookies (best effort)
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+
+      // 3. Force Immediate Redirect (Bypass React)
+      window.location.replace('/'); 
+    } catch (err) {
+      // Fallback if location.replace is somehow blocked
+      window.location.href = '/';
+    }
   };
 
   return (
