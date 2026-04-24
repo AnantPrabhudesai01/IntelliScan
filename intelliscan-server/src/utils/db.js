@@ -1,3 +1,4 @@
+const { Pool } = require('pg');
 let sqlite3 = null;
 try {
   sqlite3 = require('sqlite3').verbose();
