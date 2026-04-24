@@ -176,8 +176,15 @@ export function RoleProvider({ children }) {
     try {
       console.log("[RoleContext] Engaging Master Kill-Switch...");
       
-      // 1. Purge all persistence immediately
+      // 🔐 SET SEVERANCE KEY: Tell the sync engine to stay down
+      localStorage.setItem('intelliscan_logout_active', 'true');
+
+      // 1. Purge all persistence immediately (except our severance key)
+      const theme = localStorage.getItem('theme'); // Keep theme for aesthetics
       localStorage.clear();
+      localStorage.setItem('intelliscan_logout_active', 'true'); 
+      if (theme) localStorage.setItem('theme', theme);
+      
       sessionStorage.clear();
       
       // 2. Clear cookies (best effort)
