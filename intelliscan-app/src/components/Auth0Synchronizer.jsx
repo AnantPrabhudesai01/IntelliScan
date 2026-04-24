@@ -21,7 +21,13 @@ export default function Auth0Synchronizer() {
       }
 
       // 🚀 IDENTITY OVERRIDE: If Auth0 is not ready, jump-start with the Enterprise Speed-Pass
+      // 🛑 SAFETY LOCK: If the user just logged out, do NOT auto-login.
       if (!isAuthenticated || !user) {
+         if (localStorage.getItem('intelliscan_logout_active') === 'true') {
+           console.log("[AuthSync] User logged out. Speed-Pass suppressed.");
+           return;
+         }
+
          try {
            console.log("[AuthSync] Auth0 not ready. Engaging Enterprise Speed-Pass...");
            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/auth/sync`, {
