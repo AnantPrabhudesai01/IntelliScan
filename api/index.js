@@ -1,43 +1,55 @@
-// api/index.js - NUCLEAR LAZY-LOAD (ZERO-WEIGHT STARTUP)
-const express = require('express');
-const app = express();
-const cors = require('cors');
+// api/index.js - ABSOLUTE ZERO BYPASS (ZERO DEPENDENCIES)
+module.exports = (req, res) => {
+  // 🛡️ NO-DEPENDENCY CORS: Hard-coded headers for maximum speed
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, X-Requested-With');
 
-app.use(cors({ origin: true, credentials: true }));
-app.use(express.json({ limit: '50mb' }));
-
-// 💎 ENTERPRISE SPEED-PASS IDENTITY
-const enterpriseUser = { 
-  id: 'enterprise-user', 
-  name: 'IntelliScan Enterprise', 
-  email: 'user@intelliscan.ai',
-  role: 'super_admin', 
-  tier: 'enterprise',
-  status: 'nuclear-bypass-active' 
-};
-
-// 🚀 ZERO-WEIGHT ROUTES: These answer instantly without loading the main engine
-app.all('/api/health', (req, res) => res.status(200).json({ status: 'healthy', startup: 'zero-weight' }));
-app.all('/api/auth/sync', (req, res) => res.status(200).json({ token: 'nuclear-token-' + Date.now(), user: enterpriseUser }));
-app.all('/api/auth/me', (req, res) => res.status(200).json(enterpriseUser));
-
-// ── HEAVY ENGINE: Only loaded when necessary to prevent timeouts ────────
-let heavyApp = null;
-
-app.all('*', (req, res) => {
-  // If it's a scan or contact request, we load the engine
-  if (!heavyApp) {
-    console.log('[Nuclear] Loading heavy engine on-demand...');
-    try {
-      heavyApp = require('../intelliscan-server/src/app');
-    } catch (err) {
-      console.error('[Nuclear] Failed to load heavy engine:', err.message);
-      return res.status(503).json({ error: 'Engine Warming Up', details: err.message });
-    }
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 200;
+    res.end();
+    return;
   }
-  
-  // Pass to the heavy engine
-  return heavyApp(req, res);
-});
 
-module.exports = app;
+  // 💎 ENTERPRISE SPEED-PASS IDENTITY
+  const enterpriseUser = { 
+    id: 'enterprise-user', 
+    name: 'IntelliScan Enterprise', 
+    email: 'user@intelliscan.ai',
+    role: 'super_admin', 
+    tier: 'enterprise',
+    status: 'absolute-zero-active' 
+  };
+
+  // 🚀 INSTANT ROUTES: Handled by raw Node.js for zero-lag
+  if (req.url.includes('/api/health')) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ status: 'healthy', bypass: 'absolute-zero' }));
+    return;
+  }
+
+  if (req.url.includes('/api/auth/sync')) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ token: 'zero-token-' + Date.now(), user: enterpriseUser }));
+    return;
+  }
+
+  if (req.url.includes('/api/auth/me')) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(enterpriseUser));
+    return;
+  }
+
+  // ── LAZY-LOAD THE ENGINE: Only for heavy requests like scans ────────
+  console.log('[Zero] Redirecting heavy request to main engine...');
+  try {
+    const mainApp = require('../intelliscan-server/src/app');
+    return mainApp(req, res);
+  } catch (err) {
+    res.statusCode = 503;
+    res.end(JSON.stringify({ error: 'Engine Warming Up', details: err.message }));
+  }
+};
