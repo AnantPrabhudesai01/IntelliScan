@@ -57,10 +57,12 @@ export default function SignInPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    localStorage.removeItem('intelliscan_logout_active'); // 🔓 CLEAR LOCK
     loginWithRedirect({ authorizationParams: { login_hint: email } });
   };
 
   const handleSso = async (connection) => {
+    localStorage.removeItem('intelliscan_logout_active'); // 🔓 CLEAR LOCK
     // Immediate redirect to Auth0 for enterprise/social connections
     loginWithRedirect({ 
       authorizationParams: { 
