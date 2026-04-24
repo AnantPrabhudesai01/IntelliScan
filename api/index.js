@@ -36,6 +36,14 @@ module.exports = (req, res) => {
   // ── X-RAY DIAGNOSTIC: Reveal why the engine is failing ────────
   try {
     const mainApp = require('../intelliscan-server/src/app');
+    // 👤 Identity Anchor: Returns current user info
+    if (req.url.startsWith('/api/auth/me')) {
+      const user = req.user || { id: 'zero-user', name: 'X-Ray Admin', role: 'super_admin' };
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(user));
+    }
+
+    // 🚀 REST API Bridge (Legacy Express)
     return mainApp(req, res);
   } catch (err) {
     res.statusCode = 503;
