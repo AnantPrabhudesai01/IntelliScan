@@ -107,6 +107,17 @@ export default function AnalyticsPage() {
   if (loading && !analytics) {
     return (
       <div className="p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
+        <style>{`
+          @media print {
+            .no-print, nav, header button, footer, .tab-switcher { display: none !important; }
+            body, .p-8 { padding: 0 !important; background: white !important; color: black !important; }
+            .max-w-7xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; }
+            .grid { display: block !important; }
+            .bg-white, .dark\\:bg-\\[\\#1A1A2E\\] { background: white !important; border: 1px solid #eee !important; box-shadow: none !important; margin-bottom: 20px !important; break-inside: avoid !important; }
+            h1, h3, h4, p { color: black !important; }
+            .shadow-xl, .shadow-lg { box-shadow: none !important; }
+          }
+        `}</style>
         <div className="h-12 bg-gray-200 dark:bg-gray-800 rounded-xl w-64"></div>
         <div className="grid grid-cols-4 gap-6">
           {[1,2,3,4].map(i => <div key={i} className="h-32 bg-gray-100 dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10"></div>)}
@@ -118,6 +129,19 @@ export default function AnalyticsPage() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
+      <style>{`
+        @media print {
+          .no-print, nav, header button, footer, .tab-switcher, .flex.bg-gray-100 { display: none !important; }
+          body, .p-8 { padding: 0 !important; background: white !important; color: black !important; }
+          .max-w-7xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; }
+          .grid { display: block !important; }
+          .bg-white, .dark\\:bg-\\[\\#1A1A2E\\] { background: white !important; border: 1px solid #eee !important; box-shadow: none !important; margin-bottom: 20px !important; break-inside: avoid !important; }
+          h1, h3, h4, p, span { color: black !important; }
+          .shadow-xl, .shadow-lg { box-shadow: none !important; }
+          .rounded-3xl, .rounded-2xl { border-radius: 4px !important; }
+          .p-8 { padding: 20px !important; }
+        }
+      `}</style>
       {/* Premium Header */}
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-gray-200 dark:border-gray-800">
         <div className="space-y-1">
