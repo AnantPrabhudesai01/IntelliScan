@@ -21,8 +21,8 @@ export default function Auth0Synchronizer() {
       }
 
       // 🚀 IDENTITY OVERRIDE: If Auth0 is not ready, jump-start with the Enterprise Speed-Pass
-      // 🛑 SAFETY LOCK: If the user just logged out, do NOT auto-login.
       if (!isAuthenticated || !user) {
+         // 🛑 SAFETY LOCK: Only suppress the AUTOMATIC bypass if we just logged out.
          if (localStorage.getItem('intelliscan_logout_active') === 'true') {
            console.log("[AuthSync] User logged out. Speed-Pass suppressed.");
            return;
