@@ -20,6 +20,26 @@ export default function Auth0Synchronizer() {
          return;
       }
 
+      // 🚀 IDENTITY OVERRIDE: If Auth0 is not ready, jump-start with the Enterprise Speed-Pass
+      if (!isAuthenticated || !user) {
+         try {
+           console.log("[AuthSync] Auth0 not ready. Engaging Enterprise Speed-Pass...");
+           const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/auth/sync`, {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ bypass: true })
+           });
+           const data = await response.json();
+           if (data.token) {
+             setStoredAuth({ token: data.token, user: data.user });
+             await refreshAuth();
+             return;
+           }
+         } catch (e) {
+           console.log("[AuthSync] Speed-Pass failed, waiting for Auth0...");
+         }
+      }
+
       if (isAuthenticated && user) {
         try {
           const token = await getAccessTokenSilently();
