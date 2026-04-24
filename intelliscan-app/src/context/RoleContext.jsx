@@ -131,10 +131,21 @@ export function RoleProvider({ children }) {
     };
 
     // If Auth0 is loading, wait for it before bootstrapping our local state
+    // 🕒 FORCE-UNLOCK: If Auth0 takes more than 3s, force the app to open.
+    const forceUnlock = setTimeout(() => {
+      if (!cancelled) {
+        console.log("[RoleContext] Auth0 timeout - Force-Unlocking dashboard.");
+        setIsAuthReady(true);
+      }
+    }, 3000);
+
     if (!isAuth0Loading) {
       bootstrap();
     }
-    return () => { cancelled = true; };
+    return () => { 
+      cancelled = true; 
+      clearTimeout(forceUnlock);
+    };
   }, [isAuth0Loading]);
 
   const updateRole = (newRole = 'anonymous', newTier = 'personal') => {
