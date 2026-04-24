@@ -155,6 +155,13 @@ export default function App() {
   const { isLoading: isAuth0Loading, isAuthenticated } = useAuth0();
   const token = getStoredToken();
 
+  // 🛡️ Safety Lock Clear: If we have a token, we are NOT logging out.
+  useEffect(() => {
+    if (token) {
+      localStorage.removeItem('intelliscan_logout_active');
+    }
+  }, [token]);
+
   // 🛡️ Loop Breaker: If we are at the root but already authenticated, jump to dashboard immediately
   useEffect(() => {
     if (isAuthenticated && token && window.location.pathname === '/') {

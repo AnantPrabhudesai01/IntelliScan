@@ -134,7 +134,13 @@ export default function SignUpPage() {
               <div className="mt-12 text-center relative z-10">
                 <p className="text-[var(--text-muted)] text-[10px] font-black uppercase tracking-widest">
                   Existing link detected?
-                  <Link to="/sign-in" className="text-[var(--brand)] hover:underline ml-2">Authenticate</Link>
+                  <Link 
+                    to="/sign-in" 
+                    onClick={() => localStorage.removeItem('intelliscan_logout_active')}
+                    className="text-[var(--brand)] hover:underline ml-2"
+                  >
+                    Authenticate
+                  </Link>
                 </p>
               </div>
 
