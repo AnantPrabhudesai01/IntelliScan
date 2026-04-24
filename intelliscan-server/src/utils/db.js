@@ -106,7 +106,21 @@ async function dbRunAsync(sql, params = []) {
   return { lastID: null, changes: 0 };
 }
 
+// 🌉 COMPATIBILITY BRIDGE: Maps legacy db.all/db.get/db.run to new resilient helpers
+const db = {
+  get: (sql, params, cb) => {
+    dbGetAsync(sql, params).then(row => cb ? cb(null, row) : null).catch(err => cb ? cb(err) : null);
+  },
+  all: (sql, params, cb) => {
+    dbAllAsync(sql, params).then(rows => cb ? cb(null, rows) : null).catch(err => cb ? cb(err) : null);
+  },
+  run: (sql, params, cb) => {
+    dbRunAsync(sql, params).then(res => cb ? cb.call(res, null) : null).catch(err => cb ? cb(err) : null);
+  }
+};
+
 module.exports = {
+  db,
   dbGetAsync,
   dbAllAsync,
   dbRunAsync,
