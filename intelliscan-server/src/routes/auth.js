@@ -319,6 +319,23 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
          existingUser.tier = 'pro';
        }
 
+       // 📇 DIGITAL CARD PROVISIONING: Ensure the user has a public card entry
+       const slug = email.split('@')[0].toLowerCase();
+       const existingCard = await dbGetAsync('SELECT id FROM user_cards WHERE user_id = ?', [Number(existingUser.id)]);
+       if (!existingCard) {
+         console.log(`[AuthSync] Provisioning default digital card for ${email} with slug: ${slug}`);
+         await dbRunAsync(`
+           INSERT INTO user_cards (user_id, url_slug, headline, bio, design_json, created_at)
+           VALUES (?, ?, ?, ?, ?, datetime('now'))
+         `, [
+           Number(existingUser.id), 
+           slug, 
+           'IntelliScan Professional', 
+           'Self-learning networking professional.', 
+           JSON.stringify({ primary: '#6366f1', secondary: '#a855f7', gradient_angle: '135deg' })
+         ]);
+       }
+
        const token = jwt.sign(
         { id: Number(existingUser.id), email: existingUser.email, role: existingUser.role, tier: existingUser.tier, workspace_id: existingUser.workspace_id },
         JWT_SECRET,
