@@ -19,8 +19,9 @@ function authenticateToken(req, res, next) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  // 💎 MASTER KEY INJECTION: Trust the Enterprise Speed-Pass Bypass Tokens
-  if (token.startsWith('zero-token-') || token.startsWith('xray-token-')) {
+  // Dev-only bypass tokens (disabled in production)
+  const allowBypassTokens = process.env.NODE_ENV !== 'production';
+  if (allowBypassTokens && (token.startsWith('zero-token-') || token.startsWith('xray-token-'))) {
     req.user = { 
       id: 999999, 
       name: 'IntelliScan Enterprise', 
@@ -37,6 +38,23 @@ function authenticateToken(req, res, next) {
     if (err) {
       return res.status(403).json({ error: 'Invalid or expired token' });
     }
+    // Normalize user id to an integer for DB lookups
+    if (user && typeof user === 'object') {
+      // Back-compat: legacy diagnostic IDs
+      if (user.id === 'enterprise-user' || user.id === 'zero-user') {
+        user.id = 999999;
+      }
+
+      if (typeof user.id === 'string') {
+        const maybeNum = Number(user.id);
+        if (Number.isFinite(maybeNum)) user.id = maybeNum;
+      }
+
+      if (!Number.isFinite(Number(user.id))) {
+        return res.status(403).json({ error: 'Invalid token payload (missing numeric user id)' });
+      }
+    }
+
     req.user = user;
     next();
   });

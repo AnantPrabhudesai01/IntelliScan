@@ -329,7 +329,7 @@ router.post('/onboarding', authenticateToken, (req, res) => {
 router.get('/sessions', authenticateToken, async (req, res) => {
   try {
     const sessions = await dbAllAsync(
-      'SELECT id, device_info, ip_address, location, is_active, created_at FROM sessions WHERE user_id = ? AND is_active = 1 ORDER BY created_at DESC LIMIT 20',
+      'SELECT id, device_info, ip_address, location, is_active, created_at FROM sessions WHERE user_id = ? AND is_active IS TRUE ORDER BY created_at DESC LIMIT 20',
       [Number(req.user.id)]
     );
     res.json(sessions || []);
@@ -344,10 +344,10 @@ router.delete('/sessions/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     if (id === 'others') {
       const currentToken = req.headers.authorization?.split(' ')[1];
-      await dbRunAsync('UPDATE sessions SET is_active = 0 WHERE user_id = ? AND token != ?', [Number(req.user.id), currentToken]);
+      await dbRunAsync('UPDATE sessions SET is_active = FALSE WHERE user_id = ? AND token != ?', [Number(req.user.id), currentToken]);
       return res.json({ success: true, message: 'All other sessions revoked' });
     }
-    await dbRunAsync('UPDATE sessions SET is_active = 0 WHERE id = ? AND user_id = ?', [id, Number(req.user.id)]);
+    await dbRunAsync('UPDATE sessions SET is_active = FALSE WHERE id = ? AND user_id = ?', [id, Number(req.user.id)]);
     res.json({ success: true, message: 'Session terminated' });
   } catch (err) {
     res.status(500).json({ error: err.message });

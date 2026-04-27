@@ -59,11 +59,11 @@ router.post('/register', validate(registerSchema), async (req, res) => {
       await ensureQuotaRow(Number(userId), 'personal');
       
       // Ensure exactly one primary calendar exists
-      const existingCals = await dbAllAsync('SELECT id FROM calendars WHERE user_id = ? AND is_primary = 1 ORDER BY id ASC', [Number(userId)]);
+      const existingCals = await dbAllAsync('SELECT id FROM calendars WHERE user_id = ? AND is_primary IS TRUE ORDER BY id ASC', [Number(userId)]);
       if (existingCals.length === 0) {
         await dbRunAsync(
           'INSERT INTO calendars (user_id, name, color, is_primary, type) VALUES (?, ?, ?, ?, ?)',
-          [Number(userId), 'My Calendar', '#7b2fff', 1, 'personal']
+          [Number(userId), 'My Calendar', '#7b2fff', true, 'personal']
         );
       } else if (existingCals.length > 1) {
         // Cleanup duplicates if they exist (keep only the first one)
@@ -83,7 +83,7 @@ router.post('/register', validate(registerSchema), async (req, res) => {
         const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
         const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
         await dbRunAsync(
-          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, TRUE)',
           [Number(userId), token, deviceInfo, ipAddress, 'Unknown Location']
         );
       } catch (sessionErr) {
@@ -180,7 +180,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
 
     try {
       await dbRunAsync(
-        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, TRUE)',
         [Number(user.id), token, deviceInfo, ipAddress, location]
       );
       await ensureQuotaRow(Number(user.id), user.tier || 'personal');
@@ -240,7 +240,7 @@ router.get('/google/callback',
         const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
         const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
         await dbRunAsync(
-          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, TRUE)',
           [Number(user.id), token, deviceInfo, ipAddress, 'Unknown Location']
         );
       } catch (sessionErr) {
@@ -385,7 +385,7 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       // Self-healing infra tasks
       tasks.push(ensureQuotaRow(Number(userId), tier));
       tasks.push(dbRunAsync(
-        'INSERT INTO calendars (user_id, name, color, is_primary) VALUES (?, ?, ?, 1)',
+        'INSERT INTO calendars (user_id, name, color, is_primary) VALUES (?, ?, ?, TRUE)',
         [Number(userId), 'My Calendar', '#7b2fff']
       ));
 
@@ -408,7 +408,7 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
       const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
       dbRunAsync(
-        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, TRUE)',
         [Number(userId), token, deviceInfo, ipAddress, 'Unknown Location']
       ).catch(e => console.warn('[Sync] Session log failed (non-critical):', e.message));
     } catch (sessionErr) {}
@@ -459,7 +459,7 @@ router.get('/me', authenticateToken, async (req, res) => {
 router.get('/sessions/me', authenticateToken, async (req, res) => {
   try {
     const sessions = await dbAllAsync(
-      'SELECT id, device_info, ip_address, location, last_active, token FROM sessions WHERE user_id = ? AND is_active = 1 ORDER BY last_active DESC',
+      'SELECT id, device_info, ip_address, location, last_active, token FROM sessions WHERE user_id = ? AND is_active IS TRUE ORDER BY last_active DESC',
       [Number(req.user.id)]
     );
 

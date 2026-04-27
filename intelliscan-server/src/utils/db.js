@@ -32,7 +32,11 @@ if (isVercel) {
 // ── Resilient Async Helpers ──────────────────────────
 
 function sanitizeParams(params) {
-  return params.map(p => (p === undefined || p === null) ? null : p);
+  return params.map(p => {
+    if (p === undefined || p === null) return null;
+    if (typeof p === 'number' && !Number.isFinite(p)) return null;
+    return p;
+  });
 }
 
 // 🛰️ TRANSFORM: Convert '?' to '$1', '$2', etc. for PostgreSQL
@@ -40,6 +44,21 @@ function transformSql(sql) {
   if (!isVercel) return sql;
   let i = 1;
   return sql.replace(/\?/g, () => `$${i++}`);
+}
+
+function withReturningId(sql) {
+  if (!isVercel) return sql;
+  const raw = String(sql || '');
+  const trimmed = raw.trim();
+  if (!/^insert\s+/i.test(trimmed)) return sql;
+  if (/\breturning\b/i.test(trimmed)) return sql;
+
+  // Some tables (e.g. caches) may not have an `id` column.
+  // Add exceptions here if needed.
+  if (/\binsert\s+into\s+coach_insights_cache\b/i.test(trimmed)) return sql;
+
+  const noSemi = trimmed.replace(/;\s*$/, '');
+  return `${noSemi} RETURNING id`;
 }
 
 async function dbGetAsync(sql, params = []) {
@@ -67,8 +86,19 @@ async function dbAllAsync(sql, params = []) {
 async function dbRunAsync(sql, params = []) {
   const cleanParams = sanitizeParams(params);
   if (isVercel) {
-    const result = await pgPool.query(transformSql(sql), cleanParams);
-    return { lastID: result.oid, changes: result.rowCount };
+    const result = await pgPool.query(transformSql(withReturningId(sql)), cleanParams);
+    // Postgres only returns inserted IDs when the query includes a `RETURNING` clause.
+    // Standardize on `{ lastID, changes }` to match sqlite's API.
+    let lastID = null;
+    const firstRow = result?.rows?.[0];
+    if (firstRow && typeof firstRow === 'object') {
+      if (Object.prototype.hasOwnProperty.call(firstRow, 'id')) {
+        lastID = firstRow.id;
+      } else if (Object.keys(firstRow).length === 1) {
+        lastID = Object.values(firstRow)[0];
+      }
+    }
+    return { lastID, changes: result.rowCount };
   }
   return new Promise((resolve, reject) => {
     db.run(sql, cleanParams, function(err) {

@@ -41,7 +41,7 @@ exports.saveIntegration = async (req, res) => {
     }
 
     const configStr = JSON.stringify(config || {});
-    const activeVal = isActive ? 1 : 0;
+    const activeVal = !!isActive;
 
     // Use Upsert logic
     await dbRunAsync(`

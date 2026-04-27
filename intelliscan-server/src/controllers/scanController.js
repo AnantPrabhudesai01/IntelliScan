@@ -319,7 +319,6 @@ Return ONLY a valid JSON object. Do not include any text outside the JSON.
       });
     }
 
-    const userId = Number(req.user.id);
     const checkDuplicate = async (email, name) => {
       if (!email && !name) return false;
       const q = email

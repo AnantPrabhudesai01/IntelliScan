@@ -23,6 +23,7 @@ function getScopeWorkspaceId(workspaceId, userId) {
  */
 async function getWorkspaceIdForUser(userId) {
   const numericId = Number(userId);
+  if (!Number.isFinite(numericId)) return null;
   // 💎 MASTER KEY BYPASS: The enterprise bypass user has no physical workspace row
   if (numericId === 999999) return null;
   
