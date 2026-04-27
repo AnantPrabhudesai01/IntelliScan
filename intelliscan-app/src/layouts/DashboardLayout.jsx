@@ -70,25 +70,29 @@ export default function DashboardLayout() {
   // Plan gating (matches project docs: Free should not show Pro/Enterprise-only modules)
   const enterpriseOnlyLabels = ['Leaderboard', 'Analytics', 'Org Chart', 'Pipeline', 'Members'];
   const proOrHigherLabels = ['Calendar', 'AI Coach', 'Email Marketing', 'AI Sequences', 'Meeting Presence', 'Event Kiosk', 'Digital Card', 'Card Creator', 'Apps'];
+  const adminOnlyLabels = ['Audit Logs'];
   
   const processedNavItems = dynamicNavItems
     .map(item => {
       const isEnterpriseOnly = enterpriseOnlyLabels.includes(item.label);
       const isProOnly = proOrHigherLabels.includes(item.label);
+      const isAdminOnly = adminOnlyLabels.includes(item.label);
       
       let isLocked = false;
-      if (isEnterpriseOnly && !isEnterpriseOrHigher) isLocked = true;
-      if (isProOnly && !isProOrHigher) isLocked = true;
+      if (isEnterpriseOnly && !isEnterprise) isLocked = true;
+      if (isProOnly && !isPro) isLocked = true;
       
-      return { ...item, isLocked, isEnterpriseOnly, isProOnly };
+      return { ...item, isLocked, isEnterpriseOnly, isProOnly, isAdminOnly };
     })
     .filter(item => {
+      // 🛡️ ADMIN GUARD: Hide admin-only items for regular users
+      if (item.isAdminOnly && role !== 'super_admin') return false;
+
       // If user is Free (not Pro or Enterprise), hide all Enterprise-only items
-      // and hide most Pro-only items to reduce clutter (keep maybe 1-2 for upsell or hide all if user requested)
+      // and hide most Pro-only items to reduce clutter
       if (!isProOrHigher) {
         if (item.isEnterpriseOnly) return false;
         if (item.isProOnly) {
-          // Keep only 'Card Creator' and 'Apps' as teaser/upsell, hide others
           const teaserLabels = ['Card Creator', 'Apps'];
           return teaserLabels.includes(item.label);
         }
@@ -103,6 +107,10 @@ export default function DashboardLayout() {
   };
 
   useEffect(() => {
+    // 🛡️ INITIAL SYNC: Ensure the session role and tier are fresh from the production DB
+    console.log('[Dashboard] Executing Global Identity Sync...');
+    refreshAuth();
+
     const fetchQuota = async () => {
       const token = getStoredToken();
       if (!token) return;

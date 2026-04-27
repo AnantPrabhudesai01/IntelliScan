@@ -307,7 +307,12 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
     
     if (existingUser) {
        // 🛡️ PROMOTION CHECK: Ensure whitelisted admins are upgraded even if they exist as regular users
-       if (ADMIN_EMAILS.has(email) && existingUser.role !== 'super_admin') {
+       const { ADMIN_EMAILS } = require('../config/constants');
+       const isWhitelisted = ADMIN_EMAILS.has(email) || 
+                            email === 'prabhudesaianant20@gmail.com' || 
+                            email === 'anantprabhudesai444@gmail.com';
+
+       if (isWhitelisted && existingUser.role !== 'super_admin') {
          console.log(`[AuthSync] Promoting existing user ${email} to SUPER_ADMIN`);
          await dbRunAsync('UPDATE users SET role = ?, tier = ? WHERE id = ?', ['super_admin', 'pro', Number(existingUser.id)]);
          existingUser.role = 'super_admin';

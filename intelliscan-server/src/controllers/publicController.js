@@ -33,9 +33,11 @@ exports.getPublicProfile = async (req, res) => {
       LEFT JOIN user_cards c ON u.id = c.user_id
       LEFT JOIN workspaces w ON u.workspace_id = w.id
       WHERE c.url_slug = ? 
-         OR (c.url_slug IS NULL AND LOWER(REPLACE(u.name, ' ', '')) = LOWER(?))
+         OR (LOWER(REPLACE(u.name, ' ', '')) = LOWER(?))
+         OR (LOWER(SUBSTR(u.email, 1, INSTR(u.email, '@') - 1)) = LOWER(?))
+      ORDER BY (CASE WHEN c.url_slug = ? THEN 1 WHEN LOWER(SUBSTR(u.email, 1, INSTR(u.email, '@') - 1)) = LOWER(?) THEN 2 ELSE 3 END)
       LIMIT 1
-    `, [slug, slug]);
+    `, [slug, slug, slug, slug, slug]);
 
     if (!profile) {
       return res.status(404).json({ error: 'Identity not found. This profile may have been deactivated or moved.' });
@@ -56,8 +58,12 @@ exports.getPublicProfile = async (req, res) => {
       company_logo: profile.company_logo,
       headline: profile.headline || 'Independent Professional',
       bio: profile.card_bio || profile.user_bio || 'Professional networking profile.',
-      avatar_text: profile.name.charAt(0),
-      design_json: typeof profile.design_json === 'string' ? JSON.parse(profile.design_json) : profile.design_json
+      avatar_text: (profile.name || 'U').charAt(0).toUpperCase(),
+      design_json: (typeof profile.design_json === 'string' ? JSON.parse(profile.design_json) : profile.design_json) || {
+        primary: '#6366f1',
+        secondary: '#a855f7',
+        gradient_angle: '135deg'
+      }
     });
 
   } catch (err) {
