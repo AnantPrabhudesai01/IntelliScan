@@ -79,11 +79,15 @@ async function dbRunAsync(sql, params = []) {
   });
 }
 
+// 🛡️ ALIAS: Some modules expect 'dbExecAsync' for non-returning queries
+const dbExecAsync = dbRunAsync;
+
 module.exports = {
   db,
   dbGetAsync,
   dbAllAsync,
   dbRunAsync,
+  dbExecAsync,
   isPostgres: isVercel,
   sql: {
     now: isVercel ? "CURRENT_TIMESTAMP" : "datetime('now')",
