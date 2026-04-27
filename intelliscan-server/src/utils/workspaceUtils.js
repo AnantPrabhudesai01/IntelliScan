@@ -13,14 +13,20 @@ function getWorkspaceRoom(workspaceId, userId) {
  * If not, returns negative userId (personal scope).
  */
 function getScopeWorkspaceId(workspaceId, userId) {
-  return workspaceId ? Number(workspaceId) : Number(userId) * -1;
+  const numWorkspaceId = workspaceId ? Number(workspaceId) : null;
+  const numUserId = Number(userId);
+  return numWorkspaceId ? numWorkspaceId : numUserId * -1;
 }
 
 /**
  * Fetches the workspace_id for a given user.
  */
 async function getWorkspaceIdForUser(userId) {
-  const row = await dbGetAsync('SELECT workspace_id FROM users WHERE id = ?', [userId]);
+  const numericId = Number(userId);
+  // 💎 MASTER KEY BYPASS: The enterprise bypass user has no physical workspace row
+  if (numericId === 999999) return null;
+  
+  const row = await dbGetAsync('SELECT workspace_id FROM users WHERE id = ?', [numericId]);
   return row?.workspace_id ?? null;
 }
 

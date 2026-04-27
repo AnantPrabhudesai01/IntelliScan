@@ -11,7 +11,7 @@ router.get('/', authenticateToken, async (req, res) => {
   try {
     const notifications = await dbAllAsync(
       'SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50',
-      [req.user.id]
+      [Number(req.user.id)]
     );
     res.json(notifications);
   } catch (err) {

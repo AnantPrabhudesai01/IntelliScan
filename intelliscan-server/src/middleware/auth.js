@@ -22,7 +22,7 @@ function authenticateToken(req, res, next) {
   // 💎 MASTER KEY INJECTION: Trust the Enterprise Speed-Pass Bypass Tokens
   if (token.startsWith('zero-token-') || token.startsWith('xray-token-')) {
     req.user = { 
-      id: 'enterprise-user', 
+      id: 999999, 
       name: 'IntelliScan Enterprise', 
       email: 'user@intelliscan.ai',
       role: 'super_admin', 
@@ -142,8 +142,17 @@ function requireFeature(feature) {
   return async (req, res, next) => {
     if (!req.user) return res.status(401).json({ error: 'Authentication required' });
 
+    // 💎 MASTER KEY BYPASS: If using a bypass ID, trust the JWT claims directly
+    if (req.user.id === 999999) {
+      const profile = buildAccessProfile(req.user.role || 'super_admin', req.user.tier || 'enterprise');
+      if (!profile.feature_flags || !profile.feature_flags[feature]) {
+        return res.status(403).json({ error: `Feature '${feature}' is not available for your plan` });
+      }
+      return next();
+    }
+
     // Keep this resilient even if user has stale token data
-    const dbUser = await dbGetAsync('SELECT role, tier FROM users WHERE id = ?', [req.user.id]);
+    const dbUser = await dbGetAsync('SELECT role, tier FROM users WHERE id = ?', [Number(req.user.id)]);
     const profile = buildAccessProfile(dbUser?.role || req.user.role || 'user', dbUser?.tier || req.user.tier || 'personal');
 
     if (!profile.feature_flags || !profile.feature_flags[feature]) {

@@ -34,11 +34,11 @@ exports.getContacts = async (req, res) => {
 
     const sql = `
       SELECT * FROM contacts 
-      WHERE user_id = ? AND (is_deleted IS FALSE OR is_deleted IS NULL OR is_deleted = 0)
+      WHERE user_id = ? AND (is_deleted = 0 OR is_deleted IS NULL)
       ORDER BY sort_order ASC, scan_date DESC
     `;
 
-    const rows = await dbAllAsync(sql, [req.user.id]);
+    const rows = await dbAllAsync(sql, [Number(req.user.id)]);
     const sanitizedRows = (rows || []).map(row => applyPiiPolicyToContactOutput(row, policies));
     res.setHeader('X-Retention-Purged', `${purge.purged}`);
     res.json(sanitizedRows);
@@ -70,7 +70,7 @@ exports.getWorkspaceContacts = async (req, res) => {
          WHERE c.user_id = ? AND (c.is_deleted = 0 OR c.is_deleted IS NULL)
          ORDER BY c.sort_order ASC, c.scan_date DESC`;
     
-    const params = [workspaceId || req.user.id];
+    const params = [workspaceId ? Number(workspaceId) : Number(req.user.id)];
 
     const rows = await dbAllAsync(sql, params);
     const sanitizedRows = (rows || []).map(row => applyPiiPolicyToContactOutput(row, policies));
@@ -89,7 +89,7 @@ exports.getStats = async (req, res) => {
   try {
     const row = await dbGetAsync(
       'SELECT COUNT(*) as totalScanned, AVG(confidence) as avgConfidence FROM contacts WHERE user_id = ?',
-      [req.user.id]
+      [Number(req.user.id)]
     );
     res.json({
       totalScanned: row?.totalScanned || 0,
@@ -124,11 +124,12 @@ exports.createContact = async (req, res) => {
     }
 
     // Quota Enforcement
-    const userTierRow = await dbGetAsync('SELECT tier FROM users WHERE id = ?', [req.user.id]);
+    const userId = Number(req.user.id);
+    const userTierRow = await dbGetAsync('SELECT tier FROM users WHERE id = ?', [userId]);
     const tier = (userTierRow?.tier || 'personal').toLowerCase();
-    await ensureQuotaRow(req.user.id, tier);
+    await ensureQuotaRow(userId, tier);
     
-    const quotaRow = await dbGetAsync('SELECT used_count, limit_amount FROM user_quotas WHERE user_id = ?', [req.user.id]);
+    const quotaRow = await dbGetAsync('SELECT used_count, limit_amount FROM user_quotas WHERE user_id = ?', [userId]);
     if (Number(quotaRow?.used_count || 0) >= Number(quotaRow?.limit_amount || resolveTierLimits(tier).single)) {
       return res.status(403).json({ error: 'Quota exceeded. Please upgrade your plan.' });
     }
@@ -168,7 +169,7 @@ exports.createContact = async (req, res) => {
         name_native, company_native, title_native
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)`,
       [
-        req.user.id, name, email || '', phone || '', company || '',
+        Number(req.user.id), name, email || '', phone || '', company || '',
         job_title || title || '', Number(confidence) || 95,
         image_url || card_image || null, notes || '', tags || '',
         engine_used || 'Gemini 1.5 Flash', event_id || null,
@@ -178,7 +179,7 @@ exports.createContact = async (req, res) => {
     );
 
     const contactId = inserted.lastID;
-    await dbRunAsync('UPDATE user_quotas SET used_count = used_count + 1 WHERE user_id = ?', [req.user.id]);
+    await dbRunAsync('UPDATE user_quotas SET used_count = used_count + 1 WHERE user_id = ?', [Number(req.user.id)]);
 
     // Background: AI Embedding
     (async () => {
@@ -408,7 +409,7 @@ exports.updateContact = async (req, res) => {
         notes = ?, tags = ?, inferred_industry = ?, inferred_seniority = ?,
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ? AND user_id = ?
-    `, [name, email || '', phone || '', company || '', job_title || '', notes || '', tags || '', inferred_industry || null, inferred_seniority || null, contactId, req.user.id]);
+    `, [name, email || '', phone || '', company || '', job_title || '', notes || '', tags || '', inferred_industry || null, inferred_seniority || null, Number(contactId), Number(req.user.id)]);
 
     if (result.changes === 0) {
       return res.status(404).json({ error: 'Contact not found or not owned by user' });
@@ -467,8 +468,8 @@ exports.getWorkspaceAnalytics = async (req, res) => {
     const purge = await runRetentionPurgeForScope(scopeWorkspaceId, policies.retention_days);
 
     const scope = workspaceId
-      ? { where: 'u.workspace_id = ?', params: [workspaceId] }
-      : { where: 'c.user_id = ?', params: [req.user.id] };
+      ? { where: 'u.workspace_id = ?', params: [Number(workspaceId)] }
+      : { where: 'c.user_id = ?', params: [Number(req.user.id)] };
 
     const totals = await dbGetAsync(
       `SELECT
@@ -482,7 +483,7 @@ exports.getWorkspaceAnalytics = async (req, res) => {
     );
 
     const membersRow = workspaceId
-      ? await dbGetAsync('SELECT COUNT(*) as count FROM users WHERE workspace_id = ?', [workspaceId])
+      ? await dbGetAsync('SELECT COUNT(*) as count FROM users WHERE workspace_id = ?', [Number(workspaceId)])
       : { count: 1 };
 
     const today = new Date();
@@ -599,7 +600,7 @@ exports.getDuplicates = async (req, res) => {
     const sql = workspaceId
       ? `SELECT * FROM contacts WHERE user_id IN (SELECT id FROM users WHERE workspace_id = ?)`
       : `SELECT * FROM contacts WHERE user_id = ?`;
-    const params = [workspaceId || req.user.id];
+    const params = [workspaceId ? Number(workspaceId) : Number(req.user.id)];
     
     const contacts = await dbAllAsync(sql, params);
     
@@ -674,7 +675,7 @@ exports.getOrgChart = async (req, res) => {
       ? `SELECT id, name, job_title, company, email FROM contacts WHERE company LIKE ? AND user_id IN (SELECT id FROM users WHERE workspace_id = ?)`
       : `SELECT id, name, job_title, company, email FROM contacts WHERE company LIKE ? AND user_id = ?`;
 
-    const params = workspaceId ? [`%${companyName}%`, workspaceId] : [`%${companyName}%`, req.user.id];
+    const params = workspaceId ? [`%${companyName}%`, Number(workspaceId)] : [`%${companyName}%`, Number(req.user.id)];
     const contacts = await dbAllAsync(sql, params);
 
     const levels = {

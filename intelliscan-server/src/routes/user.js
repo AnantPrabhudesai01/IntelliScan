@@ -40,7 +40,7 @@ router.get('/quota', authenticateToken, async (req, res) => {
     if (currentTier === 'personal') {
       const paidOrder = await dbGetAsync(
         "SELECT plan_id FROM billing_orders WHERE user_id = ? AND status = 'paid' AND plan_id = 'pro' LIMIT 1",
-        [req.user.id]
+        [Number(req.user.id)]
       );
       if (paidOrder) {
         console.log(`[Self-Healing] Promoting user ${req.user.id} to pro based on paid order.`);
@@ -189,7 +189,7 @@ router.put('/profile', authenticateToken, async (req, res) => {
 router.post('/enrich-profile', authenticateToken, async (req, res) => {
   try {
     const { title, company, phone, bio } = req.body;
-    const userId = req.user.id;
+    const userId = Number(req.user.id);
     const cleanPhone = normalizePhone(phone);
 
     // 1. Update core profile (Bio only, Phone requires OTP)
