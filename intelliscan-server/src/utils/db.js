@@ -31,33 +31,40 @@ if (isVercel) {
 
 // ── Resilient Async Helpers ──────────────────────────
 
+function sanitizeParams(params) {
+  return params.map(p => p === undefined ? null : p);
+}
+
 async function dbGetAsync(sql, params = []) {
+  const cleanParams = sanitizeParams(params);
   if (isVercel) {
-    const result = await pgPool.query(sql.replace(/\?/g, ($, i) => `$${i + 1}`), params);
+    const result = await pgPool.query(sql.replace(/\?/g, ($, i) => `$${i + 1}`), cleanParams);
     return result.rows[0];
   }
   return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => err ? reject(err) : resolve(row));
+    db.get(sql, cleanParams, (err, row) => err ? reject(err) : resolve(row));
   });
 }
 
 async function dbAllAsync(sql, params = []) {
+  const cleanParams = sanitizeParams(params);
   if (isVercel) {
-    const result = await pgPool.query(sql.replace(/\?/g, ($, i) => `$${i + 1}`), params);
+    const result = await pgPool.query(sql.replace(/\?/g, ($, i) => `$${i + 1}`), cleanParams);
     return result.rows;
   }
   return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => err ? reject(err) : resolve(rows));
+    db.all(sql, cleanParams, (err, rows) => err ? reject(err) : resolve(rows));
   });
 }
 
 async function dbRunAsync(sql, params = []) {
+  const cleanParams = sanitizeParams(params);
   if (isVercel) {
-    const result = await pgPool.query(sql.replace(/\?/g, ($, i) => `$${i + 1}`), params);
+    const result = await pgPool.query(sql.replace(/\?/g, ($, i) => `$${i + 1}`), cleanParams);
     return { lastID: result.oid, changes: result.rowCount };
   }
   return new Promise((resolve, reject) => {
-    db.run(sql, params, function(err) {
+    db.run(sql, cleanParams, function(err) {
       if (err) reject(err);
       else resolve({ lastID: this.lastID, changes: this.changes });
     });
