@@ -32,13 +32,21 @@ if (isVercel) {
 // ── Resilient Async Helpers ──────────────────────────
 
 function sanitizeParams(params) {
-  return params.map(p => p === undefined ? null : p);
+  return params.map(p => (p === undefined || p === null) ? null : p);
+}
+
+// 🛰️ TRANSFORM: Convert '?' to '$1::text', '$2::text', etc. for PostgreSQL
+// This forces PG to treat inputs as text, which it can then cast to the correct column type.
+function transformSql(sql) {
+  if (!isVercel) return sql;
+  let i = 1;
+  return sql.replace(/\?/g, () => `$${i++}::text`);
 }
 
 async function dbGetAsync(sql, params = []) {
   const cleanParams = sanitizeParams(params);
   if (isVercel) {
-    const result = await pgPool.query(sql.replace(/\?/g, ($, i) => `$${i + 1}`), cleanParams);
+    const result = await pgPool.query(transformSql(sql), cleanParams);
     return result.rows[0];
   }
   return new Promise((resolve, reject) => {
@@ -49,7 +57,7 @@ async function dbGetAsync(sql, params = []) {
 async function dbAllAsync(sql, params = []) {
   const cleanParams = sanitizeParams(params);
   if (isVercel) {
-    const result = await pgPool.query(sql.replace(/\?/g, ($, i) => `$${i + 1}`), cleanParams);
+    const result = await pgPool.query(transformSql(sql), cleanParams);
     return result.rows;
   }
   return new Promise((resolve, reject) => {
@@ -60,7 +68,7 @@ async function dbAllAsync(sql, params = []) {
 async function dbRunAsync(sql, params = []) {
   const cleanParams = sanitizeParams(params);
   if (isVercel) {
-    const result = await pgPool.query(sql.replace(/\?/g, ($, i) => `$${i + 1}`), cleanParams);
+    const result = await pgPool.query(transformSql(sql), cleanParams);
     return { lastID: result.oid, changes: result.rowCount };
   }
   return new Promise((resolve, reject) => {
