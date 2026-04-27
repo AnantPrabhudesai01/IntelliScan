@@ -37,8 +37,9 @@ exports.scanSingleCard = async (req, res) => {
     const limits = resolveTierLimits(tier);
     const limit = limits.single;
     
-    await ensureQuotaRow(req.user.id, tier);
-    const quotaRow = await dbGetAsync('SELECT used_count FROM user_quotas WHERE user_id = ?', [Number(req.user.id)]);
+    const userId = Number(req.user.id);
+    await ensureQuotaRow(userId, tier);
+    const quotaRow = await dbGetAsync('SELECT used_count FROM user_quotas WHERE user_id = ?', [userId]);
 
     if ((quotaRow?.used_count || 0) >= limit) {
       const upgradePath = tier === 'personal' ? 'Professional or Enterprise' : 'Enterprise';
@@ -166,9 +167,10 @@ Accuracy is paramount. If you see a business card, extract every detail with hig
     // 4. Persistence: Auto-Save to Contacts (User Feedback Priority)
     let finalImageUrl = await imageUploadPromise;
     try {
-      const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
-      await saveContact(Number(req.user.id), normalizedCard, 'Scanned via Web App', 'Web Dashboard', finalImageUrl, scopeWorkspaceId);
-      console.log(`[Auto-Save] Card saved for user ${req.user.id} with scope ${scopeWorkspaceId}`);
+      const userId = Number(req.user.id);
+      const { scopeWorkspaceId } = await getScopeForUser(userId);
+      await saveContact(userId, normalizedCard, 'Scanned via Web App', 'Web Dashboard', finalImageUrl, scopeWorkspaceId);
+      console.log(`[Auto-Save] Card saved for user ${userId} with scope ${scopeWorkspaceId}`);
     } catch (saveErr) {
       console.error('[Auto-Save Error]', saveErr.message);
       // Don't fail the request if saving fails, but log it
@@ -222,8 +224,9 @@ exports.scanGroupCards = async (req, res) => {
     const limits = resolveTierLimits(tier);
     const groupLimit = limits.group;
     
-    await ensureQuotaRow(req.user.id, tier);
-    const quotaRow = await dbGetAsync('SELECT group_scans_used FROM user_quotas WHERE user_id = ?', [Number(req.user.id)]);
+    const userId = Number(req.user.id);
+    await ensureQuotaRow(userId, tier);
+    const quotaRow = await dbGetAsync('SELECT group_scans_used FROM user_quotas WHERE user_id = ?', [userId]);
 
     if ((quotaRow?.group_scans_used || 0) >= groupLimit) {
       const upgradePath = tier === 'personal' ? 'Professional or Enterprise' : 'Enterprise';
@@ -316,7 +319,7 @@ Return ONLY a valid JSON object. Do not include any text outside the JSON.
       });
     }
 
-    const userId = req.user.id;
+    const userId = Number(req.user.id);
     const checkDuplicate = async (email, name) => {
       if (!email && !name) return false;
       const q = email
@@ -339,7 +342,7 @@ Return ONLY a valid JSON object. Do not include any text outside the JSON.
       cardsWithDupInfo.push({ ...card, is_duplicate: isDbDup || isIntraBatchDup });
     }
 
-    await dbRunAsync('UPDATE user_quotas SET group_scans_used = group_scans_used + 1 WHERE user_id = ?', [req.user.id]);
+    await dbRunAsync('UPDATE user_quotas SET group_scans_used = group_scans_used + 1 WHERE user_id = ?', [userId]);
 
     // 4. Persistence: Auto-Save Group Cards
     try {
@@ -373,7 +376,7 @@ Return ONLY a valid JSON object. Do not include any text outside the JSON.
 
     if (shouldUseMockAiFallback()) {
       try {
-        await dbRunAsync('UPDATE user_quotas SET group_scans_used = group_scans_used + 1 WHERE user_id = ?', [req.user.id]);
+        await dbRunAsync('UPDATE user_quotas SET group_scans_used = group_scans_used + 1 WHERE user_id = ?', [Number(req.user.id)]);
       } catch (_) {}
       return res.json(buildFallbackMultiCardResponse());
     }
@@ -399,7 +402,7 @@ async function saveContact(userId, card, customNotes = '', locationContext = '',
       card.inferred_industry || null, card.inferred_seniority || null,
       locationContext,
       card.name_native || null, card.company_native || null, card.title_native || null,
-      imageUrl, workspaceScope, false
+      imageUrl, workspaceScope, 0
     ]);
   } catch (err) {
     console.error('[saveContact helper error]', err.message);
