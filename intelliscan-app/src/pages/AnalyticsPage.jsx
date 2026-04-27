@@ -201,7 +201,7 @@ export default function AnalyticsPage() {
               { label: 'Total Scans', value: data.total_scans.toLocaleString(), change: `+${data.growth_pct}%`, color: 'indigo', icon: Zap },
               { label: 'Avg Confidence', value: `${data.avg_confidence}%`, change: '+0.4%', color: 'emerald', icon: Shield },
               { label: 'System Latency', value: `${(data.latency_ms / 1000).toFixed(1)}s`, change: '-12ms', color: 'amber', icon: Clock },
-              { label: 'Inbound Leads', value: '14,204', change: '+8.2%', color: 'purple', icon: Target },
+              { label: 'Inbound Leads', value: (data.total_leads || 0).toLocaleString(), change: '+8.2%', color: 'purple', icon: Target },
             ].map((kpi, i) => (
               <div key={i} className="bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-800 p-6 rounded-2xl shadow-xl group hover:border-brand-500/30 transition-all">
                 <div className="flex justify-between items-start mb-4">

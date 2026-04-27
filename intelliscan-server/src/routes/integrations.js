@@ -1,24 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const integrationsController = require('../controllers/integrationsController');
 const { authenticateToken } = require('../middleware/auth');
+const integrationsController = require('../controllers/integrationsController');
+
+// All integration routes are protected
+router.use(authenticateToken);
 
 /**
- * @route   GET /api/integrations
- * @desc    Get all active and configured integrations
+ * @route GET /api/integrations
+ * @desc Get all active integrations for the current user
  */
-router.get('/', authenticateToken, integrationsController.getIntegrations);
+router.get('/', integrationsController.getIntegrations);
 
 /**
- * @route   POST /api/integrations
- * @desc    Save or update an integration configuration
+ * @route POST /api/integrations
+ * @desc Create or update an integration
  */
-router.post('/', authenticateToken, integrationsController.saveIntegration);
-
-/**
- * @route   DELETE /api/integrations/:appId
- * @desc    Remove an integration
- */
-router.delete('/:appId', authenticateToken, integrationsController.removeIntegration);
+router.post('/', integrationsController.saveIntegration);
 
 module.exports = router;

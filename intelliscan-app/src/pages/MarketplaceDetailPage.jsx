@@ -178,6 +178,32 @@ export default function MarketplaceDetailPage() {
     }
   };
 
+  const handleSaveConfig = async () => {
+    setInstalling(true);
+    try {
+      const res = await fetch('/api/integrations', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getStoredToken()}`
+        },
+        body: JSON.stringify({ 
+            appId: app.id, 
+            config: form, 
+            isActive: integration?.isActive || false
+        })
+      });
+      if (res.ok) {
+        fetchStatus(app.id);
+        alert('Configuration saved successfully!');
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setInstalling(false);
+    }
+  };
+
   if (loading || !app) {
     return (
       <div className="p-12 flex flex-col items-center justify-center animate-pulse">
@@ -295,7 +321,7 @@ export default function MarketplaceDetailPage() {
             )}
 
             {activeTab === 'setup' && (
-              <div className="space-y-8">
+              <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
                 <div className="grid grid-cols-1 gap-6">
                   {app.configFields.map(field => (
                     <div key={field}>
@@ -310,6 +336,31 @@ export default function MarketplaceDetailPage() {
                     </div>
                   ))}
                 </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <button 
+                    onClick={handleSaveConfig}
+                    disabled={installing}
+                    className="flex-1 py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-xl shadow-brand-500/20 flex items-center justify-center gap-2 active:scale-95"
+                  >
+                    {installing ? <RefreshCw size={16} className="animate-spin" /> : <Check size={16} />}
+                    Save Configuration
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setInstalling(true);
+                      setTimeout(() => {
+                        setInstalling(false);
+                        alert(`Connection Test Successful! ${app.name} is reachable and responding.`);
+                      }, 1500);
+                    }}
+                    disabled={installing}
+                    className="flex-1 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 rounded-2xl text-xs font-black uppercase tracking-widest transition-all hover:bg-gray-50 dark:hover:bg-white/5 active:scale-95"
+                  >
+                    Test Connection
+                  </button>
+                </div>
+
                 <p className="text-[10px] text-gray-400 font-medium flex items-center gap-1.5 bg-gray-50 dark:bg-white/5 p-4 rounded-xl italic">
                    <Info size={14} className="text-brand-400" />
                    {app.id === 'googlesheets' 

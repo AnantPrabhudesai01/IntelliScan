@@ -1,39 +1,37 @@
-const { dbGetAsync, dbAllAsync, dbRunAsync } = require('../utils/db');
+const { dbRunAsync, dbGetAsync, dbAllAsync } = require('../utils/db');
 
 /**
- * Get all integrations for the current user
+ * Get all active integrations for the current user
  */
 exports.getIntegrations = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = Number(req.user.id);
     const integrations = await dbAllAsync(
-      'SELECT app_id, config_json, is_active, last_sync_at FROM workspace_integrations WHERE user_id = ?',
+      'SELECT app_id, config_json as config, is_active FROM workspace_integrations WHERE user_id = ?',
       [userId]
     );
 
-    // Map to a more useful format for frontend
-    const mapped = integrations.reduce((acc, curr) => {
-      acc[curr.app_id] = {
-        isActive: !!curr.is_active,
-        config: JSON.parse(curr.config_json || '{}'),
-        lastSync: curr.last_sync_at
+    const integrationMap = {};
+    integrations.forEach(i => {
+      integrationMap[i.app_id] = {
+        isActive: !!i.is_active,
+        config: i.config ? JSON.parse(i.config) : {}
       };
-      return acc;
-    }, {});
+    });
 
-    res.json({ success: true, integrations: mapped });
+    res.json({ success: true, integrations: integrationMap });
   } catch (err) {
-    console.error('[Integrations] Fetch failed:', err);
-    res.status(500).json({ error: 'Failed to fetch integrations' });
+    console.error('[Integrations Controller Error]', err.message);
+    res.status(500).json({ error: 'Failed to fetch integrations', details: err.message });
   }
 };
 
 /**
- * Save or update an integration
+ * Toggle an integration or update its config
  */
 exports.saveIntegration = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = Number(req.user.id);
     const { appId, config, isActive } = req.body;
 
     if (!appId) {
@@ -41,40 +39,33 @@ exports.saveIntegration = async (req, res) => {
     }
 
     const configStr = JSON.stringify(config || {});
-    const activeVal = !!isActive;
+    const activeBool = !!isActive;
 
-    // Use Upsert logic
-    await dbRunAsync(`
-      INSERT INTO workspace_integrations (user_id, app_id, config_json, is_active)
-      VALUES (?, ?, ?, ?)
-      ON CONFLICT(user_id, app_id) DO UPDATE SET
-        config_json = EXCLUDED.config_json,
-        is_active = EXCLUDED.is_active
-    `, [userId, appId, configStr, activeVal]);
-
-    res.json({ success: true, message: `Integration ${appId} saved successfully` });
-  } catch (err) {
-    console.error('[Integrations] Save failed:', err);
-    res.status(500).json({ error: 'Failed to save integration' });
-  }
-};
-
-/**
- * Delete/Disable an integration
- */
-exports.removeIntegration = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { appId } = req.params;
-
-    await dbRunAsync(
-      'DELETE FROM workspace_integrations WHERE user_id = ? AND app_id = ?',
+    // Use UPSERT logic for Postgres/SQLite compatibility via dbRunAsync
+    const existing = await dbGetAsync(
+      'SELECT id FROM workspace_integrations WHERE user_id = ? AND app_id = ?',
       [userId, appId]
     );
 
-    res.json({ success: true, message: 'Integration removed' });
+    if (existing) {
+      await dbRunAsync(
+        'UPDATE workspace_integrations SET config_json = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ? AND app_id = ?',
+        [configStr, activeBool, userId, appId]
+      );
+    } else {
+      await dbRunAsync(
+        'INSERT INTO workspace_integrations (user_id, app_id, config_json, is_active) VALUES (?, ?, ?, ?)',
+        [userId, appId, configStr, activeBool]
+      );
+    }
+
+    res.json({ 
+      success: true, 
+      message: `${appId} integration updated successfully`,
+      integration: { appId, config, isActive: activeBool }
+    });
   } catch (err) {
-    console.error('[Integrations] Remove failed:', err);
-    res.status(500).json({ error: 'Failed to remove integration' });
+    console.error('[Integrations Save Error]', err.message);
+    res.status(500).json({ error: 'Failed to save integration', details: err.message });
   }
 };

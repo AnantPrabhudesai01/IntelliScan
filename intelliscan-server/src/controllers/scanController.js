@@ -383,12 +383,14 @@ Return ONLY a valid JSON object. Do not include any text outside the JSON.
   }
 };
 
+const crmService = require('../services/crmService');
+
 /**
  * Internal helper to save the contact to DB
  */
 async function saveContact(userId, card, customNotes = '', locationContext = '', imageUrl = null, workspaceScope = null) {
   try {
-    await dbRunAsync(`
+    const result = await dbRunAsync(`
       INSERT INTO contacts (
         user_id, name, email, phone, company, job_title, confidence, 
         notes, engine_used, inferred_industry, inferred_seniority, location_context,
@@ -403,7 +405,20 @@ async function saveContact(userId, card, customNotes = '', locationContext = '',
       card.name_native || null, card.company_native || null, card.title_native || null,
       imageUrl, workspaceScope, false
     ]);
+
+    const contactId = result.lastID;
+
+    // 🚀 Trigger LIVE CRM Sync (Fire-and-forget for better UX speed)
+    if (contactId) {
+      const contactForSync = { id: contactId, ...card };
+      crmService.triggerCrmSync(userId, contactForSync).catch(e => 
+        console.error('[CRM Sync Background Error]', e.message)
+      );
+    }
+
+    return contactId;
   } catch (err) {
     console.error('[saveContact helper error]', err.message);
+    return null;
   }
 }
