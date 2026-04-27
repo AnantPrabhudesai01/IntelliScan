@@ -34,7 +34,7 @@ exports.getContacts = async (req, res) => {
 
     const sql = `
       SELECT * FROM contacts 
-      WHERE user_id = ? AND (is_deleted = 0 OR is_deleted IS NULL)
+      WHERE user_id = ? AND (is_deleted IS FALSE OR is_deleted IS NULL)
       ORDER BY sort_order ASC, scan_date DESC
     `;
 
@@ -62,12 +62,12 @@ exports.getWorkspaceContacts = async (req, res) => {
       ? `SELECT c.*, u.name as scanner_name
          FROM contacts c
          JOIN users u ON c.user_id = u.id
-         WHERE u.workspace_id = ? AND (c.is_deleted = 0 OR c.is_deleted IS NULL)
+         WHERE u.workspace_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
          ORDER BY c.sort_order ASC, c.scan_date DESC`
       : `SELECT c.*, u.name as scanner_name
          FROM contacts c
          JOIN users u ON c.user_id = u.id
-         WHERE c.user_id = ? AND (c.is_deleted = 0 OR c.is_deleted IS NULL)
+         WHERE c.user_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
          ORDER BY c.sort_order ASC, c.scan_date DESC`;
     
     const params = [workspaceId ? Number(workspaceId) : Number(req.user.id)];
@@ -145,7 +145,7 @@ exports.createContact = async (req, res) => {
     if (email || phone) {
       const existing = await dbGetAsync(
         `SELECT id, name, company FROM contacts 
-         WHERE user_id = ? AND (is_deleted = 0 OR is_deleted IS NULL) AND (
+         WHERE user_id = ? AND (is_deleted IS FALSE OR is_deleted IS NULL) AND (
            (LOWER(email) = LOWER(?) AND email <> '') OR 
            (phone = ? AND phone <> '')
          ) LIMIT 1`,
@@ -214,7 +214,7 @@ exports.createContact = async (req, res) => {
 exports.deleteContact = async (req, res) => {
   try {
     const result = await dbRunAsync(
-      'UPDATE contacts SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?', 
+      'UPDATE contacts SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?', 
       [Number(req.params.id), Number(req.user.id)]
     );
     
@@ -255,7 +255,7 @@ exports.bulkDeleteContacts = async (req, res) => {
   try {
     const placeholders = ids.map(() => '?').join(',');
     const result = await dbRunAsync(
-      `UPDATE contacts SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE id IN (${placeholders}) AND user_id = ?`, 
+      `UPDATE contacts SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id IN (${placeholders}) AND user_id = ?`, 
       [...ids, Number(req.user.id)]
     );
     
@@ -286,7 +286,7 @@ exports.bulkDeleteContacts = async (req, res) => {
 exports.getDeletedContacts = async (req, res) => {
   try {
     const userId = Number(req.user.id);
-    const rows = await dbAllAsync('SELECT * FROM contacts WHERE user_id = ? AND is_deleted = 1 ORDER BY deleted_at DESC', [userId]);
+    const rows = await dbAllAsync('SELECT * FROM contacts WHERE user_id = ? AND is_deleted IS TRUE ORDER BY deleted_at DESC', [userId]);
     res.json(rows);
   } catch (error) {
     console.error('[Trash Error] Failed to fetch deleted contacts:', error.message);
@@ -310,7 +310,7 @@ exports.restoreContacts = async (req, res) => {
     const placeholders = numericIds.map(() => '?').join(',');
     
     const result = await dbRunAsync(
-      `UPDATE contacts SET is_deleted = 0, deleted_at = NULL WHERE id IN (${placeholders}) AND user_id = ?`, 
+      `UPDATE contacts SET is_deleted = false, deleted_at = NULL WHERE id IN (${placeholders}) AND user_id = ?`, 
       [...numericIds, userId]
     );
     
@@ -342,7 +342,7 @@ exports.restoreContacts = async (req, res) => {
 exports.emptyTrash = async (req, res) => {
   try {
     const userId = Number(req.user.id);
-    const result = await dbRunAsync('DELETE FROM contacts WHERE user_id = ? AND is_deleted = 1', [userId]);
+    const result = await dbRunAsync('DELETE FROM contacts WHERE user_id = ? AND is_deleted IS TRUE', [userId]);
     
     logAuditEvent(req, { 
       action: 'CONTACT_TRASH_EMPTY', 
@@ -375,7 +375,7 @@ exports.permanentlyDeleteContacts = async (req, res) => {
     const placeholders = numericIds.map(() => '?').join(',');
     
     const result = await dbRunAsync(
-      `DELETE FROM contacts WHERE id IN (${placeholders}) AND user_id = ? AND is_deleted = 1`, 
+      `DELETE FROM contacts WHERE id IN (${placeholders}) AND user_id = ? AND is_deleted IS TRUE`, 
       [...numericIds, userId]
     );
     
@@ -567,15 +567,15 @@ exports.getWorkspaceContacts = async (req, res) => {
       ? `SELECT c.*, u.name as scanner_name 
          FROM contacts c 
          JOIN users u ON c.user_id = u.id 
-         WHERE u.workspace_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL OR c.is_deleted = 0)
+         WHERE u.workspace_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
          ORDER BY c.scan_date DESC`
       : `SELECT c.*, u.name as scanner_name 
          FROM contacts c 
          JOIN users u ON c.user_id = u.id 
-         WHERE c.user_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL OR c.is_deleted = 0)
+         WHERE c.user_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
          ORDER BY c.scan_date DESC`;
 
-    const params = [workspaceId || req.user.id];
+    const params = [workspaceId ? Number(workspaceId) : Number(req.user.id)];
     const rows = await dbAllAsync(sql, params);
 
     const sanitizedRows = (rows || []).map(row => applyPiiPolicyToContactOutput(row, policies));

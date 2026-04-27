@@ -402,7 +402,7 @@ async function saveContact(userId, card, customNotes = '', locationContext = '',
       card.inferred_industry || null, card.inferred_seniority || null,
       locationContext,
       card.name_native || null, card.company_native || null, card.title_native || null,
-      imageUrl, workspaceScope, 0
+      imageUrl, workspaceScope, false
     ]);
   } catch (err) {
     console.error('[saveContact helper error]', err.message);
