@@ -35,12 +35,11 @@ function sanitizeParams(params) {
   return params.map(p => (p === undefined || p === null) ? null : p);
 }
 
-// 🛰️ TRANSFORM: Convert '?' to '$1::text', '$2::text', etc. for PostgreSQL
-// This forces PG to treat inputs as text, which it can then cast to the correct column type.
+// 🛰️ TRANSFORM: Convert '?' to '$1', '$2', etc. for PostgreSQL
 function transformSql(sql) {
   if (!isVercel) return sql;
   let i = 1;
-  return sql.replace(/\?/g, () => `$${i++}::text`);
+  return sql.replace(/\?/g, () => `$${i++}`);
 }
 
 async function dbGetAsync(sql, params = []) {
@@ -84,6 +83,7 @@ const dbExecAsync = dbRunAsync;
 
 module.exports = {
   db,
+  pgPool,
   dbGetAsync,
   dbAllAsync,
   dbRunAsync,
