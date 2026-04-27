@@ -306,6 +306,14 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
     let existingUser = await dbGetAsync('SELECT id, name, email, role, tier, workspace_id FROM users WHERE LOWER(email) = LOWER(?)', [email]);
     
     if (existingUser) {
+       // 🛡️ PROMOTION CHECK: Ensure whitelisted admins are upgraded even if they exist as regular users
+       if (ADMIN_EMAILS.has(email) && existingUser.role !== 'super_admin') {
+         console.log(`[AuthSync] Promoting existing user ${email} to SUPER_ADMIN`);
+         await dbRunAsync('UPDATE users SET role = ?, tier = ? WHERE id = ?', ['super_admin', 'pro', Number(existingUser.id)]);
+         existingUser.role = 'super_admin';
+         existingUser.tier = 'pro';
+       }
+
        const token = jwt.sign(
         { id: Number(existingUser.id), email: existingUser.email, role: existingUser.role, tier: existingUser.tier, workspace_id: existingUser.workspace_id },
         JWT_SECRET,

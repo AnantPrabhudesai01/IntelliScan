@@ -1,21 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Target, Activity, CheckCircle2, AlertCircle } from 'lucide-react';
+import { getStoredToken } from '../../utils/auth';
 
 export default function NeuralExtractionHeatmap() {
-  const fields = [
-    { name: 'Full Name', success: 98, trend: '+0.2%', count: '4.1k' },
-    { name: 'Job Title', success: 94, trend: '+1.5%', count: '3.8k' },
-    { name: 'Company', success: 96, trend: '-0.1%', count: '3.9k' },
-    { name: 'Email Address', success: 99, trend: 'stable', count: '4.2k' },
-    { name: 'Phone (Direct)', success: 85, trend: '-2.4%', count: '2.1k' },
-    { name: 'Phone (Mobile)', success: 89, trend: '+0.8%', count: '2.4k' },
-    { name: 'Website URL', success: 92, trend: '+4.1%', count: '1.2k' },
-    { name: 'LinkedIn URL', success: 88, trend: '+1.2%', count: '1.1k' },
-    { name: 'Address / HQ', success: 74, trend: '+0.5%', count: '0.8k' },
-    { name: 'Logo / Brand', success: 62, trend: '-5.2%', count: '0.5k' },
-    { name: 'Notes / Bio', success: 58, trend: '+2.1%', count: '0.4k' },
-    { name: 'Scan Artifacts', success: 99, trend: 'stable', count: '4.2k' },
-  ];
+  const [fields, setFields] = useState([]);
+  const [totalProcessed, setTotalProcessed] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    try {
+      const token = getStoredToken();
+      const res = await fetch('/api/admin/neural-precision', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setFields(data.matrix || []);
+        setTotalProcessed(data.totalProcessed || 0);
+      }
+    } catch (err) {
+      console.error('Neural precision fetch failed:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(fetchData, 30000); // Refresh every 30s
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatNumber = (num) => {
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+    return num.toString();
+  };
 
   return (
     <div className="bg-white dark:bg-[#161c28] border border-gray-200 dark:border-gray-800 rounded-3xl p-6 shadow-sm relative group overflow-hidden transition-all hover:shadow-xl">
@@ -27,7 +46,7 @@ export default function NeuralExtractionHeatmap() {
         <div>
           <h3 className="text-lg font-headline font-black italic tracking-tighter text-gray-900 dark:text-white uppercase">Neural Field Precision</h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest mt-1 flex items-center gap-2">
-             Analytics based on last <span className="text-brand-500">10,000 extractions</span>
+             Analytics based on last <span className="text-brand-500">{loading ? '...' : formatNumber(totalProcessed)} extractions</span>
           </p>
         </div>
         <div className="flex bg-gray-50 dark:bg-gray-800/50 p-1 rounded-xl border border-gray-100 dark:border-gray-700">

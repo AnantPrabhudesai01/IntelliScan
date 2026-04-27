@@ -23,5 +23,7 @@ router.delete('/workspaces/:id', authenticateToken, requireSuperAdmin, adminCont
 router.get('/audit-logs', authenticateToken, requireSuperAdmin, adminController.getAuditLogs);
 router.get('/security-summary', authenticateToken, requireSuperAdmin, adminController.getSecuritySummary);
 
+router.get('/neural-precision', authenticateToken, requireSuperAdmin, adminController.getNeuralPrecision);
+router.post('/sandbox/process', authenticateToken, requireSuperAdmin, adminController.processSandboxRequest);
 
 module.exports = router;
