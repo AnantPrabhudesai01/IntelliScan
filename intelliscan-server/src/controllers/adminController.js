@@ -252,3 +252,60 @@ exports.createIncident = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// --- SECURITY & AUDIT MANAGEMENT ---
+
+// GET /api/admin/audit-logs
+exports.getAuditLogs = async (req, res) => {
+  const { category, timeframe, page = 1 } = req.query;
+  const limit = 20;
+  const offset = (page - 1) * limit;
+
+  try {
+    let whereClause = '1=1';
+    const params = [];
+
+    if (category && category !== 'All Activities') {
+      whereClause += ' AND action = ?';
+      params.push(category);
+    }
+
+    const logs = await dbAllAsync(`
+      SELECT 
+        a.id, a.created_at, a.action, a.resource, a.status, a.metadata,
+        u.name as user_name, u.role as user_role
+      FROM audit_trail a
+      LEFT JOIN users u ON a.actor_user_id = u.id
+      WHERE ${whereClause}
+      ORDER BY a.created_at DESC
+      LIMIT ? OFFSET ?
+    `, [...params, limit, offset]);
+
+    const total = await dbGetAsync(`SELECT COUNT(*) as count FROM audit_trail WHERE ${whereClause}`, params);
+
+    res.json({ success: true, logs, total: total.count, page: Number(page) });
+  } catch (err) {
+    console.error('[getAuditLogs Error]', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+// GET /api/admin/security-summary
+exports.getSecuritySummary = async (req, res) => {
+  try {
+    const sessions = await dbGetAsync("SELECT COUNT(*) as count FROM audit_trail WHERE action = 'LOGIN' AND created_at > CURRENT_TIMESTAMP - INTERVAL '1 hour'");
+    const failedAuth = await dbGetAsync("SELECT COUNT(*) as count FROM audit_trail WHERE status = 'DENIED' AND created_at > CURRENT_TIMESTAMP - INTERVAL '24 hours'");
+    const dataExport = await dbGetAsync("SELECT SUM(CAST(JSON_EXTRACT(metadata, '$.size') AS FLOAT)) as total FROM audit_trail WHERE action = 'EXPORT'");
+
+    res.json({
+      success: true,
+      summary: {
+        active_sessions: sessions?.count || 0,
+        failed_auth_24h: failedAuth?.count || 0,
+        data_exported_gb: ((dataExport?.total || 0) / (1024 * 1024 * 1024)).toFixed(1)
+      }
+    });
+  } catch (err) {
+    console.error('[getSecuritySummary Error]', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};

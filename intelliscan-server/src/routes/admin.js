@@ -19,5 +19,9 @@ router.get('/workspaces', authenticateToken, requireSuperAdmin, adminController.
 router.post('/workspaces', authenticateToken, requireSuperAdmin, adminController.createWorkspace);
 router.delete('/workspaces/:id', authenticateToken, requireSuperAdmin, adminController.deleteWorkspace);
 
+// Security & Audit Logs (Super Admin)
+router.get('/audit-logs', authenticateToken, requireSuperAdmin, adminController.getAuditLogs);
+router.get('/security-summary', authenticateToken, requireSuperAdmin, adminController.getSecuritySummary);
+
 
 module.exports = router;
