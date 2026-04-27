@@ -50,7 +50,11 @@ function authenticateToken(req, res, next) {
         if (Number.isFinite(maybeNum)) user.id = maybeNum;
       }
 
-      if (!Number.isFinite(Number(user.id))) {
+      // Only enforce strict numeric IDs for non-sync routes. 
+      // New Auth0 users have string IDs (e.g., 'auth0|...') and MUST be allowed to reach /api/auth/sync.
+      const isSyncRoute = req.path === '/api/auth/sync' || req.originalUrl === '/api/auth/sync';
+      
+      if (!isSyncRoute && !Number.isFinite(Number(user.id))) {
         return res.status(403).json({ error: 'Invalid token payload (missing numeric user id)' });
       }
     }

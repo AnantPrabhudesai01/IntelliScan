@@ -18,8 +18,8 @@ const validate = (schema, source = 'body') => (req, res, next) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         error: 'Validation Failed',
-        details: error.errors.map(err => ({
-          path: err.path.join('.'),
+        details: (error.errors || []).map(err => ({
+          path: (err.path || []).join('.'),
           message: err.message
         }))
       });
