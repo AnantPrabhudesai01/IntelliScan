@@ -75,6 +75,14 @@ export default function Auth0Synchronizer() {
           if (active) {
             setStoredAuth({ token: data.token, user: data.user });
             console.log("✅ Auth0 synced with local DB");
+            
+            // 🛡️ IDENTITY PROVISIONING: Ensure the public profile is live immediately after sync
+            fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/cards/ensure-profile`, {
+              headers: { 'Authorization': `Bearer ${data.token}` }
+            }).then(res => res.json())
+              .then(d => console.log(`[AuthSync] Public Profile ${d.provisioned ? 'Provisioned' : 'Verified'}: ${d.slug}`))
+              .catch(e => console.error('[AuthSync] Profile provisioning failed:', e));
+
             await refreshAuth();
           }
         } catch (error) {

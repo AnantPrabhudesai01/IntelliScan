@@ -38,5 +38,6 @@ router.post('/upload-logo', authenticateToken, upload.single('logo'), cardsContr
  * @access Private
  */
 router.post('/generate-design', authenticateToken, cardsController.generateAiDesign);
+router.get('/ensure-profile', authenticateToken, cardsController.ensureProfile);
 
 module.exports = router;

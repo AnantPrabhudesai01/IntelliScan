@@ -105,3 +105,33 @@ exports.generateDesign = async (req, res) => {
     res.status(500).json({ error: 'AI Designer is currently calibrating. Please try again.' });
   }
 };
+exports.ensureProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const email = req.user.email;
+    const slug = email.split('@')[0].toLowerCase();
+    
+    const existing = await dbGetAsync('SELECT url_slug FROM user_cards WHERE user_id = ?', [userId]);
+    
+    if (existing) {
+      return res.json({ success: true, slug: existing.url_slug });
+    }
+
+    // Provision default card
+    await dbRunAsync(`
+      INSERT INTO user_cards (user_id, url_slug, headline, bio, design_json)
+      VALUES (?, ?, ?, ?, ?)
+    `, [
+      userId, 
+      slug, 
+      'IntelliScan Professional', 
+      'Self-learning networking professional.', 
+      JSON.stringify({ primary: '#6366f1', secondary: '#a855f7', gradient_angle: '135deg', layout: 'glassmorphism' })
+    ]);
+
+    res.json({ success: true, slug, provisioned: true });
+  } catch (err) {
+    console.error('[Ensure Profile Error]', err);
+    res.status(500).json({ error: 'Failed to ensure profile existence' });
+  }
+};
