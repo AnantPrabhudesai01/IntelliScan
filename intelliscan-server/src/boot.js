@@ -432,7 +432,7 @@ async function bootstrap() {
 
     
     const patches = [
-      { table: 'cards', column: 'location', type: 'TEXT' },
+      { table: 'user_cards', column: 'location', type: 'TEXT' },
       { table: 'crm_mappings', column: 'auto_sync', type: 'INTEGER DEFAULT 0' },
       { table: 'user_cards', column: 'contact_email', type: 'TEXT' },
       { table: 'user_cards', column: 'contact_phone', type: 'TEXT' },

@@ -31,14 +31,14 @@ exports.scanSingleCard = async (req, res) => {
       FROM users u 
       LEFT JOIN user_quotas q ON u.id = q.user_id 
       WHERE u.id = ?
-    `, [req.user.id]);
+    `, [Number(req.user.id)]);
 
     const tier = userRow?.tier || 'personal';
     const limits = resolveTierLimits(tier);
     const limit = limits.single;
     
     await ensureQuotaRow(req.user.id, tier);
-    const quotaRow = await dbGetAsync('SELECT used_count FROM user_quotas WHERE user_id = ?', [req.user.id]);
+    const quotaRow = await dbGetAsync('SELECT used_count FROM user_quotas WHERE user_id = ?', [Number(req.user.id)]);
 
     if ((quotaRow?.used_count || 0) >= limit) {
       const upgradePath = tier === 'personal' ? 'Professional or Enterprise' : 'Enterprise';
@@ -161,13 +161,13 @@ Accuracy is paramount. If you see a business card, extract every detail with hig
     } : null;
 
     // 3. Successful scan: Increment Quota (Unified Governance)
-    await incrementUsage(req.user.id, 'single');
+    await incrementUsage(Number(req.user.id), 'single');
 
     // 4. Persistence: Auto-Save to Contacts (User Feedback Priority)
     let finalImageUrl = await imageUploadPromise;
     try {
       const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
-      await saveContact(req.user.id, normalizedCard, 'Scanned via Web App', 'Web Dashboard', finalImageUrl, scopeWorkspaceId);
+      await saveContact(Number(req.user.id), normalizedCard, 'Scanned via Web App', 'Web Dashboard', finalImageUrl, scopeWorkspaceId);
       console.log(`[Auto-Save] Card saved for user ${req.user.id} with scope ${scopeWorkspaceId}`);
     } catch (saveErr) {
       console.error('[Auto-Save Error]', saveErr.message);
@@ -223,7 +223,7 @@ exports.scanGroupCards = async (req, res) => {
     const groupLimit = limits.group;
     
     await ensureQuotaRow(req.user.id, tier);
-    const quotaRow = await dbGetAsync('SELECT group_scans_used FROM user_quotas WHERE user_id = ?', [req.user.id]);
+    const quotaRow = await dbGetAsync('SELECT group_scans_used FROM user_quotas WHERE user_id = ?', [Number(req.user.id)]);
 
     if ((quotaRow?.group_scans_used || 0) >= groupLimit) {
       const upgradePath = tier === 'personal' ? 'Professional or Enterprise' : 'Enterprise';
@@ -322,7 +322,7 @@ Return ONLY a valid JSON object. Do not include any text outside the JSON.
       const q = email
         ? 'SELECT id FROM contacts WHERE user_id = ? AND (LOWER(email) = LOWER(?) OR LOWER(name) = LOWER(?)) LIMIT 1'
         : 'SELECT id FROM contacts WHERE user_id = ? AND LOWER(name) = LOWER(?) LIMIT 1';
-      const params = email ? [userId, email, name] : [userId, name];
+      const params = email ? [Number(userId), email, name] : [Number(userId), name];
       const row = await dbGetAsync(q, params);
       return !!row;
     };
@@ -347,7 +347,7 @@ Return ONLY a valid JSON object. Do not include any text outside the JSON.
       const { scopeWorkspaceId } = await getScopeForUser(userId);
       for (const card of cardsWithDupInfo) {
         if (!card.is_duplicate) {
-          await saveContact(userId, card, 'Batch Scanned via Web', 'Web Group Scan', groupImageUrl, scopeWorkspaceId);
+          await saveContact(Number(userId), card, 'Batch Scanned via Web', 'Web Group Scan', groupImageUrl, scopeWorkspaceId);
         }
       }
     } catch (saveErr) {

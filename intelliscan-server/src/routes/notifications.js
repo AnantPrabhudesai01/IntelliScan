@@ -24,7 +24,7 @@ router.patch('/:id/read', authenticateToken, async (req, res) => {
   try {
     await dbRunAsync(
       'UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?',
-      [req.params.id, req.user.id]
+      [Number(req.params.id), Number(req.user.id)]
     );
     res.json({ success: true });
   } catch (err) {
@@ -37,7 +37,7 @@ router.post('/read-all', authenticateToken, async (req, res) => {
   try {
     await dbRunAsync(
       'UPDATE notifications SET is_read = 1 WHERE user_id = ?',
-      [req.user.id]
+      [Number(req.user.id)]
     );
     res.json({ success: true });
   } catch (err) {
@@ -50,7 +50,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     await dbRunAsync(
       'DELETE FROM notifications WHERE id = ? AND user_id = ?',
-      [req.params.id, req.user.id]
+      [Number(req.params.id), Number(req.user.id)]
     );
     res.json({ success: true });
   } catch (err) {

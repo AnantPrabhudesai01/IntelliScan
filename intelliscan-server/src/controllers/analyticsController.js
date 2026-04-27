@@ -1,4 +1,4 @@
-const { dbGetAsync, dbAllAsync, isPostgres } = require('../utils/db');
+const { dbGetAsync, dbAllAsync, dbRunAsync, isPostgres } = require('../utils/db');
 
 /**
  * Controller for providing production-grade analytics data.
@@ -187,8 +187,6 @@ exports.getPublicStats = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch global transparency data' });
   }
 };
-
-module.exports = exports;
 
 /**
  * Controller for providing behavioral signal metrics.

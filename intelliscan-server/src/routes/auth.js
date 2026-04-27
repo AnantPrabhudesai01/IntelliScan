@@ -56,14 +56,14 @@ router.post('/register', validate(registerSchema), async (req, res) => {
       const result = await dbRunAsync(insertSql, [name, email, hashedPassword, userRole]);
       const userId = result.lastID;
 
-      await ensureQuotaRow(userId, 'personal');
+      await ensureQuotaRow(Number(userId), 'personal');
       
       // Ensure exactly one primary calendar exists
-      const existingCals = await dbAllAsync('SELECT id FROM calendars WHERE user_id = ? AND is_primary = 1 ORDER BY id ASC', [userId]);
+      const existingCals = await dbAllAsync('SELECT id FROM calendars WHERE user_id = ? AND is_primary = 1 ORDER BY id ASC', [Number(userId)]);
       if (existingCals.length === 0) {
         await dbRunAsync(
           'INSERT INTO calendars (user_id, name, color, is_primary, type) VALUES (?, ?, ?, ?, ?)',
-          [userId, 'My Calendar', '#7b2fff', 1, 'personal']
+          [Number(userId), 'My Calendar', '#7b2fff', 1, 'personal']
         );
       } else if (existingCals.length > 1) {
         // Cleanup duplicates if they exist (keep only the first one)
@@ -83,8 +83,8 @@ router.post('/register', validate(registerSchema), async (req, res) => {
         const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
         const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
         await dbRunAsync(
-          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, true)',
-          [userId, token, deviceInfo, ipAddress, 'Unknown Location']
+          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+          [Number(userId), token, deviceInfo, ipAddress, 'Unknown Location']
         );
       } catch (sessionErr) {
         console.warn('[Register] Session tracking failed (non-critical):', sessionErr.message);
@@ -180,10 +180,10 @@ router.post('/login', validate(loginSchema), async (req, res) => {
 
     try {
       await dbRunAsync(
-        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, true)',
-        [user.id, token, deviceInfo, ipAddress, location]
+        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+        [Number(user.id), token, deviceInfo, ipAddress, location]
       );
-      await ensureQuotaRow(user.id, user.tier || 'personal');
+      await ensureQuotaRow(Number(user.id), user.tier || 'personal');
     } catch (sessionErr) {
       console.error('Session/Quota bootstrap failed on login:', sessionErr.message);
     }
@@ -240,8 +240,8 @@ router.get('/google/callback',
         const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
         const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
         await dbRunAsync(
-          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, true)',
-          [user.id, token, deviceInfo, ipAddress, 'Unknown Location']
+          'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+          [Number(user.id), token, deviceInfo, ipAddress, 'Unknown Location']
         );
       } catch (sessionErr) {
         console.warn('[GoogleSSO] Session tracking failed (non-critical):', sessionErr.message);
@@ -307,7 +307,7 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
     
     if (existingUser) {
        const token = jwt.sign(
-        { id: existingUser.id, email: existingUser.email, role: existingUser.role, tier: existingUser.tier, workspace_id: existingUser.workspace_id },
+        { id: Number(existingUser.id), email: existingUser.email, role: existingUser.role, tier: existingUser.tier, workspace_id: existingUser.workspace_id },
         JWT_SECRET,
         { expiresIn: JWT_EXPIRES_IN }
       );
@@ -352,7 +352,7 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       
       // Keep identity synchronized
       if (name !== existingUser.name || role !== existingUser.role || tier !== existingUser.tier) {
-        await dbRunAsync('UPDATE users SET name = ?, role = ?, tier = ? WHERE id = ?', [name, role, tier, userId]);
+        await dbRunAsync('UPDATE users SET name = ?, role = ?, tier = ? WHERE id = ?', [name, role, tier, Number(userId)]);
       }
     } else {
       // 1. Provision User (Accelerated)
@@ -378,15 +378,15 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
             VALUES (?, ?, CURRENT_TIMESTAMP)
           `, [wsName, userId]);
           workspaceId = wsRes.lastID;
-          await dbRunAsync('UPDATE users SET workspace_id = ? WHERE id = ?', [workspaceId, userId]);
+          await dbRunAsync('UPDATE users SET workspace_id = ? WHERE id = ?', [Number(workspaceId), Number(userId)]);
         })());
       }
 
       // Self-healing infra tasks
-      tasks.push(ensureQuotaRow(userId, tier));
+      tasks.push(ensureQuotaRow(Number(userId), tier));
       tasks.push(dbRunAsync(
-        'INSERT INTO calendars (user_id, name, color, is_primary) VALUES (?, ?, ?, ?)',
-        [userId, 'My Calendar', '#7b2fff', 1]
+        'INSERT INTO calendars (user_id, name, color, is_primary) VALUES (?, ?, ?, 1)',
+        [Number(userId), 'My Calendar', '#7b2fff']
       ));
 
       await Promise.all(tasks);
@@ -408,8 +408,8 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
       const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || 'Unknown IP';
       dbRunAsync(
-        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, TRUE)',
-        [userId, token, deviceInfo, ipAddress, 'Unknown Location']
+        'INSERT INTO sessions (user_id, token, device_info, ip_address, location, is_active) VALUES (?, ?, ?, ?, ?, 1)',
+        [Number(userId), token, deviceInfo, ipAddress, 'Unknown Location']
       ).catch(e => console.warn('[Sync] Session log failed (non-critical):', e.message));
     } catch (sessionErr) {}
 
@@ -443,7 +443,7 @@ router.get('/me', authenticateToken, async (req, res) => {
   try {
     const user = await dbGetAsync(
       'SELECT id, name, email, role, tier, workspace_id, avatar_url, phone_number, bio FROM users WHERE id = ?',
-      [req.user.id]
+      [Number(req.user.id)]
     );
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json(user);
@@ -459,8 +459,8 @@ router.get('/me', authenticateToken, async (req, res) => {
 router.get('/sessions/me', authenticateToken, async (req, res) => {
   try {
     const sessions = await dbAllAsync(
-      'SELECT id, device_info, ip_address, location, last_active, token FROM sessions WHERE user_id = ? AND is_active = true ORDER BY last_active DESC',
-      [req.user.id]
+      'SELECT id, device_info, ip_address, location, last_active, token FROM sessions WHERE user_id = ? AND is_active = 1 ORDER BY last_active DESC',
+      [Number(req.user.id)]
     );
 
     const currentToken = req.headers.authorization?.split(' ')[1];
@@ -537,7 +537,7 @@ router.post('/request-otp', authenticateToken, async (req, res) => {
         meta_data = EXCLUDED.meta_data,
         expires_at = EXCLUDED.expires_at,
         created_at = NOW()
-    `, [req.user.id, otpType, code, metaData, expiresAt]);
+    `, [Number(req.user.id), otpType, code, metaData, expiresAt]);
 
     // 3. Send via WhatsApp
     console.log(`[OTP] Sending WhatsApp code to ${targetPhone} for user ${req.user.id}`);
@@ -577,7 +577,7 @@ router.post('/verify-otp', authenticateToken, async (req, res) => {
     // Fetch from DB
     const entry = await dbGetAsync(
       'SELECT * FROM otp_codes WHERE user_id = ? AND type = ?', 
-      [req.user.id, otpType]
+      [Number(req.user.id), otpType]
     );
 
     if (!entry) return res.status(400).json({ error: 'No OTP request found. Please request a new code.' });

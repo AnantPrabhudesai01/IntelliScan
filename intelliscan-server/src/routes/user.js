@@ -19,7 +19,7 @@ router.get('/quota', authenticateToken, async (req, res) => {
        FROM users u
        LEFT JOIN user_quotas q ON u.id = q.user_id
        WHERE u.id = ?`,
-      [req.user.id]
+      [Number(req.user.id)]
     );
 
     console.log(`[Quota-Debug] UserID: ${req.user.id}, DB-Tier: ${row?.tier}, JWT-Tier: ${req.user.tier}`);
@@ -32,7 +32,7 @@ router.get('/quota', authenticateToken, async (req, res) => {
     
     if (tierPriority[jwtTier] > tierPriority[currentTier]) {
       console.log(`[Self-Healing] Promoting user ${req.user.id} to ${jwtTier} based on JWT claim.`);
-      await dbRunAsync("UPDATE users SET tier = ? WHERE id = ?", [jwtTier, req.user.id]);
+      await dbRunAsync("UPDATE users SET tier = ? WHERE id = ?", [jwtTier, Number(req.user.id)]);
       currentTier = jwtTier;
     }
 
@@ -44,29 +44,29 @@ router.get('/quota', authenticateToken, async (req, res) => {
       );
       if (paidOrder) {
         console.log(`[Self-Healing] Promoting user ${req.user.id} to pro based on paid order.`);
-        await dbRunAsync("UPDATE users SET tier = 'pro' WHERE id = ?", [req.user.id]);
+        await dbRunAsync("UPDATE users SET tier = 'pro' WHERE id = ?", [Number(req.user.id)]);
         currentTier = 'pro';
       }
     }
 
-    await ensureQuotaRow(req.user.id, currentTier);
+    await ensureQuotaRow(Number(req.user.id), currentTier);
     
     // Fetch fresh data after potential promotion in ensureQuotaRow
-    let quota = await dbGetAsync('SELECT used_count, limit_amount, group_scans_used FROM user_quotas WHERE user_id = ?', [req.user.id]);
+    let quota = await dbGetAsync('SELECT used_count, limit_amount, group_scans_used FROM user_quotas WHERE user_id = ?', [Number(req.user.id)]);
     
     const limits = resolveTierLimits(currentTier);
 
     // ── AGGRESSIVE SYNC: If user is Pro/Ent but limit is still low, force it up
     if (quota && Number(quota.limit_amount) < Number(limits.single)) {
       console.log(`[Quota-Aggressive] Forcing limit promotion for ${currentTier}: ${quota.limit_amount} -> ${limits.single}`);
-      await dbRunAsync('UPDATE user_quotas SET limit_amount = ? WHERE user_id = ?', [limits.single, req.user.id]);
+      await dbRunAsync('UPDATE user_quotas SET limit_amount = ? WHERE user_id = ?', [Number(limits.single), Number(req.user.id)]);
       quota.limit_amount = limits.single;
     }
 
     // Fetch the latest paid order to check auto-pay status
     const latestOrder = await dbGetAsync(
       `SELECT auto_pay FROM billing_orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 1`,
-      [req.user.id]
+      [Number(req.user.id)]
     );
 
     const usedScans = Number(quota?.used_count || 0);
@@ -92,7 +92,7 @@ router.get('/quota', authenticateToken, async (req, res) => {
 // GET /api/access/me (mounted at /api/access)
 router.get('/me', authenticateToken, async (req, res) => {
   try {
-    const user = await dbGetAsync('SELECT role, tier FROM users WHERE id = ?', [req.user.id]);
+    const user = await dbGetAsync('SELECT role, tier FROM users WHERE id = ?', [Number(req.user.id)]);
     const profile = buildAccessProfile(user?.role || req.user.role || 'user', user?.tier || req.user.tier || 'personal');
     res.json(profile);
   } catch (error) {
@@ -120,19 +120,19 @@ router.post('/simulate-upgrade', authenticateToken, async (req, res) => {
 
   try {
     // 1. Update user tier
-    await dbRunAsync('UPDATE users SET tier = ? WHERE id = ?', [targetTier, req.user.id]);
+    await dbRunAsync('UPDATE users SET tier = ? WHERE id = ?', [targetTier, Number(req.user.id)]);
     
     // 2. Resolve limits
     const limits = resolveTierLimits(targetTier);
     
     // 3. Update quota row (Preserve used_count)
-    const existing = await dbGetAsync('SELECT id FROM user_quotas WHERE user_id = ?', [req.user.id]);
+    const existing = await dbGetAsync('SELECT id FROM user_quotas WHERE user_id = ?', [Number(req.user.id)]);
     if (existing) {
-      await dbRunAsync('UPDATE user_quotas SET limit_amount = ?, group_limit_amount = ? WHERE user_id = ?', [limits.single, limits.group, req.user.id]);
+      await dbRunAsync('UPDATE user_quotas SET limit_amount = ?, group_limit_amount = ? WHERE user_id = ?', [Number(limits.single), Number(limits.group), Number(req.user.id)]);
     } else {
       await dbRunAsync(
         'INSERT INTO user_quotas (user_id, used_count, limit_amount, group_scans_used, group_limit_amount, last_reset_date) VALUES (?, 0, ?, 0, ?, CURRENT_TIMESTAMP)',
-        [req.user.id, limits.single, limits.group]
+        [Number(req.user.id), Number(limits.single), Number(limits.group)]
       );
     }
 
@@ -165,7 +165,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
       FROM users u
       LEFT JOIN onboarding_prefs p ON u.id = p.user_id
       WHERE u.id = ?
-    `, [req.user.id]);
+    `, [Number(req.user.id)]);
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json(user);
   } catch (err) {
@@ -177,7 +177,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
     const { name, bio } = req.body;
-    await dbRunAsync('UPDATE users SET name = ?, bio = ? WHERE id = ?', [name, bio, req.user.id]);
+    await dbRunAsync('UPDATE users SET name = ?, bio = ? WHERE id = ?', [name, bio, Number(req.user.id)]);
     res.json({ success: true, message: 'Profile updated' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -195,7 +195,7 @@ router.post('/enrich-profile', authenticateToken, async (req, res) => {
     // 1. Update core profile (Bio only, Phone requires OTP)
     await dbRunAsync(
       'UPDATE users SET bio = ? WHERE id = ?',
-      [bio, userId]
+      [bio, Number(userId)]
     );
 
     // 2. Update digital card (Identity Pillar)
@@ -206,7 +206,7 @@ router.post('/enrich-profile', authenticateToken, async (req, res) => {
         headline = EXCLUDED.headline,
         bio = EXCLUDED.bio,
         updated_at = ${isPostgres ? 'NOW()' : 'CURRENT_TIMESTAMP'}
-    `, [userId, `${title} at ${company}`, bio]);
+    `, [Number(userId), `${title} at ${company}`, bio]);
 
     res.json({ success: true, message: 'Identity synchronized with scanned card!' });
   } catch (err) {
@@ -251,7 +251,7 @@ router.post('/profile/set-avatar', authenticateToken, async (req, res) => {
   const { avatarUrl } = req.body;
   if (!avatarUrl) return res.status(400).json({ error: 'avatarUrl is required' });
   try {
-    await dbRunAsync('UPDATE users SET avatar_url = ? WHERE id = ?', [avatarUrl, req.user.id]);
+    await dbRunAsync('UPDATE users SET avatar_url = ? WHERE id = ?', [avatarUrl, Number(req.user.id)]);
     res.json({ success: true, avatarUrl });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -293,7 +293,7 @@ router.post('/profile/upload', authenticateToken, upload.single('photo'), async 
 
     // 3. Upload to Permanent Storage
     const permanentUrl = await uploadToImgbb(base64Data);
-    await dbRunAsync('UPDATE users SET avatar_url = ? WHERE id = ?', [permanentUrl, req.user.id]);
+    await dbRunAsync('UPDATE users SET avatar_url = ? WHERE id = ?', [permanentUrl, Number(req.user.id)]);
     
     logAuditEvent(req, {
       action: 'PHOTO_UPLOAD_SUCCESS',
@@ -314,23 +314,23 @@ router.post('/onboarding', authenticateToken, (req, res) => {
   const { jobTitle, companyName, crm, teamSize, useCases } = req.body;
   const payload = JSON.stringify({ jobTitle, companyName, crm, teamSize, useCases });
 
-  db.run(
+  dbRunAsync(
     'INSERT INTO onboarding_prefs (user_id, preferences_json) VALUES (?, ?) ON CONFLICT (user_id) DO UPDATE SET preferences_json = EXCLUDED.preferences_json',
-    [req.user.id, payload],
-    function (err) {
-      if (err) return res.status(500).json({ error: err.message });
-      console.log(`✅ Onboarding preferences saved for user ${req.user.id}`);
-      res.json({ success: true, message: 'Onboarding complete!' });
-    }
-  );
+    [Number(req.user.id), payload]
+  ).then(() => {
+    console.log(`✅ Onboarding preferences saved for user ${req.user.id}`);
+    res.json({ success: true, message: 'Onboarding complete!' });
+  }).catch(err => {
+    res.status(500).json({ error: err.message });
+  });
 });
 
 // GET /api/sessions
 router.get('/sessions', authenticateToken, async (req, res) => {
   try {
     const sessions = await dbAllAsync(
-      'SELECT id, device_info, ip_address, location, is_active, created_at FROM sessions WHERE user_id = ? AND is_active = true ORDER BY created_at DESC LIMIT 20',
-      [req.user.id]
+      'SELECT id, device_info, ip_address, location, is_active, created_at FROM sessions WHERE user_id = ? AND is_active = 1 ORDER BY created_at DESC LIMIT 20',
+      [Number(req.user.id)]
     );
     res.json(sessions || []);
   } catch (err) {
@@ -344,10 +344,10 @@ router.delete('/sessions/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     if (id === 'others') {
       const currentToken = req.headers.authorization?.split(' ')[1];
-      await dbRunAsync('UPDATE sessions SET is_active = false WHERE user_id = ? AND token != ?', [req.user.id, currentToken]);
+      await dbRunAsync('UPDATE sessions SET is_active = 0 WHERE user_id = ? AND token != ?', [Number(req.user.id), currentToken]);
       return res.json({ success: true, message: 'All other sessions revoked' });
     }
-    await dbRunAsync('UPDATE sessions SET is_active = false WHERE id = ? AND user_id = ?', [id, req.user.id]);
+    await dbRunAsync('UPDATE sessions SET is_active = 0 WHERE id = ? AND user_id = ?', [id, Number(req.user.id)]);
     res.json({ success: true, message: 'Session terminated' });
   } catch (err) {
     res.status(500).json({ error: err.message });
