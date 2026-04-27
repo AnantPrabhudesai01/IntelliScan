@@ -145,9 +145,13 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Health Check & System Diagnostics
 app.use('/api/system', systemRouter);
 app.use('/api/public', publicRouter); // Standardized Public Gateway
-app.get('/api/health', (req, res) => res.redirect('/api/system/health')); // Compatibility redirect
+app.get('/api/health', (req, res) => res.redirect('/api/system/health'));
 
+const incidentRoutes = require('./routes/incidents');
+
+// --- PLATFORM CORE ROUTES ---
 app.use('/api/auth', authRouter);
+app.use('/api/incidents', incidentRoutes);
 app.use('/api/billing', billingRouter);
 app.use('/api/scan', scanRouter);
 app.post('/api/scan-multi', authenticateToken, scanController.scanGroupCards);

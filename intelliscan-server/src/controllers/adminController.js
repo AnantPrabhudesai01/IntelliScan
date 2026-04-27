@@ -184,3 +184,71 @@ exports.createModel = async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
+// --- INCIDENT & SYSTEM HEALTH MANAGEMENT ---
+
+// GET /api/incidents
+exports.getIncidents = async (req, res) => {
+  try {
+    const incidents = await dbAllAsync('SELECT * FROM system_incidents ORDER BY created_at DESC LIMIT 50');
+    res.json(incidents);
+  } catch (err) {
+    console.error('[getIncidents Error]', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// PATCH /api/incidents/:id/status
+exports.updateIncidentStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body; // 'open', 'acknowledged', 'resolved'
+
+  try {
+    // 🚀 SELF-HEALING ENGINE: If resolving a quota error, perform actual repair
+    if (status === 'resolved') {
+      const incident = await dbGetAsync('SELECT description, metadata FROM system_incidents WHERE id = ?', [id]);
+      const meta = incident.metadata ? JSON.parse(incident.metadata) : {};
+      
+      if (incident.description.includes('user_quotas') || incident.description.includes('foreign key constraint')) {
+        const userId = meta.userId || (incident.description.match(/user (\d+)/)?.[1]);
+        if (userId) {
+          console.log(`🛠️ [Auto-Repair] Ensuring quota row for user ${userId} to resolve incident ${id}`);
+          const { ensureQuotaRow } = require('../utils/quota');
+          await ensureQuotaRow(Number(userId), 'personal'); // Safe fallback
+        }
+      }
+    }
+
+    await dbRunAsync('UPDATE system_incidents SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [status, id]);
+    res.json({ success: true, id, status });
+  } catch (err) {
+    console.error('[updateIncidentStatus Error]', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// DELETE /api/incidents/:id
+exports.deleteIncident = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await dbRunAsync('DELETE FROM system_incidents WHERE id = ?', [id]);
+    res.json({ success: true, id });
+  } catch (err) {
+    console.error('[deleteIncident Error]', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// POST /api/incidents (Manual logging)
+exports.createIncident = async (req, res) => {
+  const { service, severity, description } = req.body;
+  try {
+    const result = await dbRunAsync(
+      'INSERT INTO system_incidents (service, severity, description, status) VALUES (?, ?, ?, ?)',
+      [service, severity || 'medium', description, 'open']
+    );
+    res.json({ success: true, id: result.lastID });
+  } catch (err) {
+    console.error('[createIncident Error]', err);
+    res.status(500).json({ error: err.message });
+  }
+};
