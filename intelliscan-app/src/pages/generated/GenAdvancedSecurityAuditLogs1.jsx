@@ -14,15 +14,14 @@ export default function GenAdvancedSecurityAuditLogs1() {
     setError(null);
     try {
       const token = getStoredToken();
-      const res = await fetch('/api/enterprise/audit-logs', {
+      const res = await fetch('/api/admin/audit-logs', {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) {
-        if (res.status === 403) throw new Error('Access Denied: Enterprise Tier Required');
-        throw new Error('Failed to fetch audit logs');
+        throw new Error('Security Clearance Required: Please re-authenticate as Super Admin.');
       }
       const data = await res.json();
-      setLogs(data);
+      setLogs(data.logs || []);
     } catch (err) {
       console.error('Audit log fetch error:', err);
       setError(err.message);
