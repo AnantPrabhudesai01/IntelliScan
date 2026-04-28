@@ -371,12 +371,29 @@ export default function CampaignBuilderPage() {
                     <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
                       <Database size={60} />
                     </div>
-                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-3">Injection Variables</p>
-                    <div className="flex flex-wrap gap-2 text-[10px] text-brand-400 font-mono">
-                      <span className="bg-brand-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-brand-500/20 transition-colors">{'{{firstName}}'}</span>
-                      <span className="bg-brand-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-brand-500/20 transition-colors">{'{{company}}'}</span>
-                      <span className="bg-brand-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-brand-500/20 transition-colors">{'{{title}}'}</span>
-                      <span className="bg-brand-500/10 px-2 py-0.5 rounded cursor-copy hover:bg-brand-500/20 transition-colors">{'{{unsubscribe_link}}'}</span>
+                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-3">Personalization Tags</p>
+                    <p className="text-[9px] text-gray-700 mb-3">Click to copy a tag into your email</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { label: 'First Name', value: '{{firstName}}', icon: '👤' },
+                        { label: 'Company', value: '{{company}}', icon: '🏢' },
+                        { label: 'Job Title', value: '{{title}}', icon: '💼' },
+                        { label: 'Unsubscribe', value: '{{unsubscribe_link}}', icon: '🔗' },
+                      ].map(tag => (
+                        <button
+                          key={tag.value}
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(tag.value);
+                            const el = document.getElementById(`tag-${tag.label}`);
+                            if (el) { el.textContent = 'Copied!'; setTimeout(() => { el.textContent = tag.label; }, 1200); }
+                          }}
+                          className="flex items-center gap-1.5 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-xl cursor-pointer transition-all hover:scale-105 active:scale-95 group/tag"
+                        >
+                          <span className="text-sm">{tag.icon}</span>
+                          <span id={`tag-${tag.label}`} className="text-[10px] font-bold text-brand-400 group-hover/tag:text-brand-300">{tag.label}</span>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>
