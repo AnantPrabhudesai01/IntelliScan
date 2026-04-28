@@ -258,6 +258,18 @@ export default function DashboardLayout() {
             </Link>
           );
         })}
+        {role === 'super_admin' && (
+          <div className="mt-4 pt-4 border-t border-white/5">
+            <Link
+              to="/admin/dashboard"
+              className={`flex items-center gap-2.5 ${sidebarCollapsed && !isMobile ? 'justify-center px-2 py-2.5' : 'px-3 py-2'} rounded-md text-[13px] font-bold text-brand-light hover:bg-sidebar-hover transition-all duration-150 group relative`}
+              title={sidebarCollapsed && !isMobile ? 'System Controller' : undefined}
+            >
+              <ShieldCheck size={18} className="text-brand-light" />
+              {(!sidebarCollapsed || isMobile) && <span className="truncate flex-1">System Controller</span>}
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* Plan Status — only when expanded */}

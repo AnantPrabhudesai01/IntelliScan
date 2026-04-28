@@ -352,6 +352,17 @@ export default function AdminLayout({ role = 'business_admin' }) {
             </div>
           </div>
         ))}
+        {actualRole === 'super_admin' && role !== 'super_admin' && (
+          <div className="mt-4 pt-4 border-t border-[#3D2650]">
+            <Link
+              to="/admin/dashboard"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-bold text-brand-light hover:bg-sidebar-hover transition-all duration-150"
+            >
+              <ShieldCheck size={16} className="text-brand-light" />
+              <span>System Controller</span>
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* Profile Footer */}

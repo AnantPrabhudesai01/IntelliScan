@@ -12,12 +12,12 @@ const SidebarSwitcher = ({ activeMode = 'personal', collapsed = false, isMobile 
       <div className={`flex p-1 bg-black/40 rounded-xl border border-white/5 shadow-inner ${collapsed && !isMobile ? 'flex-col gap-2' : 'gap-1'}`}>
         {/* Personal Tab */}
         <Link 
-          to={role === 'super_admin' ? '/admin/dashboard' : '/dashboard/scan'}
+          to="/dashboard/scan"
           className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${isPersonal ? 'bg-[var(--brand)] text-white shadow-lg shadow-[var(--brand)]/20' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
-          title={role === 'super_admin' ? "Platform Control Center" : "Personal Space"}
+          title="Personal Space"
         >
           <User size={14} />
-          {(!collapsed || isMobile) && <span>{role === 'super_admin' ? 'SYSTEM' : 'Personal'}</span>}
+          {(!collapsed || isMobile) && <span>Personal</span>}
         </Link>
         
         {/* Business Tab - Hidden for Pro/Free users per project requirement */}
@@ -25,10 +25,10 @@ const SidebarSwitcher = ({ activeMode = 'personal', collapsed = false, isMobile 
           <Link 
             to="/workspace/dashboard"
             className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${!isPersonal ? 'bg-[var(--brand)] text-white shadow-lg shadow-[var(--brand)]/20' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
-            title={role === 'super_admin' ? "Global Infrastructure Control" : "Business Workspace"}
+            title="Business Workspace"
           >
             <Building size={14} />
-            {(!collapsed || isMobile) && <span>{role === 'super_admin' ? 'PLATFORM' : 'Business'}</span>}
+            {(!collapsed || isMobile) && <span>Business</span>}
           </Link>
         )}
       </div>
