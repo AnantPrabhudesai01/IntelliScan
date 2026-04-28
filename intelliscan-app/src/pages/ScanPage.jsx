@@ -825,31 +825,8 @@ export default function ScanPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200/80 dark:border-gray-800 shadow-[var(--shadow-vibrant)]">
-            <h4 className="text-xs font-black uppercase tracking-widest text-amber-600 mb-4 flex items-center gap-2">
-              <Lightbulb size={16} /> Pro Tip
-            </h4>
-            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-              Ensure you have set exactly <code>GEMINI_API_KEY</code> in the server <code>.env</code> file. Our integration parses skewed images and complex fonts effortlessly via student tier access.
-            </p>
-            <button 
-              onClick={checkAiHealth}
-              disabled={isCheckingHealth}
-              className="mt-4 w-full py-2 px-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all flex items-center justify-center gap-2"
-            >
-              {isCheckingHealth ? <RefreshCw size={12} className="animate-spin" /> : <Zap size={12} />}
-              {isCheckingHealth ? 'Running Diagnostics...' : 'Check System & AI Health'}
-            </button>
 
-            <a 
-              href={`https://wa.me/14155238886?text=join%20baseball-eventually`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 w-full py-2 px-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-900/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-all flex items-center justify-center gap-2"
-            >
-              <MessageCircle size={12} /> Mobile Scan (Join First)
-            </a>
-          </div>
+
         </div>
 
         {/* Right: Extracted Data / Multi Results */}
