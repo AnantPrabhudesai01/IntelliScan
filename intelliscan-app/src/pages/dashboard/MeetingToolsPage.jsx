@@ -42,7 +42,8 @@ export default function MeetingToolsPage() {
     if (type === 'profile') {
       window.open(profileUrl, '_blank');
     } else if (type === 'linkedin') {
-      const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`;
+      const shareText = `🚀 I've upgraded my networking game! Scan my digital business card to instantly save my contact details and connect with me professionally.\n\n📇 View my digital card: ${profileUrl}\n\nPowered by IntelliScan — AI-Powered Networking`;
+      const linkedinUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(shareText)}`;
       window.open(linkedinUrl, '_blank');
     }
   };

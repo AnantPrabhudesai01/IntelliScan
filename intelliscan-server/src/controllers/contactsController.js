@@ -707,15 +707,31 @@ exports.enrichContact = async (req, res) => {
     const contact = await dbGetAsync('SELECT * FROM contacts WHERE id = ? AND user_id = ?', [contactId, req.user.id]);
     if (!contact) return res.status(404).json({ error: 'Contact not found' });
 
-    const prompt = `As a professional AI research assistant, research and provide a detailed professional profile for:
-Name: ${contact.name}
-Company: ${contact.company}
-Job Title: ${contact.job_title}
-Current Email: ${contact.email || 'None on file'}
-Current Phone: ${contact.phone || 'None on file'}
+    const prompt = `You are an elite OSINT and business intelligence analyst. Research and create a comprehensive professional dossier for the following person:
 
-If the email or phone is 'None on file', please attempt to find the official professional email/phone for this person.
-Provide JSON: { "bio": "...", "latest_news": "...", "industry": "...", "seniority": "...", "found_email": "...", "found_phone": "..." }`;
+Name: ${contact.name}
+Company: ${contact.company || 'Unknown'}
+Job Title: ${contact.job_title || 'Unknown'}
+Email: ${contact.email || 'None on file'}
+Phone: ${contact.phone || 'None on file'}
+
+Provide an EXTREMELY detailed analysis. For each field, provide your best professional assessment based on the person's name, company, and role. Be specific, not generic.
+
+Return ONLY a valid JSON object with these keys:
+{
+  "bio": "A detailed 3-4 sentence professional biography describing their career trajectory, expertise areas, and professional reputation. Be specific to their industry and role.",
+  "latest_news": "Recent industry developments, company news, or market trends relevant to this person's role and company. Include specific details like recent funding rounds, product launches, acquisitions, or industry shifts.",
+  "industry": "Their specific industry segment (e.g., 'Enterprise SaaS', 'Fintech - Digital Payments', 'Healthcare IT')",
+  "seniority": "Detailed seniority assessment with full title inference (e.g., 'Senior Home Decor Designer & Project Lead' not just 'Senior')",
+  "found_email": "Professional email pattern guess based on company domain (e.g., firstname.lastname@company.com). Leave empty string if can't determine.",
+  "found_phone": "Leave empty string - do not guess phone numbers.",
+  "key_skills": "Top 5 professional skills relevant to their role, comma-separated",
+  "estimated_company_size": "Best estimate of company size (e.g., '50-200 employees', 'Enterprise 10,000+')",
+  "recommended_approach": "Specific advice on how to approach this contact for networking or business development. What topics would resonate? What value can you offer them?",
+  "talking_points": "3 specific conversation starters or discussion topics tailored to this person's role and industry",
+  "linkedin_search_url": "A LinkedIn search URL to find this person: https://www.linkedin.com/search/results/people/?keywords=ENCODED_NAME+COMPANY",
+  "deal_potential": "Estimated business potential: 'High', 'Medium', or 'Low' with a one-line justification"
+}`;
 
     const aiResult = await unifiedTextAIPipeline({ prompt, responseFormat: 'json' });
     if (!aiResult.success) {

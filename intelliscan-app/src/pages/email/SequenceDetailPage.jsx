@@ -13,6 +13,7 @@ export default function SequenceDetailPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState(null);
   const [availableModels, setAvailableModels] = useState([]);
+  const [generatingStep, setGeneratingStep] = useState(null); // step index being generated
 
   useEffect(() => {
     fetchSequenceData();
@@ -104,6 +105,50 @@ export default function SequenceDetailPage() {
       showToast('failed to save changes', 'error');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleGenerateFromIntent = async (stepIndex) => {
+    const step = steps[stepIndex];
+    if (!step.ai_intent || step.ai_intent.trim().length < 3) {
+      showToast('Please enter an AI intent first', 'error');
+      return;
+    }
+    setGeneratingStep(stepIndex);
+    try {
+      const token = getStoredToken();
+      const res = await fetch('/api/drafts/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          contact_name: '{{name}}',
+          company: '{{company}}',
+          tone: 'professional',
+          customPrompt: `Generate an outreach email for an automated email sequence.
+AI Intent: ${step.ai_intent}
+Subject template hint: ${step.subject || 'Follow-up'}
+
+The email should use template variables like {{name}} and {{company}}.
+Write the email based on this intent: "${step.ai_intent}"
+Make it natural, professional, and personalized using the template variables.`
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Generation failed');
+      
+      // Auto-fill the step fields
+      const updated = [...steps];
+      updated[stepIndex].subject = data.subject || updated[stepIndex].subject;
+      updated[stepIndex].html_body = data.body || updated[stepIndex].html_body;
+      setSteps(updated);
+      showToast('✦ AI generated email from your intent!');
+    } catch (err) {
+      showToast('AI generation failed: ' + err.message, 'error');
+    } finally {
+      setGeneratingStep(null);
     }
   };
 
@@ -212,6 +257,17 @@ export default function SequenceDetailPage() {
                         onChange={(e) => handleUpdateStep(idx, 'ai_intent', e.target.value)}
                         className="w-full bg-gray-950/50 border border-gray-800 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-brand-500 h-20 resize-none font-medium leading-relaxed"
                       />
+                      <button
+                        onClick={() => handleGenerateFromIntent(idx)}
+                        disabled={generatingStep === idx || !step.ai_intent}
+                        className="mt-2 w-full py-2 bg-gradient-to-r from-brand-600 to-purple-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {generatingStep === idx ? (
+                          <><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> Generating...</>
+                        ) : (
+                          <><Sparkles size={12} /> Generate Email from Intent</>
+                        )}
+                      </button>
                     </div>
                     <div>
                       <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 block">AI Model Engine</label>

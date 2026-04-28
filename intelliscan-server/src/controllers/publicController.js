@@ -1,4 +1,4 @@
-const { dbGetAsync, dbRunAsync } = require('../utils/db');
+const { dbGetAsync, dbRunAsync, isPostgres } = require('../utils/db');
 const dns = require('dns').promises;
 
 /**
@@ -9,9 +9,14 @@ const dns = require('dns').promises;
 exports.getPublicProfile = async (req, res) => {
   try {
     const { slug } = req.params;
+    const slugLower = slug.toLowerCase();
 
-    // 1. Resolve card and associated user data with Name Fallback
-    // We look for direct slug match OR a slugified name match if no slug is explicitly set
+    // Cross-database compatible email prefix extraction
+    const emailPrefix = isPostgres
+      ? `LOWER(SPLIT_PART(u.email, '@', 1))`
+      : `LOWER(SUBSTR(u.email, 1, INSTR(u.email, '@') - 1))`;
+
+    // 1. Resolve card and associated user data with multi-fallback
     const profile = await dbGetAsync(`
       SELECT 
         u.name, 
@@ -33,21 +38,30 @@ exports.getPublicProfile = async (req, res) => {
       LEFT JOIN user_cards c ON u.id = c.user_id
       LEFT JOIN workspaces w ON u.workspace_id = w.id
       WHERE c.url_slug = ? 
-         OR (LOWER(REPLACE(u.name, ' ', '')) = LOWER(?))
-         OR (LOWER(SUBSTR(u.email, 1, INSTR(u.email, '@') - 1)) = LOWER(?))
-      ORDER BY (CASE WHEN c.url_slug = ? THEN 1 WHEN LOWER(SUBSTR(u.email, 1, INSTR(u.email, '@') - 1)) = LOWER(?) THEN 2 ELSE 3 END)
+         OR (LOWER(REPLACE(u.name, ' ', '')) = ?)
+         OR (${emailPrefix} = ?)
+      ORDER BY (CASE WHEN c.url_slug = ? THEN 1 WHEN ${emailPrefix} = ? THEN 2 ELSE 3 END)
       LIMIT 1
-    `, [slug, slug, slug, slug, slug]);
+    `, [slug, slugLower, slugLower, slug, slugLower]);
 
     if (!profile) {
       return res.status(404).json({ error: 'Identity not found. This profile may have been deactivated or moved.' });
     }
 
-    // 2. Atomic View Increment
-    // We don't await this to keep the response fast
-    dbRunAsync('UPDATE user_cards SET views = views + 1 WHERE url_slug = ?', [slug]).catch(console.error);
+    // 2. Atomic View Increment (non-blocking)
+    dbRunAsync('UPDATE user_cards SET views = views + 1 WHERE url_slug = ?', [slug]).catch(() => {});
 
-    // 3. Prepare response with design logic
+    // 3. Parse design_json safely
+    let designJson = null;
+    try {
+      designJson = (typeof profile.design_json === 'string' && profile.design_json.trim()) 
+        ? JSON.parse(profile.design_json) 
+        : profile.design_json;
+    } catch (e) {
+      designJson = null;
+    }
+
+    // 4. Prepare response with premium fallback design
     res.json({
       name: profile.name,
       email: profile.contact_email || profile.email,
@@ -59,7 +73,7 @@ exports.getPublicProfile = async (req, res) => {
       headline: profile.headline || 'Independent Professional',
       bio: profile.card_bio || profile.user_bio || 'Professional networking profile.',
       avatar_text: (profile.name || 'U').charAt(0).toUpperCase(),
-      design_json: (typeof profile.design_json === 'string' ? JSON.parse(profile.design_json) : profile.design_json) || {
+      design_json: designJson || {
         primary: '#6366f1',
         secondary: '#a855f7',
         gradient_angle: '135deg'

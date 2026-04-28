@@ -13,16 +13,52 @@ const { unifiedTextAIPipeline } = require('../services/aiService');
 // POST /api/drafts/generate
 router.post('/generate', authenticateToken, async (req, res) => {
   try {
-    const { contact_id, contact_name, contact_email, company, tone = 'Professional', customPrompt, job_title } = req.body;
+    const { contact_id, contact_name, contact_email, company, tone = 'professional', customPrompt, job_title } = req.body;
     
-    const systemPrompt = `You are an expert sales representative. Generate a highly personalized ${tone} outreach email.
-Return ONLY a valid JSON object with the following keys:
-"subject": A compelling subject line.
-"body": The email body text.`;
+    // Tone-specific AI instructions for genuinely different email styles
+    const toneGuides = {
+      professional: `Write a FORMAL, POLISHED business email. Use proper salutations like "Dear [Name]". 
+Keep sentences structured and corporate. Use phrases like "I trust this finds you well", "I'd like to explore potential synergies", "at your earliest convenience". 
+Sign off with "Best regards" or "Sincerely". Maintain a respectful, buttoned-up corporate tone throughout. No emojis. No slang.`,
+      
+      friendly: `Write a WARM, CASUAL, PERSONABLE email like you're writing to a friend you met at a networking event. 
+Use first names, contractions ("I'm", "we'd", "let's"), and enthusiastic language. Include phrases like "It was awesome meeting you!", "I'd love to grab coffee", "Let's definitely stay in touch!". 
+Use 1-2 emojis sparingly (like 😊 or 🙌). Sign off with "Cheers", "Talk soon", or "Looking forward to hearing from you!". Keep it upbeat and genuine.`,
+      
+      executive: `Write a CONCISE, HIGH-IMPACT email suitable for C-suite executives. 
+Be extremely brief — no more than 4-5 sentences total. Every word must carry weight. Lead with value, not pleasantries. 
+Use phrases like "I'll be direct", "The bottom line is", "Here's what I propose". No fluff, no filler. 
+Sign off with "Regards" or just your name. This should read like it was written by a busy CEO who respects the reader's time.`,
+      
+      cold_outreach: `Write a VALUE-DRIVEN cold outreach email to someone you've never met. 
+Start with a personalized hook referencing their company or role — NOT "I hope this email finds you well". 
+Clearly state the value proposition in the first 2 sentences. Include a specific, low-friction CTA like "Would a 15-min call next week work?". 
+Use social proof or a relevant stat. Keep it under 120 words. Sign off casually with "Best" or "Cheers". This should feel like a warm intro, not spam.`
+    };
 
-    const prompt = customPrompt || `Write an email to ${contact_name || 'this person'} from IntelliScan.
-Position: ${job_title || 'Lead'}
-Company: ${company || 'Unknown'}
+    const selectedToneGuide = toneGuides[tone.toLowerCase()] || toneGuides.professional;
+
+    const systemPrompt = `You are an expert email copywriter specializing in B2B networking and outreach.
+
+TONE INSTRUCTIONS:
+${selectedToneGuide}
+
+IMPORTANT RULES:
+- The email must feel genuinely human-written, not AI-generated
+- Personalize using the contact's name, company, and role
+- Do NOT use generic filler like "I came across your profile"
+- Make the email feel like it was written specifically for this person
+- The subject line must be compelling and match the tone
+
+Return ONLY a valid JSON object with exactly these keys:
+"subject": A compelling subject line (max 60 chars)
+"body": The complete email body text with proper line breaks`;
+
+    const prompt = customPrompt || `Write an email to ${contact_name || 'this professional'}.
+Their role: ${job_title || 'Professional'}
+Their company: ${company || 'their organization'}
+Context: We recently connected at a networking event and exchanged business cards. I scanned their card using IntelliScan.
+My name: ${req.user.name || 'A fellow professional'}
 Tone: ${tone}`;
 
     const aiResponse = await unifiedTextAIPipeline({ 
@@ -37,19 +73,13 @@ Tone: ${tone}`;
 
     const { subject, body } = aiResponse.data;
 
-    // Persist immediately so the frontend has an ID for sending
-    const draftId = await new Promise((resolve, reject) => {
-      db.run(
-        'INSERT INTO ai_drafts (user_id, contact_id, contact_name, contact_email, subject, body, tone) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [req.user.id, contact_id, contact_name, contact_email, subject, body, tone],
-        function (err) {
-          if (err) reject(err);
-          else resolve(this.lastID);
-        }
-      );
-    });
+    // Persist using cross-database compatible query
+    const result = await dbRunAsync(
+      'INSERT INTO ai_drafts (user_id, contact_id, contact_name, contact_email, subject, body, tone) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [req.user.id, contact_id, contact_name, contact_email, subject, body, tone]
+    );
 
-    res.json({ id: draftId, subject, body });
+    res.json({ id: result.lastID, subject, body });
   } catch (error) {
     console.error('Draft generation error:', error);
     res.status(500).json({ error: error.message });
@@ -57,24 +87,27 @@ Tone: ${tone}`;
 });
 
 // GET /api/drafts
-router.get('/', authenticateToken, (req, res) => {
-  db.all('SELECT * FROM ai_drafts WHERE user_id = ? ORDER BY created_at DESC', [req.user.id], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+router.get('/', authenticateToken, async (req, res) => {
+  try {
+    const rows = await dbAllAsync('SELECT * FROM ai_drafts WHERE user_id = ? ORDER BY created_at DESC', [req.user.id]);
+    res.json(rows || []);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // POST /api/drafts
-router.post('/', authenticateToken, (req, res) => {
-  const { contact_id, contact_name, subject, body } = req.body;
-  db.run(
-    'INSERT INTO ai_drafts (user_id, contact_id, contact_name, subject, body) VALUES (?, ?, ?, ?, ?)',
-    [req.user.id, contact_id, contact_name, subject, body],
-    function (err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.status(201).json({ id: this.lastID, message: 'Draft saved successfully' });
-    }
-  );
+router.post('/', authenticateToken, async (req, res) => {
+  try {
+    const { contact_id, contact_name, subject, body } = req.body;
+    const result = await dbRunAsync(
+      'INSERT INTO ai_drafts (user_id, contact_id, contact_name, subject, body) VALUES (?, ?, ?, ?, ?)',
+      [req.user.id, contact_id, contact_name, subject, body]
+    );
+    res.status(201).json({ id: result.lastID, message: 'Draft saved successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // PUT /api/drafts/:id

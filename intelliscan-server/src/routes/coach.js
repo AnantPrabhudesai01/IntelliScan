@@ -19,7 +19,7 @@ router.get('/insights', authenticateToken, async (req, res) => {
         COUNT(CASE WHEN crm_synced = 1 THEN 1 END) as synced,
         COUNT(CASE WHEN created_at > ${isPostgres ? "NOW() - interval '7 days'" : "datetime('now', '-7 days')"} THEN 1 END) as recent
       FROM contacts 
-      WHERE user_id = ? AND is_deleted = FALSE
+      WHERE user_id = ? AND (is_deleted IS NOT TRUE)
     `, [userId]);
 
     const total = stats.total || 0;
