@@ -278,6 +278,12 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
             }
           })
         });
+        if (!response.ok) {
+          const errText = await response.text();
+          console.error(`[AI Service] Gemini Extraction Error (${response.status}):`, errText);
+          throw new Error(`Gemini API returned ${response.status}`);
+        }
+
         const result = await response.json();
         
         if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
@@ -291,7 +297,7 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
           return { data };
         }
         console.error('Gemini REST API Rejected:', JSON.stringify(result));
-        throw new Error(result.error?.message || 'Gemini REST API Error');
+        throw new Error(result.error?.message || 'Gemini response format unrecognized');
       }
     } catch (err) {
       console.error('Gemini Extraction Failed (REST):', err.message);
@@ -475,6 +481,12 @@ async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'j
         })
       });
 
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error(`[AI Service] Gemini REST Error (${response.status}):`, errText);
+        throw new Error(`Gemini API returned ${response.status}`);
+      }
+
       const result = await response.json();
       if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
         const text = result.candidates[0].content.parts[0].text;
@@ -486,7 +498,7 @@ async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'j
         }
         return { success: true, data: text.trim(), model_used: modelName };
       }
-      throw new Error(result.error?.message || 'Gemini REST Error');
+      throw new Error(result.error?.message || 'Gemini response format unrecognized');
     }
   } catch (err) {
     console.warn('Gemini Direct Fast-Track Failed, checking fallbacks:', err.message);
