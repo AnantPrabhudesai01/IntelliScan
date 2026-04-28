@@ -55,11 +55,11 @@ export default function DashboardLayout() {
     { to: '/dashboard/email-marketing/automations', label: 'AI Sequences', icon: Zap, tag: 'NEW' },
     { to: '/workspace/analytics', label: 'Analytics', icon: BarChart2, tag: workspaceTag },
     { to: '/workspace/org-chart', label: 'Org Chart', icon: ListTree, tag: workspaceTag },
-    { to: '/dashboard/presence',    label: 'Meeting Presence', icon: Monitor },
-    { to: '/dashboard/kiosk',       label: 'Event Kiosk',   icon: Sparkles  },
-    { to: '/dashboard/my-card',     label: 'Digital Card',  icon: Smartphone },
-    { to: '/dashboard/card-creator', label: 'Card Creator',  icon: Palette },
-    { to: '/marketplace',           label: 'Apps',          icon: Store    },
+    { to: '/dashboard/presence',    label: 'Meeting Presence', icon: Monitor, tag: workspaceTag },
+    { to: '/dashboard/kiosk',       label: 'Event Kiosk',   icon: Sparkles, tag: workspaceTag },
+    { to: '/dashboard/my-card',     label: 'Digital Card',  icon: Smartphone, tag: workspaceTag },
+    { to: '/dashboard/card-creator', label: 'Card Creator',  icon: Palette, tag: workspaceTag },
+    { to: '/marketplace',           label: 'Apps',          icon: Store, tag: workspaceTag },
     { to: '/dashboard/feedback',    label: 'Feedback',      icon: MessageSquare },
     { to: '/dashboard/settings',    label: 'Settings',      icon: Settings },
   ];
@@ -80,7 +80,7 @@ export default function DashboardLayout() {
       
       let isLocked = false;
       if (isEnterpriseOnly && !isEnterprise) isLocked = true;
-      if (isProOnly && !isPro) isLocked = true;
+      if (isProOnly && !isProOrHigher) isLocked = true;
       
       return { ...item, isLocked, isEnterpriseOnly, isProOnly, isAdminOnly };
     })
@@ -410,9 +410,11 @@ export default function DashboardLayout() {
             </div>
 
             {/* Upgrade */}
-            <Link to="/subscription-plan-comparison" className="hidden sm:flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-md bg-brand hover:bg-brand-light text-white transition-colors">
-              <Zap size={11} /> Upgrade
-            </Link>
+            {!isEnterprise && (
+              <Link to="/subscription-plan-comparison" className="hidden sm:flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-md bg-brand hover:bg-brand-light text-white transition-colors">
+                <Zap size={11} /> Upgrade
+              </Link>
+            )}
 
             {/* Notifications */}
             <button 

@@ -17,7 +17,7 @@ export function RoleProvider({ children }) {
   const normalizedTier = isSuperAdmin ? 'enterprise' : (tier || 'personal').toLowerCase();
   
   const isFree = !isSuperAdmin && normalizedTier === 'personal';
-  const isPro = !isSuperAdmin && normalizedTier === 'pro';
+  const isPro = !isSuperAdmin && (normalizedTier === 'pro' || normalizedTier === 'enterprise');
   const isEnterprise = isSuperAdmin || normalizedTier === 'enterprise' || role === 'business_admin';
   const { logout, isLoading: isAuth0Loading, isAuthenticated: isAuth0Authenticated } = useAuth0();
 
