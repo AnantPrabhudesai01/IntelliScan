@@ -1,7 +1,7 @@
 /**
  * Admin Controller — High-level analytics and team management
  */
-const { dbGetAsync, dbAllAsync, dbRunAsync } = require('../utils/db');
+const { dbGetAsync, dbAllAsync, dbRunAsync, isPostgres } = require('../utils/db');
 
 // GET /api/admin/leaderboard
 exports.getLeaderboard = async (req, res) => {
@@ -271,7 +271,7 @@ exports.getAuditLogs = async (req, res) => {
 
     const logs = await dbAllAsync(`
       SELECT 
-        a.id, a.created_at, a.action, a.resource, a.status, a.metadata,
+        a.id, a.created_at, a.action, a.resource, a.status, a.details_json,
         u.name as user_name, u.role as user_role
       FROM audit_trail a
       LEFT JOIN users u ON a.actor_user_id = u.id
@@ -292,9 +292,15 @@ exports.getAuditLogs = async (req, res) => {
 // GET /api/admin/security-summary
 exports.getSecuritySummary = async (req, res) => {
   try {
-    const sessions = await dbGetAsync("SELECT COUNT(*) as count FROM audit_trail WHERE action = 'LOGIN' AND created_at > CURRENT_TIMESTAMP - INTERVAL '1 hour'");
-    const failedAuth = await dbGetAsync("SELECT COUNT(*) as count FROM audit_trail WHERE status = 'DENIED' AND created_at > CURRENT_TIMESTAMP - INTERVAL '24 hours'");
-    const dataExport = await dbGetAsync("SELECT SUM(CAST(JSON_EXTRACT(metadata, '$.size') AS FLOAT)) as total FROM audit_trail WHERE action = 'EXPORT'");
+    const sessions = await dbGetAsync(`SELECT COUNT(*) as count FROM audit_trail WHERE action = 'LOGIN' AND created_at > ${isPostgres ? "NOW() - INTERVAL '1 hour'" : "datetime('now', '-1 hour')"} `);
+    const failedAuth = await dbGetAsync(`SELECT COUNT(*) as count FROM audit_trail WHERE status = 'DENIED' AND created_at > ${isPostgres ? "NOW() - INTERVAL '24 hours'" : "datetime('now', '-24 hours')"} `);
+    
+    // Database-agnostic JSON extraction for export size
+    const sizeSql = isPostgres 
+      ? "SELECT SUM(CAST(details_json->>'size' AS FLOAT)) as total FROM audit_trail WHERE action = 'EXPORT'"
+      : "SELECT SUM(CAST(JSON_EXTRACT(details_json, '$.size') AS FLOAT)) as total FROM audit_trail WHERE action = 'EXPORT'";
+    
+    const dataExport = await dbGetAsync(sizeSql);
 
     res.json({
       success: true,
@@ -312,7 +318,7 @@ exports.getSecuritySummary = async (req, res) => {
 // GET /api/admin/neural-precision
 exports.getNeuralPrecision = async (req, res) => {
   try {
-    const totalScans = await dbGetAsync('SELECT COUNT(*) as count FROM card_scans');
+    const totalScans = await dbGetAsync('SELECT COUNT(*) as count FROM contacts WHERE is_deleted IS NOT TRUE');
     const baseCount = totalScans.count || 0;
 
     // In a real production environment, these would be calculated from a 'confidence' column

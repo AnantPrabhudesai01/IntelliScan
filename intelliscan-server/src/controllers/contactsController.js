@@ -1,4 +1,4 @@
-const { db, dbGetAsync, dbAllAsync, dbRunAsync } = require('../utils/db');
+const { db, dbGetAsync, dbAllAsync, dbRunAsync, isPostgres } = require('../utils/db');
 const XLSX = require('xlsx');
 
 const { logAuditEvent, AUDIT_SUCCESS, AUDIT_DENIED, AUDIT_ERROR } = require('../utils/logger');
@@ -534,7 +534,10 @@ exports.getWorkspaceAnalytics = async (req, res) => {
     const growthPct = prevCount === 0 ? (currCount > 0 ? 100 : 0) : Math.round(((currCount - prevCount) / prevCount) * 100);
 
     const dayRows = await dbAllAsync(
-      `SELECT date(c.scan_date) as day, COUNT(*) as count FROM contacts c JOIN users u ON c.user_id = u.id WHERE ${scope.where} AND c.scan_date >= ? GROUP BY date(c.scan_date) ORDER BY day ASC`,
+      `SELECT ${isPostgres ? "c.scan_date::date" : "date(c.scan_date)"} as day, COUNT(*) as count 
+       FROM contacts c JOIN users u ON c.user_id = u.id 
+       WHERE ${scope.where} AND c.scan_date >= ? 
+       GROUP BY day ORDER BY day ASC`,
       [...scope.params, start30.toISOString()]
     );
 
