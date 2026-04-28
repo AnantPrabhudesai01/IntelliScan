@@ -16,7 +16,7 @@ router.get('/insights', authenticateToken, async (req, res) => {
       SELECT 
         COUNT(*) as total,
         COUNT(CASE WHEN crm_synced = 1 THEN 1 END) as synced,
-        COUNT(CASE WHEN created_at > ${isPostgres ? "NOW() - interval '7 days'" : "datetime('now', '-7 days')"} THEN 1 END) as recent
+        COUNT(CASE WHEN scan_date > ${isPostgres ? "NOW() - interval '7 days'" : "datetime('now', '-7 days')"} THEN 1 END) as recent
       FROM contacts 
       WHERE user_id = ? AND ${isPostgres ? "(is_deleted IS FALSE OR is_deleted IS NULL)" : "(is_deleted IS NULL OR is_deleted = 0)"}
     `, [userId]);
@@ -31,7 +31,7 @@ router.get('/insights', authenticateToken, async (req, res) => {
       SELECT COUNT(*) as count 
       FROM contacts 
       WHERE user_id = ? 
-      AND created_at < ${isPostgres ? "NOW() - interval '7 days'" : "datetime('now', '-7 days')"}
+      AND scan_date < ${isPostgres ? "NOW() - interval '7 days'" : "datetime('now', '-7 days')"}
       AND crm_synced = 0
       AND ${isPostgres ? "(is_deleted IS FALSE OR is_deleted IS NULL)" : "(is_deleted IS NULL OR is_deleted = 0)"}
     `, [userId]))?.count || 0;

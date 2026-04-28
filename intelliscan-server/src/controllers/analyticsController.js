@@ -263,10 +263,10 @@ exports.getSignalsList = async (req, res) => {
     
     // Aggregate recent high-confidence contacts to transform into actionable behavioral signals
     const latestContacts = await dbAllAsync(`
-      SELECT id, name, company, confidence, created_at 
+      SELECT id, name, company, confidence, scan_date 
       FROM contacts 
       WHERE user_id = ? AND ${isPostgres ? "is_deleted = FALSE" : "is_deleted = 0"} AND confidence > 80
-      ORDER BY created_at DESC LIMIT 6
+      ORDER BY scan_date DESC LIMIT 6
     `, [userId]);
 
     const currentSignals = latestContacts.map(c => {
