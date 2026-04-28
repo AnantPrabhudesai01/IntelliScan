@@ -65,7 +65,7 @@ router.get('/quota', authenticateToken, async (req, res) => {
 
     // Fetch the latest paid order to check auto-pay status
     const latestOrder = await dbGetAsync(
-      `SELECT auto_pay FROM billing_orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 1`,
+      `SELECT auto_pay FROM billing_orders WHERE user_id = ? AND status = 'paid' ORDER BY updated_at DESC LIMIT 1`,
       [Number(req.user.id)]
     );
 

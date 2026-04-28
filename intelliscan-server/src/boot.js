@@ -241,7 +241,7 @@ async function bootstrap() {
         id ${isPostgres ? 'SERIAL' : 'INTEGER'} PRIMARY KEY ${isPostgres ? '' : 'AUTOINCREMENT'},
         user_id INTEGER UNIQUE REFERENCES users(id),
         used_count INTEGER DEFAULT 0,
-        limit_amount INTEGER DEFAULT 10,
+        limit_amount INTEGER DEFAULT 100,
         group_scans_used INTEGER DEFAULT 0,
         group_limit_amount INTEGER DEFAULT 1,
         last_reset_date ${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}
@@ -465,6 +465,7 @@ async function bootstrap() {
       { table: 'billing_orders', column: 'amount_paise', type: 'INTEGER DEFAULT 0' },
       { table: 'billing_orders', column: 'simulated', type: 'INTEGER DEFAULT 0' },
       { table: 'billing_orders', column: 'razorpay_signature', type: 'TEXT' },
+      { table: 'billing_orders', column: 'created_at', type: `${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}` },
       { table: 'billing_orders', column: 'updated_at', type: `${isPostgres ? 'TIMESTAMPTZ DEFAULT NOW()' : 'DATETIME DEFAULT CURRENT_TIMESTAMP'}` }
     ];
 

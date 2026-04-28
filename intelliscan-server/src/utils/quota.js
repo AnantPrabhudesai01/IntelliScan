@@ -24,7 +24,13 @@ async function ensureQuotaRow(userId, currentTier = 'personal') {
   const limits = resolveTierLimits(currentTier);
   
   // 1. Get current quota to check for existing higher limits (Safety)
-  const existing = await dbGetAsync('SELECT limit_amount, group_limit_amount FROM user_quotas WHERE user_id = ?', [userId]);
+  let existing = null;
+  try {
+    existing = await dbGetAsync('SELECT limit_amount, group_limit_amount FROM user_quotas WHERE user_id = ?', [userId]);
+  } catch (e) {
+    console.warn(`[Quota-Resilience] Failed to fetch full quota for user ${userId}, falling back to basic check.`);
+    existing = await dbGetAsync('SELECT limit_amount FROM user_quotas WHERE user_id = ?', [userId]).catch(() => null);
+  }
   
   const targetLimit = Math.max(limits.single, existing?.limit_amount || 0);
   const targetGroupLimit = Math.max(limits.group, existing?.group_limit_amount || 0);

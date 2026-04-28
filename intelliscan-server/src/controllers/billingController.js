@@ -294,7 +294,7 @@ exports.toggleAutoPay = async (req, res) => {
 
     // Find the user's latest paid order
     const order = await dbGetAsync(
-      `SELECT id FROM billing_orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 1`,
+      `SELECT id FROM billing_orders WHERE user_id = ? AND status = 'paid' ORDER BY updated_at DESC LIMIT 1`,
       [userId]
     );
 

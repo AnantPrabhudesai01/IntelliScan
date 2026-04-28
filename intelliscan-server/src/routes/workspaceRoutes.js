@@ -371,7 +371,7 @@ router.get('/billing/overview', authenticateToken, async (req, res) => {
     const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
     
     const latestOrder = await dbGetAsync(
-      `SELECT plan_id, status, created_at, auto_pay FROM billing_orders WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 1`,
+      `SELECT plan_id, status, updated_at as created_at, auto_pay FROM billing_orders WHERE user_id = ? AND status = 'paid' ORDER BY updated_at DESC LIMIT 1`,
       [req.user.id]
     );
 
