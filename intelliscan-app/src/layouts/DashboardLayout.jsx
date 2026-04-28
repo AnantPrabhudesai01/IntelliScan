@@ -380,7 +380,7 @@ export default function DashboardLayout() {
                 onClick={(e) => { e.stopPropagation(); setQuotaOpen(!quotaOpen); setProfileOpen(false); }}
                 className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:border-brand dark:hover:border-brand text-gray-600 dark:text-gray-300 transition-colors"
               >
-                {isEnterprise ? 'Enterprise' : isPro ? 'Pro' : (quota.tier === 'enterprise' ? 'Enterprise' : quota.tier === 'pro' ? 'Pro' : 'Free')}
+                {normalizedTier === 'enterprise' ? 'Enterprise' : normalizedTier === 'pro' ? 'Pro' : 'Free'}
                 <ChevronDown size={12} />
               </button>
               

@@ -13,9 +13,13 @@ exports.getLeaderboard = async (req, res) => {
 
     let dateFilter = '1=1'; // Default: All Time
     if (timeframe === 'This Week') {
-      dateFilter = "c.scan_date >= NOW() - INTERVAL '7 days'";
+      dateFilter = isPostgres 
+        ? "c.scan_date >= NOW() - INTERVAL '7 days'" 
+        : "c.scan_date >= date('now', '-7 days')";
     } else if (timeframe === 'This Month') {
-      dateFilter = "c.scan_date >= NOW() - INTERVAL '30 days'";
+      dateFilter = isPostgres 
+        ? "c.scan_date >= NOW() - INTERVAL '30 days'" 
+        : "c.scan_date >= date('now', '-30 days')";
     }
 
     const rankings = await dbAllAsync(`

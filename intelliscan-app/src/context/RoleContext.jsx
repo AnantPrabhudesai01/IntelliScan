@@ -13,10 +13,12 @@ export function RoleProvider({ children }) {
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   // Derived Helpers (Source of Truth)
-  const normalizedTier = (tier || 'personal').toLowerCase();
-  const isFree = normalizedTier === 'personal';
-  const isPro = normalizedTier === 'pro';
-  const isEnterprise = normalizedTier === 'enterprise' || role === 'business_admin' || role === 'super_admin';
+  const isSuperAdmin = role === 'super_admin';
+  const normalizedTier = isSuperAdmin ? 'enterprise' : (tier || 'personal').toLowerCase();
+  
+  const isFree = !isSuperAdmin && normalizedTier === 'personal';
+  const isPro = !isSuperAdmin && normalizedTier === 'pro';
+  const isEnterprise = isSuperAdmin || normalizedTier === 'enterprise' || role === 'business_admin';
   const { logout, isLoading: isAuth0Loading, isAuthenticated: isAuth0Authenticated } = useAuth0();
 
   const refreshAuth = useCallback(async () => {

@@ -29,7 +29,7 @@ router.get('/stats', authenticateToken, requireSuperAdmin, async (req, res) => {
 
     // In a real system, latency would be tracked in a logs table. 
     // We'll return an optimized aggregate from our models table.
-    const latencyStats = await dbGetAsync('SELECT AVG(latency_ms) as avg_latency FROM ai_models WHERE status = "deployed"');
+    const latencyStats = await dbGetAsync("SELECT AVG(latency_ms) as avg_latency FROM ai_models WHERE status = 'deployed'");
 
     res.json({
       active_inference: scanStats.total_inference || 0,

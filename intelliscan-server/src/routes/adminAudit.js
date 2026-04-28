@@ -55,10 +55,10 @@ router.get('/security-pulse', authenticateToken, requireSuperAdmin, async (req, 
     `);
 
     res.json({
-      pulse_status: scanSpikes.length > 0 || unauthorizedAdmin.count > 5 ? 'critical' : 'healthy',
-      failed_logins_24h: failedLogins.count,
-      active_threats: scanSpikes.map(s => `Potential data scraping by ${s.actor_email} (${s.scan_count} scans/hr)`),
-      unauthorized_admin_attempts: unauthorizedAdmin.count
+      pulse_status: (scanSpikes?.length > 0 || (unauthorizedAdmin?.count || 0) > 5) ? 'critical' : 'healthy',
+      failed_logins_24h: Number(failedLogins?.count || 0),
+      active_threats: (scanSpikes || []).map(s => `Potential data scraping by ${s.actor_email} (${s.scan_count} scans/hr)`),
+      unauthorized_admin_attempts: Number(unauthorizedAdmin?.count || 0)
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

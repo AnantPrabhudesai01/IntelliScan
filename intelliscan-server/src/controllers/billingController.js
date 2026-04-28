@@ -33,11 +33,30 @@ exports.createOrder = async (req, res) => {
   try {
     const planId = String(req.body?.plan || '').trim().toLowerCase();
     const plan = getBillingPlan(planId);
-    if (!plan || plan.id === 'personal') {
-      return res.status(400).json({ error: 'Invalid plan. Allowed: pro, enterprise.' });
+    if (!plan) {
+      return res.status(400).json({ error: 'Invalid plan selected.' });
     }
 
     const { scopeWorkspaceId } = await getScopeForUser(req.user.id);
+
+    // 🕊️ FREE TIER ACTIVATION: Bypass Razorpay for Personal plan
+    if (plan.id === 'personal') {
+      await dbRunAsync("UPDATE users SET tier = 'personal' WHERE id = ?", [req.user.id]);
+      await ensureQuotaRow(req.user.id, 'personal');
+      
+      logAuditEvent(req, {
+        action: 'ACCOUNT_TIER_UPDATE',
+        resource: '/api/billing/create-order',
+        status: AUDIT_SUCCESS,
+        details: { plan_id: 'personal', type: 'free_switch' }
+      });
+
+      return res.json({ 
+        success: true, 
+        message: 'Personal plan activated successfully.',
+        isFree: true 
+      });
+    }
     const amountPaise = rupeesToPaise(plan.price);
     const currency = plan.currency || 'INR';
 

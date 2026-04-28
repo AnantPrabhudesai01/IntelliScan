@@ -49,6 +49,16 @@ export default function CheckoutPage() {
       if (!orderRes.ok) throw new Error(orderPayload?.error || 'Failed to create payment order');
       const order = orderPayload;
 
+      // 🕊️ FREE TIER DIRECT ACTIVATION
+      if (order.isFree) {
+        setMessage('Activating your free tier...');
+        setTimeout(() => {
+          refreshAuth?.();
+          navigate('/dashboard', { state: { upgradeSuccess: true, plan: planId } });
+        }, 1500);
+        return;
+      }
+
       const isSimulated = order.key_id === 'simulated_key';
 
       const applyVerifyResult = (result) => {
@@ -257,7 +267,7 @@ export default function CheckoutPage() {
               {processing ? (
                 <><RefreshCw size={20} className="animate-spin" /> Committing Architecture...</>
               ) : (
-                <>Deploy Infrastructure {CURRENCY_SYMBOL}{formatCurrency(planDetails.price)}</>
+                <>{planDetails.price === 0 ? 'Activate Infrastructure Node' : `Deploy Infrastructure ${CURRENCY_SYMBOL}${formatCurrency(planDetails.price)}`}</>
               )}
             </button>
             <p className="text-center text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] mt-6 relative z-10 opacity-50">Handcrafted Protocol • Subject to Terms</p>

@@ -10,15 +10,21 @@ exports.getDashboardAnalytics = async (req, res) => {
     const { range = '30d' } = req.query;
     
     // 1. Core Totals
-    // Optimization: Running these in parallel would be faster, but keeping it simple for stability.
-    const totals = await dbGetAsync(`
-      SELECT 
-        COUNT(*) as total_scans,
-        COUNT(id) FILTER (WHERE is_deleted = FALSE) as total_leads,
-        AVG(confidence) as avg_confidence
-      FROM contacts 
-      WHERE user_id = ? AND is_deleted = FALSE
-    `, [userId]);
+    const totalsQuery = isPostgres 
+      ? `SELECT 
+          COUNT(*) as total_scans,
+          COUNT(id) FILTER (WHERE is_deleted = FALSE) as total_leads,
+          AVG(confidence) as avg_confidence
+        FROM contacts 
+        WHERE user_id = ? AND is_deleted = FALSE`
+      : `SELECT 
+          COUNT(*) as total_scans,
+          SUM(CASE WHEN is_deleted = 0 THEN 1 ELSE 0 END) as total_leads,
+          AVG(confidence) as avg_confidence
+        FROM contacts 
+        WHERE user_id = ? AND is_deleted = 0`;
+
+    const totals = await dbGetAsync(totalsQuery, [userId]);
 
     // 2. Growth Calculation (Last 30 vs Previous 30)
     const now = new Date();

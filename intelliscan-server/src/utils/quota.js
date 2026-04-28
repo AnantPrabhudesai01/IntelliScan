@@ -35,39 +35,44 @@ async function ensureQuotaRow(userId, currentTier = 'personal') {
 
   // 2. Dialect-specific month reset logic
   const monthCheck = isPostgres 
-    ? "DATE_TRUNC('month', user_quotas.last_reset_date) != DATE_TRUNC('month', CURRENT_TIMESTAMP)"
-    : "strftime('%Y-%m', user_quotas.last_reset_date) != strftime('%Y-%m', 'now')";
+    ? "DATE_TRUNC('month', last_reset_date) != DATE_TRUNC('month', CURRENT_TIMESTAMP)"
+    : "strftime('%Y-%m', last_reset_date) != strftime('%Y-%m', 'now')";
 
   const nowVal = isPostgres ? "CURRENT_TIMESTAMP" : "CURRENT_TIMESTAMP";
 
   // 3. Perform UPSERT/Update
-  if (existing) {
-    const query = `
-      UPDATE user_quotas SET
-        limit_amount = ?,
-        group_limit_amount = ?,
-        used_count = CASE 
-          WHEN ${monthCheck} THEN 0 
-          ELSE used_count 
-        END,
-        group_scans_used = CASE 
-          WHEN ${monthCheck} THEN 0 
-          ELSE group_scans_used 
-        END,
-        last_reset_date = CASE 
-          WHEN ${monthCheck} THEN ${nowVal} 
-          ELSE last_reset_date 
-        END
-      WHERE user_id = ?
-    `;
-    await dbRunAsync(query, [targetLimit, targetGroupLimit, userId]);
-  } else {
-    const query = `
-      INSERT INTO user_quotas (
-        user_id, used_count, limit_amount, group_scans_used, group_limit_amount, last_reset_date
-      ) VALUES (?, 0, ?, 0, ?, ${nowVal})
-    `;
-    await dbRunAsync(query, [userId, targetLimit, targetGroupLimit]);
+  try {
+    if (existing) {
+      const query = `
+        UPDATE user_quotas SET
+          limit_amount = ?,
+          group_limit_amount = ?,
+          used_count = CASE 
+            WHEN ${monthCheck} THEN 0 
+            ELSE used_count 
+          END,
+          group_scans_used = CASE 
+            WHEN ${monthCheck} THEN 0 
+            ELSE group_scans_used 
+          END,
+          last_reset_date = CASE 
+            WHEN ${monthCheck} THEN ${nowVal} 
+            ELSE last_reset_date 
+          END
+        WHERE user_id = ?
+      `;
+      await dbRunAsync(query, [targetLimit, targetGroupLimit, userId]);
+    } else {
+      const query = `
+        INSERT INTO user_quotas (
+          user_id, used_count, limit_amount, group_scans_used, group_limit_amount, last_reset_date
+        ) VALUES (?, 0, ?, 0, ?, ${nowVal})
+      `;
+      await dbRunAsync(query, [userId, targetLimit, targetGroupLimit]);
+    }
+  } catch (err) {
+    console.error(`[Quota-Error] Failed to ensure quota for user ${userId}:`, err.message);
+    // Silent failure to avoid breaking the main request, but we logged it.
   }
 }
 
