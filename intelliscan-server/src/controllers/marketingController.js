@@ -113,6 +113,26 @@ exports.enrollContact = async (req, res) => {
   }
 };
 
+// DELETE /api/email-sequences/enrollments/:enrollmentId
+exports.unenrollContact = async (req, res) => {
+  const enrollmentId = req.params.enrollmentId;
+  try {
+    const enrollment = await dbGetAsync(`
+      SELECT cs.id, s.user_id 
+      FROM contact_sequences cs
+      JOIN email_sequences s ON cs.sequence_id = s.id
+      WHERE cs.id = ? AND s.user_id = ?
+    `, [enrollmentId, req.user.id]);
+
+    if (!enrollment) return res.status(404).json({ error: 'Enrollment not found or not authorized' });
+
+    await dbRunAsync("UPDATE contact_sequences SET status = 'cancelled' WHERE id = ?", [enrollmentId]);
+    res.json({ success: true, message: 'Lead removed from sequence' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 /**
  * Background Sceduler Logic — To be called from a worker or setInterval
  */

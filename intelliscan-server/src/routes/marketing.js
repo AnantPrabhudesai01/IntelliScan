@@ -9,6 +9,7 @@ router.post('/sequences', authenticateToken, marketingController.createSequence)
 router.get('/sequences/:id', authenticateToken, marketingController.getSequenceById);
 router.put('/sequences/:id', authenticateToken, marketingController.updateSequence);
 router.post('/enroll', authenticateToken, marketingController.enrollContact);
+router.delete('/enrollments/:enrollmentId', authenticateToken, marketingController.unenrollContact);
 
 // Campaign Management Routes
 router.get('/campaigns', authenticateToken, requireTier('enterprise'), marketingController.getCampaigns);

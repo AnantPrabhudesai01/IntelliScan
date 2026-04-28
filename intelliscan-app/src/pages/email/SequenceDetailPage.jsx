@@ -152,6 +152,29 @@ Make it natural, professional, and personalized using the template variables.`
     }
   };
 
+  const [unenrolling, setUnenrolling] = useState(null);
+  const handleUnenroll = async (enrollmentId) => {
+    if (!window.confirm('Remove this lead from the sequence?')) return;
+    setUnenrolling(enrollmentId);
+    try {
+      const token = getStoredToken();
+      const res = await fetch(`/api/email-sequences/enrollments/${enrollmentId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to remove');
+      }
+      setEnrollments(prev => prev.filter(e => e.id !== enrollmentId));
+      showToast('✦ Lead removed from sequence');
+    } catch (err) {
+      showToast('Failed: ' + err.message, 'error');
+    } finally {
+      setUnenrolling(null);
+    }
+  };
+
   if (loading) return (
     <div className="flex items-center justify-center min-h-[50vh]">
       <div className="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
@@ -368,8 +391,17 @@ Make it natural, professional, and personalized using the template variables.`
                       </div>
                     </div>
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-1.5 text-gray-700 hover:text-red-500 transition-colors">
-                        <Trash2 size={12} />
+                      <button 
+                        onClick={() => handleUnenroll(enr.id)}
+                        disabled={unenrolling === enr.id}
+                        className="p-1.5 text-gray-700 hover:text-red-500 transition-colors disabled:opacity-50"
+                        title="Remove from sequence"
+                      >
+                        {unenrolling === enr.id ? (
+                          <div className="w-3 h-3 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Trash2 size={12} />
+                        )}
                       </button>
                     </div>
                   </div>
