@@ -107,6 +107,30 @@ export default function MyCardPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleSaveContact = () => {
+    const vCardData = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      `FN:${me.name}`,
+      `TITLE:${cardData.headline || ''}`,
+      `EMAIL;TYPE=INTERNET,WORK:${cardData.contact_email || ''}`,
+      `TEL;TYPE=CELL:${cardData.contact_phone || ''}`,
+      `URL:${cardUrl}`,
+      `NOTE:${cardData.bio || ''}`,
+      'END:VCARD'
+    ].join('\n');
+
+    const blob = new Blob([vCardData], { type: 'text/vcard' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${me.name.replace(/\s+/g, '_')}.vcf`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
   const d = cardData.design_json || {};
   const primary = d.primary || '#6366f1';
   const secondary = d.secondary || '#a855f7';
@@ -190,13 +214,19 @@ export default function MyCardPage() {
                       </p>
 
                       <div className="mt-8 space-y-2">
-                         <div className="w-full py-4 bg-white text-black rounded-2xl font-black text-[10px] flex items-center justify-center gap-2">
+                         <button 
+                           onClick={handleSaveContact}
+                           className="w-full py-4 bg-white text-black rounded-2xl font-black text-[10px] flex items-center justify-center gap-2 hover:brightness-90 transition-all active:scale-95"
+                         >
                             <Download size={14} strokeWidth={3} /> SAVE CONTACT
-                         </div>
+                         </button>
                          <div className="flex gap-2">
-                            <div className="flex-1 py-3 bg-white/5 border border-white/5 text-white/50 rounded-xl font-bold text-[9px] flex items-center justify-center gap-2">
-                               URL COPIED
-                            </div>
+                            <button 
+                              onClick={handleCopy}
+                              className={`flex-1 py-3 border border-white/5 rounded-xl font-bold text-[9px] flex items-center justify-center gap-2 transition-all ${copied ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}
+                            >
+                               {copied ? 'COPIED!' : 'COPY URL'}
+                            </button>
                             <div className="w-10 h-10 bg-white/5 border border-white/5 text-emerald-400/50 rounded-xl flex items-center justify-center">
                                <MessageCircle size={14} />
                             </div>
