@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Users, FileText, Send, CheckCircle, Sparkles, ArrowLeft, ArrowRight, Save, Clock, Wand2, Smartphone, Monitor, AlertCircle } from 'lucide-react';
+import { Mail, Users, FileText, Send, CheckCircle, Sparkles, ArrowLeft, ArrowRight, Save, Clock, Wand2, Smartphone, Monitor, AlertCircle, Database, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import EmailPreview from '../../components/email/EmailPreview';
 import { getStoredToken } from '../../utils/auth.js';
@@ -14,10 +14,6 @@ export default function CampaignBuilderPage() {
   const [aiGenerating, setAiGenerating] = useState(false);
   const [isLaunched, setIsLaunched] = useState(false);
 
-  const totalAudience = lists
-    .filter(l => campaign.list_ids.includes(l.id))
-    .reduce((sum, l) => sum + (l.contact_count || 0), 0);
-
   // Campaign State
   const [campaign, setCampaign] = useState({
     name: '',
@@ -31,6 +27,10 @@ export default function CampaignBuilderPage() {
     template_id: null,
     list_ids: []
   });
+
+  const totalAudience = lists
+    .filter(l => campaign.list_ids.includes(l.id))
+    .reduce((sum, l) => sum + (l.contact_count || 0), 0);
 
   async function fetchLists() {
     try {
