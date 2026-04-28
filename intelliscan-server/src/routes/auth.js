@@ -460,7 +460,7 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
       res.status(500).json({ 
         error: 'Identity synchronization failed.', 
         message: err.message,
-        details: process.env.NODE_ENV === 'development' ? err.stack : undefined 
+        details: err.stack?.split('\n').slice(0, 3).join(' | ')
       });
     }
   }
