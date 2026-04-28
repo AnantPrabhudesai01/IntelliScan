@@ -326,7 +326,7 @@ router.post('/sync', validate(syncSchema), async (req, res) => {
          console.log(`[AuthSync] Provisioning default digital card for ${email} with slug: ${slug}`);
          await dbRunAsync(`
            INSERT INTO user_cards (user_id, url_slug, headline, bio, design_json, created_at)
-           VALUES (?, ?, ?, ?, ?, datetime('now'))
+           VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
          `, [
            Number(existingUser.id), 
            slug, 
