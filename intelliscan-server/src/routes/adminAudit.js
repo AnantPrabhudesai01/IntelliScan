@@ -26,11 +26,14 @@ router.get('/audit-timeline', authenticateToken, requireSuperAdmin, async (req, 
 router.get('/security-pulse', authenticateToken, requireSuperAdmin, async (req, res) => {
   try {
     // 1. Check for failed logins in last 24h
+    const { isPostgres } = require('../utils/db');
+    
+    // 1. Check for failed logins in last 24h
     const failedLogins = await dbGetAsync(`
       SELECT COUNT(*) as count 
       FROM audit_trail 
       WHERE action = 'LOGIN_FAIL' 
-      AND created_at > datetime('now', '-1 day')
+      AND created_at > ${isPostgres ? "NOW() - INTERVAL '1 day'" : "datetime('now', '-1 day')"}
     `);
 
     // 2. Check for scan spikes (e.g. > 50 scans by one user in 1 hour)
@@ -38,7 +41,7 @@ router.get('/security-pulse', authenticateToken, requireSuperAdmin, async (req, 
       SELECT actor_email, COUNT(*) as scan_count
       FROM audit_trail
       WHERE action = 'CARD_SCAN'
-      AND created_at > datetime('now', '-1 hour')
+      AND created_at > ${isPostgres ? "NOW() - INTERVAL '1 hour'" : "datetime('now', '-1 hour')"}
       GROUP BY actor_email
       HAVING scan_count > 50
     `);
@@ -48,7 +51,7 @@ router.get('/security-pulse', authenticateToken, requireSuperAdmin, async (req, 
       SELECT COUNT(*) as count
       FROM audit_trail
       WHERE status = 'FAILURE' AND resource LIKE '%admin%'
-      AND created_at > datetime('now', '-1 day')
+      AND created_at > ${isPostgres ? "NOW() - INTERVAL '1 day'" : "datetime('now', '-1 day')"}
     `);
 
     res.json({
