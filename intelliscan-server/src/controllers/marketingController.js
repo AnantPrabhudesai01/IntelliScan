@@ -452,28 +452,43 @@ exports.getAnalyticsOverview = async (req, res) => {
 // GET /api/email/lists
 exports.getLists = async (req, res) => {
   try {
+    // 1. Ensure "All Scanned Contacts" exists for this user
+    let defaultList = await dbGetAsync('SELECT id FROM email_lists WHERE user_id = ? AND name = ?', [req.user.id, "All Scanned Contacts"]);
+    
+    if (!defaultList) {
+      console.log(`[Marketing] Creating default list for user ${req.user.id}`);
+      const result = await dbRunAsync("INSERT INTO email_lists (user_id, name, description) VALUES (?, ?, ?)", 
+        [req.user.id, "All Scanned Contacts", "Automatically populated from your recent scans"]);
+      defaultList = { id: result.lastID };
+    }
+
+    // 2. Sync any contacts not yet in the default list
+    const unsyncedContacts = await dbAllAsync(`
+      SELECT c.email, c.name, c.company 
+      FROM contacts c
+      LEFT JOIN email_list_contacts elc ON c.email = elc.email AND elc.list_id = ?
+      WHERE c.user_id = ? AND c.email IS NOT NULL AND elc.id IS NULL
+      AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
+    `, [defaultList.id, req.user.id]);
+
+    if (unsyncedContacts.length > 0) {
+      console.log(`[Marketing] Syncing ${unsyncedContacts.length} new contacts to default list`);
+      for (const c of unsyncedContacts) {
+        await dbRunAsync("INSERT OR IGNORE INTO email_list_contacts (list_id, email, first_name, company) VALUES (?, ?, ?, ?)", 
+          [defaultList.id, c.email, c.name?.split(' ')[0], c.company]);
+      }
+    }
+
+    // 3. Fetch all lists with counts
     const lists = await dbAllAsync(`
       SELECT l.*, (SELECT COUNT(*) FROM email_list_contacts WHERE list_id = l.id) as contact_count 
       FROM email_lists l 
       WHERE l.user_id = ? 
       ORDER BY l.created_at DESC`, [req.user.id]);
     
-    // Auto-seed a default list if none exist for a smoother UX
-    if (lists.length === 0) {
-      const result = await dbRunAsync("INSERT INTO email_lists (user_id, name, description) VALUES (?, ?, ?)", [req.user.id, "All Scanned Contacts", "Automatically populated from your recent scans"]);
-      const newList = { id: result.lastID, name: "All Scanned Contacts", description: "Automatically populated from your recent scans", contact_count: 0 };
-      
-      // Attempt to sync some contacts into this list
-      const recentContacts = await dbAllAsync("SELECT email, name, company FROM contacts WHERE user_id = ? AND (is_deleted IS FALSE OR is_deleted IS NULL) LIMIT 50", [req.user.id]);
-      for (const c of recentContacts) {
-        await dbRunAsync("INSERT OR IGNORE INTO email_list_contacts (list_id, email, first_name, company) VALUES (?, ?, ?, ?)", [result.lastID, c.email, c.name?.split(' ')[0], c.company]);
-      }
-      newList.contact_count = recentContacts.length;
-      return res.json({ success: true, lists: [newList] });
-    }
-
     res.json({ success: true, lists });
   } catch (err) {
+    console.error('[GetLists Error]', err);
     res.status(500).json({ success: false, error: err.message });
   }
 };

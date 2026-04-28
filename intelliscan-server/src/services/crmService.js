@@ -77,3 +77,32 @@ async function syncToApp(appId, config, contact) {
     message: `Transmitted ${contact.name} to ${appId} successfully.`
   };
 }
+
+/**
+ * Bulk sync contacts to a provider (used by export/sync button)
+ */
+exports.syncContactsToProvider = async (workspaceId, provider, contacts, mappings) => {
+  console.log(`[CRM Service] Bulk sync started for ${provider} (${contacts.length} nodes)`);
+  
+  let success = 0;
+  let failed = 0;
+
+  for (const contact of contacts) {
+    try {
+      // Logic for field transformation based on mappings would go here
+      // For now, use the simulator
+      const result = await syncToApp(provider, {}, contact);
+      if (result.success) success++;
+      else failed++;
+    } catch (e) {
+      failed++;
+    }
+  }
+
+  return {
+    success,
+    failed,
+    total: contacts.length,
+    provider
+  };
+};
