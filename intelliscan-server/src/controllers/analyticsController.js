@@ -31,8 +31,8 @@ exports.getDashboardAnalytics = async (req, res) => {
     const d30 = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
     const d60 = new Date(now.getTime() - (60 * 24 * 60 * 60 * 1000));
 
-    const currRange = await dbGetAsync('SELECT COUNT(*) as count FROM contacts WHERE user_id = ? AND scan_date >= ? AND is_deleted = FALSE', [userId, d30.toISOString()]);
-    const prevRange = await dbGetAsync('SELECT COUNT(*) as count FROM contacts WHERE user_id = ? AND scan_date >= ? AND scan_date < ? AND is_deleted = FALSE', [userId, d60.toISOString(), d30.toISOString()]);
+    const currRange = await dbGetAsync(`SELECT COUNT(*) as count FROM contacts WHERE user_id = ? AND scan_date >= ? AND ${isPostgres ? "is_deleted = FALSE" : "is_deleted = 0"}`, [userId, d30.toISOString()]);
+    const prevRange = await dbGetAsync(`SELECT COUNT(*) as count FROM contacts WHERE user_id = ? AND scan_date >= ? AND scan_date < ? AND ${isPostgres ? "is_deleted = FALSE" : "is_deleted = 0"}`, [userId, d60.toISOString(), d30.toISOString()]);
     
     const currCount = Number(currRange?.count || 0);
     const prevCount = Number(prevRange?.count || 0);
@@ -65,7 +65,7 @@ exports.getDashboardAnalytics = async (req, res) => {
     const industries = await dbAllAsync(`
       SELECT inferred_industry as name, COUNT(*) as count 
       FROM contacts 
-      WHERE user_id = ? AND inferred_industry IS NOT NULL AND is_deleted = FALSE
+      WHERE user_id = ? AND inferred_industry IS NOT NULL AND ${isPostgres ? "is_deleted = FALSE" : "is_deleted = 0"}
       GROUP BY name ORDER BY count DESC LIMIT 5
     `, [userId]);
     
@@ -84,7 +84,7 @@ exports.getDashboardAnalytics = async (req, res) => {
     const seniority = await dbAllAsync(`
       SELECT inferred_seniority as level, COUNT(*) as count 
       FROM contacts 
-      WHERE user_id = ? AND inferred_seniority IS NOT NULL AND is_deleted = FALSE
+      WHERE user_id = ? AND inferred_seniority IS NOT NULL AND ${isPostgres ? "is_deleted = FALSE" : "is_deleted = 0"}
       GROUP BY level ORDER BY count DESC
     `, [userId]);
     const totSeniority = seniority.reduce((acc, curr) => acc + Number(curr.count), 0);
@@ -101,7 +101,7 @@ exports.getDashboardAnalytics = async (req, res) => {
     const networkers = await dbAllAsync(`
       SELECT u.name, COUNT(c.id) as scans, u.role as department
       FROM users u
-      LEFT JOIN contacts c ON c.user_id = u.id AND c.is_deleted = FALSE
+      LEFT JOIN contacts c ON c.user_id = u.id AND ${isPostgres ? "c.is_deleted = FALSE" : "c.is_deleted = 0"}
       WHERE u.workspace_id = (SELECT workspace_id FROM users WHERE id = ?)
       GROUP BY u.name, u.role
       ORDER BY scans DESC LIMIT 5
@@ -265,7 +265,7 @@ exports.getSignalsList = async (req, res) => {
     const latestContacts = await dbAllAsync(`
       SELECT id, name, company, confidence, created_at 
       FROM contacts 
-      WHERE user_id = ? AND is_deleted = FALSE AND confidence > 80
+      WHERE user_id = ? AND ${isPostgres ? "is_deleted = FALSE" : "is_deleted = 0"} AND confidence > 80
       ORDER BY created_at DESC LIMIT 6
     `, [userId]);
 
@@ -329,7 +329,7 @@ exports.getEngineStats = async (req, res) => {
         COUNT(*) as total_scans,
         AVG(confidence) as avg_confidence
       FROM contacts 
-      WHERE user_id = ? AND is_deleted = FALSE
+      WHERE user_id = ? AND ${isPostgres ? "is_deleted = FALSE" : "is_deleted = 0"}
     `, [userId]);
 
     // Resource usage (simulated node counts based on real load)
@@ -338,7 +338,7 @@ exports.getEngineStats = async (req, res) => {
     // Request volume last 24h
     const requests24h = await dbGetAsync(`
       SELECT COUNT(*) as count FROM analytics_logs 
-      WHERE timestamp > CURRENT_TIMESTAMP - interval '1 day'
+      WHERE timestamp > ${isPostgres ? "CURRENT_TIMESTAMP - interval '1 day'" : "datetime('now', '-1 day')"}
     `);
 
     res.json({

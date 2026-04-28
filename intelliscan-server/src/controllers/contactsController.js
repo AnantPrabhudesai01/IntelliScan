@@ -34,7 +34,7 @@ exports.getContacts = async (req, res) => {
 
     const sql = `
       SELECT * FROM contacts 
-      WHERE user_id = ? AND (is_deleted IS FALSE OR is_deleted IS NULL)
+      WHERE user_id = ? AND ${isPostgres ? "(is_deleted IS FALSE OR is_deleted IS NULL)" : "(is_deleted IS NULL OR is_deleted = 0)"}
       ORDER BY sort_order ASC, scan_date DESC
     `;
 
@@ -62,12 +62,12 @@ exports.getWorkspaceContacts = async (req, res) => {
       ? `SELECT c.*, u.name as scanner_name
          FROM contacts c
          JOIN users u ON c.user_id = u.id
-         WHERE u.workspace_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
+         WHERE u.workspace_id = ? AND ${isPostgres ? "(c.is_deleted IS FALSE OR c.is_deleted IS NULL)" : "(c.is_deleted IS NULL OR c.is_deleted = 0)"}
          ORDER BY c.sort_order ASC, c.scan_date DESC`
       : `SELECT c.*, u.name as scanner_name
          FROM contacts c
          JOIN users u ON c.user_id = u.id
-         WHERE c.user_id = ? AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
+         WHERE c.user_id = ? AND ${isPostgres ? "(c.is_deleted IS FALSE OR c.is_deleted IS NULL)" : "(c.is_deleted IS NULL OR c.is_deleted = 0)"}
          ORDER BY c.sort_order ASC, c.scan_date DESC`;
     
     const params = [workspaceId ? Number(workspaceId) : Number(req.user.id)];
@@ -116,7 +116,7 @@ exports.getMutualContacts = async (req, res) => {
       FROM contacts 
       WHERE LOWER(company) = LOWER(?) 
       AND workspace_id = ?
-      AND (is_deleted IS FALSE OR is_deleted IS NULL)
+      AND ${isPostgres ? "(is_deleted IS FALSE OR is_deleted IS NULL)" : "(is_deleted IS NULL OR is_deleted = 0)"}
     `;
     
     const row = await dbGetAsync(sql, [company, scopeWorkspaceId]);

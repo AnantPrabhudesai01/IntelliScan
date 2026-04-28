@@ -1,7 +1,7 @@
 /**
  * CRM Controller — Logic for field mapping, provider connections, and sync logs
  */
-const { dbGetAsync, dbAllAsync, dbRunAsync } = require('../utils/db');
+const { dbGetAsync, dbAllAsync, dbRunAsync, isPostgres } = require('../utils/db');
 const { getDefaultMappings, getCrmSchema } = require('../utils/crmUtils');
 const crmService = require('../services/crmService');
 
@@ -214,7 +214,7 @@ exports.exportContacts = async (req, res) => {
                  FROM contacts c
                  LEFT JOIN users u ON c.user_id = u.id
                  WHERE (u.workspace_id = ? OR c.user_id = ?)
-                 AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
+                 AND ${isPostgres ? "(c.is_deleted IS FALSE OR c.is_deleted IS NULL)" : "(c.is_deleted IS NULL OR c.is_deleted = 0)"}
                  ORDER BY c.scan_date DESC`;
     const params = [workspaceId, req.user.id];
     const contacts = await dbAllAsync(sql, params);

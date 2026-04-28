@@ -468,7 +468,7 @@ exports.getLists = async (req, res) => {
       FROM contacts c
       LEFT JOIN email_list_contacts elc ON c.email = elc.email AND elc.list_id = ?
       WHERE c.user_id = ? AND c.email IS NOT NULL AND elc.id IS NULL
-      AND (c.is_deleted IS FALSE OR c.is_deleted IS NULL)
+      AND ${isPostgres ? "(c.is_deleted IS FALSE OR c.is_deleted IS NULL)" : "(c.is_deleted IS NULL OR c.is_deleted = 0)"}
     `, [defaultList.id, req.user.id]);
 
     if (unsyncedContacts.length > 0) {

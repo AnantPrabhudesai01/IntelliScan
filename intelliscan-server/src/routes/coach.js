@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
-const { dbGetAsync, dbAllAsync } = require('../utils/db');
+const { dbGetAsync, dbAllAsync, isPostgres } = require('../utils/db');
 const { unifiedTextAIPipeline } = require('../services/aiService');
 
 router.get('/insights', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
-    const isPostgres = process.env.DATABASE_URL && process.env.DATABASE_URL.startsWith('postgres');
 
     // 1. REAL DATA ANALYSIS
     // ---------------------------------------------------------
@@ -19,7 +18,7 @@ router.get('/insights', authenticateToken, async (req, res) => {
         COUNT(CASE WHEN crm_synced = 1 THEN 1 END) as synced,
         COUNT(CASE WHEN created_at > ${isPostgres ? "NOW() - interval '7 days'" : "datetime('now', '-7 days')"} THEN 1 END) as recent
       FROM contacts 
-      WHERE user_id = ? AND (is_deleted IS NOT TRUE)
+      WHERE user_id = ? AND ${isPostgres ? "(is_deleted IS FALSE OR is_deleted IS NULL)" : "(is_deleted IS NULL OR is_deleted = 0)"}
     `, [userId]);
 
     const total = stats.total || 0;
@@ -34,6 +33,7 @@ router.get('/insights', authenticateToken, async (req, res) => {
       WHERE user_id = ? 
       AND created_at < ${isPostgres ? "NOW() - interval '7 days'" : "datetime('now', '-7 days')"}
       AND crm_synced = 0
+      AND ${isPostgres ? "(is_deleted IS FALSE OR is_deleted IS NULL)" : "(is_deleted IS NULL OR is_deleted = 0)"}
     `, [userId]))?.count || 0;
 
     // Calculate Health Score
