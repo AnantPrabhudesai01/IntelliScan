@@ -15,12 +15,15 @@ const { normalizePhone } = require('../utils/auth');
 router.get('/quota', authenticateToken, async (req, res) => {
   try {
     const row = await dbGetAsync(
-      `SELECT u.tier, q.used_count as used, q.limit_amount as "limit", q.group_scans_used
+      `SELECT u.tier, q.used_count as used, q.limit_amount as "limit"
        FROM users u
        LEFT JOIN user_quotas q ON u.id = q.user_id
        WHERE u.id = ?`,
       [Number(req.user.id)]
-    );
+    ).catch(async () => {
+      // Emergency fallback if join fails
+      return await dbGetAsync('SELECT tier FROM users WHERE id = ?', [Number(req.user.id)]);
+    });
 
     console.log(`[Quota-Debug] UserID: ${req.user.id}, DB-Tier: ${row?.tier}, JWT-Tier: ${req.user.tier}`);
 
@@ -49,12 +52,21 @@ router.get('/quota', authenticateToken, async (req, res) => {
       }
     }
 
-    await ensureQuotaRow(Number(req.user.id), currentTier);
+    try {
+      await ensureQuotaRow(Number(req.user.id), currentTier);
+    } catch (e) {
+      console.warn(`[Quota-Sync-Error] Background sync failed for ${req.user.id}:`, e.message);
+    }
     
     // Fetch fresh data after potential promotion in ensureQuotaRow
-    let quota = await dbGetAsync('SELECT used_count, limit_amount, group_scans_used FROM user_quotas WHERE user_id = ?', [Number(req.user.id)]);
+    let quota = await dbGetAsync('SELECT used_count, limit_amount, group_scans_used FROM user_quotas WHERE user_id = ?', [Number(req.user.id)])
+      .catch(() => dbGetAsync('SELECT used_count, limit_amount FROM user_quotas WHERE user_id = ?', [Number(req.user.id)]))
+      .catch(() => null);
+
+    console.log(`[Quota-Step] Quota sync complete. Row exists? ${!!quota}`);
     
     const limits = resolveTierLimits(currentTier);
+    console.log(`[Quota-Step] Limits resolved: ${JSON.stringify(limits)}`);
 
     // ── AGGRESSIVE SYNC: If user is Pro/Ent but limit is still low, force it up
     if (quota && Number(quota.limit_amount) < Number(limits.single)) {
@@ -72,7 +84,7 @@ router.get('/quota', authenticateToken, async (req, res) => {
     const usedScans = Number(quota?.used_count || 0);
     const limitScans = Math.max(Number(quota?.limit_amount || 0), Number(limits.single));
 
-    console.log(`[Quota-Final] User ${req.user.id} -> Tier: ${currentTier}, Limit: ${limitScans}`);
+    console.log(`[Quota-Final] User ${req.user.id} -> Tier: ${currentTier}, Limit: ${limitScans}, AutoPay: ${!!latestOrder?.auto_pay}`);
 
     res.json({
       userId: req.user.id, // Debug visibility

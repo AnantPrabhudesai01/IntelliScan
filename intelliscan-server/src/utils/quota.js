@@ -20,34 +20,34 @@ function resolveTierLimits(tier) {
  * Cross-dialect support for SQLite and PostgreSQL.
  */
 async function ensureQuotaRow(userId, currentTier = 'personal') {
-  console.log(`[Quota-Trace] Entering ensureQuotaRow for User: ${userId}, Tier: ${currentTier}`);
-  const limits = resolveTierLimits(currentTier);
-  
-  // 1. Get current quota to check for existing higher limits (Safety)
-  let existing = null;
   try {
-    existing = await dbGetAsync('SELECT limit_amount, group_limit_amount FROM user_quotas WHERE user_id = ?', [userId]);
-  } catch (e) {
-    console.warn(`[Quota-Resilience] Failed to fetch full quota for user ${userId}, falling back to basic check.`);
-    existing = await dbGetAsync('SELECT limit_amount FROM user_quotas WHERE user_id = ?', [userId]).catch(() => null);
-  }
-  
-  const targetLimit = Math.max(limits.single, existing?.limit_amount || 0);
-  const targetGroupLimit = Math.max(limits.group, existing?.group_limit_amount || 0);
+    console.log(`[Quota-Trace] Entering ensureQuotaRow for User: ${userId}, Tier: ${currentTier}`);
+    const limits = resolveTierLimits(currentTier);
+    
+    // 1. Get current quota to check for existing higher limits (Safety)
+    let existing = null;
+    try {
+      existing = await dbGetAsync('SELECT limit_amount, group_limit_amount FROM user_quotas WHERE user_id = ?', [userId]);
+    } catch (e) {
+      console.warn(`[Quota-Resilience] Failed to fetch full quota for user ${userId}, falling back to basic check.`);
+      existing = await dbGetAsync('SELECT limit_amount FROM user_quotas WHERE user_id = ?', [userId]).catch(() => null);
+    }
+    
+    const targetLimit = Math.max(limits.single, existing?.limit_amount || 0);
+    const targetGroupLimit = Math.max(limits.group, existing?.group_limit_amount || 0);
 
-  if (targetLimit > (existing?.limit_amount || 0)) {
-    console.log(`[Quota] Promoting limit for User ${userId}: ${existing?.limit_amount || 0} -> ${targetLimit}`);
-  }
+    if (targetLimit > (existing?.limit_amount || 0)) {
+      console.log(`[Quota] Promoting limit for User ${userId}: ${existing?.limit_amount || 0} -> ${targetLimit}`);
+    }
 
-  // 2. Dialect-specific month reset logic
-  const monthCheck = isPostgres 
-    ? "DATE_TRUNC('month', last_reset_date) != DATE_TRUNC('month', CURRENT_TIMESTAMP)"
-    : "strftime('%Y-%m', last_reset_date) != strftime('%Y-%m', 'now')";
+    // 2. Dialect-specific month reset logic
+    const monthCheck = isPostgres 
+      ? "DATE_TRUNC('month', last_reset_date) != DATE_TRUNC('month', CURRENT_TIMESTAMP)"
+      : "strftime('%Y-%m', last_reset_date) != strftime('%Y-%m', 'now')";
 
-  const nowVal = isPostgres ? "CURRENT_TIMESTAMP" : "CURRENT_TIMESTAMP";
+    const nowVal = isPostgres ? "CURRENT_TIMESTAMP" : "CURRENT_TIMESTAMP";
 
-  // 3. Perform UPSERT/Update
-  try {
+    // 3. Perform UPSERT/Update
     if (existing) {
       const query = `
         UPDATE user_quotas SET
@@ -77,8 +77,7 @@ async function ensureQuotaRow(userId, currentTier = 'personal') {
       await dbRunAsync(query, [userId, targetLimit, targetGroupLimit]);
     }
   } catch (err) {
-    console.error(`[Quota-Error] Failed to ensure quota for user ${userId}:`, err.message);
-    // Silent failure to avoid breaking the main request, but we logged it.
+    console.error(`[Quota-Error-Critical] Absolute failure in ensureQuotaRow for user ${userId}:`, err.message);
   }
 }
 
