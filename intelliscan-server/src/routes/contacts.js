@@ -22,6 +22,7 @@ router.get('/', contactsController.getContacts);
  * @route   GET /api/contacts/stats
  * @desc    Get contact statistics
  */
+router.get('/mutual', contactsController.getMutualContacts);
 router.get('/stats', contactsController.getStats);
 router.put('/reorder', contactsController.reorderContacts);
 

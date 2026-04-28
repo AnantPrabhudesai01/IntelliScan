@@ -101,6 +101,32 @@ exports.getStats = async (req, res) => {
 };
 
 /**
+ * GET /api/contacts/mutual
+ * Counts existing contacts from the same company for workspace intelligence.
+ */
+exports.getMutualContacts = async (req, res) => {
+  try {
+    const { company } = req.query;
+    if (!company) return res.json({ mutualCount: 0 });
+
+    const { scopeWorkspaceId } = await require('../utils/workspaceUtils').getScopeForUser(req.user.id);
+    
+    const sql = `
+      SELECT COUNT(*) as count 
+      FROM contacts 
+      WHERE LOWER(company) = LOWER(?) 
+      AND workspace_id = ?
+      AND (is_deleted IS FALSE OR is_deleted IS NULL)
+    `;
+    
+    const row = await dbGetAsync(sql, [company, scopeWorkspaceId]);
+    res.json({ mutualCount: row?.count || 0 });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/**
  * POST /api/contacts
  * Creates a new contact, handles image uploads, and checks quotas.
  */
