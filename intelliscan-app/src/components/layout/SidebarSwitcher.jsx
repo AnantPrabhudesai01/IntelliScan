@@ -38,7 +38,7 @@ const SidebarSwitcher = ({ activeMode = 'personal', collapsed = false, isMobile 
           <div className="flex flex-col">
             <div className="flex items-center gap-1">
                <Globe size={8} className={isPersonal ? 'text-brand-400' : 'text-blue-400'} />
-               <span className="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">{role === 'super_admin' ? 'PLATFORM CORE' : (isPersonal ? 'Personal Area' : 'Workspace HQ')}</span>
+               <span className="text-[7px] font-black text-white/30 uppercase tracking-[0.2em]">{role === 'super_admin' ? 'SYSTEM OVERVIEW' : (isPersonal ? 'Personal Area' : 'Workspace HQ')}</span>
             </div>
             <span className="text-[10px] font-bold text-white truncate max-w-[110px]">
               {role === 'super_admin' ? 'IntelliScan Global' : (isPersonal ? 'My Private Desk' : 'Enterprise Hub')}

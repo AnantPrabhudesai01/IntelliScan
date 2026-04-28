@@ -48,14 +48,14 @@ export default function DashboardLayout() {
     { to: '/dashboard/contacts',    label: 'Contacts',      icon: Users    },
     { to: '/dashboard/calendar',    label: 'Calendar',      icon: Calendar },
     { to: '/dashboard/leaderboard', label: 'Leaderboard',   icon: Trophy   },
-    { to: '/admin/audit-logs',      label: 'Audit Logs',    icon: ListTree },
-    { to: '/dashboard/drafts',      label: 'AI Drafts',     icon: Mail },
+    { to: '/admin/audit-logs',      label: 'Activity History', icon: ListTree },
+    { to: '/dashboard/drafts',      label: 'Email Drafts',     icon: Mail },
     { to: '/dashboard/coach',       label: 'AI Coach',      icon: Target },
     { to: '/dashboard/email-marketing', label: 'Email Marketing', icon: Mail },
-    { to: '/dashboard/email-marketing/automations', label: 'AI Sequences', icon: Zap, tag: 'NEW' },
+    { to: '/dashboard/email-marketing/automations', label: 'Auto Follow-ups', icon: Zap, tag: 'NEW' },
     { to: '/workspace/analytics', label: 'Analytics', icon: BarChart2, tag: workspaceTag },
     { to: '/workspace/org-chart', label: 'Org Chart', icon: ListTree, tag: workspaceTag },
-    { to: '/dashboard/presence',    label: 'Meeting Presence', icon: Monitor, tag: workspaceTag },
+    { to: '/dashboard/presence',    label: 'Meeting Attendance', icon: Monitor, tag: workspaceTag },
     { to: '/dashboard/kiosk',       label: 'Event Kiosk',   icon: Sparkles, tag: workspaceTag },
     { to: '/dashboard/my-card',     label: 'Digital Card',  icon: Smartphone, tag: workspaceTag },
     { to: '/dashboard/card-creator', label: 'Card Creator',  icon: Palette, tag: workspaceTag },
@@ -69,8 +69,8 @@ export default function DashboardLayout() {
 
   // Plan gating (matches project docs: Free should not show Pro/Enterprise-only modules)
   const enterpriseOnlyLabels = ['Leaderboard', 'Analytics', 'Org Chart', 'Pipeline', 'Members'];
-  const proOrHigherLabels = ['Calendar', 'AI Coach', 'Email Marketing', 'AI Sequences', 'Meeting Presence', 'Event Kiosk', 'Digital Card', 'Card Creator', 'Apps'];
-  const adminOnlyLabels = ['Audit Logs'];
+  const proOrHigherLabels = ['Calendar', 'AI Coach', 'Email Marketing', 'Auto Follow-ups', 'Meeting Attendance', 'Event Kiosk', 'Digital Card', 'Card Creator', 'Apps'];
+  const adminOnlyLabels = ['Activity History'];
   
   const processedNavItems = dynamicNavItems
     .map(item => {
@@ -266,7 +266,7 @@ export default function DashboardLayout() {
               title={sidebarCollapsed && !isMobile ? 'System Controller' : undefined}
             >
               <ShieldCheck size={18} className="text-brand-light" />
-              {(!sidebarCollapsed || isMobile) && <span className="truncate flex-1">System Controller</span>}
+              {(!sidebarCollapsed || isMobile) && <span className="truncate flex-1">Platform Admin</span>}
             </Link>
           </div>
         )}
