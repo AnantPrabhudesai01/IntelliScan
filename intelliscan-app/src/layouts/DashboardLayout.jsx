@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { ScanLine, Users, Settings, LogOut, Bell, Sun, Moon, Zap, Store, MessageSquare, UploadCloud, Calendar, Mail, Menu, User, ChevronDown, Target, Smartphone, X, BarChart2, ListTree, Monitor, Sparkles, Palette, Trophy, Layers, Webhook, Search, ChevronRight } from 'lucide-react';
+import { ScanLine, Users, Settings, LogOut, Bell, Sun, Moon, Zap, Store, MessageSquare, UploadCloud, Calendar, Mail, Menu, User, ChevronDown, Target, Smartphone, X, BarChart2, ListTree, Monitor, Sparkles, Palette, Trophy, Layers, Webhook, Search, ChevronRight, ShieldCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import ChatbotWidget from '../components/ChatbotWidget';

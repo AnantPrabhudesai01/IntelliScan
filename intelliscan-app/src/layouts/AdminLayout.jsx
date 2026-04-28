@@ -8,7 +8,7 @@ import {
   ScanLine, Home, Users, Link2, BarChart2, CreditCard,
   Settings, LogOut, Bell, Sun, Moon, Menu, User as UserIcon, Crown, Activity,
   Shield, Database, Cpu, Webhook, Briefcase, FileText, ChevronDown, ChevronRight,
-  X, Key, Globe, Bell as BellIcon, Lock, Mail, Smartphone, Save, Check, AlertTriangle, Building, MessageSquare, GitCommit, ListTree, Zap, Layers, Trophy, Calendar
+  X, Key, Globe, Bell as BellIcon, Lock, Mail, Smartphone, Save, Check, AlertTriangle, Building, MessageSquare, GitCommit, ListTree, Zap, Layers, Trophy, Calendar, ShieldCheck
 } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
 import NotificationCenter from '../components/NotificationCenter';
