@@ -29,7 +29,7 @@ async function generateWithFallback(prompt) {
 
   if (geminiKey) {
     try {
-      const url = `https://generativelanguage.googleapis.com/v1/models/${geminiModelName}:generateContent?key=${geminiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModelName}:generateContent?key=${geminiKey}`;
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -262,8 +262,8 @@ async function unifiedExtractionPipeline({ imageBase64, mimeType, prompt, userId
       if (geminiApiKey) {
         // Use REST API for maximum control over version/naming
         // Use the latest Flash model for 2x speed and better density support
-        const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-latest";
-        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiApiKey}`;
+        const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiApiKey}`;
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -466,8 +466,8 @@ async function unifiedTextAIPipeline({ prompt, systemPrompt, responseFormat = 'j
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
     if (apiKey) {
       // Use Flash-8B for CHAT to get ~1s response time.
-      const modelName = preferredModel || process.env.GEMINI_MODEL || "gemini-1.5-flash-latest";
-      const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
+      const modelName = preferredModel || process.env.GEMINI_MODEL || "gemini-1.5-flash";
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
       
       const response = await fetch(url, {
         method: 'POST',
@@ -661,7 +661,7 @@ Return ONLY a valid JSON object:
     }
 
     const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
-    const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

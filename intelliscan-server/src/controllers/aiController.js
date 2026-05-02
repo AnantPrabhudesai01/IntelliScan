@@ -151,13 +151,25 @@ The tone should be concise and strategic for a CRM dashboard.`;
  */
 exports.supportChat = async (req, res) => {
   try {
-    const { messages } = req.body;
+    const { messages, currentPage } = req.body;
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: 'Messages array is required' });
     }
 
+    // Dynamic Context based on current page
+    let pageContext = "";
+    if (currentPage) {
+      const path = currentPage.toLowerCase();
+      if (path.includes('contacts')) pageContext = "\nCURRENT CONTEXT: The user is currently on the CONTACTS page. They can see their scanned cards, filter by confidence, use AI Enrichment, and export to Excel/CRM. Mention the 'Deduplication Hub' if they ask about cleaning up.";
+      else if (path.includes('calendar')) pageContext = "\nCURRENT CONTEXT: The user is on the CALENDAR / CAMPAIGNS page. They can see their scheduled follow-ups, ROI tracking, and networking events.";
+      else if (path.includes('billing')) pageContext = "\nCURRENT CONTEXT: The user is on the BILLING page. They can see their current quota, upgrade tiers, or contact sales for Enterprise Scale.";
+      else if (path.includes('settings')) pageContext = "\nCURRENT CONTEXT: The user is in SETTINGS. This is where they configure their Profile, CRM links, and Twilio WhatsApp Sandbox.";
+      else if (path.includes('dashboard') && !path.includes('/')) pageContext = "\nCURRENT CONTEXT: The user is on the main DASHBOARD OVERVIEW. They can see quick stats and the 'New Scan' button.";
+    }
+
     const systemPrompt = `You are the IntelliScan Expert, an advanced AI Support Assistant.
 You guide users on how to use the IntelliScan Enterprise platform.
+${pageContext}
 
 ### STRUCTURE RULES:
 1. **USE BOLD HEADERS** (e.g. ### 💎 Feature Name) for every new section.

@@ -36,7 +36,10 @@ export default function ChatbotWidget({ role = 'user' }) {
           'Content-Type': 'application/json',
           'Authorization': token ? `Bearer ${token}` : ''
         },
-        body: JSON.stringify({ messages: newMessages })
+        body: JSON.stringify({ 
+          messages: newMessages,
+          currentPage: window.location.pathname
+        })
       });
 
       if (!response.ok) throw new Error('Failed to send message');
